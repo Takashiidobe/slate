@@ -8,6 +8,7 @@ pub enum Type {
     Numeric(NumericType),
     Complex(NumericType),
     Imaginary(FloatType),
+    FixedPoint(FixedPointType),
     Vector {
         element: NumericType,
         lanes: u32,
@@ -45,6 +46,7 @@ impl fmt::Display for Type {
             Self::Numeric(ty) => write!(f, "{ty}"),
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Imaginary(ty) => write!(f, "imaginary<{ty}>"),
+            Self::FixedPoint(ty) => write!(f, "{ty}"),
             Self::Vector { element, lanes } => write!(f, "vector<{element}, {lanes}>"),
             Self::Pointer {
                 pointee,
@@ -97,6 +99,36 @@ impl fmt::Display for Type {
                 )
             }
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FixedPointType {
+    pub width: u32,
+    pub scale: u32,
+    pub signed: bool,
+    pub saturating: bool,
+}
+
+impl FixedPointType {
+    pub fn integral_bits(self) -> u32 {
+        self.width - self.scale - u32::from(self.signed)
+    }
+
+    pub fn storage(self) -> NumericType {
+        NumericType::integer(self.width, self.signed)
+    }
+}
+
+impl fmt::Display for FixedPointType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}fixed<{}, {}>",
+            if self.saturating { "sat_" } else { "" },
+            self.storage(),
+            self.scale
+        )
     }
 }
 
@@ -390,6 +422,12 @@ pub enum ArithSema {
         negative_left: Option<UbPolicy>,
     },
     Floating(FloatingSemantics),
+    FixedPoint {
+        overflow: FixedOverflow,
+        rounding: FixedRounding,
+        by_zero: Option<UbPolicy>,
+        amount_out_of_range: Option<UbPolicy>,
+    },
     ComplexFloating(FloatingSemantics),
     ComplexInteger {
         overflow: Overflow,
@@ -400,6 +438,34 @@ pub enum ArithSema {
         fill: ShiftFill,
         amount_out_of_range: UbPolicy,
     },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FixedOverflow {
+    Undefined,
+    Saturate,
+}
+
+impl fmt::Display for FixedOverflow {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Undefined => "ub",
+            Self::Saturate => "saturate",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FixedRounding {
+    TowardZero,
+}
+
+impl fmt::Display for FixedRounding {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::TowardZero => "toward_zero",
+        })
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -445,6 +511,11 @@ pub enum ConversionKind {
     ImaginaryConvert,
     VectorSplat,
     VectorBitCast,
+    IntToFixed,
+    FixedToInt,
+    FloatToFixed,
+    FixedToFloat,
+    FixedConvert,
     EnumToInt,
     IntToEnum,
     PtrToInt,
@@ -475,6 +546,11 @@ impl fmt::Display for ConversionKind {
             Self::ComplexToImaginary => "complex_to_imaginary",
             Self::VectorSplat => "vector_splat",
             Self::VectorBitCast => "vector_bit_cast",
+            Self::IntToFixed => "int_to_fixed",
+            Self::FixedToInt => "fixed_to_int",
+            Self::FloatToFixed => "float_to_fixed",
+            Self::FixedToFloat => "fixed_to_float",
+            Self::FixedConvert => "fixed_convert",
             Self::ImaginaryConvert => "imaginary_convert",
             Self::EnumToInt => "enum_to_int",
             Self::IntToEnum => "int_to_enum",
@@ -525,6 +601,10 @@ pub enum ConversionSema {
     },
     Floating(FloatingSemantics),
     Exceptions(Exceptions),
+    FixedPoint {
+        overflow: FixedOverflow,
+        rounding: FixedRounding,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

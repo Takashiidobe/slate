@@ -452,6 +452,9 @@ impl TargetInfo {
                 alignment_bytes: alignment,
             });
         }
+        if let Type::FixedPoint(fixed) = ty {
+            return self.storage_of(Type::Numeric(fixed.storage()));
+        }
         let key = match ty {
             Type::Bool => ScalarKey::Bool,
             Type::Numeric(NumericType::Integer {
@@ -474,6 +477,7 @@ impl TargetInfo {
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
             | Type::Vector { .. }
+            | Type::FixedPoint(_)
             | Type::Defined(_)
             | Type::Array { .. }
             | Type::VariableArray { .. }

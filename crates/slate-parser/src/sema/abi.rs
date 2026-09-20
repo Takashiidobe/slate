@@ -222,6 +222,7 @@ impl<'a> AbiClassifier<'a> {
             Type::Bool
             | Type::Numeric(_)
             | Type::Imaginary(_)
+            | Type::FixedPoint(_)
             | Type::Pointer { .. }
             | Type::VaList => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_abi(*component, result, convention),

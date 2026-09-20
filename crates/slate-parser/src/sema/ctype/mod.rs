@@ -143,6 +143,28 @@ impl FloatKind {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FixedKind {
+    Fract,
+    Accum,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FixedRank {
+    Short,
+    Default,
+    Long,
+    LongLong,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct FixedType {
+    pub kind: FixedKind,
+    pub rank: FixedRank,
+    pub signed: bool,
+    pub saturating: bool,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Extent {
     Incomplete,
@@ -166,6 +188,7 @@ pub enum CTypeKind {
         signed: bool,
     },
     Float(FloatKind),
+    FixedPoint(FixedType),
     Complex(CTypeId),
     Imaginary(FloatKind),
     Vector {

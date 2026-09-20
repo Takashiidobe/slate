@@ -157,6 +157,7 @@ VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" ;
 FixedPointType = FixedPointType {
                    kind: ( "Fract" | "Accum" ),
                    rank: ( "Default" | "Short" | "Long" | "LongLong" ),
+                   signed: bool,
                    saturated: bool } ;
 TypeOfOperand  = "Expression(" expr ")" | "Type(" TypeName ")" ;
 

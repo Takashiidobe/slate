@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
-    FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, TagBody, TagDefinition,
-    TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    FieldItemKind, FixedPointKind, FixedPointRank, FloatingType, IntegerRank, IntegerType,
+    ParameterList, TagBody, TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName,
+    TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
@@ -14,7 +15,8 @@ use crate::target_info::{StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
 
 use super::ctype::{
-    CTypeKind, CTypeMetadata, CTypes, Extent, FloatKind, IntRank, QualType, Qualifiers,
+    CTypeKind, CTypeMetadata, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank,
+    QualType, Qualifiers,
 };
 use super::numeric::ResolveError;
 use super::operand::Operand;
@@ -923,6 +925,20 @@ impl TypeResolver {
                     bytes,
                 }
             }
+            TypeSpecifier::FixedPoint(fixed) => CTypeKind::FixedPoint(FixedType {
+                kind: match fixed.kind {
+                    FixedPointKind::Fract => FixedKind::Fract,
+                    FixedPointKind::Accum => FixedKind::Accum,
+                },
+                rank: match fixed.rank {
+                    FixedPointRank::Short => FixedRank::Short,
+                    FixedPointRank::Default => FixedRank::Default,
+                    FixedPointRank::Long => FixedRank::Long,
+                    FixedPointRank::LongLong => FixedRank::LongLong,
+                },
+                signed: fixed.signed,
+                saturating: fixed.saturated,
+            }),
             TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => CTypeKind::VaList,
             _ => return Err(ResolveError::Unsupported("type specifier")),
         };

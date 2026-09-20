@@ -1,5 +1,7 @@
-use super::{CTypeKind, CTypes, Extent, FloatKind, IntRank, QualType};
-use crate::ir::{Access, FloatType, NumericType, Type, VariableExtent};
+use super::{
+    CTypeKind, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank, QualType,
+};
+use crate::ir::{Access, FixedPointType, FloatType, NumericType, Type, VariableExtent};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 impl CTypes {
@@ -18,6 +20,7 @@ impl CTypes {
                 Type::Complex(self.numeric(QualType::new(*component), target))
             }
             CTypeKind::Imaginary(kind) => Type::Imaginary(float_type(*kind, target)),
+            CTypeKind::FixedPoint(fixed) => Type::FixedPoint(fixed_point_type(*fixed)),
             CTypeKind::Vector { element, lanes, .. } => Type::Vector {
                 element: self.numeric(*element, target),
                 lanes: *lanes,
@@ -109,6 +112,29 @@ impl CTypes {
             CTypeKind::Float(kind) => NumericType::Float(float_type(*kind, target)),
             _ => NumericType::integer(target.int_width, true),
         }
+    }
+}
+
+// N1169 widths, as clang and gcc resolve them: a _Fract is 8 bits at rank short
+// and doubles per rank, an _Accum is twice as wide as the _Fract of its rank,
+// and an unsigned type spends the sign bit on another fractional bit
+pub fn fixed_point_type(fixed: FixedType) -> FixedPointType {
+    let fract_width = 8u32
+        << match fixed.rank {
+            FixedRank::Short => 0,
+            FixedRank::Default => 1,
+            FixedRank::Long => 2,
+            FixedRank::LongLong => 3,
+        };
+    let width = match fixed.kind {
+        FixedKind::Fract => fract_width,
+        FixedKind::Accum => fract_width * 2,
+    };
+    FixedPointType {
+        width,
+        scale: fract_width - u32::from(fixed.signed),
+        signed: fixed.signed,
+        saturating: fixed.saturating,
     }
 }
 

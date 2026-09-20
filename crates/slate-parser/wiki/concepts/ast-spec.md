@@ -227,7 +227,7 @@ or functions; those come only from declarators.
 | `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
 | `Float(Decimal32 \| Decimal64 \| Decimal128)`                      | `_Decimal32`, `_Decimal64`, `_Decimal128`; literals `DF`/`DD`/`DL`     |
 | `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                        |
-| `FixedPoint { kind, rank, saturated }`                             | `_Fract`/`_Accum`                                                      |
+| `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, in any specifier order, `signed` unless `unsigned` |
 | `Atomic(TypeName)`                                                 | `_Atomic(T)` specifier form                                            |
 | `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                   |
 | `TypedefName(String)`                                              | an identifier the parser knows is a typedef name                       |

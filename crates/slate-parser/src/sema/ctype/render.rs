@@ -1,4 +1,7 @@
-use super::{CTypeKind, CTypes, Extent, FloatKind, IntRank, QualType, Qualifiers};
+use super::{
+    CTypeKind, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank, QualType,
+    Qualifiers,
+};
 use crate::ir::TypeDefinition;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -230,6 +233,7 @@ impl Printer<'_> {
                 format!("_Complex {}", self.name(self.types.kind(*component)))
             }
             CTypeKind::Imaginary(kind) => format!("_Imaginary {}", float_name(*kind)),
+            CTypeKind::FixedPoint(fixed) => fixed_point_name(*fixed),
             CTypeKind::Vector { element, bytes, .. } => format!(
                 "{} __attribute__((vector_size({bytes})))",
                 self.print(*element, Declarator::empty())
@@ -305,6 +309,27 @@ fn float_name(kind: FloatKind) -> &'static str {
         FloatKind::Decimal64 => "_Decimal64",
         FloatKind::Decimal128 => "_Decimal128",
     }
+}
+
+fn fixed_point_name(fixed: FixedType) -> String {
+    let mut words = Vec::new();
+    if fixed.saturating {
+        words.push("_Sat");
+    }
+    if !fixed.signed {
+        words.push("unsigned");
+    }
+    words.extend(match fixed.rank {
+        FixedRank::Short => Some("short"),
+        FixedRank::Default => None,
+        FixedRank::Long => Some("long"),
+        FixedRank::LongLong => Some("long long"),
+    });
+    words.push(match fixed.kind {
+        FixedKind::Fract => "_Fract",
+        FixedKind::Accum => "_Accum",
+    });
+    words.join(" ")
 }
 
 fn tag_name(prefix: &str, name: Option<&str>) -> String {

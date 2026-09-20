@@ -950,7 +950,9 @@ impl Lowerer {
         }
         let mut result = match &value.ty {
             Type::Bool => return Ok(value),
-            Type::Numeric(_) | Type::Imaginary(_) => self.context.condition(value),
+            Type::Numeric(_) | Type::Imaginary(_) | Type::FixedPoint(_) => {
+                self.context.condition(value)
+            }
             Type::Complex(component) => {
                 let component = *component;
                 let zero = self.value(

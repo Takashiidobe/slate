@@ -28,8 +28,9 @@ pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
-    Fits, FloatClassTest, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow,
-    Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
+    Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest, FloatType,
+    FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill, Type,
+    UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,
@@ -588,6 +589,9 @@ impl Value {
                         ", out_of_range=ub, exceptions={}",
                         exceptions_name(*exceptions)
                     )?,
+                    ConversionSema::FixedPoint { overflow, rounding } => {
+                        write!(f, ", overflow={overflow}, rounding={rounding}")?;
+                    }
                 }
                 write!(
                     f,
@@ -800,6 +804,20 @@ impl Value {
                 },
                 exceptions_name(properties.exceptions)
             )?,
+            ArithSema::FixedPoint {
+                overflow,
+                rounding,
+                by_zero,
+                amount_out_of_range,
+            } => {
+                write!(f, ", overflow={overflow}, rounding={rounding}")?;
+                if let Some(policy) = by_zero {
+                    write!(f, ", by_zero={policy}")?;
+                }
+                if let Some(policy) = amount_out_of_range {
+                    write!(f, ", amount_out_of_range={policy}")?;
+                }
+            }
             ArithSema::ComplexFloating(properties) => write!(
                 f,
                 ", complex=true, rounding={}, exceptions={}",

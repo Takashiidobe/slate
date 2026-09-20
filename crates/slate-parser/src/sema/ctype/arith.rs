@@ -1,4 +1,4 @@
-use super::{CTypeKind, CTypes, FloatKind, IntRank, QualType, layout::rank_width};
+use super::{CTypeKind, CTypes, FixedType, FloatKind, IntRank, QualType, layout::rank_width};
 use crate::sema::numeric::ResolveError;
 use crate::target_info::TargetInfo;
 
@@ -125,6 +125,43 @@ impl CTypes {
             }
         };
         Ok(self.qual(kind))
+    }
+
+    pub fn fixed(&self, q: QualType) -> Option<FixedType> {
+        match self.canonical_kind(q) {
+            CTypeKind::FixedPoint(fixed) => Some(*fixed),
+            _ => None,
+        }
+    }
+
+    // N1169 6.3.1.x: a fixed-point operand absorbs an integer operand, yields to
+    // a floating one, and against another fixed-point type takes the wider kind
+    // and rank, signed if either is, saturating if either is
+    pub fn usual_fixed_type(&mut self, a: QualType, b: QualType) -> Result<QualType, ResolveError> {
+        let (left, right) = (self.fixed(a), self.fixed(b));
+        if let (Some(left), Some(right)) = (left, right) {
+            return Ok(self.qual(CTypeKind::FixedPoint(FixedType {
+                kind: left.kind.max(right.kind),
+                rank: left.rank.max(right.rank),
+                signed: left.signed || right.signed,
+                saturating: left.saturating || right.saturating,
+            })));
+        }
+        let (fixed, other) = if left.is_some() { (a, b) } else { (b, a) };
+        if self.is_floating(other) {
+            if !matches!(self.canonical_kind(other), CTypeKind::Float(_)) {
+                return Err(ResolveError::Invalid(
+                    "complex or imaginary operand with a fixed-point operand",
+                ));
+            }
+            return Ok(self.unqualified(other));
+        }
+        if !self.is_integer(other) {
+            return Err(ResolveError::Invalid(
+                "operand of a fixed-point operator must be arithmetic",
+            ));
+        }
+        Ok(self.unqualified(fixed))
     }
 
     pub fn arithmetic_component(&mut self, q: QualType) -> QualType {

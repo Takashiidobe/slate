@@ -821,8 +821,8 @@ type; an imaginary type contains a resolved component type but is not a
 complex value with a known-zero real part. A vector contains a resolved scalar
 element type and a lane count; source byte sizing is converted to lanes after
 the element's target storage size is known. A fixed-point type contains its
-kind (`_Fract` or `_Accum`), rank, signedness, saturation mode, and resolved
-scale/storage information. Source spelling and typedefs stay in type metadata.
+resolved width, scale, signedness, and saturation mode; the source kind
+(`_Fract` or `_Accum`) and rank survive only in the C type metadata. Source spelling and typedefs stay in type metadata.
 These are intended as structural `Type` variants, like pointer and array,
 because arithmetic and representation must remain visible without consulting
 source metadata. This is the type-shape decision of `slate-parser-lh7.2.17`,
@@ -996,18 +996,47 @@ result types (`int_to_float<vector<f32, 4>>(..)`), so it carries the same
 exactness and exception policy as the scalar conversion it mirrors.
 `tests/fixtures/sema/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
 
-**Out of scope for current IR lowering:** fixed-point types remain
-unrepresented, tracked by `slate-parser-lh7.2.17.4`:
+**Implemented for fixed-point:** `Type::FixedPoint` prints as `fixed<i32, 15>`
+(`sat_fixed<..>` for `_Sat`): a two's-complement storage word of `width` bits
+holding `scale` fractional bits, so the integral bits are
+`width - scale - signed`. Widths follow N1169 as clang and gcc resolve them
+and are not target-varying: a `_Fract` is 8 bits at rank `short` and doubles
+per rank, an `_Accum` is twice as wide as the `_Fract` of its rank, and an
+unsigned type spends the sign bit on one more fractional bit (there is no
+unsigned padding bit, matching clang's default). `short _Fract` is
+`fixed<i8, 7>`, `_Accum` is `fixed<i32, 15>`, `unsigned _Accum` is
+`fixed<u32, 16>`, `long long _Accum` is `fixed<i128, 63>`. Storage and
+alignment are the storage integer's, so a fixed-point value passes in the ABI
+as a scalar.
 
-| Family      | Reason lowering remains out of scope                                                                                                                                              |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled.                                                        |
+`ArithSema::FixedPoint` carries `overflow` (`saturate` for a `_Sat` type,
+`ub` otherwise -- saturation is not integer overflow), `rounding`, which is
+always `toward_zero` for the fractional bits an operation discards, and the
+`by_zero` and `amount_out_of_range` policies where they apply. It is used by
+`+ - * /`, `<< >>`, and unary `-`. `%`, the bitwise operators, and `~` are
+rejected; a fixed-point value is a scalar condition, so `if`, `!`, `&&` and
+`||` compare it against a zero of its own type.
 
-`ArithSema` needs a distinct saturating fixed-point case rather than treating
-saturation as integer overflow. No numeric operation should silently accept a
-fixed-point type until its contract and conversions are pinned by FileCheck
-fixtures. Declaration-only support also requires target storage and ABI
-rules, so adding a bare `Type` variant alone would not make headers lower.
+Conversions are `int_to_fixed`, `fixed_to_int`, `float_to_fixed`,
+`fixed_to_float`, and `fixed_convert`, each carrying the destination's
+saturation and rounding, except that a `fixed_convert` keeping every
+representable value of the source (no fewer fractional bits, no fewer
+integral bits, and not signed to unsigned) is `Exact`. `fixed_to_float`
+carries the ordinary floating rounding and exception policy instead.
+
+The common type of two fixed-point operands takes the wider kind (`_Accum`
+over `_Fract`) and the greater rank, is signed if either is, and saturating
+if either is; a fixed-point operand absorbs an integer operand and yields to
+a real floating one. Clang instead computes the common type from the maximum
+integral and fractional bit counts, which can name a type that is wider than
+either operand; we model the result at the C type level, which is what N1169
+describes and is enough for translation. A fixed-point operand mixed with a
+complex or imaginary operand is rejected. `tests/fixtures/sema/ir_fixed_point.c`
+and `ir_fixed_point_invalid.c` pin these forms.
+
+**Not yet implemented:** N1169 fixed-point literals (`0.5r`, `1.5k`, and
+their `u`/`h`/`l`/`ll` spellings) are not lexed, so a fixed-point value can
+only come from a conversion; tracked by `slate-parser-lh7.2.17.8`.
 
 ### Records
 

@@ -215,6 +215,13 @@ impl TypeResolver {
     ) -> Result<(Operand, Operand), ResolveError> {
         let left = self.promote_operand(context, left, None);
         let right = self.promote_operand(context, right, None);
+        if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
+            let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
+            return Ok((
+                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith),
+                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith),
+            ));
+        }
         let component = self
             .ctypes
             .usual_real_type(left.c, right.c, &context.target)?;
@@ -335,6 +342,13 @@ impl TypeResolver {
         } else if shift || matches!(op, BinaryOp::And | BinaryOp::Or) {
             let c = left.c;
             (left, right, c)
+        } else if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
+            let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
+            (
+                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith),
+                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith),
+                c,
+            )
         } else {
             let component = self
                 .ctypes

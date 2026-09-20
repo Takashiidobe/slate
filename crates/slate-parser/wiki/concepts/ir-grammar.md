@@ -75,6 +75,7 @@ type          = "void" | "bool" | "va_list" | numeric
               | "complex<" numeric ">"
               | "imaginary<" float_type ">"
               | "vector<" numeric ", " int ">"
+              | [ "sat_" ] "fixed<" int_type ", " int ">"
               | "ptr<" [ "const " ] [ access_prefix ] type ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
               | "vla<" type ", " ( binding | "*" ) ">"
@@ -94,6 +95,11 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `d32`/`d64`/`d128` are decimal floating types, never converted to binary.
 - `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` type with
   `N` lanes of the scalar `T`; both source forms print the same way.
+- `fixed<iW, S>` is an N1169 fixed-point type: a two's-complement `iW`/`uW`
+  storage word with `S` fractional bits, leaving `W - S - signed` integral
+  bits. `sat_fixed<..>` is the `_Sat` form, whose operations saturate where
+  the plain form is undefined. `_Fract` and `_Accum` of the same rank differ
+  only in width, so the kind is not printed.
 - `ptr<const T>` records pointee constness; `volatile`/`atomic` on a pointee
   are what make accesses through the pointer volatile or atomic.
 - `vla<T, %n>` has a runtime extent held in synthetic binding `%n`, captured
@@ -425,7 +431,9 @@ conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "complex_convert"
            | "real_to_imaginary" | "imaginary_to_real" | "imaginary_to_complex"
            | "complex_to_imaginary" | "imaginary_convert"
-           | "vector_splat" | "vector_bit_cast" ;
+           | "vector_splat" | "vector_bit_cast"
+           | "int_to_fixed" | "fixed_to_int" | "float_to_fixed"
+           | "fixed_to_float" | "fixed_convert" ;
 arith_op   = "add" | "sub" | "mul" | "div" | "rem"
            | "and" | "or" | "xor" | "shl" | "shr"
            | "minnum" | "maxnum" | "minimum" | "maximum"
@@ -444,7 +452,8 @@ conversion_policy = (* exact: nothing *)
                   | ", fits=" ( "always" | "unknown" )
                   | ", exact=" bool floating
                   | floating
-                  | ", out_of_range=ub, exceptions=" exceptions ;
+                  | ", out_of_range=ub, exceptions=" exceptions
+                  | fixed ;
 arith_policy      = [ ", elementwise=true" ] arith_contract ;
 arith_contract    = (* exact: nothing *)
                   | overflow
@@ -453,7 +462,10 @@ arith_contract    = (* exact: nothing *)
                   | ", amount_out_of_range=ub, fill=" ( "sign_extend" | "zero_extend" )
                   | floating
                   | ", complex=true" floating
-                  | ", complex=true" overflow [ ", by_zero=ub" ] ;
+                  | ", complex=true" overflow [ ", by_zero=ub" ]
+                  | fixed [ ", by_zero=ub" ] [ ", amount_out_of_range=ub" ] ;
+fixed             = ", overflow=" ( "ub" | "saturate" )
+                    ", rounding=toward_zero" ;
 overflow          = ", overflow=" ( "ub" | "wrap" | "trap" ) ;
 floating          = ", rounding=" ( "nearest_even" | "environment" )
                     ", exceptions=" exceptions ;
@@ -470,7 +482,12 @@ exceptions        = "ignore" | "observable" ;
   `neg`; integer `add`/`sub`/`mul`/`neg`; `div`/`rem` (signed adds
   `min_by_neg_one`); `shl` (signed adds `negative_left`); `shr`; floating
   arithmetic (`add`/`sub`/`mul`/`div` and the six extrema); complex
-  floating; complex integer.
+  floating; complex integer; fixed-point.
+- A fixed-point contract is `overflow=saturate` for a `_Sat` type and
+  `overflow=ub` otherwise, and always `rounding=toward_zero`, which is the
+  fractional bits the operation discards. It appears on `add`/`sub`/`mul`/
+  `div`/`shl`/`shr`/`neg` and on every conversion into or out of a
+  fixed-point type except one that is exact.
 
 ## Metadata
 

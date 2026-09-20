@@ -930,6 +930,7 @@ pub enum FixedPointRank {
 pub struct FixedPointType {
     pub kind: FixedPointKind,
     pub rank: FixedPointRank,
+    pub signed: bool,
     pub saturated: bool,
 }
 

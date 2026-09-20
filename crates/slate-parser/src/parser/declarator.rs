@@ -101,6 +101,9 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(crate) fn parse_base_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
+        if self.fixed_point_ahead() {
+            return self.parse_fixed_point();
+        }
         let Some(token) = self.peek().cloned() else {
             return Err(DeclaratorError::ExpectedDeclarationType);
         };
@@ -152,19 +155,7 @@ impl<'a> DeclaratorParser<'a> {
                 signed: true,
             }),
             Token::Keyword(Keyword::Long) => {
-                if matches!(
-                    self.peek(),
-                    Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
-                ) {
-                    return self.parse_fixed_point(FixedPointRank::Long, false);
-                }
                 if self.matches(Token::Keyword(Keyword::Long)) {
-                    if matches!(
-                        self.peek(),
-                        Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
-                    ) {
-                        return self.parse_fixed_point(FixedPointRank::LongLong, false);
-                    }
                     let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
                     if signed {
                         self.matches(Token::Keyword(Keyword::Signed));
@@ -199,12 +190,6 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Token::Keyword(Keyword::Short) => {
-                if matches!(
-                    self.peek(),
-                    Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
-                ) {
-                    return self.parse_fixed_point(FixedPointRank::Short, false);
-                }
                 let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
                 if signed {
                     self.matches(Token::Keyword(Keyword::Signed));
@@ -323,18 +308,7 @@ impl<'a> DeclaratorParser<'a> {
             },
             Token::Keyword(Keyword::Void) => TypeSpecifier::Void,
             Token::Keyword(Keyword::Saturated) => {
-                let rank = if self.matches(Token::Keyword(Keyword::Short)) {
-                    FixedPointRank::Short
-                } else if self.matches(Token::Keyword(Keyword::Long)) {
-                    if self.matches(Token::Keyword(Keyword::Long)) {
-                        FixedPointRank::LongLong
-                    } else {
-                        FixedPointRank::Long
-                    }
-                } else {
-                    FixedPointRank::Default
-                };
-                return self.parse_fixed_point(rank, true);
+                return Err(DeclaratorError::ExpectedFractOrAccum);
             }
             Token::Keyword(Keyword::Atomic) => {
                 self.expect(
@@ -379,12 +353,6 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
             Token::Keyword(Keyword::TypeofUnqual) => {
                 TypeSpecifier::TypeOfUnqual(self.parse_typeof_operand()?)
-            }
-            Token::Keyword(Keyword::Fract) => {
-                self.fixed_point(FixedPointKind::Fract, false, FixedPointRank::Default)
-            }
-            Token::Keyword(Keyword::Accum) => {
-                self.fixed_point(FixedPointKind::Accum, false, FixedPointRank::Default)
             }
             Token::Keyword(Keyword::Struct) => self.parse_record_type(TagKind::Struct)?,
             Token::Keyword(Keyword::Union) => self.parse_record_type(TagKind::Union)?,
@@ -610,31 +578,53 @@ impl<'a> DeclaratorParser<'a> {
         Ok(items)
     }
 
-    pub(super) fn parse_fixed_point(
-        &mut self,
-        rank: FixedPointRank,
-        saturated: bool,
-    ) -> Result<TypeSpecifier, DeclaratorError> {
-        let kind = match self.peek() {
-            Some(Token::Keyword(Keyword::Fract)) => FixedPointKind::Fract,
-            Some(Token::Keyword(Keyword::Accum)) => FixedPointKind::Accum,
-            _ => return Err(DeclaratorError::ExpectedFractOrAccum),
-        };
-        self.pos += 1;
-        Ok(self.fixed_point(kind, saturated, rank))
+    fn fixed_point_ahead(&self) -> bool {
+        let mut index = self.pos;
+        loop {
+            match self.tokens.get(index).map(|span| &span.value) {
+                Some(Token::Keyword(Keyword::Fract | Keyword::Accum)) => return true,
+                Some(Token::Keyword(
+                    Keyword::Saturated
+                    | Keyword::Signed
+                    | Keyword::Unsigned
+                    | Keyword::Short
+                    | Keyword::Long,
+                )) => index += 1,
+                _ => return false,
+            }
+        }
     }
 
-    pub(super) fn fixed_point(
-        &self,
-        kind: FixedPointKind,
-        saturated: bool,
-        rank: FixedPointRank,
-    ) -> TypeSpecifier {
-        TypeSpecifier::FixedPoint(FixedPointType {
+    pub(super) fn parse_fixed_point(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
+        let mut rank = FixedPointRank::Default;
+        let mut signed = true;
+        let mut saturated = false;
+        let kind = loop {
+            match self.peek() {
+                Some(Token::Keyword(Keyword::Fract)) => break FixedPointKind::Fract,
+                Some(Token::Keyword(Keyword::Accum)) => break FixedPointKind::Accum,
+                Some(Token::Keyword(Keyword::Saturated)) => saturated = true,
+                Some(Token::Keyword(Keyword::Signed)) => signed = true,
+                Some(Token::Keyword(Keyword::Unsigned)) => signed = false,
+                Some(Token::Keyword(Keyword::Short)) => rank = FixedPointRank::Short,
+                Some(Token::Keyword(Keyword::Long)) => {
+                    rank = if rank == FixedPointRank::Long {
+                        FixedPointRank::LongLong
+                    } else {
+                        FixedPointRank::Long
+                    };
+                }
+                _ => return Err(DeclaratorError::ExpectedFractOrAccum),
+            }
+            self.pos += 1;
+        };
+        self.pos += 1;
+        Ok(TypeSpecifier::FixedPoint(FixedPointType {
             kind,
             rank,
+            signed,
             saturated,
-        })
+        }))
     }
 
     pub(super) fn parse_bit_int(

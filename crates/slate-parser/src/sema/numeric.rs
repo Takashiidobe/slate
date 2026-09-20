@@ -6,9 +6,9 @@ use crate::const_expr::{
 };
 use crate::ir::{
     AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, ConversionKind,
-    ConversionReason, ConversionSema, Exceptions, Fits, FloatType, FloatingSemantics, LogicalOp,
-    Number, NumericType, Overflow, Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, Value,
-    ValueKind,
+    ConversionReason, ConversionSema, Exceptions, Fits, FixedOverflow, FixedRounding, FloatType,
+    FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill, Type,
+    UbPolicy, UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -161,6 +161,11 @@ impl Context {
         if matches!(left.ty, Type::Vector { .. }) || matches!(right.ty, Type::Vector { .. }) {
             return self.vector_binary(op, left, right);
         }
+        if (matches!(left.ty, Type::FixedPoint(_)) || matches!(right.ty, Type::FixedPoint(_)))
+            && !matches!(op, BinaryOp::And | BinaryOp::Or)
+        {
+            return self.fixed_binary(op, left, right);
+        }
         let arith = match op {
             BinaryOp::Add => ArithOp::Add,
             BinaryOp::Sub => ArithOp::Sub,
@@ -290,6 +295,22 @@ impl Context {
                     overflow: Overflow::Wrap,
                 },
             };
+            return Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op: arith,
+                    operand: Box::new(operand),
+                    semantics,
+                },
+            ));
+        }
+        if let Type::FixedPoint(fixed) = operand.ty {
+            if arith != UnaryArithOp::Neg {
+                return Err(ResolveError::Invalid(
+                    "bitwise complement of a fixed-point operand",
+                ));
+            }
+            let semantics = self.fixed_semantics(fixed, None, None);
             return Ok((
                 operand.ty.clone(),
                 ValueKind::Unary {
@@ -565,6 +586,91 @@ impl Context {
         reject_mixed_decimal(operator, &left, &right)?;
         let left_ty = numeric(&left)?;
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
+    }
+
+    fn fixed_binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let shift = matches!(op, BinaryOp::ShiftLeft | BinaryOp::ShiftRight);
+        let Type::FixedPoint(fixed) = &left.ty else {
+            return Err(ResolveError::Unsupported("unconverted fixed-point operand"));
+        };
+        let fixed = *fixed;
+        if shift {
+            if !matches!(right.ty, Type::Numeric(NumericType::Integer { .. })) {
+                return Err(ResolveError::Invalid(
+                    "fixed-point shift amount must be an integer",
+                ));
+            }
+        } else if left.ty != right.ty {
+            return Err(ResolveError::Unsupported(
+                "unconverted fixed-point operands",
+            ));
+        }
+        let compare = match op {
+            BinaryOp::Equal => Some(CompareOp::Eq),
+            BinaryOp::NotEqual => Some(CompareOp::Ne),
+            BinaryOp::Less => Some(CompareOp::Lt),
+            BinaryOp::LessEqual => Some(CompareOp::Le),
+            BinaryOp::Greater => Some(CompareOp::Gt),
+            BinaryOp::GreaterEqual => Some(CompareOp::Ge),
+            _ => None,
+        };
+        if let Some(op) = compare {
+            return Ok((
+                Type::Bool,
+                ValueKind::Compare {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    exceptions: None,
+                    reason: None,
+                },
+            ));
+        }
+        let arith = match op {
+            BinaryOp::Add => ArithOp::Add,
+            BinaryOp::Sub => ArithOp::Sub,
+            BinaryOp::Mul => ArithOp::Mul,
+            BinaryOp::Div => ArithOp::Div,
+            BinaryOp::ShiftLeft => ArithOp::Shl,
+            BinaryOp::ShiftRight => ArithOp::Shr,
+            _ => {
+                return Err(ResolveError::Invalid(
+                    "operator requires integer or real operands",
+                ));
+            }
+        };
+        Ok((
+            left.ty.clone(),
+            ValueKind::Arith {
+                op: arith,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics: self.fixed_semantics(
+                    fixed,
+                    (arith == ArithOp::Div).then_some(UbPolicy::Undefined),
+                    shift.then_some(UbPolicy::Undefined),
+                ),
+            },
+        ))
+    }
+
+    fn fixed_semantics(
+        &self,
+        fixed: crate::ir::FixedPointType,
+        by_zero: Option<UbPolicy>,
+        amount_out_of_range: Option<UbPolicy>,
+    ) -> ArithSema {
+        ArithSema::FixedPoint {
+            overflow: fixed_overflow(fixed),
+            rounding: FixedRounding::TowardZero,
+            by_zero,
+            amount_out_of_range,
+        }
     }
 
     fn complex_binary(
@@ -928,6 +1034,50 @@ impl Context {
                 };
                 conversion(value, to, ConversionKind::ComplexConvert, reason, semantics)
             }
+            (Type::FixedPoint(from), Type::FixedPoint(target)) => conversion(
+                value,
+                to,
+                ConversionKind::FixedConvert,
+                reason,
+                fixed_conversion_sema(from, target),
+            ),
+            (Type::Numeric(NumericType::Integer { .. }), Type::FixedPoint(target)) => conversion(
+                value,
+                to,
+                ConversionKind::IntToFixed,
+                reason,
+                ConversionSema::FixedPoint {
+                    overflow: fixed_overflow(target),
+                    rounding: FixedRounding::TowardZero,
+                },
+            ),
+            (Type::FixedPoint(_), Type::Numeric(NumericType::Integer { .. })) => conversion(
+                value,
+                to,
+                ConversionKind::FixedToInt,
+                reason,
+                ConversionSema::FixedPoint {
+                    overflow: FixedOverflow::Undefined,
+                    rounding: FixedRounding::TowardZero,
+                },
+            ),
+            (Type::Numeric(NumericType::Float(_)), Type::FixedPoint(target)) => conversion(
+                value,
+                to,
+                ConversionKind::FloatToFixed,
+                reason,
+                ConversionSema::FixedPoint {
+                    overflow: fixed_overflow(target),
+                    rounding: FixedRounding::TowardZero,
+                },
+            ),
+            (Type::FixedPoint(_), Type::Numeric(NumericType::Float(_))) => conversion(
+                value,
+                to,
+                ConversionKind::FixedToFloat,
+                reason,
+                ConversionSema::Floating(self.floating),
+            ),
             (
                 Type::Numeric(NumericType::Integer {
                     width: from_width,
@@ -1037,6 +1187,7 @@ impl Context {
         let ty = match value.ty {
             Type::Numeric(ty) => ty,
             Type::Imaginary(format) => NumericType::Float(format),
+            Type::FixedPoint(fixed) => fixed.storage(),
             _ => return value,
         };
         let zero = match ty {
@@ -1055,6 +1206,32 @@ impl Context {
     }
 }
 
+fn fixed_overflow(fixed: crate::ir::FixedPointType) -> FixedOverflow {
+    if fixed.saturating {
+        FixedOverflow::Saturate
+    } else {
+        FixedOverflow::Undefined
+    }
+}
+
+// a fixed-point conversion that keeps every representable value of the source
+// can neither saturate nor drop fractional bits
+fn fixed_conversion_sema(
+    from: crate::ir::FixedPointType,
+    to: crate::ir::FixedPointType,
+) -> ConversionSema {
+    if to.scale >= from.scale
+        && to.integral_bits() >= from.integral_bits()
+        && (to.signed || !from.signed)
+    {
+        return ConversionSema::Exact;
+    }
+    ConversionSema::FixedPoint {
+        overflow: fixed_overflow(to),
+        rounding: FixedRounding::TowardZero,
+    }
+}
+
 fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
     match value.ty {
         Type::Numeric(ty) => Ok(ty),
@@ -1062,6 +1239,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         Type::Defined(_)
         | Type::Complex(_)
         | Type::Imaginary(_)
+        | Type::FixedPoint(_)
         | Type::Vector { .. }
         | Type::Pointer { .. }
         | Type::VaList

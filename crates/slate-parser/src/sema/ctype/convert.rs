@@ -84,6 +84,13 @@ impl CTypes {
         if self.is_vector(from) || self.is_vector(to) {
             return Ok(Conversion::plain(CastKind::Vector));
         }
+        if (self.is_fixed_point(from) || self.is_fixed_point(to))
+            && (self.is_complex_domain(from) || self.is_complex_domain(to))
+        {
+            return Err(ResolveError::Invalid(
+                "conversion between a fixed-point type and a complex or imaginary type",
+            ));
+        }
         if self.enum_underlying(from).is_some() {
             return Ok(Conversion::plain(CastKind::EnumToInt));
         }
@@ -264,8 +271,19 @@ impl CTypes {
         )
     }
 
+    pub fn is_complex_domain(&self, q: QualType) -> bool {
+        matches!(
+            self.canonical_kind(q),
+            CTypeKind::Complex(_) | CTypeKind::Imaginary(_)
+        )
+    }
+
+    pub fn is_fixed_point(&self, q: QualType) -> bool {
+        matches!(self.canonical_kind(q), CTypeKind::FixedPoint(_))
+    }
+
     pub fn is_arithmetic(&self, q: QualType) -> bool {
-        self.is_integer(q) || self.is_floating(q)
+        self.is_integer(q) || self.is_floating(q) || self.is_fixed_point(q)
     }
 
     pub fn is_scalar(&self, q: QualType) -> bool {
