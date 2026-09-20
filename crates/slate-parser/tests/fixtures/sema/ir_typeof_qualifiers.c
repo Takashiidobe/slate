@@ -55,9 +55,9 @@ int test(cvint value, row array, int function(int)) {
 // DEFAULT-NEXT:     type @type1 row = array<i32, 2> [c="cvint[2]"] [c_canon="const volatile int[2]"] [typedef_chain="cvint"] [c_const="true"] [c_volatile="true"];
 // DEFAULT-NEXT:     type @type2 pointer = ptr<const i32> [c="const int *const"] [c_const="true"];
 // DEFAULT-NEXT:     type @type3 Record = struct {
-// DEFAULT-NEXT:         field0 field: volatile i32;
-// DEFAULT-NEXT:         field1 ptr: ptr<const i32>;
-// DEFAULT-NEXT:         field2 copied: volatile i32;
+// DEFAULT-NEXT:         field0 field: const volatile i32;
+// DEFAULT-NEXT:         field1 ptr: const ptr<const i32>;
+// DEFAULT-NEXT:         field2 copied: const volatile i32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     global %3 original: volatile i32 [storage=static] [const] [linkage=external] [c="cvint"] [c_canon="const volatile int"] [typedef_chain="cvint"] [c_const="true"] [c_volatile="true"];
 // DEFAULT-NEXT:     global %4 table: volatile array<i32, 2> [storage=static] [const] [linkage=external] [c="row"] [c_canon="const volatile int[2]"] [typedef_chain="row -> cvint"] [c_const="true"] [c_volatile="true"];

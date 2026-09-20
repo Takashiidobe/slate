@@ -578,8 +578,9 @@ impl fmt::Display for DisplayModule<'_> {
                         for (index, field) in fields.iter().enumerate() {
                             write!(
                                 f,
-                                "        field{index} {}: {}{}",
+                                "        field{index} {}: {}{}{}",
                                 field.name.as_deref().unwrap_or("<anonymous>"),
+                                if field.is_const { "const " } else { "" },
                                 field.access.prefix(),
                                 field.ty
                             )?;

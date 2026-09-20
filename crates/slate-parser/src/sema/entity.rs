@@ -20,6 +20,7 @@ impl ObjectRequest {
 pub(super) struct Entity {
     pub ty: QualType,
     pub request: ObjectRequest,
+    pub is_register: bool,
 }
 
 #[derive(Debug, Default)]
@@ -32,20 +33,35 @@ impl Entities {
         self.entities.get(id).map(|entity| entity.ty)
     }
 
-    pub(super) fn declare(&mut self, id: BindingId, ty: QualType) -> Option<QualType> {
+    pub(super) fn declare(
+        &mut self,
+        id: BindingId,
+        ty: QualType,
+        is_register: bool,
+    ) -> Option<QualType> {
         match self.entities.get_mut(&id) {
-            Some(entity) => Some(std::mem::replace(&mut entity.ty, ty)),
+            Some(entity) => {
+                entity.is_register |= is_register;
+                Some(std::mem::replace(&mut entity.ty, ty))
+            }
             None => {
                 self.entities.insert(
                     id,
                     Entity {
                         ty,
                         request: ObjectRequest::default(),
+                        is_register,
                     },
                 );
                 None
             }
         }
+    }
+
+    pub(super) fn is_register(&self, id: &BindingId) -> bool {
+        self.entities
+            .get(id)
+            .is_some_and(|entity| entity.is_register)
     }
 
     pub(super) fn request(&self, id: &BindingId) -> ObjectRequest {

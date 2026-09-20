@@ -7,7 +7,7 @@ redeclarations. The table lives in `src/sema/entity.rs` and hangs off
 ## What an entity holds
 
 ```rust
-struct Entity { ty: QualType, request: ObjectRequest }
+struct Entity { ty: QualType, request: ObjectRequest, is_register: bool }
 struct ObjectRequest { alignment: Option<u64>, common: Option<bool> }
 ```
 
@@ -27,6 +27,7 @@ record:
 | `is_const`, `restrict`, `access.volatile`, `access.atomic` | `quals(entity.ty)` / `access_of(entity.ty)` |
 | `Variable.alignment` (`[align=N]`) | `effective_alignment(request.alignment, natural)` |
 | `Global.common` | `request.common`, then `-fcommon` |
+| register-address constraint | `is_register` |
 | `__alignof__` of an object | `declared_alignment(request.alignment, natural)` |
 | the access map handed to effects normalization | `entities.types()`, once, after lowering |
 
@@ -109,9 +110,8 @@ site, in one dump. Three cells are empty and cannot be filled:
 - `_Alignas` on a parameter is a constraint violation (C23 6.7.5p2); sema
   rejects it as "parameter attributes".
 - `const` on a record field is enforced (assigning to a struct with a
-  `const`-qualified member is rejected, as clang does) but invisible in the
-  printed IR: `ir::Field` carries an `Access`, which is volatile and atomic
-  only (slate-parser-eiq).
+  `const`-qualified member is rejected, as clang does) and is printed as a
+  field type prefix alongside volatile and atomic access (slate-parser-eiq).
 - A compound literal prints no binding-level qualifier or alignment
   annotation, because it prints as a place rather than a declaration. Its
   qualifiers are still observable, in the type of its address and in the

@@ -61,6 +61,7 @@ pub struct BitFieldUnit {
 pub struct Field {
     pub name: Option<String>,
     pub ty: Type,
+    pub is_const: bool,
     #[debug(skip_if = Access::is_plain)]
     pub access: Access,
     #[debug(skip_if = Option::is_none)]

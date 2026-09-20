@@ -67,7 +67,7 @@ int forwarded_truth(int a, int b) { return (a, a < b) && (b, a > b); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 Record = struct {
 // DEFAULT-NEXT:         field0 member: i64;
-// DEFAULT-NEXT:         field1 immutable: i32;
+// DEFAULT-NEXT:         field1 immutable: const i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type1 float4 = vector<f32, 4> [c="float __attribute__((vector_size(16)))"];
 // DEFAULT-NEXT:     type @type2 int4 = vector<i32, 4> [c="int __attribute__((vector_size(16)))"];

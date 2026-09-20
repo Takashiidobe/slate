@@ -46,7 +46,7 @@ int block(void) {
 // IR-NEXT:     }
 // IR-NEXT:     type @type0 fields = struct {
 // IR-NEXT:         field0 field_aligned: i32;
-// IR-NEXT:         field1 field_const: i32;
+// IR-NEXT:         field1 field_const: const i32;
 // IR-NEXT:         field2 field_volatile: volatile i32;
 // IR-NEXT:         field3 field_atomic: atomic i32;
 // IR-NEXT:         field4 field_restrict: ptr<i32>;

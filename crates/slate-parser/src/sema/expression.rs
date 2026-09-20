@@ -1078,7 +1078,7 @@ impl Lowerer {
                 let object = self.fresh();
                 let ty = value.ty.clone();
                 let c = self.with_length(resolved, &ty);
-                self.types.entities.declare(object, c);
+                self.types.entities.declare(object, c, false);
                 let storage = if self.in_function {
                     StorageDuration::Automatic
                 } else {
@@ -1954,6 +1954,13 @@ impl Lowerer {
                 operand,
             } => {
                 let place = self.place(operand)?;
+                if let PlaceKind::Binding(id) = place.kind
+                    && self.types.entities.is_register(&id)
+                {
+                    return Err(ResolveError::Invalid(
+                        "address of register variable requested",
+                    ));
+                }
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                     return Err(ResolveError::Invalid("address of a bit-field"));
                 }

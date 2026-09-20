@@ -1033,7 +1033,7 @@ warning:
 | prototyped parameter lists differing in types, count, or `...`     | warning (MSVC C4028/C4030/C4031/C4052) |
 | unprototyped vs prototyped, or only top-level parameter qualifiers  | accepted silently |
 | a struct/union/enum redefined in the same scope                     | error   |
-| the same, in C23, when fields (name, type, access, bit width) or enumerators (name, value) match | accepted, reuses the first definition |
+| the same, in C23, when fields (name, type, constness, access, bit width) or enumerators (name, value) match | accepted, reuses the first definition |
 
 Merging is decided on C types, in `TypeResolver::merge_redeclaration`
 (`src/sema/types.rs`). Compatible declarations merge into their composite

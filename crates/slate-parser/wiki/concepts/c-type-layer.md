@@ -112,8 +112,8 @@ compared on C types rather than IR widths, plain `char` is distinct from
 `signed char` (slate-parser-4o9) and nested pointer levels are compared as
 carefully as the first.
 
-Taking the address of a `register` variable is still accepted, since no
-storage class is recorded per binding (slate-parser-zm8).
+Taking the address of a `register` variable is rejected during expression
+lowering, using the storage class recorded on its binding (slate-parser-zm8).
 
 ## Redeclaration merging
 

@@ -107,7 +107,7 @@ type_body     = type                                          (* alias *)
                 [ "[size=" int ", align=" int "]" ] ;
 fields        = "{" { field } "}" ;
 field         = "field" digits ( c_identifier | "<anonymous>" ) ":"
-                [ access_prefix ] type [ ":" int ] { metadata } ";" ;
+                [ "const " ] [ access_prefix ] type [ ":" int ] { metadata } ";" ;
 record_layout = "[size=" int ", align=" int ", offsets=" int_list
                 [ ", bit_offsets=" "[" opt_int { ", " opt_int } "]" ]
                 [ ", bit_units=" "[" [ unit { ", " unit } ] "]" ]

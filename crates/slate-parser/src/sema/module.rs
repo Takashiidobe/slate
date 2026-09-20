@@ -89,7 +89,7 @@ pub fn resolve_module(
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
-                let previous = lower.types.entities.declare(id, resolved);
+                let previous = lower.types.entities.declare(id, resolved, false);
                 let mut metadata = vec![
                     (
                         "c_storage".into(),
@@ -450,7 +450,11 @@ impl Lowerer {
                 (true, Some(name)) => self.declaration_id(parameter.id, name)?,
                 _ => self.fresh(),
             };
-            self.types.entities.declare(id, adjusted);
+            self.types.entities.declare(
+                id,
+                adjusted,
+                parameter.specifiers.storage == StorageClass::Register,
+            );
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
@@ -556,7 +560,10 @@ impl Lowerer {
             }
             let ty = self.types.object_type(resolved, "void object")?;
             let id = self.declaration_id(declarator.id, name)?;
-            let previous = self.types.entities.declare(id, resolved);
+            let previous =
+                self.types
+                    .entities
+                    .declare(id, resolved, storage_class == StorageClass::Register);
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -697,7 +704,11 @@ impl Lowerer {
                         ty => ty,
                     };
                     let completed = self.with_length(resolved, &ty);
-                    self.types.entities.declare(id, completed);
+                    self.types.entities.declare(
+                        id,
+                        completed,
+                        storage_class == StorageClass::Register,
+                    );
                     (ty, Some(value))
                 }
             };
@@ -808,7 +819,7 @@ impl Lowerer {
                 let count = self.expr(expr)?;
                 let count = self.convert(count, extent_type, ConversionReason::Assign)?;
                 let id = self.fresh();
-                self.types.entities.declare(id, extent_type);
+                self.types.entities.declare(id, extent_type, false);
                 self.types.extents.insert(expr.id, id);
                 out.push((id, count.value));
                 Ok(())

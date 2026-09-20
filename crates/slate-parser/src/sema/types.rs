@@ -540,11 +540,11 @@ impl TypeResolver {
             return Ok(None);
         };
         if let Some(composite) = self.ctypes.composite(previous, declared) {
-            self.entities.declare(id, composite);
+            self.entities.declare(id, composite, false);
             return Ok(None);
         }
         let message = self.conflict_message(previous, declared)?;
-        self.entities.declare(id, previous);
+        self.entities.declare(id, previous, false);
         Ok(Some(message))
     }
 
@@ -1100,6 +1100,7 @@ impl TypeResolver {
                         fields.push(item.derive(Field {
                             name: None,
                             ty: self.object_type(resolved, "void record field")?,
+                            is_const: self.ctypes.quals(resolved).is_const,
                             access: self.access_of(resolved),
                             bit_width: None,
                         }));
@@ -1127,6 +1128,7 @@ impl TypeResolver {
                         fields.push(declarator.derive(Field {
                             name: declarator.declarator.name().map(str::to_owned),
                             ty,
+                            is_const: self.ctypes.quals(resolved).is_const,
                             access: self.access_of(resolved),
                             bit_width,
                         }));
