@@ -84,13 +84,13 @@ int gnu(int order, int *expected, int *desired) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 counter: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 cursor: ptr<i32> [storage=static] [linkage=external];
+// IR-NEXT:     global %0 counter: atomic i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %1 cursor: atomic ptr<i32> [storage=static] [linkage=external];
 // IR-NEXT:     global %2 plain: i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 raw: ptr<i32> [storage=static] [linkage=external];
 // IR-NEXT:     global %4 byte: u8 [storage=static] [linkage=external];
 // IR-NEXT:     global %5 flag: bool [storage=static] [linkage=external];
-// IR-NEXT:     global %6 device: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %6 device: volatile i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %7 @c11(%8 order: i32, %9 expected: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<i32>(deref(addr_of<ptr<atomic i32>>(%0)), const<i32>(0));
 // IR-NEXT:         write<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%0)), const<i32>(1));

@@ -69,8 +69,8 @@ int f(memory_order order, int *expected) {
 // IR-NEXT:         field0 _Value: atomic bool;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
 // IR-NEXT:     type @type5 atomic_flag = @type4 [c="struct atomic_flag"];
-// IR-NEXT:     global %12 counter: i32 [storage=static] [linkage=external] [c="atomic_int"] [c_canon="_Atomic(int)"] [typedef_chain="atomic_int"] [c_atomic="true"];
-// IR-NEXT:     global %13 cursor: ptr<i64> [storage=static] [linkage=external] [c="_Atomic(long *)"] [c_atomic="true"];
+// IR-NEXT:     global %12 counter: atomic i32 [storage=static] [linkage=external] [c="atomic_int"] [c_canon="_Atomic(int)"] [typedef_chain="atomic_int"] [c_atomic="true"];
+// IR-NEXT:     global %13 cursor: atomic ptr<i64> [storage=static] [linkage=external] [c="_Atomic(long *)"] [c_atomic="true"];
 // IR-NEXT:     global %14 gate: @type4 [storage=static] = aggregate<@type4, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external] [c="atomic_flag"] [c_canon="struct atomic_flag"] [typedef_chain="atomic_flag"];
 // IR-NEXT:     fn %15 @f(%16 order: @type0 [c="memory_order"] [c_canon="enum memory_order"] [typedef_chain="memory_order"], %17 expected: ptr<i32> [c="int *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(memory_order, int *)"] [c_canon="int(enum memory_order, int *)"] {
 // IR-NEXT:         write<i32>(deref(addr_of<ptr<atomic i32>>(%12)), const<i32>(0)) [c_builtin="__c11_atomic_init"] [c_macro="atomic_init"];

@@ -40,7 +40,7 @@ int weakness(int weak, int *expected, int *desired) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 counter: f32 [storage=static] [linkage=external];
+// IR-NEXT:     global %0 counter: atomic f32 [storage=static] [linkage=external];
 // IR-NEXT:     global %1 real: f32 [storage=static] [linkage=external];
 // IR-NEXT:     global %2 wide: f64 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 plain: i32 [storage=static] [linkage=external];

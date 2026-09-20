@@ -43,7 +43,7 @@ int f(int x) {
 // IR-NEXT:         %0 K = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     global %2 g: i32 [storage=static] [linkage=external] [c="int"];
-// IR-NEXT:     global %3 v: i32 [storage=static] [linkage=external] [c="volatile int"] [c_volatile="true"];
+// IR-NEXT:     global %3 v: volatile i32 [storage=static] [linkage=external] [c="volatile int"] [c_volatile="true"];
 // IR-NEXT:     global %4 by_enum: array<i32, 3> [storage=static] [linkage=external] [c="int[3]"];
 // IR-NEXT:     global %5 bounded: array<i32, 4> [storage=static] [linkage=external] [c="int[4]"];
 // IR-NEXT:     global %6 unbounded: array<i32, 8> [storage=static] [linkage=external] [c="int[8]"];

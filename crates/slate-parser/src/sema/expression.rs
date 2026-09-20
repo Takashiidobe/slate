@@ -1024,6 +1024,7 @@ impl Lowerer {
                         storage: StorageDuration::Static,
                         restrict: false,
                         is_const: false,
+                        access: Access::default(),
                         constexpr: false,
                         alignment: None,
                         initializer: Some(initializer),

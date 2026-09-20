@@ -128,7 +128,8 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ```ebnf
 global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
-variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
+variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
+               [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
                [ "[align=" int "]" ] [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
@@ -157,8 +158,8 @@ function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               [ "[fallthrough=" fallthrough "]" ] { metadata }
               ( ";" | "{" { statement } "}" ) ;
 params      = "unprototyped" | param { ", " param } [ ", ..." ] | "..." ;
-param       = binding ( c_identifier | "<unnamed>" ) ":" type [ "[restrict]" ]
-              [ "[const]" ] [ array_param ] { metadata } ;
+param       = binding ( c_identifier | "<unnamed>" ) ":" [ access_prefix ] type
+              [ "[restrict]" ] [ "[const]" ] [ array_param ] { metadata } ;
 array_param = "[array=" ( "static" [ " " extent ] | extent ) "]" ;
 extent      = integer | binding | "*" ;
 fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;

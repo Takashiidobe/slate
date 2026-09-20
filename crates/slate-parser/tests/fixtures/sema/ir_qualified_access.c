@@ -57,9 +57,9 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:         field0 status: volatile i32;
 // IR-NEXT:         field1 data: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     global %0 g: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 counter: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %2 total: i64 [storage=static] [linkage=external];
+// IR-NEXT:     global %0 g: volatile i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %1 counter: atomic i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %2 total: atomic i64 [storage=static] [linkage=external];
 // IR-NEXT:     fn %5 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<i32, volatile>(%0, const<i32>(1));
 // IR-NEXT:         return read<i32, volatile>(%0);
@@ -84,13 +84,13 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:         let %24: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%1, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
 // IR-NEXT:         write<i64, atomic=seq_cst>(%2, widen<i64, reason=assign>(read<i32, atomic=seq_cst>(%1)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @poll(%13 p: ptr<volatile i32>, %14 r: ptr<@type1>, %15 u: ptr<volatile u32>, %16 a: ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %12 @poll(%13 p: ptr<volatile i32>, %14 r: ptr<@type1>, %15 u: ptr<volatile u32>, %16 a: volatile ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<i32, volatile>(deref(read<ptr<volatile i32>>(%13)), const<i32>(0));
 // IR-NEXT:         write<i32, volatile>(field0(deref(read<ptr<@type1>>(%14))), const<i32>(1));
 // IR-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%14))), const<i32>(2));
 // IR-NEXT:         write<u32, volatile>(deref(read<ptr<volatile u32>>(%15)), const<u32>(3));
 // IR-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>, volatile>(%16), const<i32>(0))), const<i32>(4));
-// IR-NEXT:         let %17 arr: array<i32, 2> [storage=automatic];
+// IR-NEXT:         let %17 arr: volatile array<i32, 2> [storage=automatic];
 // IR-NEXT:         write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(2)>(%17), const<i32>(1))), const<i32>(5));
 // IR-NEXT:         let %18 q: ptr<i32> [storage=automatic] [restrict] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>, volatile>(%16), const<i32>(0))));
 // IR-NEXT:         let %19 x: i32 [storage=automatic];

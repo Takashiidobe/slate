@@ -1937,6 +1937,10 @@ fn resolve_parameters(
             ty,
             restrict: qualifiers.is_restrict,
             is_const: qualifiers.is_const,
+            access: Access {
+                volatile: qualifiers.is_volatile,
+                atomic: qualifiers.is_atomic,
+            },
             array,
         });
         module.annotate(&lowered, resolver.render(resolved).entries());

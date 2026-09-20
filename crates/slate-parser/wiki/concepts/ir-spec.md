@@ -1358,7 +1358,15 @@ on the type:
   decay and `&` carry it back into the pointer type.
 - Pointer types keep pointee `volatile`/`_Atomic` next to `const`
   (`ptr<volatile i32>`). The access through `*p` cannot be recovered any
-  other way. A volatile-qualified object type is not shown.
+  other way.
+- A declaration also carries its own access, printed as a prefix on its
+  type exactly as a record field's is (`global %1 counter: atomic i32`,
+  `let %9 flag: volatile i32`, `%13 a: atomic i32` on a parameter). This is
+  a property of the *object*, not of one access, so it appears even when
+  the translation unit never reads or writes it (`slate-parser-lh7.2.28`);
+  Slate needs it to choose the Rust type. Variable, parameter and global
+  all derive it from the declared C type, and a redeclaration re-derives it
+  from the merged composite.
 - An atomic update (compound assignment or `++`/`--` on an `_Atomic`
   object, or a fetch/exchange builtin) is one read-modify-write, so
   side-effect hoisting keeps `update<T, result=..., atomic=...>(place,
@@ -1368,9 +1376,11 @@ on the type:
 - `restrict` is an aliasing promise about a pointer binding, so it is a
   `[restrict]` flag on the parameter or variable. For an array parameter,
   the qualifiers inside its first brackets (`int a[restrict 4]`) are the
-  adjusted pointer's own; `const` there is `[const]` on the parameter,
-  while a `const` on the element type stays in the pointee
-  (`const int a[3]` is `ptr<const i32>`).
+  adjusted pointer's own; `const` there is `[const]` on the parameter and
+  `volatile`/`_Atomic` there are its access prefix, so
+  `int a[restrict volatile 4]` is `volatile ptr<i32> [restrict]`, while a
+  `const` on the element type stays in the pointee (`const int a[3]` is
+  `ptr<const i32>`).
 - A top-level `const` on an object is `[const]` on its `let` or `global`
   (`int *const q` is `ptr<i32> [const]`), which is what distinguishes an
   immutable binding: `Type::Pointer::is_const` is the pointee's. It follows

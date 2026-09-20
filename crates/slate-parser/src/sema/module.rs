@@ -331,9 +331,14 @@ impl Lowerer {
             .ty(&id)
             .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
         let merged_ty = self.types.object_type(merged, "void object")?;
+        let merged_quals = self.types.ctypes.quals(merged);
+        let merged_access = self.types.access_of(merged);
         let global = global.value;
         let existing = &mut self.module.globals[index].value;
         existing.variable.ty = merged_ty;
+        existing.variable.restrict = merged_quals.is_restrict;
+        existing.variable.is_const = merged_quals.is_const;
+        existing.variable.access = merged_access;
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
                 return Err(ResolveError::Unsupported("multiple global initializers"));
@@ -446,6 +451,10 @@ impl Lowerer {
                 ty,
                 restrict: qualifiers.is_restrict,
                 is_const: qualifiers.is_const,
+                access: Access {
+                    volatile: qualifiers.is_volatile,
+                    atomic: qualifiers.is_atomic,
+                },
                 array,
             });
             let c_entries = self.types.render(resolved).entries();
@@ -575,6 +584,7 @@ impl Lowerer {
                                         ty: ty.clone(),
                                         restrict: false,
                                         is_const: false,
+                                        access: Access::default(),
                                         array: None,
                                     },
                                     declarator.spelling,
@@ -687,6 +697,10 @@ impl Lowerer {
                 storage,
                 restrict: qualifiers.is_restrict,
                 is_const: qualifiers.is_const,
+                access: Access {
+                    volatile: qualifiers.is_volatile,
+                    atomic: qualifiers.is_atomic,
+                },
                 constexpr: item.specifiers.is_constexpr,
                 alignment: automatic_alignment,
                 initializer,

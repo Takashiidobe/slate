@@ -86,7 +86,7 @@ unsigned long objects(_Atomic struct odd3 *pointer, struct member *record) {
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // IR-NEXT:     global %4 records: array<u64, 8> [storage=static] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16), index6 = const<u64>(17), index7 = const<u64>(1)) [linkage=external];
 // IR-NEXT:     global %5 scalars: array<u64, 14> [storage=static] = aggregate<array<u64, 14>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(2), index3 = const<u64>(2), index4 = const<u64>(4), index5 = const<u64>(4), index6 = const<u64>(8), index7 = const<u64>(8), index8 = const<u64>(8), index9 = const<u64>(8), index10 = const<u64>(16), index11 = const<u64>(16), index12 = const<u64>(8), index13 = const<u64>(8)) [linkage=external];
-// IR-NEXT:     global %9 object: @type0 [storage=static] [linkage=external];
+// IR-NEXT:     global %9 object: atomic @type0 [storage=static] [linkage=external];
 // IR-NEXT:     fn %10 @objects(%11 pointer: ptr<atomic @type0>, %12 record: ptr<@type4>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(4), const<u64>(4)), const<u64>(4)), const<u64>(4));
 // IR-NEXT:     }

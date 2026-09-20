@@ -126,6 +126,7 @@ pub struct Variable {
     pub storage: StorageDuration,
     pub restrict: bool,
     pub is_const: bool,
+    pub access: Access,
     pub constexpr: bool,
     pub alignment: Option<u64>,
     pub initializer: Option<Value>,
@@ -170,6 +171,7 @@ pub struct Parameter {
     pub ty: Type,
     pub restrict: bool,
     pub is_const: bool,
+    pub access: Access,
     pub array: Option<ArrayParameter>,
 }
 

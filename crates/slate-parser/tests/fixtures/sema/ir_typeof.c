@@ -64,8 +64,8 @@ int extents(int n) {
 // DEFAULT-NEXT:     global %2 source: u64 [storage=static] [linkage=external] [c="alias"] [c_canon="unsigned long"] [typedef_chain="alias -> word"];
 // DEFAULT-NEXT:     global %3 named: u64 [storage=static] [linkage=external] [c="typeof(alias)"] [c_canon="unsigned long"] [typedef_chain="alias -> word"];
 // DEFAULT-NEXT:     global %4 copied: u64 [storage=static] [linkage=external] [c="typeof(source)"] [c_canon="unsigned long"] [typedef_chain="alias -> word"];
-// DEFAULT-NEXT:     global %5 qualified: i32 [storage=static] [const] [linkage=external] [c="const volatile int"] [c_const="true"] [c_volatile="true"];
-// DEFAULT-NEXT:     global %6 kept: i32 [storage=static] [const] [linkage=external] [c="typeof(qualified)"] [c_canon="const volatile int"] [c_const="true"] [c_volatile="true"];
+// DEFAULT-NEXT:     global %5 qualified: volatile i32 [storage=static] [const] [linkage=external] [c="const volatile int"] [c_const="true"] [c_volatile="true"];
+// DEFAULT-NEXT:     global %6 kept: volatile i32 [storage=static] [const] [linkage=external] [c="typeof(qualified)"] [c_canon="const volatile int"] [c_const="true"] [c_volatile="true"];
 // DEFAULT-NEXT:     global %7 stripped: i32 [storage=static] [linkage=external] [c="typeof_unqual(qualified)"] [c_canon="int"];
 // DEFAULT-NEXT:     global %8 non_atomic: i32 [storage=static] [linkage=external] [c="typeof_unqual(_Atomic(int))"] [c_canon="int"];
 // DEFAULT-NEXT:     global %9 array: array<i32, 3> [storage=static] [linkage=external] [c="int[3]"];

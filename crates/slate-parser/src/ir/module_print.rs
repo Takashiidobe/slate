@@ -131,9 +131,10 @@ impl DisplayModule<'_> {
     fn variable(&self, f: &mut fmt::Formatter<'_>, variable: &Variable) -> fmt::Result {
         write!(
             f,
-            "%{} {}: {} [storage={}]",
+            "%{} {}: {}{} [storage={}]",
             variable.id.0,
             variable.name,
+            variable.access.prefix(),
             variable.ty,
             match variable.storage {
                 StorageDuration::Automatic => "automatic",
@@ -602,9 +603,10 @@ impl fmt::Display for DisplayModule<'_> {
                         }
                         write!(
                             f,
-                            "%{} {}: {}",
+                            "%{} {}: {}{}",
                             parameter.value.id.0,
                             parameter.name.as_deref().unwrap_or("<unnamed>"),
+                            parameter.access.prefix(),
                             parameter.ty
                         )?;
                         if parameter.restrict {

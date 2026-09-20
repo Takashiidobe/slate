@@ -675,6 +675,7 @@ impl Lowerer {
                         ty: ty.clone(),
                         restrict: false,
                         is_const: false,
+                        access: Access::default(),
                         array: None,
                     },
                     e.spelling,
