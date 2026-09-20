@@ -6,8 +6,11 @@ use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
 use slate_parser::target_info::TargetInfo;
+use std::ffi::OsString;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use tempfile::{NamedTempFile, TempDir};
 
 type ClangNode = Node<ClangKind>;
 
@@ -204,6 +207,50 @@ fn error_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
+// the copy sits beside the original so relative includes still resolve
+enum Scratch {
+    Beside(NamedTempFile),
+    Isolated(TempDir, OsString),
+}
+
+impl Scratch {
+    fn new(fixture: &Path, source: &str) -> Self {
+        let name = fixture.file_name().unwrap();
+        if source.contains(&format!("#include \"{}\"", name.to_string_lossy())) {
+            let directory =
+                tempfile::tempdir().expect("create isolated self-include fixture directory");
+            std::fs::write(directory.path().join(name), source)
+                .expect("write fixture without FileCheck metadata");
+            return Self::Isolated(directory, name.to_owned());
+        }
+        let mut file = tempfile::Builder::new()
+            .prefix(&format!(
+                ".{}.filecheck.",
+                fixture.file_stem().unwrap().to_string_lossy()
+            ))
+            .suffix(".c")
+            .tempfile_in(fixture.parent().unwrap())
+            .expect("create fixture without FileCheck metadata");
+        file.write_all(source.as_bytes())
+            .expect("write fixture without FileCheck metadata");
+        Self::Beside(file)
+    }
+
+    fn path(&self) -> PathBuf {
+        match self {
+            Self::Beside(file) => file.path().to_path_buf(),
+            Self::Isolated(directory, name) => directory.path().join(name),
+        }
+    }
+
+    fn name(&self) -> String {
+        match self {
+            Self::Beside(file) => file.path().file_name().unwrap().to_string_lossy().into(),
+            Self::Isolated(_, name) => name.to_string_lossy().into(),
+        }
+    }
+}
+
 struct FixtureJob {
     fixture: PathBuf,
     prefix: String,
@@ -214,7 +261,6 @@ struct FixtureJob {
     show_ids: bool,
     error: bool,
     warnings: bool,
-    slot: usize,
 }
 
 fn run_job(job: FixtureJob) {
@@ -227,7 +273,6 @@ fn run_job(job: FixtureJob) {
             job.flavor.as_deref(),
             job.standard.as_deref(),
             job.show_ids,
-            job.slot,
         );
     } else {
         run_fixture(
@@ -239,7 +284,6 @@ fn run_job(job: FixtureJob) {
             job.standard.as_deref(),
             job.show_ids,
             job.warnings,
-            job.slot,
         );
     }
 }
@@ -257,31 +301,9 @@ fn run_fixture(
     standard: Option<&str>,
     show_ids: bool,
     warnings: bool,
-    slot: usize,
 ) {
     let source = fixture_source(fixture);
-    let self_include = format!(
-        "#include \"{}\"",
-        fixture.file_name().unwrap().to_string_lossy()
-    );
-    let temp_dir = std::env::temp_dir().join(format!(
-        "slate-parser-filecheck-{}.{}.{}",
-        fixture.file_stem().unwrap().to_string_lossy(),
-        std::process::id(),
-        slot
-    ));
-    let parsed_fixture = if source.contains(&self_include) {
-        std::fs::create_dir_all(&temp_dir).expect("create isolated self-include fixture directory");
-        temp_dir.join(fixture.file_name().unwrap())
-    } else {
-        fixture.with_file_name(format!(
-            ".{}.filecheck.{}.{}.c",
-            fixture.file_stem().unwrap().to_string_lossy(),
-            std::process::id(),
-            slot
-        ))
-    };
-    std::fs::write(&parsed_fixture, &source).expect("write fixture without FileCheck metadata");
+    let parsed = Scratch::new(fixture, &source);
     let original = decode_source_bytes(&std::fs::read(fixture).expect("read fixture renderer"));
     let example = original
         .lines()
@@ -298,7 +320,7 @@ fn run_fixture(
         command
     } else {
         let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
-        command.arg("parse").arg(&parsed_fixture);
+        command.arg("parse").arg(parsed.path());
         command
     };
     command
@@ -324,10 +346,6 @@ fn run_fixture(
     let rendered = command
         .output()
         .expect("run slate-parser filecheck renderer");
-    std::fs::remove_file(&parsed_fixture).expect("remove fixture without FileCheck metadata");
-    if source.contains(&self_include) {
-        std::fs::remove_dir(&temp_dir).expect("remove isolated self-include fixture directory");
-    }
     assert!(
         rendered.status.success(),
         "renderer failed for {}:\n{}",
@@ -338,7 +356,7 @@ fn run_fixture(
     let checked = if warnings {
         String::from_utf8_lossy(&rendered.stderr)
             .replace(
-                parsed_fixture.file_name().unwrap().to_str().unwrap(),
+                &parsed.name(),
                 fixture.file_name().unwrap().to_str().unwrap(),
             )
             .into_bytes()
@@ -359,16 +377,8 @@ fn run_fixture(
         return;
     }
 
-    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target/filecheck")
-        .join(format!(
-            "{}.{}.{}",
-            fixture.file_stem().unwrap().to_string_lossy(),
-            std::process::id(),
-            slot
-        ));
-    std::fs::create_dir_all(&work).expect("create FileCheck work directory");
-    let input = work.join("rendered.txt");
+    let work = tempfile::tempdir().expect("create FileCheck work directory");
+    let input = work.path().join("rendered.txt");
     std::fs::write(&input, checked).expect("write rendered AST");
 
     let result = Command::new(filecheck())
@@ -379,15 +389,15 @@ fn run_fixture(
         .arg("--dump-input=fail")
         .output()
         .expect("run FileCheck");
-    std::fs::remove_file(&input).expect("remove FileCheck input");
-    std::fs::remove_dir(&work).expect("remove FileCheck work directory");
-    assert!(
-        result.status.success(),
-        "FileCheck failed for {} ({prefix}):\n{}{}",
-        fixture.display(),
-        String::from_utf8_lossy(&result.stdout),
-        String::from_utf8_lossy(&result.stderr)
-    );
+    if !result.status.success() {
+        panic!(
+            "FileCheck failed for {} ({prefix}), input kept at {}:\n{}{}",
+            fixture.display(),
+            work.keep().join("rendered.txt").display(),
+            String::from_utf8_lossy(&result.stdout),
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
 
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
         assert_evaluated_matches_clang(fixture, defines, isystem, flavor);
@@ -413,7 +423,6 @@ fn fixture_source(fixture: &Path) -> String {
     result
 }
 
-#[expect(clippy::too_many_arguments, reason = "fine")]
 fn run_error_fixture(
     fixture: &Path,
     prefix: &str,
@@ -422,20 +431,11 @@ fn run_error_fixture(
     flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
-    slot: usize,
 ) {
     let file_name = fixture.file_name().unwrap().to_string_lossy();
-    let parsed_name = format!(
-        ".{}.filecheck.{}.{}.c",
-        fixture.file_stem().unwrap().to_string_lossy(),
-        std::process::id(),
-        slot
-    );
-    let parsed_fixture = fixture.with_file_name(&parsed_name);
-    std::fs::write(&parsed_fixture, fixture_source(fixture))
-        .expect("write fixture without FileCheck metadata");
+    let parsed = Scratch::new(fixture, &fixture_source(fixture));
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
-    command.arg("parse").arg(&parsed_fixture);
+    command.arg("parse").arg(parsed.path());
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -458,24 +458,15 @@ fn run_error_fixture(
         .env("NO_COLOR", "1")
         .output()
         .expect("run slate-parser failing fixture");
-    std::fs::remove_file(&parsed_fixture).expect("remove fixture without FileCheck metadata");
     assert!(
         !output.status.success(),
         "fixture unexpectedly parsed: {}",
         fixture.display()
     );
 
-    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target/filecheck")
-        .join(format!(
-            "{}.{}.{}",
-            fixture.file_stem().unwrap().to_string_lossy(),
-            std::process::id(),
-            slot
-        ));
-    std::fs::create_dir_all(&work).expect("create FileCheck work directory");
-    let input = work.join("diagnostic.txt");
-    let diagnostic = String::from_utf8_lossy(&output.stderr).replace(&parsed_name, &file_name);
+    let work = tempfile::tempdir().expect("create FileCheck work directory");
+    let input = work.path().join("diagnostic.txt");
+    let diagnostic = String::from_utf8_lossy(&output.stderr).replace(&parsed.name(), &file_name);
     std::fs::write(&input, diagnostic).expect("write diagnostic");
     let result = Command::new(filecheck())
         .arg(fixture)
@@ -485,15 +476,15 @@ fn run_error_fixture(
         .arg("--dump-input=fail")
         .output()
         .expect("run FileCheck");
-    std::fs::remove_file(&input).expect("remove FileCheck input");
-    std::fs::remove_dir(&work).expect("remove FileCheck work directory");
-    assert!(
-        result.status.success(),
-        "diagnostic FileCheck failed for {} ({prefix}):\n{}{}",
-        fixture.display(),
-        String::from_utf8_lossy(&result.stdout),
-        String::from_utf8_lossy(&result.stderr)
-    );
+    if !result.status.success() {
+        panic!(
+            "diagnostic FileCheck failed for {} ({prefix}), input kept at {}:\n{}{}",
+            fixture.display(),
+            work.keep().join("diagnostic.txt").display(),
+            String::from_utf8_lossy(&result.stdout),
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
 }
 
 fn assert_evaluated_matches_clang(
@@ -1071,7 +1062,7 @@ fn fixtures_are_filechecked() {
         let flavor = flavor(&source);
         let isystem = isystem_paths(&source);
         if !errors.is_empty() {
-            for (slot, prefix) in errors.iter().enumerate() {
+            for prefix in &errors {
                 let defines = configs
                     .iter()
                     .find(|(name, _)| name == prefix)
@@ -1086,7 +1077,6 @@ fn fixtures_are_filechecked() {
                     show_ids: show_ids_for_prefix(&source, prefix),
                     error: true,
                     warnings: false,
-                    slot,
                 });
             }
             continue;
@@ -1096,7 +1086,7 @@ fn fixtures_are_filechecked() {
             "fixture has no FileCheck configurations: {}",
             fixture.display()
         );
-        for (slot, (prefix, defines)) in configs.iter().enumerate() {
+        for (prefix, defines) in &configs {
             jobs.push(FixtureJob {
                 fixture: fixture.clone(),
                 prefix: prefix.clone(),
@@ -1107,7 +1097,6 @@ fn fixtures_are_filechecked() {
                 show_ids: show_ids_for_prefix(&source, prefix),
                 error: false,
                 warnings: warnings.contains(prefix),
-                slot,
             });
         }
     }
@@ -1131,7 +1120,6 @@ fn fixtures_are_filechecked() {
                             show_ids: job.show_ids,
                             error: job.error,
                             warnings: job.warnings,
-                            slot: job.slot,
                         })
                     })
                 })
