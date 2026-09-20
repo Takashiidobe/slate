@@ -532,6 +532,10 @@ impl Hoister {
                 operand: Box::new(self.value(*operand, out)?),
                 semantics,
             },
+            ValueKind::FloatClass { test, operand } => ValueKind::FloatClass {
+                test,
+                operand: Box::new(self.value(*operand, out)?),
+            },
             ValueKind::Convert {
                 kind,
                 operand,
@@ -642,6 +646,7 @@ fn effects(value: &Value) -> bool {
         ValueKind::Aggregate { members, .. } => members.iter().any(|member| effects(&member.value)),
         ValueKind::Copy { operand, .. }
         | ValueKind::Unary { operand, .. }
+        | ValueKind::FloatClass { operand, .. }
         | ValueKind::Convert { operand, .. } => effects(operand),
         ValueKind::Read {
             place,

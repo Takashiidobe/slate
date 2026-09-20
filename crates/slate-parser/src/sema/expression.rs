@@ -1,3 +1,4 @@
+use super::builtins::CustomBuiltin;
 use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, QualType};
 use super::numeric::{Context, ResolveError};
@@ -113,40 +114,9 @@ impl Lowerer {
             return Ok(None);
         };
         let name = builtin.name.to_owned();
-        if matches!(
-            builtin.record,
-            "AddOverflow" | "SubOverflow" | "MulOverflow"
-        ) {
-            let [left, right, result] = arguments else {
-                return Err(ResolveError::Unsupported("overflow builtin argument count"));
-            };
-            let left = self.expr(left)?;
-            let right = self.expr(right)?;
-            let pointer = self.expr(result)?;
-            let result = self.deref(pointer)?;
-            if !self.types.ctypes.is_integer(left.c)
-                || !self.types.ctypes.is_integer(right.c)
-                || !self.types.ctypes.is_integer(result.c)
-            {
-                return Err(ResolveError::Invalid("overflow builtin operand type"));
-            }
-            let op = match builtin.record {
-                "AddOverflow" => ArithOp::Add,
-                "SubOverflow" => ArithOp::Sub,
-                "MulOverflow" => ArithOp::Mul,
-                _ => return Err(ResolveError::Unsupported("overflow builtin")),
-            };
-            let c = self.types.ctypes.qual(CTypeKind::Bool);
-            let value = self.operand(
-                e,
-                c,
-                ValueKind::Overflow {
-                    op,
-                    left: Box::new(left.value),
-                    right: Box::new(right.value),
-                    result: result.place,
-                },
-            );
+        let custom = super::builtins::custom_builtin(builtin);
+        if let Some(custom) = custom {
+            let value = self.custom_builtin(e, custom, arguments)?;
             self.module
                 .annotate(&value.value.node, [("c_builtin".into(), name)]);
             return Ok(Some(value));
@@ -158,6 +128,245 @@ impl Lowerer {
         self.module
             .annotate(&value.value.node, [("c_builtin".into(), name)]);
         Ok(Some(value))
+    }
+
+    fn custom_builtin(
+        &mut self,
+        e: &Expr,
+        custom: CustomBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Operand, ResolveError> {
+        match custom {
+            CustomBuiltin::Overflow(op) => self.overflow_builtin(e, op, arguments),
+            CustomBuiltin::FloatClass(test) => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Unsupported("float class builtin arity"));
+                };
+                let operand = self.real_floating_operand(operand)?;
+                Ok(self.truth(
+                    e,
+                    ValueKind::FloatClass {
+                        test,
+                        operand: Box::new(operand.value),
+                    },
+                ))
+            }
+            CustomBuiltin::QuietCompare(op) => {
+                let (left, right) = self.real_floating_pair(arguments)?;
+                Ok(self.truth(
+                    e,
+                    ValueKind::Compare {
+                        op,
+                        left: Box::new(left.value),
+                        right: Box::new(right.value),
+                        exceptions: Some(Exceptions::Ignore),
+                        reason: None,
+                    },
+                ))
+            }
+            CustomBuiltin::Unordered => {
+                let (left, right) = self.real_floating_pair(arguments)?;
+                let left = self.float_class_int(e, FloatClassTest::Nan, left.value);
+                let right = self.float_class_int(e, FloatClassTest::Nan, right.value);
+                Ok(self.either(e, left, right))
+            }
+            CustomBuiltin::LessGreater => {
+                let (left, right) = self.real_floating_pair(arguments)?;
+                let less = self.quiet_compare_int(e, CompareOp::Lt, &left, &right);
+                let greater = self.quiet_compare_int(e, CompareOp::Gt, &left, &right);
+                Ok(self.either(e, less, greater))
+            }
+            CustomBuiltin::InfSign => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Unsupported("float class builtin arity"));
+                };
+                let operand = self.real_floating_operand(operand)?;
+                let c = self.types.ctypes.int();
+                let int = self.types.ir_type(c);
+                let infinite = self.value(
+                    e,
+                    Type::Bool,
+                    ValueKind::FloatClass {
+                        test: FloatClassTest::Infinite,
+                        operand: Box::new(operand.value.clone()),
+                    },
+                );
+                let negative = self.value(
+                    e,
+                    Type::Bool,
+                    ValueKind::FloatClass {
+                        test: FloatClassTest::SignBit,
+                        operand: Box::new(operand.value),
+                    },
+                );
+                let minus_one = self.value(
+                    e,
+                    int.clone(),
+                    ValueKind::Constant(Number::SignedInteger((-1).into())),
+                );
+                let one = self.value(
+                    e,
+                    int.clone(),
+                    ValueKind::Constant(Number::Integer(1u32.into())),
+                );
+                let zero = self.value(e, int, ValueKind::Constant(Number::Integer(0u32.into())));
+                let signed = self.value(
+                    e,
+                    self.types.ir_type(c),
+                    ValueKind::Conditional {
+                        condition: Box::new(negative),
+                        then_value: Box::new(minus_one),
+                        else_value: Box::new(one),
+                    },
+                );
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Conditional {
+                        condition: Box::new(infinite),
+                        then_value: Box::new(signed),
+                        else_value: Box::new(zero),
+                    },
+                ))
+            }
+            CustomBuiltin::Complex => {
+                let (real, imaginary) = self.real_floating_pair(arguments)?;
+                let component = self.types.ctypes.unqualified(real.c).ty;
+                let c = self.types.ctypes.qual(CTypeKind::Complex(component));
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Aggregate {
+                        members: vec![
+                            AggregateMember {
+                                target: AggregateTarget::Index(0),
+                                value: real.value,
+                            },
+                            AggregateMember {
+                                target: AggregateTarget::Index(1),
+                                value: imaginary.value,
+                            },
+                        ],
+                        zero_fill: false,
+                    },
+                ))
+            }
+        }
+    }
+
+    fn overflow_builtin(
+        &mut self,
+        e: &Expr,
+        op: ArithOp,
+        arguments: &[Expr],
+    ) -> Result<Operand, ResolveError> {
+        let [left, right, result] = arguments else {
+            return Err(ResolveError::Unsupported("overflow builtin argument count"));
+        };
+        let left = self.expr(left)?;
+        let right = self.expr(right)?;
+        let pointer = self.expr(result)?;
+        let result = self.deref(pointer)?;
+        if !self.types.ctypes.is_integer(left.c)
+            || !self.types.ctypes.is_integer(right.c)
+            || !self.types.ctypes.is_integer(result.c)
+        {
+            return Err(ResolveError::Invalid("overflow builtin operand type"));
+        }
+        let c = self.types.ctypes.qual(CTypeKind::Bool);
+        Ok(self.operand(
+            e,
+            c,
+            ValueKind::Overflow {
+                op,
+                left: Box::new(left.value),
+                right: Box::new(right.value),
+                result: result.place,
+            },
+        ))
+    }
+
+    fn float_class_int(&mut self, e: &Expr, test: FloatClassTest, operand: Value) -> Value {
+        let value = self.value(
+            e,
+            Type::Bool,
+            ValueKind::FloatClass {
+                test,
+                operand: Box::new(operand),
+            },
+        );
+        self.promote_truth(value)
+    }
+
+    fn quiet_compare_int(
+        &mut self,
+        e: &Expr,
+        op: CompareOp,
+        left: &Operand,
+        right: &Operand,
+    ) -> Value {
+        let value = self.value(
+            e,
+            Type::Bool,
+            ValueKind::Compare {
+                op,
+                left: Box::new(left.value.clone()),
+                right: Box::new(right.value.clone()),
+                exceptions: Some(Exceptions::Ignore),
+                reason: None,
+            },
+        );
+        self.promote_truth(value)
+    }
+
+    fn promote_truth(&mut self, value: Value) -> Value {
+        let int = self.context.int_type();
+        self.context
+            .emit_arithmetic_conversion(value, int, ConversionReason::Promotion)
+    }
+
+    fn either(&mut self, e: &Expr, left: Value, right: Value) -> Operand {
+        let c = self.types.ctypes.int();
+        self.operand(
+            e,
+            c,
+            ValueKind::Arith {
+                op: ArithOp::Or,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics: ArithSema::Exact,
+            },
+        )
+    }
+
+    fn real_floating_operand(&mut self, argument: &Expr) -> Result<Operand, ResolveError> {
+        let operand = self.expr(argument)?;
+        let c = self.types.ctypes.arithmetic_component(operand.c);
+        if !self.types.ctypes.is_floating(c) {
+            return Err(ResolveError::Invalid(
+                "floating classification builtin operand",
+            ));
+        }
+        self.convert(operand, c, ConversionReason::UsualArith)
+    }
+
+    fn real_floating_pair(
+        &mut self,
+        arguments: &[Expr],
+    ) -> Result<(Operand, Operand), ResolveError> {
+        let [left, right] = arguments else {
+            return Err(ResolveError::Unsupported("float class builtin arity"));
+        };
+        let left = self.real_floating_operand(left)?;
+        let right = self.real_floating_operand(right)?;
+        let target = self.context.target.clone();
+        let common = self
+            .types
+            .ctypes
+            .usual_real_type(left.c, right.c, &target)?;
+        let left = self.convert(left, common, ConversionReason::UsualArith)?;
+        let right = self.convert(right, common, ConversionReason::UsualArith)?;
+        Ok((left, right))
     }
 
     pub(super) fn builtin_operand(

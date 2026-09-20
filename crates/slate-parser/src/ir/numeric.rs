@@ -322,6 +322,33 @@ impl fmt::Display for CompareOp {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatClassTest {
+    Nan,
+    Infinite,
+    Finite,
+    Normal,
+    Subnormal,
+    Zero,
+    Signaling,
+    SignBit,
+}
+
+impl fmt::Display for FloatClassTest {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Nan => "nan",
+            Self::Infinite => "infinite",
+            Self::Finite => "finite",
+            Self::Normal => "normal",
+            Self::Subnormal => "subnormal",
+            Self::Zero => "zero",
+            Self::Signaling => "signaling",
+            Self::SignBit => "sign_bit",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogicalOp {
     And,
     Or,

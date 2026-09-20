@@ -23,8 +23,8 @@ pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
-    Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
-    ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
+    Fits, FloatClassTest, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow,
+    Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,
@@ -177,6 +177,10 @@ pub enum ValueKind {
         op: LogicalOp,
         left: Box<Value>,
         right: Box<Value>,
+    },
+    FloatClass {
+        test: FloatClassTest,
+        operand: Box<Value>,
     },
 }
 
@@ -587,6 +591,14 @@ impl Value {
                         .with_compact(compact)
                 )
             }
+            ValueKind::FloatClass { test, operand } => write!(
+                f,
+                "float_class<{}, test={test}>({})",
+                self.ty,
+                operand
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::Overflow {
                 op,
                 left,

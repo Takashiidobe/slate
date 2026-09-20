@@ -121,8 +121,25 @@ parameters, or when the prototype names something with no C type in our model
 (`FILE`, `jmp_buf`, ObjC `id`, HLSL resources, C++ references, ext-vectors);
 those still report an unsupported-builtin diagnostic. Named types resolve to the
 target's canonical types, not to any typedef the translation unit declares.
-Ordinary declarations take precedence over implicit builtin recognition. The
-generic checked arithmetic builtins lower to
+Ordinary declarations take precedence over implicit builtin recognition.
+
+Builtins whose result cannot come from a prototype are dispatched by their
+tblgen record through `builtins::custom_builtin`, which returns a typed
+`CustomBuiltin` rather than matching spellings at the lowering site. The
+floating classification family lowers to
+`float_class<bool, test=..>(x)`, a non-trapping IEEE class test that the
+`int`-returning builtins wrap in `from_bool<int>`: `__builtin_isnan`,
+`isinf`, `isfinite`, `isnormal`, `issubnormal`, `iszero`, `issignaling` and
+`signbit`. `__builtin_isinf_sign` composes two of them into nested
+`conditional<int>` to produce -1/0/1. The quiet relational builtins
+(`isgreater`, `isgreaterequal`, `isless`, `islessequal`) lower to the ordinary
+comparison with `exceptions=ignore`. `__builtin_isunordered` and
+`__builtin_islessgreater` combine two such tests with a bitwise `or<int>`
+rather than `logical_or`, because `logical_or` short-circuits and both
+operands of these builtins are always evaluated; `islessgreater` is
+`lt | gt`, not `ne`, since it is false for NaN. `__builtin_complex(re, im)`
+lowers to the same `aggregate<complex<T>>` a complex value gets anywhere
+else. The generic checked arithmetic builtins lower to
 `overflow_add/sub/mul<bool>(left, right, place)`,
 which computes in the mathematical domain, stores the converted result through
 the destination place, and returns whether conversion overflowed. Fixture:

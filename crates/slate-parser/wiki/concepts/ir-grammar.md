@@ -305,7 +305,8 @@ core       = "const<" type ">(" constant ")"
            | unary_op "<" type arith_policy ">(" value ")"
            | compare_op "<" type [ ", result=" type ] [ ", reason=" reason ]
              [ ", exceptions=" exceptions ] ">(" value ", " value ")"
-           | logical_op "<" type ">(" value ", " value ")" ;
+           | logical_op "<" type ">(" value ", " value ")"
+           | "float_class<bool, test=" float_class ">(" value ")" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
              " = " value ;
@@ -330,6 +331,9 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   declaration. A builtin name starts with `__builtin_` and has no binding.
 - `overflow_add/sub/mul` stores the converted arithmetic result through its
   place operand and returns whether that conversion overflowed.
+- `float_class` tests one real floating operand against an IEEE class and
+  results in `bool`; it never raises, so the classification builtins that
+  return `int` wrap it in `from_bool<int>`.
 - Side-effect hoisting turns `store` and non-atomic `update` into `write`
   statements, so the module dump contains only atomic `update`s (one
   read-modify-write). Atomic `update` and `compare_exchange` are each kept
@@ -361,6 +365,8 @@ arith_op   = "add" | "sub" | "mul" | "div" | "rem"
 unary_op   = "neg" | "not" ;
 compare_op = "eq" | "ne" | "lt" | "le" | "gt" | "ge" ;
 logical_op = "logical_and" | "logical_or" ;
+float_class = "nan" | "infinite" | "finite" | "normal" | "subnormal"
+            | "zero" | "signaling" | "sign_bit" ;
 ```
 
 ### Operation policies

@@ -1,5 +1,6 @@
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
 use super::types::TypeResolver;
+use crate::ir::{ArithOp, CompareOp, FloatClassTest};
 use crate::target_info::TargetInfo;
 
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
@@ -127,6 +128,42 @@ impl ClangBuiltin {
     pub fn has(&self, attribute: BuiltinAttribute) -> bool {
         self.attributes.contains(&attribute)
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum CustomBuiltin {
+    Overflow(ArithOp),
+    FloatClass(FloatClassTest),
+    QuietCompare(CompareOp),
+    LessGreater,
+    Unordered,
+    InfSign,
+    Complex,
+}
+
+pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
+    Some(match builtin.record {
+        "AddOverflow" => CustomBuiltin::Overflow(ArithOp::Add),
+        "SubOverflow" => CustomBuiltin::Overflow(ArithOp::Sub),
+        "MulOverflow" => CustomBuiltin::Overflow(ArithOp::Mul),
+        "IsNan" => CustomBuiltin::FloatClass(FloatClassTest::Nan),
+        "IsInf" => CustomBuiltin::FloatClass(FloatClassTest::Infinite),
+        "IsFinite" => CustomBuiltin::FloatClass(FloatClassTest::Finite),
+        "IsNormal" => CustomBuiltin::FloatClass(FloatClassTest::Normal),
+        "IsSubnormal" => CustomBuiltin::FloatClass(FloatClassTest::Subnormal),
+        "IsZero" => CustomBuiltin::FloatClass(FloatClassTest::Zero),
+        "IsSignaling" => CustomBuiltin::FloatClass(FloatClassTest::Signaling),
+        "Signbit" | "SignbitF" | "SignbitL" => CustomBuiltin::FloatClass(FloatClassTest::SignBit),
+        "IsGreater" => CustomBuiltin::QuietCompare(CompareOp::Gt),
+        "IsGreaterEqual" => CustomBuiltin::QuietCompare(CompareOp::Ge),
+        "IsLess" => CustomBuiltin::QuietCompare(CompareOp::Lt),
+        "IsLessEqual" => CustomBuiltin::QuietCompare(CompareOp::Le),
+        "IsLessGreater" => CustomBuiltin::LessGreater,
+        "IsUnordered" => CustomBuiltin::Unordered,
+        "IsInfSign" => CustomBuiltin::InfSign,
+        "BuiltinComplex" => CustomBuiltin::Complex,
+        _ => return None,
+    })
 }
 
 pub(super) fn clang_builtin(name: &str) -> Option<&'static ClangBuiltin> {
