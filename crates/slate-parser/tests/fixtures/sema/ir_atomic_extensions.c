@@ -33,6 +33,15 @@ float propagating(void) {
     return a;
 }
 
+unsigned counted;
+
+unsigned wrapping(unsigned limit) {
+    unsigned a = __atomic_fetch_uinc(&counted, limit, 5);
+    a += __atomic_fetch_udec(&counted, limit, 2);
+    a += __atomic_fetch_uinc(&plain, limit, 0);
+    return a;
+}
+
 int weakness(int weak, int *expected, int *desired) {
     int a = __atomic_compare_exchange_n(&plain, expected, 3, weak, 5, 5);
     a += __atomic_compare_exchange(&plain, expected, desired, weak + 1, 2, 0);
@@ -62,81 +71,96 @@ int weakness(int weak, int *expected, int *desired) {
 // IR-NEXT:     global %1 real: f32 [storage=static] [linkage=external];
 // IR-NEXT:     global %2 wide: f64 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 plain: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %10 counted: u32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %4 @floating() -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %5 a: f32 [storage=automatic];
-// IR-NEXT:         let %15: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%0)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         write<f32>(%5, read<f32>(%15));
-// IR-NEXT:         let %16: f32 [synthetic] = read<f32>(%5);
-// IR-NEXT:         let %17: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%0)), sub<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         let %18: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%16), read<f32>(%17));
-// IR-NEXT:         write<f32>(%5, read<f32>(%18));
-// IR-NEXT:         let %19: f32 [synthetic] = read<f32>(%5);
-// IR-NEXT:         let %20: f32 [synthetic] = update<f32, result=old, atomic=acquire>(deref(addr_of<ptr<f32>>(%1)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
-// IR-NEXT:         let %21: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%19), read<f32>(%20));
-// IR-NEXT:         write<f32>(%5, read<f32>(%21));
-// IR-NEXT:         let %22: f32 [synthetic] = read<f32>(%5);
-// IR-NEXT:         let %23: f32 [synthetic] = update<f32, result=new, atomic=release>(deref(addr_of<ptr<f32>>(%1)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
-// IR-NEXT:         let %24: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%22), read<f32>(%23));
-// IR-NEXT:         write<f32>(%5, read<f32>(%24));
-// IR-NEXT:         let %25: f32 [synthetic] = read<f32>(%5);
-// IR-NEXT:         let %26: f64 [synthetic] = update<f64, result=new, atomic=seq_cst>(deref(addr_of<ptr<f64>>(%2)), sub<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
-// IR-NEXT:         let %27: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%25)), read<f64>(%26)));
-// IR-NEXT:         write<f32>(%5, read<f32>(%27));
+// IR-NEXT:         let %19: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%0)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         write<f32>(%5, read<f32>(%19));
+// IR-NEXT:         let %20: f32 [synthetic] = read<f32>(%5);
+// IR-NEXT:         let %21: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%0)), sub<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         let %22: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%20), read<f32>(%21));
+// IR-NEXT:         write<f32>(%5, read<f32>(%22));
+// IR-NEXT:         let %23: f32 [synthetic] = read<f32>(%5);
+// IR-NEXT:         let %24: f32 [synthetic] = update<f32, result=old, atomic=acquire>(deref(addr_of<ptr<f32>>(%1)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
+// IR-NEXT:         let %25: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%23), read<f32>(%24));
+// IR-NEXT:         write<f32>(%5, read<f32>(%25));
+// IR-NEXT:         let %26: f32 [synthetic] = read<f32>(%5);
+// IR-NEXT:         let %27: f32 [synthetic] = update<f32, result=new, atomic=release>(deref(addr_of<ptr<f32>>(%1)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
+// IR-NEXT:         let %28: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%26), read<f32>(%27));
+// IR-NEXT:         write<f32>(%5, read<f32>(%28));
+// IR-NEXT:         let %29: f32 [synthetic] = read<f32>(%5);
+// IR-NEXT:         let %30: f64 [synthetic] = update<f64, result=new, atomic=seq_cst>(deref(addr_of<ptr<f64>>(%2)), sub<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
+// IR-NEXT:         let %31: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%29)), read<f64>(%30)));
+// IR-NEXT:         write<f32>(%5, read<f32>(%31));
 // IR-NEXT:         return read<f32>(%5);
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @extrema() -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %7 a: f32 [storage=automatic];
-// IR-NEXT:         let %28: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%0)), minnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         write<f32>(%7, read<f32>(%28));
-// IR-NEXT:         let %29: f32 [synthetic] = read<f32>(%7);
-// IR-NEXT:         let %30: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%0)), maxnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         let %31: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%29), read<f32>(%30));
-// IR-NEXT:         write<f32>(%7, read<f32>(%31));
-// IR-NEXT:         let %32: f32 [synthetic] = read<f32>(%7);
-// IR-NEXT:         let %33: f32 [synthetic] = update<f32, result=old, atomic=acquire>(deref(addr_of<ptr<f32>>(%1)), minnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
-// IR-NEXT:         let %34: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%32), read<f32>(%33));
-// IR-NEXT:         write<f32>(%7, read<f32>(%34));
-// IR-NEXT:         let %35: f32 [synthetic] = read<f32>(%7);
-// IR-NEXT:         let %36: f32 [synthetic] = update<f32, result=new, atomic=release>(deref(addr_of<ptr<f32>>(%1)), maxnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
-// IR-NEXT:         let %37: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%35), read<f32>(%36));
-// IR-NEXT:         write<f32>(%7, read<f32>(%37));
-// IR-NEXT:         let %38: f32 [synthetic] = read<f32>(%7);
-// IR-NEXT:         let %39: f64 [synthetic] = update<f64, result=old, atomic=seq_cst>(deref(addr_of<ptr<f64>>(%2)), maxnum<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
-// IR-NEXT:         let %40: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%38)), read<f64>(%39)));
-// IR-NEXT:         write<f32>(%7, read<f32>(%40));
-// IR-NEXT:         let %41: f32 [synthetic] = read<f32>(%7);
-// IR-NEXT:         let %42: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%3)), conditional<i32>(lt<i32>(old<i32>, const<i32>(1)), old<i32>, const<i32>(1)));
-// IR-NEXT:         let %43: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%41), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%42)));
-// IR-NEXT:         write<f32>(%7, read<f32>(%43));
+// IR-NEXT:         let %32: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%0)), minnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         write<f32>(%7, read<f32>(%32));
+// IR-NEXT:         let %33: f32 [synthetic] = read<f32>(%7);
+// IR-NEXT:         let %34: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%0)), maxnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         let %35: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%33), read<f32>(%34));
+// IR-NEXT:         write<f32>(%7, read<f32>(%35));
+// IR-NEXT:         let %36: f32 [synthetic] = read<f32>(%7);
+// IR-NEXT:         let %37: f32 [synthetic] = update<f32, result=old, atomic=acquire>(deref(addr_of<ptr<f32>>(%1)), minnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
+// IR-NEXT:         let %38: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%36), read<f32>(%37));
+// IR-NEXT:         write<f32>(%7, read<f32>(%38));
+// IR-NEXT:         let %39: f32 [synthetic] = read<f32>(%7);
+// IR-NEXT:         let %40: f32 [synthetic] = update<f32, result=new, atomic=release>(deref(addr_of<ptr<f32>>(%1)), maxnum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.0)));
+// IR-NEXT:         let %41: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%39), read<f32>(%40));
+// IR-NEXT:         write<f32>(%7, read<f32>(%41));
+// IR-NEXT:         let %42: f32 [synthetic] = read<f32>(%7);
+// IR-NEXT:         let %43: f64 [synthetic] = update<f64, result=old, atomic=seq_cst>(deref(addr_of<ptr<f64>>(%2)), maxnum<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
+// IR-NEXT:         let %44: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%42)), read<f64>(%43)));
+// IR-NEXT:         write<f32>(%7, read<f32>(%44));
+// IR-NEXT:         let %45: f32 [synthetic] = read<f32>(%7);
+// IR-NEXT:         let %46: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%3)), conditional<i32>(lt<i32>(old<i32>, const<i32>(1)), old<i32>, const<i32>(1)));
+// IR-NEXT:         let %47: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%45), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%46)));
+// IR-NEXT:         write<f32>(%7, read<f32>(%47));
 // IR-NEXT:         return read<f32>(%7);
 // IR-NEXT:     }
 // IR-NEXT:     fn %8 @propagating() -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %9 a: f32 [storage=automatic];
-// IR-NEXT:         let %44: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<f32>>(%1)), minimum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         write<f32>(%9, read<f32>(%44));
-// IR-NEXT:         let %45: f32 [synthetic] = read<f32>(%9);
-// IR-NEXT:         let %46: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<f32>>(%1)), maximum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
-// IR-NEXT:         let %47: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%45), read<f32>(%46));
-// IR-NEXT:         write<f32>(%9, read<f32>(%47));
-// IR-NEXT:         let %48: f32 [synthetic] = read<f32>(%9);
-// IR-NEXT:         let %49: f64 [synthetic] = update<f64, result=old, atomic=acquire>(deref(addr_of<ptr<f64>>(%2)), minimum_num<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, const<f64>(2.0)));
-// IR-NEXT:         let %50: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%48)), read<f64>(%49)));
-// IR-NEXT:         write<f32>(%9, read<f32>(%50));
-// IR-NEXT:         let %51: f32 [synthetic] = read<f32>(%9);
-// IR-NEXT:         let %52: f64 [synthetic] = update<f64, result=old, atomic=release>(deref(addr_of<ptr<f64>>(%2)), maximum_num<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, const<f64>(2.0)));
-// IR-NEXT:         let %53: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%51)), read<f64>(%52)));
-// IR-NEXT:         write<f32>(%9, read<f32>(%53));
+// IR-NEXT:         let %48: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(deref(addr_of<ptr<f32>>(%1)), minimum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         write<f32>(%9, read<f32>(%48));
+// IR-NEXT:         let %49: f32 [synthetic] = read<f32>(%9);
+// IR-NEXT:         let %50: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<f32>>(%1)), maximum<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(1.5)));
+// IR-NEXT:         let %51: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%49), read<f32>(%50));
+// IR-NEXT:         write<f32>(%9, read<f32>(%51));
+// IR-NEXT:         let %52: f32 [synthetic] = read<f32>(%9);
+// IR-NEXT:         let %53: f64 [synthetic] = update<f64, result=old, atomic=acquire>(deref(addr_of<ptr<f64>>(%2)), minimum_num<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, const<f64>(2.0)));
+// IR-NEXT:         let %54: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%52)), read<f64>(%53)));
+// IR-NEXT:         write<f32>(%9, read<f32>(%54));
+// IR-NEXT:         let %55: f32 [synthetic] = read<f32>(%9);
+// IR-NEXT:         let %56: f64 [synthetic] = update<f64, result=old, atomic=release>(deref(addr_of<ptr<f64>>(%2)), maximum_num<f64, rounding=nearest_even, exceptions=ignore>(old<f64>, const<f64>(2.0)));
+// IR-NEXT:         let %57: f32 [synthetic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%55)), read<f64>(%56)));
+// IR-NEXT:         write<f32>(%9, read<f32>(%57));
 // IR-NEXT:         return read<f32>(%9);
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @weakness(%11 weak: i32, %12 expected: ptr<i32>, %13 desired: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %14 a: i32 [storage=automatic];
-// IR-NEXT:         let %54: bool [synthetic] = compare_exchange<i32, form=write_back, weak=dynamic(read<i32>(%11)), success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i32>>(%3)), read<ptr<i32>>(%12), const<i32>(3));
-// IR-NEXT:         write<i32>(%14, from_bool<i32, reason=assign>(read<bool>(%54)));
-// IR-NEXT:         let %55: i32 [synthetic] = read<i32>(%14);
-// IR-NEXT:         let %56: bool [synthetic] = compare_exchange<i32, form=write_back, weak=dynamic(add<i32, overflow=ub>(read<i32>(%11), const<i32>(1))), success=acquire, failure=relaxed>(deref(addr_of<ptr<i32>>(%3)), read<ptr<i32>>(%12), read<i32>(deref(read<ptr<i32>>(%13))));
-// IR-NEXT:         let %57: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%55), from_bool<i32, reason=promotion>(read<bool>(%56)));
-// IR-NEXT:         write<i32>(%14, read<i32>(%57));
-// IR-NEXT:         return read<i32>(%14);
+// IR-NEXT:     fn %11 @wrapping(%12 limit: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %13 a: u32 [storage=automatic];
+// IR-NEXT:         let %58: u32 [synthetic] = update<u32, result=old, atomic=seq_cst>(deref(addr_of<ptr<u32>>(%10)), conditional<u32>(ge<u32>(old<u32>, read<u32>(%12)), const<u32>(0), add<u32, overflow=wrap>(old<u32>, const<u32>(1))));
+// IR-NEXT:         write<u32>(%13, read<u32>(%58));
+// IR-NEXT:         let %59: u32 [synthetic] = read<u32>(%13);
+// IR-NEXT:         let %60: u32 [synthetic] = update<u32, result=old, atomic=acquire>(deref(addr_of<ptr<u32>>(%10)), conditional<u32>(logical_or<bool>(eq<u32>(old<u32>, const<u32>(0)), gt<u32>(old<u32>, read<u32>(%12))), read<u32>(%12), sub<u32, overflow=wrap>(old<u32>, const<u32>(1))));
+// IR-NEXT:         let %61: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%59), read<u32>(%60));
+// IR-NEXT:         write<u32>(%13, read<u32>(%61));
+// IR-NEXT:         let %62: u32 [synthetic] = read<u32>(%13);
+// IR-NEXT:         let %63: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<i32>>(%3)), conditional<i32>(ge<u32>(reinterpret<u32, reason=arg, fits=unknown>(old<i32>), reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%12)))), const<i32>(0), add<i32, overflow=wrap>(old<i32>, const<i32>(1))));
+// IR-NEXT:         let %64: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%62), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%63)));
+// IR-NEXT:         write<u32>(%13, read<u32>(%64));
+// IR-NEXT:         return read<u32>(%13);
+// IR-NEXT:     }
+// IR-NEXT:     fn %14 @weakness(%15 weak: i32, %16 expected: ptr<i32>, %17 desired: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %18 a: i32 [storage=automatic];
+// IR-NEXT:         let %65: bool [synthetic] = compare_exchange<i32, form=write_back, weak=dynamic(read<i32>(%15)), success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i32>>(%3)), read<ptr<i32>>(%16), const<i32>(3));
+// IR-NEXT:         write<i32>(%18, from_bool<i32, reason=assign>(read<bool>(%65)));
+// IR-NEXT:         let %66: i32 [synthetic] = read<i32>(%18);
+// IR-NEXT:         let %67: bool [synthetic] = compare_exchange<i32, form=write_back, weak=dynamic(add<i32, overflow=ub>(read<i32>(%15), const<i32>(1))), success=acquire, failure=relaxed>(deref(addr_of<ptr<i32>>(%3)), read<ptr<i32>>(%16), read<i32>(deref(read<ptr<i32>>(%17))));
+// IR-NEXT:         let %68: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%66), from_bool<i32, reason=promotion>(read<bool>(%67)));
+// IR-NEXT:         write<i32>(%18, read<i32>(%68));
+// IR-NEXT:         return read<i32>(%18);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

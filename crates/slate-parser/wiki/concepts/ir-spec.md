@@ -1633,10 +1633,19 @@ their own:
   `_num` variants lower the same way to `minimum`/`maximum` and
   `minimum_num`/`maximum_num`; they reject a non-floating object.
   `__sync_fetch_and_min/max` stay integer-only, as clang requires there.
+- `__atomic_fetch_uinc`/`udec` (`atomicrmw uinc_wrap`/`udec_wrap`, and note
+  the builtin names carry no `_wrap`) are integer-only counters that saturate
+  against the operand rather than wrapping at the type's width. They need no
+  arithmetic op of their own, because the compare-and-select form states them
+  exactly: `uinc` is `ge(old, v) ? 0 : add(old, 1)` and `udec` is
+  `logical_or(eq(old, 0), gt(old, v)) ? v : sub(old, 1)`, with `overflow=wrap`
+  on the step, which the guard already makes unreachable. Both compares are
+  unsigned whatever the object's signedness, so a signed object reinterprets
+  both operands, as `__sync_fetch_and_umin/umax` does.
 - Not every family spells every operation. `min`/`max` have no `__sync_`
   spelling beyond the explicit `fetch_and_[u]min/max` names, and the floating
-  extrema exist only as `__atomic_fetch_<op>` — there is no
-  `__atomic_fminimum_fetch` or `__c11_atomic_fetch_fminimum`. Names outside a
+  extrema and `uinc`/`udec` exist only as `__atomic_fetch_<op>` — there is no
+  `__atomic_uinc_fetch` or `__c11_atomic_fetch_fminimum`. Names outside a
   family's set are not atomic builtins at all and fall through to ordinary
   name resolution, matching clang's "call to undeclared function".
 - `__sync_*` builtins are all `seq_cst` except `lock_test_and_set`

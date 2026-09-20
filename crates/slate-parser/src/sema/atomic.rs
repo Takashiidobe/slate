@@ -66,6 +66,8 @@ pub(super) enum FetchOp {
     Min { signed: Option<bool> },
     Max { signed: Option<bool> },
     FloatExtremum(ArithOp),
+    UIncWrap,
+    UDecWrap,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -90,6 +92,8 @@ impl FetchOp {
             "fmaximum" => Self::FloatExtremum(ArithOp::Maximum),
             "fminimum_num" => Self::FloatExtremum(ArithOp::MinimumNum),
             "fmaximum_num" => Self::FloatExtremum(ArithOp::MaximumNum),
+            "uinc" => Self::UIncWrap,
+            "udec" => Self::UDecWrap,
             _ => return None,
         })
     }
@@ -98,7 +102,9 @@ impl FetchOp {
         let spelled = match self {
             Self::Add | Self::Sub | Self::And | Self::Or | Self::Xor | Self::Nand => true,
             Self::Min { .. } | Self::Max { .. } => spelling != FetchSpelling::Sync,
-            Self::FloatExtremum(_) => spelling == FetchSpelling::Gnu { fetch: true },
+            Self::FloatExtremum(_) | Self::UIncWrap | Self::UDecWrap => {
+                spelling == FetchSpelling::Gnu { fetch: true }
+            }
         };
         spelled.then_some(self)
     }
@@ -839,37 +845,64 @@ impl Lowerer {
                 };
                 arith(self, op, old, operand, wrap)
             }
-            FetchOp::Min { signed } | FetchOp::Max { signed } => {
-                let (left, right) = match (signed, &place.ty) {
-                    (
-                        Some(signed),
-                        Type::Numeric(NumericType::Integer {
-                            signed: declared, ..
-                        }),
-                    ) if signed != *declared => {
-                        let compared = self.types.ctypes.integer_signedness(place.c, signed)?;
-                        (
-                            self.convert(old.clone(), compared, ConversionReason::Arg)?,
-                            self.convert(operand.clone(), compared, ConversionReason::Arg)?,
-                        )
-                    }
-                    _ => (old.clone(), operand.clone()),
-                };
-                let keep_old = self.builtin_operand(
-                    e,
-                    CTypeKind::Bool,
-                    ValueKind::Compare {
-                        op: if matches!(op, FetchOp::Min { .. }) {
-                            CompareOp::Lt
-                        } else {
-                            CompareOp::Gt
-                        },
-                        left: Box::new(left.value),
-                        right: Box::new(right.value),
-                        exceptions: None,
-                        reason: None,
+            FetchOp::UIncWrap | FetchOp::UDecWrap => {
+                let (left, right) = self.compared_as(place, false, &old, &operand)?;
+                let increment = matches!(op, FetchOp::UIncWrap);
+                let one =
+                    self.operand(e, place.c, ValueKind::Constant(Number::Integer(1u8.into())));
+                let stepped = arith(
+                    self,
+                    if increment {
+                        ArithOp::Add
+                    } else {
+                        ArithOp::Sub
                     },
+                    old,
+                    one,
+                    wrap,
                 );
+                let (wrapped, condition) = if increment {
+                    let zero =
+                        self.operand(e, place.c, ValueKind::Constant(Number::Integer(0u8.into())));
+                    let exhausted = self.compare(e, CompareOp::Ge, left, right);
+                    (zero, exhausted)
+                } else {
+                    let zero =
+                        self.operand(e, left.c, ValueKind::Constant(Number::Integer(0u8.into())));
+                    let empty = self.compare(e, CompareOp::Eq, left.clone(), zero);
+                    let above = self.compare(e, CompareOp::Gt, left, right);
+                    let restart = self.builtin_operand(
+                        e,
+                        CTypeKind::Bool,
+                        ValueKind::Logical {
+                            op: LogicalOp::Or,
+                            left: Box::new(empty.value),
+                            right: Box::new(above.value),
+                        },
+                    );
+                    (operand, restart)
+                };
+                self.operand(
+                    e,
+                    place.c,
+                    ValueKind::Conditional {
+                        condition: Box::new(condition.value),
+                        then_value: Box::new(wrapped.value),
+                        else_value: Box::new(stepped.value),
+                    },
+                )
+            }
+            FetchOp::Min { signed } | FetchOp::Max { signed } => {
+                let (left, right) = match signed {
+                    Some(signed) => self.compared_as(place, signed, &old, &operand)?,
+                    None => (old.clone(), operand.clone()),
+                };
+                let op = if matches!(op, FetchOp::Min { .. }) {
+                    CompareOp::Lt
+                } else {
+                    CompareOp::Gt
+                };
+                let keep_old = self.compare(e, op, left, right);
                 self.operand(
                     e,
                     place.c,
@@ -881,6 +914,43 @@ impl Lowerer {
                 )
             }
         })
+    }
+
+    fn compared_as(
+        &mut self,
+        place: &Lvalue,
+        signed: bool,
+        old: &Operand,
+        operand: &Operand,
+    ) -> Result<(Operand, Operand), ResolveError> {
+        let Type::Numeric(NumericType::Integer {
+            signed: declared, ..
+        }) = &place.ty
+        else {
+            return Ok((old.clone(), operand.clone()));
+        };
+        if signed == *declared {
+            return Ok((old.clone(), operand.clone()));
+        }
+        let compared = self.types.ctypes.integer_signedness(place.c, signed)?;
+        Ok((
+            self.convert(old.clone(), compared, ConversionReason::Arg)?,
+            self.convert(operand.clone(), compared, ConversionReason::Arg)?,
+        ))
+    }
+
+    fn compare(&mut self, e: &Expr, op: CompareOp, left: Operand, right: Operand) -> Operand {
+        self.builtin_operand(
+            e,
+            CTypeKind::Bool,
+            ValueKind::Compare {
+                op,
+                left: Box::new(left.value),
+                right: Box::new(right.value),
+                exceptions: None,
+                reason: None,
+            },
+        )
     }
 
     fn memory_order(&mut self, order: &Expr) -> Result<MemoryOrder, ResolveError> {
