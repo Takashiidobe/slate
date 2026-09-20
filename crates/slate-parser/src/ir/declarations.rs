@@ -255,6 +255,10 @@ pub enum PlaceKind {
         base: Box<Value>,
         index: Box<Value>,
     },
+    Lane {
+        base: Box<Place>,
+        index: Box<Value>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -319,6 +323,15 @@ impl Place {
                 base.display_metadata(false, None).with_compact(compact),
                 index.display_metadata(false, None).with_compact(compact)
             ),
+            PlaceKind::Lane { base, index } => {
+                f.write_str("lane(")?;
+                base.format(f, compact)?;
+                write!(
+                    f,
+                    ", {})",
+                    index.display_metadata(false, None).with_compact(compact)
+                )
+            }
             PlaceKind::Field { base, index, bits } => {
                 match bits {
                     Some(bits) => write!(

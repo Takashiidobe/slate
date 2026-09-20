@@ -896,8 +896,12 @@ of different sizes is an error. Clang additionally rejects a splat whose
 scalar type would truncate (`v4si + double`); we accept it and record the
 element conversion in the IR instead, since sema is a debugging aid for input
 that already compiles. Braced initializers fill lanes like array elements,
-with omitted lanes zero-filled. Lane subscripting (`v[i]`) and `ext_vector`
-swizzles are not lowered yet (`slate-parser-lh7.2.17.7`).
+with omitted lanes zero-filled. `v[i]` on a vector lvalue is the place
+`lane(place, index)`, so a write or compound assignment stays a write to that
+lane; on a vector rvalue, where there is no storage, it is the value
+`lane<T>(vector, index)`. A lane is not addressable, and the index is an
+ordinary runtime value, not a constant. `ext_vector` swizzles (`v.x`, `v.xy`,
+`v.lo`/`.hi`) are still not lowered (`slate-parser-lh7.2.17.7`).
 `tests/fixtures/sema/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
 
 **Out of scope for current IR lowering:** fixed-point types remain
@@ -1338,8 +1342,10 @@ result of computation. Places retain object and projection structure
 `read(place)`, `write(place, value)`, and `addr_of(place)` consume places.
 `Index` projects into an array place. Pointer indexing uses
 `Deref(ptr_offset(pointer, index))`, with offsets in element units.
+`Lane` projects into a vector place.
 Each place has a resolved type; field IDs refer to the record layout.
-Bit-fields are readable/writable projections but are not addressable.
+Bit-fields and vector lanes are readable/writable projections but are not
+addressable.
 
 For `p->a[i]`, where `a` is an array member, the place is
 `index(field(deref(p), a), i)`. Reading or writing it accesses that element,

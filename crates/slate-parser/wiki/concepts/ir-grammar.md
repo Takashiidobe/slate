@@ -244,6 +244,7 @@ place  = binding
        | "bitfield" digits "<unit=" int ", bytes=" int ".." int
          ", bits=" int ".." int ">(" place ")"
        | ( "real(" | "imag(" ) place ")"
+       | "lane(" place ", " value ")"
        | "compound_literal" binding "[storage=" storage "]" "=" value ;
 access   = [ ", volatile" ] ;
 ordering = ", atomic=" order ;
@@ -260,6 +261,9 @@ order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
 - `bitfieldN<unit=U, bytes=A..B, bits=C..D>` is field `N`, stored in storage
   unit `U` (record bytes `A..B`), occupying bits `C..D` from the least
   significant bit of that unit. Bit-fields are not addressable.
+- `lane(p, i)` is element `i` of the vector place `p`. Like a bit-field it is
+  readable and writable but not addressable, and `i` is a runtime value, not a
+  constant. A vector *value* is indexed by the `lane<T>(..)` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
 - Lowering does not produce `index(..)` yet: all indexing is
   `deref(ptr_offset(..))`, including arrays through `array_decay`.
@@ -306,7 +310,8 @@ core       = "const<" type ">(" constant ")"
            | compare_op "<" type [ ", result=" type ] [ ", reason=" reason ]
              [ ", exceptions=" exceptions ] ">(" value ", " value ")"
            | logical_op "<" type ">(" value ", " value ")"
-           | "float_class<bool, test=" float_class ">(" value ")" ;
+           | "float_class<bool, test=" float_class ">(" value ")"
+           | "lane<" type ">(" value ", " value ")" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
              " = " value ;
@@ -319,6 +324,9 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   `compare_exchange` (result `bool`, or the place type for `form=old`), where it is the place type, and in `compare_op`, where it is the operand type. A
   scalar comparison results in `bool`; a vector comparison prints its
   `result=vector<iN, lanes>` lane-mask type instead.
+- `lane<T>(v, i)` extracts element `i` from the vector value `v`, for a
+  subscript whose base is not an lvalue. An lvalue base yields a `lane(..)`
+  place instead, so `v[i] = x` stays a write to that place.
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
   spelling.

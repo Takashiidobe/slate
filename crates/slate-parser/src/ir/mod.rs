@@ -182,6 +182,10 @@ pub enum ValueKind {
         test: FloatClassTest,
         operand: Box<Value>,
     },
+    Lane {
+        vector: Box<Value>,
+        index: Box<Value>,
+    },
 }
 
 impl fmt::Display for Value {
@@ -591,6 +595,17 @@ impl Value {
                         .with_compact(compact)
                 )
             }
+            ValueKind::Lane { vector, index } => write!(
+                f,
+                "lane<{}>({}, {})",
+                self.ty,
+                vector
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                index
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::FloatClass { test, operand } => write!(
                 f,
                 "float_class<{}, test={test}>({})",

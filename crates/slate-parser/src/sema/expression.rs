@@ -11,6 +11,11 @@ use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::ir::*;
 use std::collections::HashMap;
 
+enum Subscript {
+    Place(Lvalue),
+    Value(Operand),
+}
+
 pub(super) struct Lowerer {
     pub context: Context,
     pub types: TypeResolver,
@@ -1130,12 +1135,12 @@ impl Lowerer {
                     },
                 })
             }
-            ExprKind::Index { base, index } => {
-                let base = self.expr(base)?;
-                let index = self.expr(index)?;
-                let pointer = self.binary(e, BinaryOp::Add, base, index)?;
-                self.deref(pointer)
-            }
+            ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
+                Subscript::Place(place) => Ok(place),
+                Subscript::Value(_) => Err(ResolveError::Invalid(
+                    "vector element of a value is not a place",
+                )),
+            },
             ExprKind::Member { base, field, arrow } => {
                 let base = if *arrow {
                     let value = self.expr(base)?;
@@ -1149,6 +1154,66 @@ impl Lowerer {
             _ => Err(ResolveError::Unsupported(
                 "expression is not a supported place",
             )),
+        }
+    }
+
+    fn subscript(
+        &mut self,
+        e: &Expr,
+        base: &Expr,
+        index: &Expr,
+    ) -> Result<Subscript, ResolveError> {
+        let object = match self.place(base) {
+            Ok(object) if self.types.ctypes.is_vector(object.c) => {
+                let index = self.expr(index)?;
+                return Ok(Subscript::Place(self.lane(object, index)?));
+            }
+            Ok(object) => self.read(base, object)?,
+            Err(_) => self.expr(base)?,
+        };
+        let index = self.expr(index)?;
+        if self.types.ctypes.is_vector(object.c) {
+            let c = self.vector_element(object.c, &index)?;
+            return Ok(Subscript::Value(self.operand(
+                e,
+                c,
+                ValueKind::Lane {
+                    vector: Box::new(object.value),
+                    index: Box::new(index.value),
+                },
+            )));
+        }
+        let pointer = self.binary(e, BinaryOp::Add, object, index)?;
+        Ok(Subscript::Place(self.deref(pointer)?))
+    }
+
+    fn lane(&mut self, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
+        let element = self.vector_element(object.c, &index)?;
+        let c = element.with(self.types.ctypes.quals(object.c));
+        Ok(Lvalue {
+            c,
+            place: Place {
+                ty: self.types.ir_type(c),
+                access: object.place.access,
+                kind: PlaceKind::Lane {
+                    base: Box::new(object.place),
+                    index: Box::new(index.value),
+                },
+            },
+        })
+    }
+
+    fn vector_element(
+        &mut self,
+        vector: QualType,
+        index: &Operand,
+    ) -> Result<QualType, ResolveError> {
+        if !self.types.ctypes.is_integer(index.c) {
+            return Err(ResolveError::Invalid("vector index is not an integer"));
+        }
+        match self.types.ctypes.canonical_kind(vector) {
+            CTypeKind::Vector { element, .. } => Ok(*element),
+            _ => Err(ResolveError::Unsupported("expected vector")),
         }
     }
 
@@ -1602,9 +1667,12 @@ impl Lowerer {
                     .ok_or(ResolveError::Unsupported("unresolved enumerator constant"))?;
                 Ok(self.operand(e, value.c, value.value.node.value))
             }
+            ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
+                Subscript::Place(place) => self.read(e, place),
+                Subscript::Value(value) => Ok(value),
+            },
             ExprKind::Identifier(_)
             | ExprKind::Member { .. }
-            | ExprKind::Index { .. }
             | ExprKind::CompoundLiteral { .. }
             | ExprKind::Unary {
                 op: UnaryOp::Deref, ..
@@ -1697,6 +1765,9 @@ impl Lowerer {
                 let place = self.place(operand)?;
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                     return Err(ResolveError::Invalid("address of a bit-field"));
+                }
+                if matches!(place.kind, PlaceKind::Lane { .. }) {
+                    return Err(ResolveError::Invalid("address of a vector element"));
                 }
                 let ty = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, ty, ValueKind::AddressOf(place.place)))

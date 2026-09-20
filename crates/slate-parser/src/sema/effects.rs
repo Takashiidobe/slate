@@ -98,6 +98,10 @@ impl Hoister {
                 base: Box::new(self.value(*base, out)?),
                 index: Box::new(self.value(*index, out)?),
             },
+            PlaceKind::Lane { base, index } => PlaceKind::Lane {
+                base: Box::new(self.place(*base, out)?),
+                index: Box::new(self.value(*index, out)?),
+            },
         };
         Ok(Place {
             ty: place.ty,
@@ -141,6 +145,15 @@ impl Hoister {
                 let index = self.value(*index, out)?;
                 let index = self.temporary(index, out);
                 PlaceKind::Index {
+                    base: Box::new(base),
+                    index: Box::new(index),
+                }
+            }
+            PlaceKind::Lane { base, index } => {
+                let base = self.stable_place(*base, out)?;
+                let index = self.value(*index, out)?;
+                let index = self.temporary(index, out);
+                PlaceKind::Lane {
                     base: Box::new(base),
                     index: Box::new(index),
                 }
@@ -536,6 +549,10 @@ impl Hoister {
                 test,
                 operand: Box::new(self.value(*operand, out)?),
             },
+            ValueKind::Lane { vector, index } => ValueKind::Lane {
+                vector: Box::new(self.value(*vector, out)?),
+                index: Box::new(self.value(*index, out)?),
+            },
             ValueKind::Convert {
                 kind,
                 operand,
@@ -613,6 +630,7 @@ fn place_effects(place: &Place) -> bool {
         PlaceKind::ComplexPart { base, .. } => place_effects(base),
         PlaceKind::Field { base, .. } => place_effects(base),
         PlaceKind::Index { base, index } => effects(base) || effects(index),
+        PlaceKind::Lane { base, index } => place_effects(base) || effects(index),
     }
 }
 
@@ -644,6 +662,7 @@ fn effects(value: &Value) -> bool {
             else_value,
         } => effects(condition) || effects(then_value) || effects(else_value),
         ValueKind::Aggregate { members, .. } => members.iter().any(|member| effects(&member.value)),
+        ValueKind::Lane { vector, index } => effects(vector) || effects(index),
         ValueKind::Copy { operand, .. }
         | ValueKind::Unary { operand, .. }
         | ValueKind::FloatClass { operand, .. }

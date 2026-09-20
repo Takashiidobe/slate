@@ -116,6 +116,24 @@ v3ss odd_lanes(v3ss a, v3ss b) {
     return a + b;
 }
 
+int read_lane(v4si a, int i) {
+    return a[0] + a[i];
+}
+
+void write_lane(v4si *a, int i, int value) {
+    (*a)[i] = value;
+    (*a)[0] += value;
+}
+
+v4si value_lane(v4si a, v4si b, int i) {
+    v4si result = {(a + b)[i], a[1], b[2], 0};
+    return result;
+}
+
+float extended_lane(v4sf a) {
+    return a[3];
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -205,10 +223,10 @@ v3ss odd_lanes(v3ss a, v3ss b) {
 // IR-NEXT:         return vector_bit_cast<vector<i32, 4>, reason=explicit>(read<vector<u32, 4>>(%55));
 // IR-NEXT:     }
 // IR-NEXT:     fn %56 @compound(%57 a: ptr<vector<i32, 4>>, %58 b: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         let %68: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%57);
-// IR-NEXT:         let %69: vector<i32, 4> [synthetic] = read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%68)));
-// IR-NEXT:         let %70: vector<i32, 4> [synthetic] = add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%69), read<vector<i32, 4>>(%58));
-// IR-NEXT:         write<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%68)), read<vector<i32, 4>>(%70));
+// IR-NEXT:         let %82: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%57);
+// IR-NEXT:         let %83: vector<i32, 4> [synthetic] = read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%82)));
+// IR-NEXT:         let %84: vector<i32, 4> [synthetic] = add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%83), read<vector<i32, 4>>(%58));
+// IR-NEXT:         write<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%82)), read<vector<i32, 4>>(%84));
 // IR-NEXT:     }
 // IR-NEXT:     fn %59 @select(%60 a: vector<i32, 4>, %61 b: vector<i32, 4>, %62 c: i32) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, direct, scalar) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return conditional<vector<i32, 4>>(ne<i32>(read<i32>(%62), const<i32>(0)), read<vector<i32, 4>>(%60), read<vector<i32, 4>>(%61));
@@ -219,6 +237,24 @@ v3ss odd_lanes(v3ss a, v3ss b) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %65 @odd_lanes(%66 a: vector<i16, 3>, %67 b: vector<i16, 3>) -> vector<i16, 3> [linkage=external] [abi=sysv64(coerce<f64>, coerce<f64>) -> coerce<f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<vector<i16, 3>, elementwise=true, overflow=wrap>(read<vector<i16, 3>>(%66), read<vector<i16, 3>>(%67));
+// IR-NEXT:     }
+// IR-NEXT:     fn %68 @read_lane(%69 a: vector<i32, 4>, %70 i: i32) -> i32 [linkage=external] [abi=sysv64(direct, scalar) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(lane(%69, const<i32>(0))), read<i32>(lane(%69, read<i32>(%70))));
+// IR-NEXT:     }
+// IR-NEXT:     fn %71 @write_lane(%72 a: ptr<vector<i32, 4>>, %73 i: i32, %74 value: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         write<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%72)), read<i32>(%73)), read<i32>(%74));
+// IR-NEXT:         let %85: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%72);
+// IR-NEXT:         let %86: i32 [synthetic] = const<i32>(0);
+// IR-NEXT:         let %87: i32 [synthetic] = read<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%85)), read<i32>(%86)));
+// IR-NEXT:         let %88: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%87), read<i32>(%74));
+// IR-NEXT:         write<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%85)), read<i32>(%86)), read<i32>(%88));
+// IR-NEXT:     }
+// IR-NEXT:     fn %75 @value_lane(%76 a: vector<i32, 4>, %77 b: vector<i32, 4>, %78 i: i32) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, direct, scalar) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %79 result: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = lane<i32>(add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%76), read<vector<i32, 4>>(%77)), read<i32>(%78)), index1 = read<i32>(lane(%76, const<i32>(1))), index2 = read<i32>(lane(%77, const<i32>(2))), index3 = const<i32>(0));
+// IR-NEXT:         return read<vector<i32, 4>>(%79);
+// IR-NEXT:     }
+// IR-NEXT:     fn %80 @extended_lane(%81 a: vector<f32, 4>) -> f32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<f32>(lane(%81, const<i32>(3)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR
