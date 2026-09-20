@@ -41,12 +41,12 @@ void call(void) { function_reference(); }
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 above: i32 [storage=static] [linkage=external] [align=16];
-// IR-NEXT:     global %1 below: i32 [storage=static] [linkage=external] [align=1];
+// IR-NEXT:     global %0 above: i32 [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %1 below: i32 [storage=static] [align=1] [linkage=external];
 // IR-NEXT:     global %2 natural: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %3 alignas_initialized: i32 [storage=static] = const<i32>(1) [linkage=external] [align=32];
-// IR-NEXT:     global %4 redeclared: i32 [storage=static] [linkage=external] [align=64];
-// IR-NEXT:     global %5 incomplete: array<i32, 1> [storage=static] [linkage=external] [align=32];
+// IR-NEXT:     global %3 alignas_initialized: i32 [storage=static] [align=32] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %4 redeclared: i32 [storage=static] [align=64] [linkage=external];
+// IR-NEXT:     global %5 incomplete: array<i32, 1> [storage=static] [align=32] [linkage=external];
 // IR-NEXT:     global %6 common_requested: i32 [storage=static] [linkage=external] [common];
 // IR-NEXT:     global %7 nocommon_requested: i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %8 common_wins: i32 [storage=static] [linkage=external] [common];

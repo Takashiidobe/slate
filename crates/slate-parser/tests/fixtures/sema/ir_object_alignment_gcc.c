@@ -24,7 +24,7 @@ int below __attribute__((aligned(1)));
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 above: i32 [storage=static] [linkage=external] [align=16];
+// IR-NEXT:     global %0 above: i32 [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     global %1 below: i32 [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

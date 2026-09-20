@@ -177,6 +177,13 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     }
 }
 
+fn is_alignment_attribute(attribute: &ast::Attribute) -> bool {
+    matches!(
+        attribute,
+        ast::Attribute::Aligned(_) | ast::Attribute::AlignAs(_)
+    )
+}
+
 fn is_vector_attribute(attribute: &ast::Attribute) -> bool {
     matches!(
         attribute,
@@ -278,7 +285,7 @@ impl Lowerer {
                         .alignment_bytes,
                 );
                 let effective = self.types.effective_alignment(requested, natural);
-                global.alignment = (effective != natural).then_some(effective);
+                global.variable.alignment = (effective != natural).then_some(effective);
             }
             let symbol = &global.symbol;
             let tentative = global.definition
@@ -607,8 +614,11 @@ impl Lowerer {
             } else {
                 StorageDuration::Static
             };
+            let unsupported_on_automatic = attributes.clone().any(|attribute| {
+                !is_vector_attribute(attribute) && !is_alignment_attribute(attribute)
+            });
             if storage == StorageDuration::Automatic
-                && (has_attributes || declarator.asm_label.is_some())
+                && (unsupported_on_automatic || declarator.asm_label.is_some())
             {
                 return Err(ResolveError::Unsupported(
                     "automatic variable attributes or asm label",
@@ -635,6 +645,14 @@ impl Lowerer {
                 },
             };
             self.types.entities.merge_request(id, request)?;
+            let automatic_alignment = match (storage, request.alignment) {
+                (StorageDuration::Automatic, Some(requested)) => {
+                    let natural = u64::from(self.types.storage(ty.clone())?.alignment_bytes);
+                    let effective = self.types.effective_alignment(requested, natural);
+                    (effective != natural).then_some(effective)
+                }
+                _ => None,
+            };
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
                 Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
@@ -670,6 +688,7 @@ impl Lowerer {
                 restrict: qualifiers.is_restrict,
                 is_const: qualifiers.is_const,
                 constexpr: item.specifiers.is_constexpr,
+                alignment: automatic_alignment,
                 initializer,
             };
             if storage != StorageDuration::Automatic
@@ -700,7 +719,6 @@ impl Lowerer {
                     linkage: declared_linkage,
                     symbol,
                     definition,
-                    alignment: None,
                     common: false,
                 });
                 self.module.annotate(&global, c_entries);
@@ -715,7 +733,6 @@ impl Lowerer {
                     linkage: Linkage::Internal,
                     symbol,
                     definition: true,
-                    alignment: None,
                     common: false,
                 });
                 self.module.annotate(&global, c_entries);

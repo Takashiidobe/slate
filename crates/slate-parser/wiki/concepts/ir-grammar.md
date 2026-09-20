@@ -126,10 +126,10 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ## Globals
 
 ```ebnf
-global       = ( "global" | "extern" ) variable linkage symbol_attrs [ "[align=" int "]" ]
+global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
 variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
-               [ "=" value ] ;
+               [ "[align=" int "]" ] [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
 symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]

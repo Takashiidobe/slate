@@ -32,7 +32,7 @@ int completed; extern int completed;
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %0 tentative: i32 [storage=static] [linkage=external] [common];
-// IR-NEXT:     global %1 aligned_tentative: i32 [storage=static] [linkage=external] [align=16] [common];
+// IR-NEXT:     global %1 aligned_tentative: i32 [storage=static] [align=16] [linkage=external] [common];
 // IR-NEXT:     global %2 nocommon_requested: i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 initialized: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-NEXT:     extern %4 declared: i32 [storage=static] [linkage=external];

@@ -210,7 +210,7 @@ impl TypeResolver {
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
-                    u64::from(layout.alignment_bytes)
+                    self.object_alignment(operand, u64::from(layout.alignment_bytes))
                 };
                 (
                     self.ctypes.size_type(&self.target),
@@ -348,6 +348,20 @@ impl TypeResolver {
             operand.value.ty = Type::Bool;
         }
         Ok(operand)
+    }
+
+    pub(super) fn object_alignment(&self, e: &crate::ast::Expr, natural: u64) -> u64 {
+        let mut operand = e;
+        while let crate::ast::ExprKind::Paren(inner) = &operand.value {
+            operand = inner;
+        }
+        let Some(id) = self.references.get(&operand.id) else {
+            return natural;
+        };
+        let Some(requested) = self.entities.request(id).alignment else {
+            return natural;
+        };
+        self.declared_alignment(requested, natural)
     }
 
     fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
@@ -1275,6 +1289,14 @@ impl TypeResolver {
             requested
         } else {
             requested.max(natural)
+        }
+    }
+
+    pub(super) fn declared_alignment(&self, requested: u64, natural: u64) -> u64 {
+        if matches!(self.flavor, CompilerFlavor::Msvc) {
+            requested.max(natural)
+        } else {
+            requested
         }
     }
 

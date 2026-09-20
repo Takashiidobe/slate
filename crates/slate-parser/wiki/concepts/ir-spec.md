@@ -922,8 +922,8 @@ automatic local they are invalid. Symbol attributes are a semantic
 and merged across redeclarations (first value wins, flags OR): `asm_name`
 (from `asm("sym")` labels), `visibility`, `weak`, `alias`, `section`, `used`,
 `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`, `selectany`.
-Attributes on typedefs, parameters, or automatic locals remain unsupported.
-Fixture: `sema/ir_globals_linkage.c`.
+Attributes on typedefs or parameters remain unsupported; on automatic locals
+only alignment attributes are accepted. Fixture: `sema/ir_globals_linkage.c`.
 
 **Object attributes (`lh7.2.22`):** `weakref("t")` is not `weak` plus
 `alias`: `alias` defines a symbol, while a weakref emits none and its uses
@@ -934,10 +934,13 @@ linkage. Alignment and common-ness are object properties on `Global`, not
 symbol attributes, resolved after all redeclarations merge:
 
 - `[align=N]` comes from `aligned`, `_Alignas`, and `__declspec(align)`, taking
-  the largest request across declarations. It prints only when it differs from
-  the type's natural alignment. Clang honors the request as written, even
-  below natural (`aligned(1)` on an `int` gives `align=1`); gcc and MSVC take
-  the max with natural.
+  the largest request across declarations. It is a property of the *variable*,
+  so it prints on a `let` as well as a `global`, and it prints only when it
+  differs from the type's natural alignment. Clang honors the request as
+  written, even below natural (`aligned(1)` on an `int` gives `align=1`); gcc
+  and MSVC take the max with natural. Clang's LLVM IR is the oracle here: it
+  carries `align 1` for both a global and an `alloca`, while the emitted
+  assembly's `.p2align 2` is a later section-level decision.
 - `[common]` marks an external tentative definition: a definition with no
   initializer on any declaration, not thread-local, and not `alias`, `section`,
   `weak`, or `selectany`. `common` on any declaration wins over `nocommon`
@@ -945,8 +948,18 @@ symbol attributes, resolved after all redeclarations merge:
   decides (default off, rejected under MSVC). On an MSVC target, an alignment
   request also opts out.
 
+**Alignment of a declared object (`lh7.2.31`, `lh7.2.32`):** `__alignof__` of
+an object reports the object's alignment, not its type's, and that is a
+*different* rule from the one above. clang and gcc both report the declared
+request even when it is below natural; MSVC raises it to natural. gcc therefore
+lays a `aligned(1) int` out at 4 but reports 1, which is why
+`TypeResolver::declared_alignment` exists alongside `effective_alignment`
+rather than reusing it. Both rules read the same request, held once per
+`BindingId` on the sema entity (`slate-parser-8lv`).
+
 Fixtures: `sema/ir_object_attributes.c`, `sema/ir_object_attributes_fcommon.c`,
-`sema/ir_object_alignment_gcc.c`, `sema/x86_64-pc-windows-msvc/ir_selectany.c`.
+`sema/ir_object_alignment_gcc.c`, `sema/ir_object_alignment_sites.c`,
+`sema/x86_64-pc-windows-msvc/ir_selectany.c`.
 
 **Function specifiers (`lh7.2.14`):** `FunctionSemantics` separates inlining
 preference (`hint`, `always`, `never`), definition emission, and `noreturn`.

@@ -127,6 +127,7 @@ pub struct Variable {
     pub restrict: bool,
     pub is_const: bool,
     pub constexpr: bool,
+    pub alignment: Option<u64>,
     pub initializer: Option<Value>,
 }
 
@@ -159,7 +160,6 @@ pub struct Global {
     pub linkage: super::Linkage,
     pub symbol: super::SymbolAttributes,
     pub definition: bool,
-    pub alignment: Option<u64>,
     pub common: bool,
 }
 

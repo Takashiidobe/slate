@@ -150,6 +150,9 @@ impl DisplayModule<'_> {
         if variable.constexpr {
             f.write_str(" [constexpr]")?;
         }
+        if let Some(alignment) = variable.alignment {
+            write!(f, " [align={alignment}]")?;
+        }
         if let Some(value) = &variable.initializer {
             write!(
                 f,
@@ -582,9 +585,6 @@ impl fmt::Display for DisplayModule<'_> {
             )?;
             self.variable(f, &global.variable)?;
             write!(f, " [linkage={}]{}", global.linkage, global.symbol)?;
-            if let Some(alignment) = global.alignment {
-                write!(f, " [align={alignment}]")?;
-            }
             if global.common {
                 f.write_str(" [common]")?;
             }

@@ -1025,12 +1025,12 @@ impl Lowerer {
                         restrict: false,
                         is_const: false,
                         constexpr: false,
+                        alignment: None,
                         initializer: Some(initializer),
                     },
                     linkage: Linkage::Internal,
                     symbol: SymbolAttributes::default(),
                     definition: true,
-                    alignment: None,
                     common: false,
                 }));
                 self.read(
@@ -1487,7 +1487,8 @@ impl Lowerer {
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
-                    u64::from(layout.alignment_bytes)
+                    self.types
+                        .object_alignment(operand, u64::from(layout.alignment_bytes))
                 };
                 let key = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     "size_of"
