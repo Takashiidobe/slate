@@ -219,6 +219,23 @@ fn gnu_operation(operation: &str) -> Option<AtomicOperation> {
 }
 
 fn sync_builtin(operation: &str) -> Option<SyncBuiltin> {
+    let (operation, sized) = match strip_size(operation) {
+        Some(operation) => (operation, true),
+        None => (operation, false),
+    };
+    let builtin = sync_operation(operation)?;
+    (!sized || builtin.sized()).then_some(builtin)
+}
+
+// gcc's legacy spellings name the width they were resolved for; clang ignores
+// the suffix and takes the width from the pointee
+fn strip_size(operation: &str) -> Option<&str> {
+    ["_1", "_2", "_4", "_8", "_16"]
+        .iter()
+        .find_map(|suffix| operation.strip_suffix(suffix))
+}
+
+fn sync_operation(operation: &str) -> Option<SyncBuiltin> {
     Some(match operation {
         "bool_compare_and_swap" => SyncBuiltin::CompareAndSwap(CompareExchangeForm::Success),
         "val_compare_and_swap" => SyncBuiltin::CompareAndSwap(CompareExchangeForm::Old),
@@ -248,6 +265,24 @@ fn sync_builtin(operation: &str) -> Option<SyncBuiltin> {
             },
         },
     })
+}
+
+impl SyncBuiltin {
+    fn sized(self) -> bool {
+        match self {
+            Self::Fetch { op, .. } => matches!(
+                op,
+                FetchOp::Add
+                    | FetchOp::Sub
+                    | FetchOp::And
+                    | FetchOp::Or
+                    | FetchOp::Xor
+                    | FetchOp::Nand
+            ),
+            Self::CompareAndSwap(_) | Self::LockTestAndSet | Self::LockRelease | Self::Swap => true,
+            Self::Synchronize => false,
+        }
+    }
 }
 
 impl Lowerer {

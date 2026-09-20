@@ -1669,7 +1669,14 @@ their own:
   ignored. `__sync_fetch_and_min/max` compare signed and `umin/umax`
   unsigned, whatever the object's signedness, through `reinterpret`
   conversions of both operands. On a pointer, an integer operand offsets in
-  bytes, as with `__atomic_*` (gcc; clang requires a pointer operand).
+  bytes, as with `__atomic_*` (gcc; clang requires a pointer operand). gcc's
+  legacy size-suffixed spellings (`__sync_fetch_and_add_1` through `_16`, and
+  the same for `sub`/`and`/`or`/`xor`/`nand`, both fetch forms,
+  `val`/`bool_compare_and_swap`, `lock_test_and_set`, `lock_release` and
+  `swap`) lower identically to the unsuffixed ones: clang ignores the suffix
+  and takes the width from the pointee, so `__sync_fetch_and_add_8` on a
+  `char` object is an `i8` update. `min`/`max`/`umin`/`umax` and
+  `synchronize` have no sized spellings.
 - `__c11_atomic_is_lock_free(n)`, `__atomic_is_lock_free(n, p)` and
   `__atomic_always_lock_free(n, p)` follow clang's constant evaluator: true
   when `n` is a power of two no wider than the target's max inline atomic
