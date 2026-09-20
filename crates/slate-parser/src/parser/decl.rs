@@ -89,8 +89,9 @@ impl Parser {
                 }
             }
             [Token::Ident(name), Token::Ident(action)] if name == "ms_struct" => {
-                PragmaKind::MsStruct {
-                    action: parse_stack_action(action)?,
+                match parse_ms_struct_action(action) {
+                    Some(action) => PragmaKind::MsStruct { action },
+                    None => PragmaKind::Opaque(text.clone()),
                 }
             }
             _ => PragmaKind::Opaque(text),
@@ -497,6 +498,15 @@ fn parse_on_off(token: &str) -> Result<bool, ParseError> {
     }
 }
 
+fn parse_ms_struct_action(token: &str) -> Option<MsStructAction> {
+    match token {
+        "on" => Some(MsStructAction::On),
+        "off" => Some(MsStructAction::Off),
+        "reset" => Some(MsStructAction::Reset),
+        _ => None,
+    }
+}
+
 fn parse_stdc_option(token: &str) -> Option<StdcPragmaOption> {
     match token {
         "FENV_ACCESS" => Some(StdcPragmaOption::FenvAccess),
@@ -518,19 +528,34 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
     let action = tokens.first().map_or(PragmaStackAction::Set, |token| {
         parse_stack_action_token(&token.value).unwrap_or(PragmaStackAction::Set)
     });
-    let alignment_start = match action {
-        PragmaStackAction::Push => 2,
-        PragmaStackAction::Set => 0,
-        PragmaStackAction::Pop | PragmaStackAction::Show => tokens.len(),
-    };
-    let alignment = tokens.get(alignment_start).and_then(|_token| {
-        let checkpoint = parser.checkpoint();
-        let expression =
-            const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()?;
-        checkpoint.commit();
-        Some(expression)
-    });
-    Ok(PragmaKind::Pack { action, alignment })
+    let mut arguments = match action {
+        PragmaStackAction::Set => tokens,
+        _ => tokens.get(2..).unwrap_or_default(),
+    }
+    .split(|token| token.value == Token::Comma)
+    .filter(|argument| !argument.is_empty());
+    let mut label = None;
+    let mut alignment = None;
+    for argument in arguments.by_ref() {
+        match &argument.as_tokens()[..] {
+            [Token::Ident(name)] if label.is_none() && alignment.is_none() => {
+                label = Some(name.clone());
+            }
+            _ => {
+                let checkpoint = parser.checkpoint();
+                if let Ok(expression) = const_expr::Parser::parse_expression(argument, Some(parser))
+                {
+                    checkpoint.commit();
+                    alignment = Some(expression);
+                }
+            }
+        }
+    }
+    Ok(PragmaKind::Pack {
+        action,
+        label,
+        alignment,
+    })
 }
 
 struct ParsedDeclarator {

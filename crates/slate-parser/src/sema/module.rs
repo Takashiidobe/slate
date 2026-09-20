@@ -67,11 +67,12 @@ pub fn resolve_module(
                     &function.declarator,
                     &function.attributes,
                 );
-                let symbol = function_symbol(attributes.iter().copied(), None)?;
+                let mut symbol = function_symbol(attributes.iter().copied(), None)?;
                 let name = function
                     .declarator
                     .name()
                     .ok_or(ResolveError::Unsupported("unnamed function"))?;
+                lower.types.pragmas.apply(name, &mut symbol);
                 let id = lower.declaration_id(declaration.id, name)?;
                 lower.record_function(id, &function.specifiers, &attributes, true, true)?;
                 let start = lower.types.definitions.len();
@@ -588,8 +589,9 @@ impl Lowerer {
                     &declarator.declarator,
                     &declarator.attributes,
                 );
-                let symbol =
+                let mut symbol =
                     function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
+                self.types.pragmas.apply(name, &mut symbol);
                 self.record_function(id, &item.specifiers, &attributes, false, global)?;
                 let parameters = match declarator.declarator.function_parameters() {
                     Some(params) => self.parameters(params, None)?,
@@ -658,7 +660,8 @@ impl Lowerer {
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }
-            let symbol = symbol_attributes(attributes.clone(), declarator.asm_label.as_ref())?;
+            let mut symbol = symbol_attributes(attributes.clone(), declarator.asm_label.as_ref())?;
+            self.types.pragmas.apply(name, &mut symbol);
             let request = super::entity::ObjectRequest {
                 alignment: super::types::requested_alignment(&mut self.types, attributes.clone())?,
                 common: if attributes

@@ -371,18 +371,24 @@ Designator      = "Array(" expr ")"
 
 ```ebnf
 Pragma     = Pragma { kind: PragmaKind } ;
-PragmaKind = Pack { action: StackAction, alignment: opt<expr> }
+PragmaKind = Pack { action: StackAction, label?: opt<string>,
+                    alignment: opt<expr> }
            | Weak { name: string, alias: opt<string> }
            | Visibility { action: StackAction, visibility: opt<string> }
            | Stdc { option: ( "FenvAccess" | "FpContract" | "CxLimitedRange" ),
                     enabled: bool }
            | FloatControl { option: ( "Precise" | "Except" ), enabled: bool }
-           | MsStruct { action: StackAction }
+           | MsStruct { action: ( "On" | "Off" | "Reset" ) }
            | "Opaque(" string ")" ;
 StackAction = "Push" | "Pop" | "Show" | "Set" ;
 ```
 
-`Opaque` holds the text of any pragma without a typed form.
+`Opaque` holds the text of any pragma without a typed form, including a
+recognized pragma given an argument it does not accept -- `#pragma ms_struct
+push` and `#pragma STDC FP_CONTRACT maybe` both land there.
+
+`Pack`'s `label` is the MSVC named slot: `#pragma pack(push, lbl, 1)` fills
+both `label` and `alignment`, `#pragma pack(pop, lbl)` only `label`.
 
 ## Inline assembly
 

@@ -15,6 +15,7 @@ mod module;
 pub mod names;
 pub mod numeric;
 mod operand;
+pub mod pragmas;
 mod type_of;
 pub mod types;
 mod validate;

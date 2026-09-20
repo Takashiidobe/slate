@@ -295,16 +295,16 @@ int hidden_function(void) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: MsStruct {
-// DEFAULT-NEXT:               action: Push,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "ms_struct push",
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: MsStruct {
-// DEFAULT-NEXT:               action: Pop,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "ms_struct pop",
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

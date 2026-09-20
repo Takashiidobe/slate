@@ -27,6 +27,8 @@ the wrapper's `.value`.
 - `src/reachability.rs` — root dependency marking is exhaustive.
 - `src/sema/module.rs` — `resolve_module`'s dispatch is exhaustive: a new
   variant must lower to IR or be explicitly dropped.
+- `src/sema/pragmas.rs` — `collect`'s dispatch is exhaustive; a variant that can
+  hold a pragma or a tag definition must be walked.
 - `tests/filecheck.rs` — clang-oracle filtering and declaration summaries are exhaustive.
 
 ## Adding a `Stmt` variant
@@ -41,6 +43,8 @@ an empty statement without introducing a compound scope.
   rules that depend on `TranslationUnit.standard`.
 - `src/render.rs` — comment stripping recurses into single bodies and blocks.
 - `src/sema/module.rs` — module lowering handles `Null` and explicit blocks.
+- `src/sema/pragmas.rs` — the ordered pragma walk is exhaustive over `StmtKind`:
+  a variant holding statements must recurse or a pragma inside it is missed.
 
 - `src/parser/stmt.rs` — every `FunctionDecl` body (top-level and nested) is
   passed through `reachability::mark_unreachable` when it is built. A new

@@ -33,10 +33,12 @@ pub struct Pragma {
     pub kind: PragmaKind,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum PragmaKind {
     Pack {
         action: PragmaStackAction,
+        #[debug(skip_if = Option::is_none)]
+        label: Option<String>,
         alignment: Option<Expr>,
     },
     Weak {
@@ -56,7 +58,7 @@ pub enum PragmaKind {
         enabled: bool,
     },
     MsStruct {
-        action: PragmaStackAction,
+        action: MsStructAction,
     },
     Opaque(String),
 }
@@ -67,6 +69,13 @@ pub enum PragmaStackAction {
     Pop,
     Show,
     Set,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsStructAction {
+    On,
+    Off,
+    Reset,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

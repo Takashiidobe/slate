@@ -37,6 +37,7 @@ pub struct TypeResolver {
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
+    pub(super) pragmas: super::pragmas::Pragmas,
     prototype_scope: bool,
 }
 
@@ -70,6 +71,7 @@ impl TypeResolver {
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
+            pragmas: super::pragmas::Pragmas::default(),
             prototype_scope: false,
         }
     }
@@ -107,6 +109,7 @@ impl TypeResolver {
         resolver.flavor = unit.flavor;
         resolver.features = StandardFeatures::new(unit.standard);
         resolver.tags = unit.tags.clone();
+        resolver.pragmas = super::pragmas::collect(unit);
         resolver
     }
 
@@ -1144,8 +1147,19 @@ impl TypeResolver {
                     .attributes
                     .iter()
                     .any(|attribute| matches!(attribute, Attribute::Packed));
+                if self.pragmas.is_ms_struct(tag.id) {
+                    return Err(ResolveError::Unsupported("ms_struct record layout"));
+                }
+                let max_field_alignment = self.pragmas.max_field_alignment(tag.id);
                 let alignment = requested_alignment(self, &tag.attributes)?;
-                let layout = self.layout_record(tag.kind, &fields, &requests, packed, alignment)?;
+                let layout = self.layout_record(
+                    tag.kind,
+                    &fields,
+                    &requests,
+                    packed,
+                    max_field_alignment,
+                    alignment,
+                )?;
                 self.record_fields.insert(id, field_types);
                 TypeDefinitionKind::Record {
                     kind: match tag.kind {
@@ -1418,6 +1432,7 @@ impl TypeResolver {
         fields: &[crate::ast::Span<Field>],
         requests: &[(bool, Option<u64>)],
         packed: bool,
+        max_field_alignment: Option<u64>,
         requested: Option<u64>,
     ) -> Result<RecordLayout, ResolveError> {
         let mut end_bits = 0u64;
@@ -1440,8 +1455,9 @@ impl TypeResolver {
                 ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
             };
             let natural = u64::from(storage.alignment_bytes);
-            let align =
-                (if packed || field_packed { 1 } else { natural }).max(field_aligned.unwrap_or(1));
+            let align = (if packed || field_packed { 1 } else { natural })
+                .max(field_aligned.unwrap_or(1))
+                .min(max_field_alignment.unwrap_or(u64::MAX));
             if field.bit_width == Some(0) && self.target.abi.zero_width_bitfield_aligns_record {
                 aggregate_align = aggregate_align.max(natural);
             } else if field.bit_width != Some(0) {
@@ -1476,7 +1492,7 @@ impl TypeResolver {
                 }
                 let position = if kind == TagKind::Union {
                     0
-                } else if packed || field_packed {
+                } else if packed || field_packed || max_field_alignment.is_some() {
                     end_bits
                 } else {
                     let boundary = align_up(

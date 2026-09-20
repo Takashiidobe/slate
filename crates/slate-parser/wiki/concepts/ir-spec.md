@@ -710,14 +710,38 @@ printer rather than carrying only a template string. Name resolution binds
 those operand expressions the same way it binds a statement asm's; only labels
 are impossible, since there is no function to hold them.
 
-Pragmas are dropped at lowering, both at file scope (`DeclKind::Pragma`) and in
-statement position (`StmtKind::Pragma`). Conditional-compilation and macro-stack
-pragmas are already consumed by the preprocessor, so what survives into the AST
-is an annotation on code the IR describes in its own terms, not a node Rust
-conversion could use. The semantic ones (`pack`, `weak`, `visibility`, `Stdc`)
-are not applied anywhere in sema yet either; when they are, they belong on the
-declarations they affect (record layout, `SymbolAttributes`) rather than as IR
-nodes of their own.
+Pragmas are never IR nodes. They are positional -- each applies to whatever
+follows it -- so `sema::pragmas` resolves them in one ordered walk over the
+declarations (descending into function bodies, where `StmtKind::Pragma` changes
+the same state) and hands the result to the places that already own the thing
+the pragma modifies: `pack` and `ms_struct` to record layout, `weak`,
+`visibility` and `redefine_extname` to `SymbolAttributes`. Nothing downstream
+has to know a pragma was involved.
+
+The walk resolves them to a lookup rather than a running state because sema does
+not visit declarations in source order: tag bodies are laid out on demand. Packs
+key on `TagId`, symbol pragmas on the symbol name. An explicit attribute always
+wins over a pragma, which is why `apply` only fills fields the declaration left
+open.
+
+`#pragma pack(N)` is a cap on field alignment, not a request to pack to one
+byte: a field's alignment is `min(max(natural_or_packed, aligned_attr), N)`. It
+caps an explicit `aligned` on a *field*, but not one on the record, which is why
+`#pragma pack(1)` with `__attribute__((aligned(16)))` still gives a 16-aligned
+record of packed fields. A pack that is not a small power of two is diagnosed
+and ignored, leaving the previous value in effect rather than resetting it, and
+while any pack is in effect bit-fields stop padding to avoid straddling a
+storage unit -- the same rule `__attribute__((packed))` triggers.
+
+`#pragma ms_struct on` is refused rather than laid out, because MS bit-field
+layout is a different algorithm and emitting an Itanium layout for it would be
+silently wrong. `__attribute__((ms_struct))` has the same gap and is still
+accepted; both want the same missing algorithm (`slate-parser-dyd.29`).
+
+`STDC` and `float_control` are still dropped: unlike the others they are
+region-scoped rather than declaration-scoped, and `FP_CONTRACT` and
+`CX_LIMITED_RANGE` have nowhere to go, since `FloatingSemantics` carries only
+rounding and exceptions. See `slate-parser-dyd.28`.
 
 Declarator asm labels are separate work (`slate-parser-dyd.4`).
 

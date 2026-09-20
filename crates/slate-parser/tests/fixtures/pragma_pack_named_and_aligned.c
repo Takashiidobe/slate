@@ -465,23 +465,21 @@ int main(void) {
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Push,
+// DEFAULT-NEXT:               label: Some(
+// DEFAULT-NEXT:                   "lbl",
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               alignment: Some(
-// DEFAULT-NEXT:                   Comma {
-// DEFAULT-NEXT:                       left: Identifier(
-// DEFAULT-NEXT:                           "lbl",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 1,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "1",
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 1,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                           spelling: "1",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
@@ -503,6 +501,9 @@ int main(void) {
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               label: Some(
+// DEFAULT-NEXT:                   "lbl",
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               alignment: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
