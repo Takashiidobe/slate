@@ -379,6 +379,8 @@ fn run_fixture(
         .arg("--dump-input=fail")
         .output()
         .expect("run FileCheck");
+    std::fs::remove_file(&input).expect("remove FileCheck input");
+    std::fs::remove_dir(&work).expect("remove FileCheck work directory");
     assert!(
         result.status.success(),
         "FileCheck failed for {} ({prefix}):\n{}{}",
@@ -483,6 +485,8 @@ fn run_error_fixture(
         .arg("--dump-input=fail")
         .output()
         .expect("run FileCheck");
+    std::fs::remove_file(&input).expect("remove FileCheck input");
+    std::fs::remove_dir(&work).expect("remove FileCheck work directory");
     assert!(
         result.status.success(),
         "diagnostic FileCheck failed for {} ({prefix}):\n{}{}",
