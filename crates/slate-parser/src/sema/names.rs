@@ -128,12 +128,14 @@ impl Resolver {
     ) -> Result<(), ResolveError> {
         if declaration.declarators.is_empty()
             && let TypeSpecifier::Tag(TagSpecifier::Reference {
-                name,
-                fixed_type: None,
-                ..
+                name, fixed_type, ..
             }) = &declaration.specifiers.ty
         {
-            return self.declare_incomplete_tag(name, span);
+            self.declare_incomplete_tag(name, span)?;
+            if let Some(fixed_type) = fixed_type {
+                self.type_name(fixed_type, span)?;
+            }
+            return Ok(());
         }
         self.type_specifier(&declaration.specifiers.ty, span)?;
         let base_kind = if declaration.specifiers.storage == StorageClass::Typedef {
@@ -489,13 +491,24 @@ impl Resolver {
             .clone()
             .unwrap_or_else(|| format!("<anonymous:{}>", id.0));
         if !self.collecting_labels {
-            let entry = self.new_entry(&name, BindingKind::Tag, span);
-            if tag.name.is_some() {
-                self.tags
-                    .last_mut()
-                    .unwrap()
-                    .insert(name.clone(), entry.clone());
-            }
+            let declared = tag
+                .name
+                .is_some()
+                .then(|| self.tags.last().and_then(|scope| scope.get(&name)).cloned())
+                .flatten();
+            let entry = match declared {
+                Some(entry) => entry,
+                None => {
+                    let entry = self.new_entry(&name, BindingKind::Tag, span);
+                    if tag.name.is_some() {
+                        self.tags
+                            .last_mut()
+                            .unwrap()
+                            .insert(name.clone(), entry.clone());
+                    }
+                    entry
+                }
+            };
             self.tag_ids.insert(id, entry);
         }
         match &tag.body {
@@ -725,10 +738,7 @@ impl Resolver {
         {
             return self.reference_tag(name, span);
         }
-        let entry = self.new_entry(name, BindingKind::Tag, span);
-        if let Some(scope) = self.tags.last_mut() {
-            scope.insert(name.to_owned(), entry);
-        }
+        self.declare_tag_in_scope(name, span);
         Ok(())
     }
 
@@ -736,18 +746,26 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
-        let entry = self
+        let visible = self
             .tags
             .iter()
             .rev()
             .find_map(|scope| scope.get(name))
-            .cloned()
-            .ok_or_else(|| ResolveError::Unresolved {
-                namespace: "tag",
-                name: name.into(),
-            })?;
+            .cloned();
+        let entry = match visible {
+            Some(entry) => entry,
+            None => self.declare_tag_in_scope(name, span),
+        };
         self.push_reference(name, entry, span);
         Ok(())
+    }
+
+    fn declare_tag_in_scope<T>(&mut self, name: &str, span: &Span<T>) -> Entry {
+        let entry = self.new_entry(name, BindingKind::Tag, span);
+        if let Some(scope) = self.tags.last_mut() {
+            scope.insert(name.to_owned(), entry.clone());
+        }
+        entry
     }
 
     fn reference_label<T>(&mut self, label: &Span<T>) -> Result<(), ResolveError>

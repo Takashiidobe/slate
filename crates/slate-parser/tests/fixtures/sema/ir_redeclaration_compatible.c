@@ -66,7 +66,7 @@ enum E e;
 // SAME_TAGS_C23-NEXT:     type @type1 E = enum : u32 {
 // SAME_TAGS_C23-NEXT:         %0 A = const<i32>(0);
 // SAME_TAGS_C23-NEXT:     } [size=4, align=4];
-// SAME_TAGS_C23-NEXT:     global %5 s: @type0 [storage=static] [linkage=external];
-// SAME_TAGS_C23-NEXT:     global %6 e: @type1 [storage=static] [linkage=external];
+// SAME_TAGS_C23-NEXT:     global %3 s: @type0 [storage=static] [linkage=external];
+// SAME_TAGS_C23-NEXT:     global %4 e: @type1 [storage=static] [linkage=external];
 // SAME_TAGS_C23-NEXT: }
 // SLATE-FILECHECK-END SAME_TAGS_C23

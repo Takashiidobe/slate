@@ -60,7 +60,20 @@ Tags are not in this table. A tag has no `BindingId`; its identity is a
   definitions get distinct `TypeId`s (slate-parser-rsm).
 - `declare_incomplete_tag` makes a standalone `struct S;` declare an incomplete
   tag *in the current scope*, hiding any outer one, per C11 6.7.2.3p8
-  (slate-parser-9wx).
+  (slate-parser-9wx). A declarator-less declaration declares the tag even when
+  it carries a fixed underlying type (`enum E : unsigned char;`).
+- A tag reference that resolves to nothing is not an error: per C11 6.7.2.3p8 it
+  *declares* an incomplete tag in the current scope, so `typedef struct _IO_FILE
+  FILE;` and `struct Holder { struct Member *m; };` work with no prior
+  declaration (slate-parser-dyd.5).
+- Because of that, both `names.rs::define_tag` and `types.rs::define_tag`
+  complete the entry already present in the *innermost* scope instead of minting
+  a fresh one, so a forward or implicit declaration and its later definition are
+  one binding and one `TypeId`.
+- `TypeSpecifier::Tag(Reference)` in `types.rs` never falls back to searching
+  `unit.tags` by name. That fallback bound a block-scope `struct T *p;` to an
+  unrelated file-scope `struct T` defined later; a miss must push a fresh
+  incomplete tag into the current scope and let `define_tag` complete it.
 
 Fixture: `sema/ir_tag_scopes.c`.
 

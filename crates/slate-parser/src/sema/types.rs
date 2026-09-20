@@ -775,23 +775,10 @@ impl TypeResolver {
                 let id = if let Some(id) = self.lookup_tag(&key) {
                     id
                 } else {
-                    let tag = self
-                        .tags
-                        .iter()
-                        .find(|tag| {
-                            !self.assertion_scope
-                                && tag.kind == *kind
-                                && tag.name.as_deref() == Some(name)
-                        })
-                        .cloned();
-                    if let Some(tag) = tag {
-                        self.define_tag(&tag.value)?
-                    } else {
-                        let id = self.push(incomplete_tag(*kind));
-                        self.definitions[id.0 as usize].name = Some(name.clone());
-                        self.declare_tag(key, id);
-                        id
-                    }
+                    let id = self.push(incomplete_tag(*kind));
+                    self.definitions[id.0 as usize].name = Some(name.clone());
+                    self.declare_tag(key, id);
+                    id
                 };
                 if let Some(fixed_type) = fixed_type
                     && matches!(
