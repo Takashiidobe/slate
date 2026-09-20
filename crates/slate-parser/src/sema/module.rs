@@ -35,7 +35,6 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
         names,
         function_declarations: HashMap::new(),
         type_spans: HashMap::new(),
-        object_requests: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
@@ -84,7 +83,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
-                lower.types.bindings.insert(id, resolved);
+                let previous = lower.types.entities.declare(id, resolved);
                 let mut metadata = vec![
                     (
                         "c_storage".into(),
@@ -134,7 +133,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     fallthrough: Some(fallthrough),
                 });
                 lower.module.annotate(&lowered, metadata);
-                lower.declare_function(lowered)?;
+                lower.declare_function(lowered, previous)?;
             }
             _ => return Err(ResolveError::Unsupported("module declaration")),
         }
@@ -161,28 +160,13 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
     }
     lower.resolve_object_requests(unit)?;
     lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
-    let access = lower
-        .types
-        .bindings
-        .iter()
-        .map(|(id, c)| (*id, lower.types.access_of(*c)))
+    let declared: Vec<_> = lower.types.entities.types().collect();
+    let access = declared
+        .into_iter()
+        .map(|(id, c)| (id, lower.types.access_of(c)))
         .collect();
     super::effects_statements::normalize(&mut lower.module, lower.next_id, access)?;
     Ok((lower.module, lower.diagnostics))
-}
-
-#[derive(Debug, Default, Clone, Copy)]
-pub(super) struct ObjectRequest {
-    alignment: Option<u64>,
-    common: Option<bool>,
-}
-
-impl ObjectRequest {
-    fn merge(&mut self, later: Self) {
-        self.alignment = self.alignment.max(later.alignment);
-        // clang lets `common` on any declaration win over `nocommon`
-        self.common = self.common.max(later.common);
-    }
 }
 
 fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
@@ -286,11 +270,7 @@ impl Lowerer {
         let msvc_target = self.context.target.environment == TargetEnvironment::Msvc;
         for global in &mut self.module.globals {
             let global = &mut global.value;
-            let request = self
-                .object_requests
-                .get(&global.variable.id)
-                .copied()
-                .unwrap_or_default();
+            let request = self.types.entities.request(&global.variable.id);
             if let Some(requested) = request.alignment {
                 let natural = u64::from(
                     self.types
@@ -315,15 +295,18 @@ impl Lowerer {
         Ok(())
     }
 
-    fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
+    fn declare_global(
+        &mut self,
+        global: Span<Global>,
+        previous: Option<QualType>,
+    ) -> Result<(), ResolveError> {
         let id = global.value.variable.id;
         let declared = self
             .types
-            .bindings
-            .get(&id)
-            .copied()
+            .entities
+            .ty(&id)
             .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
-        if let Some(message) = self.types.merge_redeclaration(id, declared)? {
+        if let Some(message) = self.types.merge_redeclaration(id, previous, declared)? {
             self.warn(Warning::ConflictingTypes, message, &global);
         }
         let Some(index) = self
@@ -337,9 +320,8 @@ impl Lowerer {
         };
         let merged = self
             .types
-            .bindings
-            .get(&id)
-            .copied()
+            .entities
+            .ty(&id)
             .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
         let merged_ty = self.types.object_type(merged, "void object")?;
         let global = global.value;
@@ -362,10 +344,14 @@ impl Lowerer {
         Ok(())
     }
 
-    fn declare_function(&mut self, function: Span<Function>) -> Result<(), ResolveError> {
+    fn declare_function(
+        &mut self,
+        function: Span<Function>,
+        previous: Option<QualType>,
+    ) -> Result<(), ResolveError> {
         let id = function.value.id;
-        if let Some(declared) = self.types.bindings.get(&id).copied()
-            && let Some(message) = self.types.merge_redeclaration(id, declared)?
+        if let Some(declared) = self.types.entities.ty(&id)
+            && let Some(message) = self.types.merge_redeclaration(id, previous, declared)?
         {
             self.warn(Warning::ConflictingTypes, message, &function);
         }
@@ -442,7 +428,7 @@ impl Lowerer {
                 (true, Some(name)) => self.declaration_id(parameter.id, name)?,
                 _ => self.fresh(),
             };
-            self.types.bindings.insert(id, adjusted);
+            self.types.entities.declare(id, adjusted);
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
@@ -543,7 +529,7 @@ impl Lowerer {
             }
             let ty = self.types.object_type(resolved, "void object")?;
             let id = self.declaration_id(declarator.id, name)?;
-            self.types.bindings.insert(id, resolved);
+            let previous = self.types.entities.declare(id, resolved);
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -607,7 +593,7 @@ impl Lowerer {
                     fallthrough: None,
                 });
                 self.module.annotate(&lowered, c_entries);
-                self.declare_function(lowered)?;
+                self.declare_function(lowered, previous)?;
                 continue;
             }
             let linked = global || storage_class == StorageClass::Extern;
@@ -632,7 +618,7 @@ impl Lowerer {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }
             let symbol = symbol_attributes(attributes.clone(), declarator.asm_label.as_ref())?;
-            let request = ObjectRequest {
+            let request = super::entity::ObjectRequest {
                 alignment: super::types::requested_alignment(&mut self.types, attributes.clone())?,
                 common: if attributes
                     .clone()
@@ -648,7 +634,7 @@ impl Lowerer {
                     None
                 },
             };
-            self.object_requests.entry(id).or_default().merge(request);
+            self.types.entities.merge_request(id, request)?;
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
                 Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
@@ -672,7 +658,7 @@ impl Lowerer {
                         ty => ty,
                     };
                     let completed = self.with_length(resolved, &ty);
-                    self.types.bindings.insert(id, completed);
+                    self.types.entities.declare(id, completed);
                     (ty, Some(value))
                 }
             };
@@ -718,7 +704,7 @@ impl Lowerer {
                     common: false,
                 });
                 self.module.annotate(&global, c_entries);
-                self.declare_global(global)?;
+                self.declare_global(global, previous)?;
             } else if storage == StorageDuration::Automatic {
                 let binding = declarator.derive(Statement::Let(variable));
                 self.module.annotate(&binding, c_entries);
@@ -780,7 +766,7 @@ impl Lowerer {
                 let count = self.expr(expr)?;
                 let count = self.convert(count, extent_type, ConversionReason::Assign)?;
                 let id = self.fresh();
-                self.types.bindings.insert(id, extent_type);
+                self.types.entities.declare(id, extent_type);
                 self.types.extents.insert(expr.id, id);
                 out.push((id, count.value));
                 Ok(())

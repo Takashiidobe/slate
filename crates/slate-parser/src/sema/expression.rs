@@ -17,7 +17,6 @@ pub(super) struct Lowerer {
     pub names: NameResolution,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
-    pub object_requests: HashMap<BindingId, super::module::ObjectRequest>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
@@ -437,10 +436,10 @@ impl Lowerer {
             }
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
-                let ty = *self
+                let ty = self
                     .types
-                    .bindings
-                    .get(&id)
+                    .entities
+                    .ty(&id)
                     .ok_or(ResolveError::Unsupported("untyped binding"))?;
                 Ok(Lvalue {
                     c: ty,
@@ -464,7 +463,7 @@ impl Lowerer {
                 let object = self.fresh();
                 let ty = value.ty.clone();
                 let c = self.with_length(resolved, &ty);
-                self.types.bindings.insert(object, c);
+                self.types.entities.declare(object, c);
                 let storage = if self.in_function {
                     StorageDuration::Automatic
                 } else {
@@ -682,7 +681,7 @@ impl Lowerer {
         };
         self.next_id = next_id;
         self.module.globals.truncate(globals);
-        self.types.bindings.retain(|id, _| id.0 < next_id);
+        self.types.entities.discard_after(next_id);
         result
     }
 
@@ -880,7 +879,7 @@ impl Lowerer {
         };
         self.module.globals.truncate(globals);
         self.next_id = next_id;
-        self.types.bindings.retain(|id, _| id.0 < next_id);
+        self.types.entities.discard_after(next_id);
         result
     }
 

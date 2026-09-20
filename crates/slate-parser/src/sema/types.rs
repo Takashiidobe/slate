@@ -33,8 +33,7 @@ pub struct TypeResolver {
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
-    pub(super) bindings: HashMap<BindingId, QualType>,
-    pub(super) declared: HashMap<BindingId, QualType>,
+    pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
@@ -67,8 +66,7 @@ impl TypeResolver {
             assertion_scope: false,
             extents: HashMap::new(),
             references: HashMap::new(),
-            bindings: HashMap::new(),
-            declared: HashMap::new(),
+            entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
@@ -354,7 +352,7 @@ impl TypeResolver {
 
     fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
         let id = self.references.get(&e.id)?;
-        self.bindings.get(id).copied()
+        self.entities.ty(id)
     }
 
     pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
@@ -477,19 +475,18 @@ impl TypeResolver {
     pub(super) fn merge_redeclaration(
         &mut self,
         id: BindingId,
+        previous: Option<QualType>,
         declared: QualType,
     ) -> Result<Option<&'static str>, ResolveError> {
-        let Some(previous) = self.declared.insert(id, declared) else {
+        let Some(previous) = previous else {
             return Ok(None);
         };
         if let Some(composite) = self.ctypes.composite(previous, declared) {
-            self.declared.insert(id, composite);
-            self.bindings.insert(id, composite);
+            self.entities.declare(id, composite);
             return Ok(None);
         }
         let message = self.conflict_message(previous, declared)?;
-        self.declared.insert(id, previous);
-        self.bindings.insert(id, previous);
+        self.entities.declare(id, previous);
         Ok(Some(message))
     }
 

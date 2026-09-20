@@ -5,6 +5,7 @@ mod builtins;
 pub mod ctype;
 mod effects;
 mod effects_statements;
+mod entity;
 mod expression;
 mod fold;
 mod function;
