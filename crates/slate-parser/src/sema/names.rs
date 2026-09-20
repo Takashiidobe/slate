@@ -662,6 +662,10 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
+        if super::expression::predefined_function_name(name) && self.lookup_ordinary(name).is_none()
+        {
+            return Ok(());
+        }
         let entry =
             self.lookup_ordinary(name)
                 .cloned()

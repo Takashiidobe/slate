@@ -81,6 +81,28 @@ impl CTypes {
         }
     }
 
+    /// The type printed as a declaration of `name`, the way Clang spells a
+    /// function in `__PRETTY_FUNCTION__`.
+    pub fn declaration_spelling(
+        &self,
+        q: QualType,
+        name: &str,
+        definitions: &[TypeDefinition],
+    ) -> String {
+        Printer {
+            types: self,
+            definitions,
+            desugar: false,
+        }
+        .print(
+            q,
+            Declarator {
+                text: name.to_owned(),
+                suffix: true,
+            },
+        )
+    }
+
     pub fn spelling(&self, q: QualType, definitions: &[TypeDefinition]) -> String {
         Printer {
             types: self,
@@ -237,7 +259,10 @@ impl Printer<'_> {
         text.push(name);
         let mut text = text.join(" ");
         if !declarator.text.is_empty() {
-            if !declarator.suffix {
+            let named = declarator
+                .text
+                .starts_with(|c: char| c.is_alphanumeric() || c == '_');
+            if !declarator.suffix || named {
                 text.push(' ');
             }
             text.push_str(&declarator.text);

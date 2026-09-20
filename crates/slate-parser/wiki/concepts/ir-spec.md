@@ -158,6 +158,28 @@ that advances the list, so it counts as a side effect for hoisting like a call.
 name in sema, not declared; va_start's last-named-parameter argument is
 resolved but dropped, as the IR does not need it.
 
+The source-location builtins `__builtin_FILE`, `__builtin_FILE_NAME`,
+`__builtin_FUNCTION`, `__builtin_LINE` and `__builtin_COLUMN` are Clang
+keywords rather than `Builtins.td` records, so they are recognized by callee
+name too. `LINE` and `COLUMN` fold to `int` constants and the rest to an
+internal `.strN` global that decays like any string literal. Their position
+comes from the callee token's own `Loc` resolved through the `Files` source
+map, not from `Provenance`: the preprocessor stamps one `Provenance` on every
+token of a logical line (`expand_line` covers the line with its first token's
+location), so `Provenance.line` is exact for any token on that line but a
+column taken from it would always be the line's first token. `Files` carries
+the line table the preprocessor recorded, and `Files::position` turns a
+`(FileId, offset)` into a zero-based line and column.
+
+`__func__`, `__FUNCTION__` and `__PRETTY_FUNCTION__` lower to the same kind of
+internal global, as an lvalue of type `char[N]`, so `sizeof`, indexing and
+decay all behave like a string literal. `__func__` and `__FUNCTION__` are the
+bare function name in every personality. `__PRETTY_FUNCTION__` differs by
+personality and is one of the places a flavor changes meaning: GCC spells it
+as the bare name in C, while Clang spells the whole declaration
+(`unsigned long n(int)`), which sema renders with
+`CTypes::declaration_spelling`.
+
 `__builtin_choose_expr(cond, a, b)` also resolves during lowering and never
 reaches the IR. It is a Clang keyword rather than a `Builtins.td` record, so
 the generated registry does not contain it; sema recognizes it by callee name

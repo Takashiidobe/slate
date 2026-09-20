@@ -14,7 +14,10 @@ use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
-pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>), ResolveError> {
+pub fn resolve_module(
+    unit: &TranslationUnit,
+    files: &crate::files::Files,
+) -> Result<(Module, Vec<SemaError>), ResolveError> {
     let features = StandardFeatures::new(unit.standard);
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
@@ -40,6 +43,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
         continue_targets: Vec::new(),
         switches: Vec::new(),
         in_function: false,
+        function_name: None,
+        pretty_function_name: None,
+        files: files.clone(),
         return_type: None,
         diagnostic_options: unit.options.diagnostics.clone(),
         standard: unit.standard,
@@ -98,6 +104,8 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
                 let mut prologue = Vec::new();
                 lower.in_function = true;
+                lower.function_name = Some(name.to_string());
+                lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
                 lower.return_type = return_type.as_ref().map(|_| return_c);
                 let parameters = lower.parameters(params, Some(&mut prologue));
                 let body = parameters.and_then(|parameters| {
@@ -108,6 +116,8 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     Ok((parameters, prologue))
                 });
                 lower.in_function = false;
+                lower.function_name = None;
+                lower.pretty_function_name = None;
                 lower.return_type = None;
                 let (parameters, body) = body?;
                 let fallthrough = if name == "main"

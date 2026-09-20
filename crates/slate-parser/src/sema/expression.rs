@@ -23,6 +23,9 @@ pub(super) struct Lowerer {
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, QualType)>,
     pub in_function: bool,
+    pub function_name: Option<String>,
+    pub pretty_function_name: Option<String>,
+    pub files: crate::files::Files,
     pub return_type: Option<QualType>,
     pub diagnostic_options: DiagnosticOptions,
     pub standard: LanguageStandard,
@@ -266,6 +269,102 @@ impl Lowerer {
             when_false
         } else {
             when_true
+        })
+    }
+
+    fn source_location(
+        &mut self,
+        e: &Expr,
+        callee: &Expr,
+        builtin: SourceLocationBuiltin,
+    ) -> Result<Operand, ResolveError> {
+        let file = callee.spelling.file;
+        match builtin {
+            SourceLocationBuiltin::Line | SourceLocationBuiltin::Column => {
+                let (line, column) = self
+                    .files
+                    .position(file, callee.spelling.offset)
+                    .ok_or(ResolveError::Unsupported("unknown source position"))?;
+                let n = match builtin {
+                    SourceLocationBuiltin::Line => line,
+                    _ => column,
+                };
+                let c = self.types.ctypes.int();
+                let value = i64::try_from(n.saturating_add(1))
+                    .map_err(|_| ResolveError::Unsupported("source location out of range"))?;
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Constant(Number::SignedInteger(value.into())),
+                ))
+            }
+            SourceLocationBuiltin::File
+            | SourceLocationBuiltin::FileName
+            | SourceLocationBuiltin::Function => {
+                let text = match builtin {
+                    SourceLocationBuiltin::Function => {
+                        self.function_name.clone().unwrap_or_default()
+                    }
+                    SourceLocationBuiltin::FileName => {
+                        let path = self
+                            .files
+                            .get_path(file)
+                            .ok_or(ResolveError::Unsupported("unknown source file"))?;
+                        path.file_name().map_or_else(
+                            || crate::files::display_path(path),
+                            |name| name.to_string_lossy().into_owned(),
+                        )
+                    }
+                    _ => {
+                        let path = self
+                            .files
+                            .get_path(file)
+                            .ok_or(ResolveError::Unsupported("unknown source file"))?;
+                        crate::files::display_path(path)
+                    }
+                };
+                let lvalue = self.string_global(e, &text)?;
+                self.read(e, lvalue)
+            }
+        }
+    }
+
+    fn string_global(&mut self, e: &Expr, text: &str) -> Result<Lvalue, ResolveError> {
+        let mut units: Vec<u32> = text.bytes().map(u32::from).collect();
+        units.push(0);
+        let char_type = self.types.ctypes.qual(CTypeKind::Char);
+        let c = self.types.ctypes.qual(CTypeKind::Array {
+            element: char_type,
+            extent: super::ctype::Extent::Fixed(units.len() as u64),
+        });
+        let ty = self.types.ir_type(c);
+        let id = self.fresh();
+        let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
+        self.module.globals.push(e.derive(Global {
+            variable: Variable {
+                id,
+                name: format!(".str{}", id.0),
+                ty: ty.clone(),
+                storage: StorageDuration::Static,
+                restrict: false,
+                is_const: false,
+                access: Access::default(),
+                constexpr: false,
+                alignment: None,
+                initializer: Some(initializer),
+            },
+            linkage: Linkage::Internal,
+            symbol: SymbolAttributes::default(),
+            definition: true,
+            common: false,
+        }));
+        Ok(Lvalue {
+            c,
+            place: Place {
+                ty,
+                kind: PlaceKind::Binding(id),
+                access: Access::default(),
+            },
         })
     }
 
@@ -788,6 +887,17 @@ impl Lowerer {
             } => {
                 let selected = self.generic_selected(controlling, associations)?;
                 self.place(selected)
+            }
+            ExprKind::Identifier(name) if predefined_function_name(name) => {
+                let pretty = name == "__PRETTY_FUNCTION__"
+                    && self.types.compiler_flavor() != crate::compiler_args::CompilerFlavor::Gcc;
+                let text = if pretty {
+                    self.pretty_function_name.clone()
+                } else {
+                    self.function_name.clone()
+                }
+                .ok_or(ResolveError::Invalid("predefined name outside a function"))?;
+                self.string_global(e, &text)
             }
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
@@ -1753,6 +1863,13 @@ impl Lowerer {
                 Ok(value)
             }
             ExprKind::Call { callee, arguments }
+                if arguments.is_empty() && source_location_builtin(callee).is_some() =>
+            {
+                let builtin = source_location_builtin(callee)
+                    .ok_or(ResolveError::Unsupported("source location builtin"))?;
+                self.source_location(e, callee, builtin)
+            }
+            ExprKind::Call { callee, arguments }
                 if choose_expr_operands(callee, arguments).is_some() =>
             {
                 let chosen = self.chosen_expr(callee, arguments)?;
@@ -1949,6 +2066,34 @@ pub(super) fn specially_lowered(callee: &Expr, arguments: &[Expr]) -> bool {
         || va_builtin(callee).is_some()
         || constant_p_operand(callee, arguments).is_some()
         || choose_expr_operands(callee, arguments).is_some()
+        || (arguments.is_empty() && source_location_builtin(callee).is_some())
+}
+
+pub(super) fn predefined_function_name(name: &str) -> bool {
+    matches!(name, "__func__" | "__FUNCTION__" | "__PRETTY_FUNCTION__")
+}
+
+pub(super) fn source_location_builtin(callee: &Expr) -> Option<SourceLocationBuiltin> {
+    let ExprKind::Identifier(name) = &callee.value else {
+        return None;
+    };
+    match name.as_str() {
+        "__builtin_FILE" => Some(SourceLocationBuiltin::File),
+        "__builtin_FILE_NAME" => Some(SourceLocationBuiltin::FileName),
+        "__builtin_FUNCTION" => Some(SourceLocationBuiltin::Function),
+        "__builtin_LINE" => Some(SourceLocationBuiltin::Line),
+        "__builtin_COLUMN" => Some(SourceLocationBuiltin::Column),
+        _ => None,
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum SourceLocationBuiltin {
+    File,
+    FileName,
+    Function,
+    Line,
+    Column,
 }
 
 pub(super) fn choose_expr_operands<'e>(

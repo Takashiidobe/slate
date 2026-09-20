@@ -90,6 +90,14 @@ impl TypeResolver {
         self.ctypes.render(q, &self.definitions)
     }
 
+    pub(super) fn declaration_spelling(&self, q: QualType, name: &str) -> String {
+        self.ctypes.declaration_spelling(q, name, &self.definitions)
+    }
+
+    pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
+        self.flavor
+    }
+
     pub fn access_of(&self, q: QualType) -> Access {
         self.ctypes.access(q)
     }

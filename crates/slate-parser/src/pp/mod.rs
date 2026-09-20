@@ -473,12 +473,11 @@ impl<'a> Preprocessor<'a> {
 
     fn parse_source(&mut self, src: &str, file: FileId) -> Result<Vec<PPNode>, PPFailure> {
         self.sources.insert(file, src.to_string());
-        self.line_starts.insert(
-            file,
-            std::iter::once(0)
-                .chain(src.match_indices('\n').map(|(index, _)| index + 1))
-                .collect(),
-        );
+        let starts: Vec<usize> = std::iter::once(0)
+            .chain(src.match_indices('\n').map(|(index, _)| index + 1))
+            .collect();
+        self.files.set_line_starts(file, starts.clone());
+        self.line_starts.insert(file, starts);
         let tokens = Lexer::new(file, src)
             .with_newlines()
             .with_features(self.features)

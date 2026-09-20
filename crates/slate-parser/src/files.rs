@@ -49,6 +49,7 @@ pub struct SearchPaths {
 #[derive(Debug, Default, Clone)]
 pub struct Files {
     entries: Vec<(PathBuf, HeaderKind)>,
+    line_starts: Vec<Vec<usize>>,
 }
 
 impl Files {
@@ -65,6 +66,7 @@ impl Files {
             return FileId(pos as u32);
         }
         self.entries.push((path, kind));
+        self.line_starts.push(Vec::new());
         FileId((self.entries.len() - 1) as u32)
     }
 
@@ -76,6 +78,23 @@ impl Files {
         self.entries
             .get(id.0 as usize)
             .map(|(path, _)| path.as_path())
+    }
+
+    pub fn set_line_starts(&mut self, id: FileId, starts: Vec<usize>) {
+        if let Some(slot) = self.line_starts.get_mut(id.0 as usize) {
+            *slot = starts;
+        }
+    }
+
+    /// Zero-based line and column of a location, from the line table the
+    /// preprocessor recorded when it read the file.
+    pub fn position(&self, id: FileId, offset: usize) -> Option<(usize, usize)> {
+        let starts = self.line_starts.get(id.0 as usize)?;
+        let line = starts
+            .partition_point(|&start| start <= offset)
+            .checked_sub(1)?;
+        let start = starts.get(line)?;
+        Some((line, offset.saturating_sub(*start)))
     }
 
     pub fn kind(&self, id: FileId) -> HeaderKind {
