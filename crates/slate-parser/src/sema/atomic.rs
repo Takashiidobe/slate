@@ -65,6 +65,14 @@ pub(super) enum FetchOp {
     Nand,
     Min { signed: Option<bool> },
     Max { signed: Option<bool> },
+    FloatExtremum(ArithOp),
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum FetchSpelling {
+    Sync,
+    C11,
+    Gnu { fetch: bool },
 }
 
 impl FetchOp {
@@ -78,8 +86,21 @@ impl FetchOp {
             "nand" => Self::Nand,
             "min" => Self::Min { signed: None },
             "max" => Self::Max { signed: None },
+            "fminimum" => Self::FloatExtremum(ArithOp::Minimum),
+            "fmaximum" => Self::FloatExtremum(ArithOp::Maximum),
+            "fminimum_num" => Self::FloatExtremum(ArithOp::MinimumNum),
+            "fmaximum_num" => Self::FloatExtremum(ArithOp::MaximumNum),
             _ => return None,
         })
+    }
+
+    fn spelled_as(self, spelling: FetchSpelling) -> Option<Self> {
+        let spelled = match self {
+            Self::Add | Self::Sub | Self::And | Self::Or | Self::Xor | Self::Nand => true,
+            Self::Min { .. } | Self::Max { .. } => spelling != FetchSpelling::Sync,
+            Self::FloatExtremum(_) => spelling == FetchSpelling::Gnu { fetch: true },
+        };
+        spelled.then_some(self)
     }
 }
 
@@ -106,7 +127,8 @@ pub(super) fn atomic_builtin(callee: &Expr) -> Option<AtomicBuiltin> {
             "thread_fence" => AtomicBuiltin::Fence(FenceScope::Thread),
             "signal_fence" => AtomicBuiltin::Fence(FenceScope::Signal),
             _ => AtomicBuiltin::Fetch {
-                op: FetchOp::parse(operation.strip_prefix("fetch_")?)?,
+                op: FetchOp::parse(operation.strip_prefix("fetch_")?)?
+                    .spelled_as(FetchSpelling::C11)?,
                 postfix: true,
                 byte_offsets: false,
             },
@@ -134,12 +156,13 @@ pub(super) fn atomic_builtin(callee: &Expr) -> Option<AtomicBuiltin> {
         "signal_fence" => AtomicBuiltin::Fence(FenceScope::Signal),
         _ => match operation.strip_prefix("fetch_") {
             Some(op) => AtomicBuiltin::Fetch {
-                op: FetchOp::parse(op)?,
+                op: FetchOp::parse(op)?.spelled_as(FetchSpelling::Gnu { fetch: true })?,
                 postfix: true,
                 byte_offsets: true,
             },
             None => AtomicBuiltin::Fetch {
-                op: FetchOp::parse(operation.strip_suffix("_fetch")?)?,
+                op: FetchOp::parse(operation.strip_suffix("_fetch")?)?
+                    .spelled_as(FetchSpelling::Gnu { fetch: false })?,
                 postfix: false,
                 byte_offsets: true,
             },
@@ -166,14 +189,13 @@ fn sync_builtin(operation: &str) -> Option<SyncBuiltin> {
                     "umax" => FetchOp::Max {
                         signed: Some(false),
                     },
-                    op => FetchOp::parse(op)
-                        .filter(|op| !matches!(op, FetchOp::Min { .. } | FetchOp::Max { .. }))?,
+                    op => FetchOp::parse(op)?.spelled_as(FetchSpelling::Sync)?,
                 },
                 postfix: true,
             },
             None => SyncBuiltin::Fetch {
-                op: FetchOp::parse(operation.strip_suffix("_and_fetch")?)
-                    .filter(|op| !matches!(op, FetchOp::Min { .. } | FetchOp::Max { .. }))?,
+                op: FetchOp::parse(operation.strip_suffix("_and_fetch")?)?
+                    .spelled_as(FetchSpelling::Sync)?,
                 postfix: false,
             },
         },
@@ -750,14 +772,20 @@ impl Lowerer {
             ));
         }
         let floating = match (&place.ty, op) {
-            (Type::Numeric(NumericType::Integer { .. }), _) => false,
             (
                 Type::Numeric(NumericType::Float(_)),
                 FetchOp::Add
                 | FetchOp::Sub
                 | FetchOp::Min { signed: None }
-                | FetchOp::Max { signed: None },
+                | FetchOp::Max { signed: None }
+                | FetchOp::FloatExtremum(_),
             ) => true,
+            (_, FetchOp::FloatExtremum(_)) => {
+                return Err(ResolveError::Invalid(
+                    "atomic floating extremum on a non-floating object",
+                ));
+            }
+            (Type::Numeric(NumericType::Integer { .. }), _) => false,
             _ => {
                 return Err(ResolveError::Unsupported(
                     "atomic arithmetic on non-integer",
@@ -802,6 +830,7 @@ impl Lowerer {
                     },
                 )
             }
+            FetchOp::FloatExtremum(op) => arith(self, op, old, operand, wrap),
             FetchOp::Min { .. } | FetchOp::Max { .. } if floating => {
                 let op = if matches!(op, FetchOp::Min { .. }) {
                     ArithOp::MinNum

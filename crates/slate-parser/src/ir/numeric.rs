@@ -266,6 +266,10 @@ pub enum ArithOp {
     Shr,
     MinNum,
     MaxNum,
+    Minimum,
+    Maximum,
+    MinimumNum,
+    MaximumNum,
 }
 
 impl fmt::Display for ArithOp {
@@ -283,6 +287,10 @@ impl fmt::Display for ArithOp {
             Self::Shr => "shr",
             Self::MinNum => "minnum",
             Self::MaxNum => "maxnum",
+            Self::Minimum => "minimum",
+            Self::Maximum => "maximum",
+            Self::MinimumNum => "minimum_num",
+            Self::MaximumNum => "maximum_num",
         })
     }
 }

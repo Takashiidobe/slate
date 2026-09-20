@@ -208,9 +208,15 @@ impl Context {
                 ArithSema::Floating(self.floating)
             }
             (NumericType::Float(_), _)
-            | (NumericType::Integer { .. }, ArithOp::MinNum | ArithOp::MaxNum) => {
-                return Err(invalid);
-            }
+            | (
+                NumericType::Integer { .. },
+                ArithOp::MinNum
+                | ArithOp::MaxNum
+                | ArithOp::Minimum
+                | ArithOp::Maximum
+                | ArithOp::MinimumNum
+                | ArithOp::MaximumNum,
+            ) => return Err(invalid),
             (_, ArithOp::Shl | ArithOp::Shr) if matches!(right_ty, NumericType::Float(_)) => {
                 return Err(invalid);
             }
@@ -418,9 +424,15 @@ impl Context {
                     "operator requires integer vector elements",
                 ));
             }
-            (NumericType::Integer { .. }, ArithOp::MinNum | ArithOp::MaxNum) => {
-                return Err(ResolveError::Unsupported("vector operator"));
-            }
+            (
+                NumericType::Integer { .. },
+                ArithOp::MinNum
+                | ArithOp::MaxNum
+                | ArithOp::Minimum
+                | ArithOp::Maximum
+                | ArithOp::MinimumNum
+                | ArithOp::MaximumNum,
+            ) => return Err(ResolveError::Unsupported("vector operator")),
             (NumericType::Integer { .. }, ArithOp::Add | ArithOp::Sub | ArithOp::Mul) => {
                 ArithSema::Integer {
                     overflow: Overflow::Wrap,

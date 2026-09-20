@@ -1336,7 +1336,8 @@ store fits.
 ## Arithmetic
 
 Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
-`shr`, `and`, `or`, `xor`, `minnum`, `maxnum`, `neg`, `not`, `eq`/`ne`/`lt`/…
+`shr`, `and`, `or`, `xor`, `minnum`, `maxnum`, `minimum`, `maximum`,
+`minimum_num`, `maximum_num`, `neg`, `not`, `eq`/`ne`/`lt`/…
 
 - `overflow=wrap|ub` (unsigned / signed). `impossible` is an analysis fact,
   not emitted by lowering.
@@ -1344,9 +1345,13 @@ Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
 - `shl`/`shr`: amount type kept separately; `amount_out_of_range=ub`; `shl` of
   a negative signed value is `ub`. Right shift of negative signed values is
   resolved by target (`shr<i32, amount_out_of_range=ub, fill=sign_extend>`).
-- `minnum`/`maxnum` are floating only and have no C operator spelling; they
-  exist for floating atomic `min`/`max` fetches, and are NaN-ignoring (LLVM
-  `minnum`, C `fmin`) rather than the NaN-propagating `minimum`.
+- The six extrema are floating only and have no C operator spelling; they
+  exist for the floating atomic fetches, and are named after the C builtin
+  spellings, which are also LLVM's intrinsic names. `minnum`/`maxnum` ignore
+  NaN and leave `-0` versus `+0` unordered (LLVM `minnum`, C `fmin`);
+  `minimum`/`maximum` propagate NaN and order `-0` below `+0`;
+  `minimum_num`/`maximum_num` ignore NaN like `minnum` but order `-0` below
+  `+0` (IEEE 754-2019 `minimumNumber`).
 - Comparisons, `!`, `&&`, `||` produce `bool`; `from_bool<i32>` is inserted
   only where the result is used as an integer.
 - Scalars in boolean context lower to `ne<T>(x, const<T>(0))`; pointers to
@@ -1624,8 +1629,16 @@ their own:
   `min`/`max` (`atomicrmw fmin`/`fmax`) lower to `minnum`/`maxnum` with the
   same semantics: those are NaN-ignoring (LLVM `minnum`, C `fmin`), which the
   integer compare-and-select form cannot express, since `lt(old, v) ? old : v`
-  answers NaN when `v` is NaN. `__sync_fetch_and_min/max` stay integer-only,
-  as clang requires there.
+  answers NaN when `v` is NaN. `__atomic_fetch_fminimum`/`fmaximum` and their
+  `_num` variants lower the same way to `minimum`/`maximum` and
+  `minimum_num`/`maximum_num`; they reject a non-floating object.
+  `__sync_fetch_and_min/max` stay integer-only, as clang requires there.
+- Not every family spells every operation. `min`/`max` have no `__sync_`
+  spelling beyond the explicit `fetch_and_[u]min/max` names, and the floating
+  extrema exist only as `__atomic_fetch_<op>` — there is no
+  `__atomic_fminimum_fetch` or `__c11_atomic_fetch_fminimum`. Names outside a
+  family's set are not atomic builtins at all and fall through to ordinary
+  name resolution, matching clang's "call to undeclared function".
 - `__sync_*` builtins are all `seq_cst` except `lock_test_and_set`
   (acquire, as gcc documents it; clang strengthens it to `seq_cst`) and
   `lock_release` (release). Trailing "protected variable" arguments are
