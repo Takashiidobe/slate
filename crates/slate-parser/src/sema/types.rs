@@ -394,7 +394,7 @@ impl TypeResolver {
                 GenericAssociation::Type { ty, value } => {
                     let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
                     self.object_type(ty, "void generic association type")?;
-                    if self.compatible_c(ty, controlling) {
+                    if self.ctypes.compatible(ty, controlling) {
                         if selected.is_some() {
                             return Err(ResolveError::Invalid("ambiguous generic selection"));
                         }
@@ -559,57 +559,6 @@ impl TypeResolver {
                 self.ctypes.quals(*field).is_const || self.has_const_member(*field, seen)
             })
         })
-    }
-
-    pub(super) fn compatible_c(&self, a: QualType, b: QualType) -> bool {
-        let a = self.ctypes.canonical(a);
-        let b = self.ctypes.canonical(b);
-        if a.quals != b.quals {
-            return false;
-        }
-        if a == b || self.enum_matches(a, b) || self.enum_matches(b, a) {
-            return true;
-        }
-        match (self.ctypes.kind(a.ty), self.ctypes.kind(b.ty)) {
-            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => self.compatible_c(*a, *b),
-            (
-                CTypeKind::Array {
-                    element: a,
-                    extent: ae,
-                },
-                CTypeKind::Array {
-                    element: b,
-                    extent: be,
-                },
-            ) => {
-                self.compatible_c(*a, *b)
-                    && match (ae, be) {
-                        (Extent::Fixed(a), Extent::Fixed(b)) => a == b,
-                        _ => true,
-                    }
-            }
-            (
-                CTypeKind::Function {
-                    ret: ar,
-                    params: ap,
-                    variadic: av,
-                    prototyped: aproto,
-                },
-                CTypeKind::Function {
-                    ret: br,
-                    params: bp,
-                    variadic: bv,
-                    prototyped: bproto,
-                },
-            ) => {
-                self.compatible_c(*ar, *br)
-                    && av == bv
-                    && aproto == bproto
-                    && ap.len() == bp.len()
-                    && ap.iter().zip(bp).all(|(a, b)| self.compatible_c(*a, *b))
-            }
-            _ => false,
-        }
     }
 
     pub(super) fn offsetof_member(
@@ -1048,6 +997,7 @@ impl TypeResolver {
                 .copied()
         });
         let redefines = previous.filter(|id| is_complete(&self.definitions[id.0 as usize].kind));
+        let redefined_fields = redefines.and_then(|id| self.record_fields.get(&id).cloned());
         let id = previous.unwrap_or_else(|| self.push(incomplete_tag(tag.kind)));
         self.tag_ids.insert(tag.id, id);
         self.definitions[id.0 as usize].name = tag.name.clone();
@@ -1252,6 +1202,7 @@ impl TypeResolver {
         if redefines.is_some() {
             if self.features.compatible_tag_redefinitions
                 && same_tag_content(&self.definitions[id.0 as usize].kind, &kind)
+                && self.same_field_types(id, redefined_fields.as_deref(), &kind)
             {
                 return Ok(id);
             }
@@ -1261,6 +1212,25 @@ impl TypeResolver {
         }
         self.definitions[id.0 as usize].kind = kind;
         Ok(id)
+    }
+
+    fn same_field_types(
+        &self,
+        id: TypeId,
+        redefined: Option<&[QualType]>,
+        kind: &TypeDefinitionKind,
+    ) -> bool {
+        if !matches!(kind, TypeDefinitionKind::Record { .. }) {
+            return true;
+        }
+        let (Some(redefined), Some(current)) = (redefined, self.record_fields.get(&id)) else {
+            return false;
+        };
+        redefined.len() == current.len()
+            && redefined
+                .iter()
+                .zip(current)
+                .all(|(a, b)| self.ctypes.compatible(*a, *b))
     }
 
     pub(super) fn types_compatible(
@@ -1286,12 +1256,6 @@ impl TypeResolver {
         };
         let unqualified = self.ctypes.unqualified(resolved);
         Ok(self.ctypes.canonical(unqualified).with(atomic))
-    }
-
-    fn enum_matches(&self, tag: QualType, other: QualType) -> bool {
-        self.ctypes
-            .enum_underlying(tag)
-            .is_some_and(|underlying| self.ctypes.same(underlying, other))
     }
 
     pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {

@@ -136,6 +136,56 @@ that removed `types::compatible`, `same_layout_ignoring_sign` and
 `__builtin_types_compatible_p` calls `CTypes::compatible` directly, so it and
 redeclaration merging cannot drift apart.
 
+## The invariant, and where it is allowed to bend
+
+The rule the layer exists to enforce: **no `ir::Type` equality or shape decides
+C type identity**. Compatibility, conversions, redeclaration merging,
+`_Generic` selection and `__builtin_types_compatible_p` all answer through
+`CTypes`, and `ir::Type` is produced only by `layout()`.
+
+The audit behind the table below is
+
+```
+grep -rn 'ty ==\|ty !=\|== Type::\|!= Type::' src/sema/
+```
+
+Every hit is listed here; re-run it after touching sema and account for any new
+one. `ir::Type` is still compared in `src/sema`, and those comparisons are fine
+because they ask a layout or representation question, not an identity one:
+
+| Site | Question | Why it is allowed |
+| --- | --- | --- |
+| `numeric.rs`, `expression.rs::emit_cast` | `value.ty == to`, `ty == Type::Bool` | IR emission: has this value already got the representation we are about to build? `CastKind::Identity` relies on it, because a truth value has IR `Bool` and C type `int` |
+| `fold.rs` | operand vs value type | constant folding over IR values |
+| `effects.rs`, `atomic.rs` | `== Type::Void`, `== Type::Bool` | effect and atomic normalization over IR |
+| `expression.rs` | `!= Type::VaList` | `VaList` is an IR marker type with no C-level counterpart |
+| `types.rs::same_layout` | do two lowered types share a shape, ignoring integer signedness? | deliberately a layout question — it decides warning-vs-error for redeclarations, per MSVC's own C4142/C2371 rule |
+
+One genuine exception remains. `same_tag_content` compares `ir::Type` field
+types as a structural pre-filter for C23 compatible tag redefinitions. The
+C-level question is answered by `same_field_types` through
+`CTypes::compatible`, so the pre-filter only ever makes the check *stricter*,
+and it changes the answer in exactly one measured case: a member of an
+enumerated type against a member of that enum's underlying integer type, where
+clang accepts and gcc rejects (`slate-parser-ntb`).
+
+Three smaller residues worth knowing about:
+
+- `type_of.rs::with_length` reads an inferred length back out of an
+  `ir::Type::Array` to complete an incomplete C array extent. It flows layout
+  into a C type, but decides no identity.
+- `initializer.rs` decides brace elision — whether an expression initializes an
+  aggregate member whole or is elided into its fields — by comparing unaliased
+  `ir::Type`. C23 6.7.11 makes that a compatibility question. The two agree for
+  every ordinary case, since `Defined(id)` is nominal; they diverge only for a
+  compatible tag defined twice in one translation unit (`slate-parser-pd7`).
+  The initializer walk is shaped over `Shape`/`ir::Type`, which is why the fix
+  did not fit this phase.
+- `convert.rs` still has functions named `differ_only_in_sign` and
+  `compatible_ignoring_qualifiers`. These are *not* the deleted layout
+  helpers of the same name — they take `QualType` and answer on C types. The
+  `ir::Type` versions are gone.
+
 ## Where personality enters
 
 `TypeResolver` carries a `CompilerFlavor`, set once in `with_tags` from
@@ -164,7 +214,13 @@ Personality is *reachable* from `AbiClassifier` too, since it holds a
 `&TypeResolver`, but argument classification still runs on `ir::Type` and so
 cannot see `_Atomic` on an aggregate (`slate-parser-lh7.2.29`).
 
-## Remaining phases
+## Adding a rule
 
-9ve.6 is the acceptance sweep: a documented grep audit that no `ir::Type`
-equality or shape decides C type identity in `src/sema`.
+Put it in `ctype/`, as a function over `QualType` that transcribes its
+standard section, and call it from lowering. Do not reach for `ir::Type`: if
+the rule needs a size or an alignment it wants `layout()`/`storage()`, and if
+it needs to know what a type *is* it wants `CTypes`. If the answer differs
+between compilers, it belongs next to `promotes_atomic_layout` and
+`effective_alignment` on `TypeResolver`, decided by `CompilerFlavor` — and
+per the project rule, reject only where clang, gcc and MSVC all reject;
+otherwise accept with a named warning from `src/diagnostics.rs`.

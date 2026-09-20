@@ -759,7 +759,7 @@ impl Lowerer {
             (BinaryOp::Sub, Some(element), Some(other)) => {
                 let a = self.types.ctypes.canonical(element).local_unqualified();
                 let b = self.types.ctypes.canonical(other).local_unqualified();
-                if !self.types.compatible_c(a, b) {
+                if !self.types.ctypes.compatible(a, b) {
                     return Err(ResolveError::Unsupported(
                         "incompatible pointer subtraction",
                     ));
@@ -1333,9 +1333,9 @@ impl Lowerer {
                     left =
                         self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
                 }
-                if left.ty != right.ty {
-                    return Err(ResolveError::Unsupported(
-                        "incompatible conditional operands",
+                if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
+                    return Err(ResolveError::Invalid(
+                        "conditional operands have incompatible types",
                     ));
                 }
                 Ok(self.operand(
