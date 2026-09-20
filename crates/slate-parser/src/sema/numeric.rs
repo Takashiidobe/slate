@@ -529,7 +529,7 @@ impl Context {
             value,
             Type::Numeric(element),
             ConversionReason::UsualArith,
-        );
+        )?;
         Ok(conversion(
             value,
             to,
@@ -701,8 +701,9 @@ impl Context {
         } else {
             Type::Numeric(component)
         };
-        let left = self.emit_arithmetic_conversion(left, left_to, ConversionReason::UsualArith);
-        let right = self.emit_arithmetic_conversion(right, right_to, ConversionReason::UsualArith);
+        let left = self.emit_arithmetic_conversion(left, left_to, ConversionReason::UsualArith)?;
+        let right =
+            self.emit_arithmetic_conversion(right, right_to, ConversionReason::UsualArith)?;
         if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
             return Ok((
                 Type::Bool,
@@ -787,8 +788,8 @@ impl Context {
             };
             self.emit_arithmetic_conversion(value, to, ConversionReason::UsualArith)
         };
-        let left = domain(left);
-        let right = domain(right);
+        let left = domain(left)?;
+        let right = domain(right)?;
         if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
             return Ok((
                 Type::Bool,
@@ -882,7 +883,7 @@ impl Context {
             ty: from,
             node: value.node.clone(),
         };
-        let converted = self.emit_arithmetic_conversion(probe, to, reason);
+        let converted = self.emit_arithmetic_conversion(probe, to, reason)?;
         per_lane(converted, value, lanes)
     }
 
@@ -891,16 +892,16 @@ impl Context {
         value: Value,
         to: Type,
         reason: ConversionReason,
-    ) -> Value {
+    ) -> Result<Value, ResolveError> {
         if value.ty == to {
-            return value;
+            return Ok(value);
         }
         if to == Type::Bool {
             let mut value = self.condition(value);
             if let ValueKind::Compare { reason: why, .. } = &mut value.node.value {
                 *why = Some(reason);
             }
-            return value;
+            return Ok(value);
         }
         if value.ty == Type::Bool {
             let integer = if matches!(to, Type::Numeric(NumericType::Integer { .. })) {
@@ -917,7 +918,8 @@ impl Context {
             );
             return self.emit_arithmetic_conversion(value, to, reason);
         }
-        match (value.ty.clone(), to.clone()) {
+        let expected = to.clone();
+        let converted = match (value.ty.clone(), to.clone()) {
             (Type::Imaginary(from), Type::Imaginary(target)) => {
                 let semantics = if target.widens_from(from) {
                     ConversionSema::Exact
@@ -954,7 +956,7 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.emit_arithmetic_conversion(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)?
             }
             (Type::Complex(source), Type::Imaginary(target)) => {
                 let format = match source {
@@ -965,7 +967,7 @@ impl Context {
                     value,
                     Type::Complex(NumericType::Float(format)),
                     reason,
-                );
+                )?;
                 let value = conversion(
                     value,
                     Type::Imaginary(format),
@@ -973,11 +975,11 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.emit_arithmetic_conversion(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)?
             }
             (Type::Numeric(_), Type::Complex(component)) => {
                 let value =
-                    self.emit_arithmetic_conversion(value, Type::Numeric(component), reason);
+                    self.emit_arithmetic_conversion(value, Type::Numeric(component), reason)?;
                 conversion(
                     value,
                     to,
@@ -994,7 +996,7 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.emit_arithmetic_conversion(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)?
             }
             (Type::Complex(from), Type::Complex(target)) => {
                 let semantics = match (from, target) {
@@ -1180,7 +1182,13 @@ impl Context {
                 )
             }
             _ => value,
+        };
+        // an unhandled type pair would otherwise leave the operand at its source
+        // type while the caller treats it as converted
+        if converted.ty != expected {
+            return Err(ResolveError::Unsupported("arithmetic conversion"));
         }
+        Ok(converted)
     }
 
     pub(super) fn condition(&self, value: Value) -> Value {

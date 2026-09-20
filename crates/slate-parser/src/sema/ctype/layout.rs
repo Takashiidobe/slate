@@ -110,7 +110,21 @@ impl CTypes {
                 bit_precise: true,
             },
             CTypeKind::Float(kind) => NumericType::Float(float_type(*kind, target)),
-            _ => NumericType::integer(target.int_width, true),
+            CTypeKind::Void
+            | CTypeKind::Bool
+            | CTypeKind::FixedPoint(_)
+            | CTypeKind::Complex(_)
+            | CTypeKind::Imaginary(_)
+            | CTypeKind::Vector { .. }
+            | CTypeKind::VaList
+            | CTypeKind::Record { .. }
+            | CTypeKind::Enum(_)
+            | CTypeKind::Pointer(_)
+            | CTypeKind::Array { .. }
+            | CTypeKind::Function { .. }
+            | CTypeKind::Typedef { .. }
+            | CTypeKind::TypeOf { .. }
+            | CTypeKind::AtomicSpecifier(_) => NumericType::integer(target.int_width, true),
         }
     }
 }

@@ -379,7 +379,7 @@ impl TypeResolver {
                     value,
                     ty,
                     crate::ir::ConversionReason::Explicit,
-                );
+                )?;
                 operand.value.node = e.derive(operand.value.node.value);
                 return Ok(operand);
             }
@@ -940,7 +940,9 @@ impl TypeResolver {
                 saturating: fixed.saturated,
             }),
             TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => CTypeKind::VaList,
-            _ => return Err(ResolveError::Unsupported("type specifier")),
+            TypeSpecifier::TargetBuiltin(_) => {
+                return Err(ResolveError::Unsupported("target builtin type"));
+            }
         };
         Ok(self.ctypes.qual(kind))
     }

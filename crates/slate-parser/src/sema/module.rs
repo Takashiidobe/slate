@@ -968,7 +968,7 @@ impl Lowerer {
                 ),
                 StmtKind::Switch { discriminant, body } => {
                     let value = self.expr(discriminant)?;
-                    let discriminant = self.promote(value);
+                    let discriminant = self.promote(value)?;
                     if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                         return Err(ResolveError::Unsupported("noninteger switch discriminant"));
                     }

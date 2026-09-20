@@ -168,14 +168,17 @@ impl TypeResolver {
         operand: Operand,
         c: QualType,
         reason: ConversionReason,
-    ) -> Operand {
+    ) -> Result<Operand, ResolveError> {
         let operand = self.enum_operand(operand);
         let c = self.ctypes.unqualified(c);
         if let Some(underlying) = self.ctypes.enum_underlying(c) {
-            let value =
-                context.emit_arithmetic_conversion(operand.value, self.ir_type(underlying), reason);
+            let value = context.emit_arithmetic_conversion(
+                operand.value,
+                self.ir_type(underlying),
+                reason,
+            )?;
             let node = value.node.clone();
-            return Operand {
+            return Ok(Operand {
                 c,
                 value: Value {
                     ty: self.ir_type(c),
@@ -186,12 +189,12 @@ impl TypeResolver {
                         semantics: crate::ir::ConversionSema::Exact,
                     }),
                 },
-            };
+            });
         }
-        Operand {
-            value: context.emit_arithmetic_conversion(operand.value, self.ir_type(c), reason),
+        Ok(Operand {
+            value: context.emit_arithmetic_conversion(operand.value, self.ir_type(c), reason)?,
             c,
-        }
+        })
     }
 
     pub(super) fn promote_operand(
@@ -199,7 +202,7 @@ impl TypeResolver {
         context: &Context,
         operand: Operand,
         bits: Option<u32>,
-    ) -> Operand {
+    ) -> Result<Operand, ResolveError> {
         let operand = self.enum_operand(operand);
         let c = self
             .ctypes
@@ -213,13 +216,13 @@ impl TypeResolver {
         left: Operand,
         right: Operand,
     ) -> Result<(Operand, Operand), ResolveError> {
-        let left = self.promote_operand(context, left, None);
-        let right = self.promote_operand(context, right, None);
+        let left = self.promote_operand(context, left, None)?;
+        let right = self.promote_operand(context, right, None)?;
         if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
             let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
             return Ok((
-                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith),
-                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith),
+                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
+                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
             ));
         }
         let component = self
@@ -236,8 +239,8 @@ impl TypeResolver {
         };
         let c = self.arithmetic_domain(component, domain)?;
         Ok((
-            self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith),
-            self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith),
+            self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
+            self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
         ))
     }
 
@@ -277,8 +280,8 @@ impl TypeResolver {
             });
         }
         super::numeric::reject_mixed_decimal(op.into(), &left.value, &right.value)?;
-        let left = self.promote_operand(context, left, None);
-        let right = self.promote_operand(context, right, None);
+        let left = self.promote_operand(context, left, None)?;
+        let right = self.promote_operand(context, right, None)?;
         let comparison = matches!(
             op,
             BinaryOp::Equal
@@ -345,8 +348,8 @@ impl TypeResolver {
         } else if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
             let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
             (
-                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith),
-                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith),
+                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
+                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
                 c,
             )
         } else {
@@ -373,8 +376,8 @@ impl TypeResolver {
             let rc = self.arithmetic_domain(component, rd)?;
             let result = self.arithmetic_domain(component, result_domain)?;
             (
-                self.arithmetic_conversion(context, left, lc, ConversionReason::UsualArith),
-                self.arithmetic_conversion(context, right, rc, ConversionReason::UsualArith),
+                self.arithmetic_conversion(context, left, lc, ConversionReason::UsualArith)?,
+                self.arithmetic_conversion(context, right, rc, ConversionReason::UsualArith)?,
                 result,
             )
         };
@@ -400,7 +403,7 @@ impl TypeResolver {
         op: UnaryOp,
         operand: Operand,
     ) -> Result<Operand, ResolveError> {
-        let operand = self.promote_operand(context, operand, None);
+        let operand = self.promote_operand(context, operand, None)?;
         if op == UnaryOp::Plus {
             return Ok(operand);
         }

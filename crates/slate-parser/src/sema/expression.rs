@@ -179,14 +179,14 @@ impl Lowerer {
             }
             CustomBuiltin::Unordered => {
                 let (left, right) = self.real_floating_pair(arguments)?;
-                let left = self.float_class_int(e, FloatClassTest::Nan, left.value);
-                let right = self.float_class_int(e, FloatClassTest::Nan, right.value);
+                let left = self.float_class_int(e, FloatClassTest::Nan, left.value)?;
+                let right = self.float_class_int(e, FloatClassTest::Nan, right.value)?;
                 Ok(self.either(e, left, right))
             }
             CustomBuiltin::LessGreater => {
                 let (left, right) = self.real_floating_pair(arguments)?;
-                let less = self.quiet_compare_int(e, CompareOp::Lt, &left, &right);
-                let greater = self.quiet_compare_int(e, CompareOp::Gt, &left, &right);
+                let less = self.quiet_compare_int(e, CompareOp::Lt, &left, &right)?;
+                let greater = self.quiet_compare_int(e, CompareOp::Gt, &left, &right)?;
                 Ok(self.either(e, less, greater))
             }
             CustomBuiltin::InfSign => {
@@ -550,7 +550,12 @@ impl Lowerer {
         ))
     }
 
-    fn float_class_int(&mut self, e: &Expr, test: FloatClassTest, operand: Value) -> Value {
+    fn float_class_int(
+        &mut self,
+        e: &Expr,
+        test: FloatClassTest,
+        operand: Value,
+    ) -> Result<Value, ResolveError> {
         let value = self.value(
             e,
             Type::Bool,
@@ -568,7 +573,7 @@ impl Lowerer {
         op: CompareOp,
         left: &Operand,
         right: &Operand,
-    ) -> Value {
+    ) -> Result<Value, ResolveError> {
         let value = self.value(
             e,
             Type::Bool,
@@ -583,7 +588,7 @@ impl Lowerer {
         self.promote_truth(value)
     }
 
-    fn promote_truth(&mut self, value: Value) -> Value {
+    fn promote_truth(&mut self, value: Value) -> Result<Value, ResolveError> {
         let int = self.context.int_type();
         self.context
             .emit_arithmetic_conversion(value, int, ConversionReason::Promotion)
@@ -783,7 +788,7 @@ impl Lowerer {
                 if ty == Type::Bool {
                     return self.condition(value, Some(reason));
                 }
-                Ok(self.context.emit_arithmetic_conversion(value, ty, reason))
+                self.context.emit_arithmetic_conversion(value, ty, reason)
             }
             CastKind::Vector => self.context.vector_convert(value, ty, reason),
             CastKind::EnumToInt => {
@@ -851,10 +856,10 @@ impl Lowerer {
         if ty == Type::Bool {
             return self.condition(value, Some(reason));
         }
-        Ok(self.context.emit_arithmetic_conversion(value, ty, reason))
+        self.context.emit_arithmetic_conversion(value, ty, reason)
     }
 
-    pub(super) fn promote(&mut self, value: Operand) -> Operand {
+    pub(super) fn promote(&mut self, value: Operand) -> Result<Operand, ResolveError> {
         let value = self.enum_operand(value);
         self.types.promote_operand(&self.context, value, None)
     }
@@ -967,7 +972,7 @@ impl Lowerer {
                     zero,
                     value.ty.clone(),
                     ConversionReason::UsualArith,
-                );
+                )?;
                 let node = value.node.clone();
                 self.value(
                     &node,
@@ -1596,11 +1601,11 @@ impl Lowerer {
                 };
                 let ordering = place.implicit_ordering();
                 let value = self.operand(e, c, ValueKind::Read { place, ordering });
-                return Ok(if bits.is_some() {
+                return if bits.is_some() {
                     self.types.promote_operand(&self.context, value, bits)
                 } else {
-                    value
-                });
+                    Ok(value)
+                };
             }
         };
         Ok(self.operand(e, c, kind))
@@ -1657,7 +1662,7 @@ impl Lowerer {
     ) -> Result<Operand, ResolveError> {
         let element = self.types.ir_type(element);
         self.types.require_complete(&element)?;
-        let amount = self.promote(amount);
+        let amount = self.promote(amount)?;
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
             return Err(ResolveError::Unsupported("noninteger pointer offset"));
         }
@@ -1697,7 +1702,7 @@ impl Lowerer {
             _ => None,
         };
         let old = if bits.is_some() {
-            self.types.promote_operand(&self.context, old, bits)
+            self.types.promote_operand(&self.context, old, bits)?
         } else {
             old
         };
@@ -2047,7 +2052,7 @@ impl Lowerer {
                         ) {
                             return Err(ResolveError::Unsupported("non-numeric unary plus"));
                         }
-                        Ok(self.promote(value))
+                        self.promote(value)
                     }
                     UnaryOp::Not => {
                         let value = self.condition(value.value, None)?;

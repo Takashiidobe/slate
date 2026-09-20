@@ -36,32 +36,35 @@ compile to".
 
 ## What the compiler catches
 
-Adding a variant to `ir::Type` fails the build at exactly four sites, and
-adding one to `CTypeKind` at exactly two. Verified by adding a dummy variant to
-each enum and reading the `E0004` list:
+Verified by adding a dummy variant to each enum and reading the `E0004` list.
+
+A new `ir::Type` variant fails the build at four sites:
 
 - `src/ir/numeric.rs` — `Display for Type`, the printed IR spelling.
 - `src/target_info.rs` — `storage_of`, size and alignment for the target.
 - `src/sema/abi.rs` — `abi_pass`, register vs. memory classification.
 - `src/sema/numeric.rs` — the `numeric()` helper, which decides what counts as
   a plain numeric operand and rejects everything else.
+
+A new `CTypeKind` variant fails at three:
+
 - `src/sema/ctype/layout.rs` — `ir_type`, the `CTypeKind` to `ir::Type` map.
+- `src/sema/ctype/layout.rs` — `numeric()`, the component type used for
+  complex components and vector elements.
 - `src/sema/ctype/render.rs` — `name`, the C spelling used in metadata.
 
-Handling those six makes a declaration lower. It does **not** make any
-operation on the type correct.
+A new `TypeSpecifier` variant fails at `src/sema/types.rs` `base()`, the
+`TypeSpecifier` to `CTypeKind` map, on top of the AST-side sites in
+[[ast-enum-touchpoints]].
+
+Handling those makes a declaration lower. It does **not** make any operation on
+the type correct.
 
 ## What the compiler does not catch
 
 Every site below has a `_ =>` arm that will accept a new family and do
 something wrong with it, silently. This is the list that is expensive to
 rediscover.
-
-**The type never resolves at all**
-
-- `src/sema/types.rs` — `base()` maps `TypeSpecifier` to `CTypeKind` and ends
-  in `_ => Unsupported("type specifier")`. Without an arm here nothing else
-  is reachable.
 
 **Classification predicates, which gate conversions**
 
@@ -84,8 +87,6 @@ rediscover.
   implement the usual arithmetic conversions for integers and floats. A family
   with its own common-type rule needs its own function (`usual_fixed_type` is
   the model) and a branch that reaches it.
-- `src/sema/ctype/layout.rs` — `numeric()` falls back to `int` for anything it
-  does not know. A family that reaches it is silently typed as `int`.
 
 **Operand conversion, where the branch order matters**
 
@@ -100,9 +101,15 @@ rediscover.
 
 - `src/sema/numeric.rs` — `emit_binary` dispatches per family before falling
   through to scalar arithmetic; `emit_unary_arith` does the same for `-` and
-  `~`; `emit_arithmetic_conversion` is the big `(from, to)` match that emits
-  every `ConversionKind`; `condition()` builds the compare-against-zero that
-  makes a value a truth value.
+  `~`; `condition()` builds the compare-against-zero that makes a value a
+  truth value.
+- `src/sema/numeric.rs` — `emit_arithmetic_conversion` is the big `(from, to)`
+  match that emits every `ConversionKind`. Exhaustiveness is not available
+  over pairs, so it ends in a postcondition instead: if the match did not
+  produce a value of the requested type, it returns
+  `Unsupported("arithmetic conversion")` rather than handing back the operand
+  at its source type. A missing pair is a clean error, not a miscompile — but
+  it is still a missing pair, and only you can write the arm.
 - `src/sema/expression.rs` — `condition()` **again**. This is a second,
   separate truth-test path (the one `if`, `?:`, `!`, `&&` and `||` reach) and
   it rejects anything it does not recognise as a scalar condition. Missing it
@@ -164,6 +171,15 @@ always stale.
 
 This map was reconstructed while adding fixed-point lowering
 (slate-parser-lh7.2.17.4). The "compiler catches" list is empirical, not
-remembered: it came from adding a throwaway variant to `ir::Type` and
-`CTypeKind` and collecting the `E0004` errors. Repeat that probe if you suspect
-this page has drifted — it takes a minute and is more trustworthy than grep.
+remembered: it came from adding a throwaway variant to `ir::Type`, `CTypeKind`
+and `TypeSpecifier` and collecting the `E0004` errors. Repeat that probe if you
+suspect this page has drifted — it takes a minute and is more trustworthy than
+grep.
+
+Three sites moved from the silent list to the caught list afterwards, once the
+map made clear what they cost: `base()` and `numeric()` became exhaustive, and
+`emit_arithmetic_conversion` gained its postcondition. The predicates were left
+as `matches!` deliberately — a new family answering "no" to "is this an
+integer?" is correct, and ~170 arms of mechanical `=> false` would train the
+next reader to add theirs without thinking. Exhaustiveness is worth it where
+the answer for a new variant needs thought, not everywhere it is possible.
