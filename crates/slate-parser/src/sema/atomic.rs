@@ -37,6 +37,11 @@ enum AtomicOperation {
     LockFree(LockFreeQuery),
 }
 
+struct FetchObject {
+    place: Lvalue,
+    declared: Option<QualType>,
+}
+
 struct Exchange {
     weak: Weakness,
     form: CompareExchangeForm,
@@ -426,10 +431,11 @@ impl Lowerer {
                 },
                 [object, operand, order],
             ) => {
-                let place = self.atomic_object(object)?;
-                let computation = self.fetch_computation(&place, op, operand, byte_offsets)?;
+                let object = self.arithmetic_object(object)?;
+                let computation = self.fetch_computation(&object, op, operand, byte_offsets)?;
                 let ordering = self.atomicity(order, &scope)?;
-                Ok(self.atomic_update(e, place, computation, postfix, ordering))
+                let old = self.atomic_update(e, object.place, computation, postfix, ordering);
+                self.fetch_result(old, object.declared)
             }
             (AtomicOperation::Sync(builtin), arguments) => self.sync_builtin(e, builtin, arguments),
             (AtomicOperation::LockFree(query), arguments) => self.lock_free(e, query, arguments),
@@ -485,6 +491,36 @@ impl Lowerer {
             ));
         }
         Ok(place)
+    }
+
+    // clang computes a `_Bool` fetch in the object's storage byte (`atomicrmw
+    // add ptr, i8`), which is the only way a byte outside {0, 1} can be stored
+    fn arithmetic_object(&mut self, object: &Expr) -> Result<FetchObject, ResolveError> {
+        let mut place = self.atomic_object(object)?;
+        if place.ty != Type::Bool {
+            return Ok(FetchObject {
+                place,
+                declared: None,
+            });
+        }
+        let declared = place.c;
+        place.c = self.types.ctypes.qual(CTypeKind::UChar);
+        place.place.ty = self.types.ir_type(place.c);
+        Ok(FetchObject {
+            place,
+            declared: Some(declared),
+        })
+    }
+
+    fn fetch_result(
+        &mut self,
+        old: Operand,
+        declared: Option<QualType>,
+    ) -> Result<Operand, ResolveError> {
+        match declared {
+            Some(c) => self.convert(old, c, ConversionReason::Arg),
+            None => Ok(old),
+        }
     }
 
     fn flag_object(&mut self, object: &Expr) -> Result<Lvalue, ResolveError> {
@@ -637,9 +673,16 @@ impl Lowerer {
     ) -> Result<Operand, ResolveError> {
         match (builtin, arguments) {
             (SyncBuiltin::Fetch { op, postfix }, [object, operand, ..]) => {
-                let place = self.atomic_object(object)?;
-                let computation = self.fetch_computation(&place, op, operand, true)?;
-                Ok(self.atomic_update(e, place, computation, postfix, MemoryOrder::SeqCst.into()))
+                let object = self.arithmetic_object(object)?;
+                let computation = self.fetch_computation(&object, op, operand, true)?;
+                let old = self.atomic_update(
+                    e,
+                    object.place,
+                    computation,
+                    postfix,
+                    MemoryOrder::SeqCst.into(),
+                );
+                self.fetch_result(old, object.declared)
             }
             (SyncBuiltin::CompareAndSwap(form), [object, expected, desired, ..]) => {
                 let place = self.atomic_object(object)?;
@@ -826,7 +869,7 @@ impl Lowerer {
 
     fn fetch_computation(
         &mut self,
-        place: &Lvalue,
+        FetchObject { place, declared }: &FetchObject,
         op: FetchOp,
         e: &Expr,
         byte_offsets: bool,
@@ -886,6 +929,12 @@ impl Lowerer {
                     "atomic arithmetic on non-integer",
                 ));
             }
+        };
+        // the builtin's value parameter has the object's declared type, so a
+        // `_Bool` object converts the operand to `_Bool` before widening it
+        let operand = match declared {
+            Some(c) => self.convert(operand, *c, ConversionReason::Arg)?,
+            None => operand,
         };
         let operand = self.convert(operand, place.c, ConversionReason::Arg)?;
         let arith = |this: &mut Self, op, left: Operand, right: Operand, semantics| {

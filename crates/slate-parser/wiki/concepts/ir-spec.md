@@ -1648,6 +1648,20 @@ their own:
   `__atomic_uinc_fetch` or `__c11_atomic_fetch_fminimum`. Names outside a
   family's set are not atomic builtins at all and fall through to ordinary
   name resolution, matching clang's "call to undeclared function".
+- A `_Bool` object's fetch arithmetic runs in its storage byte, as `u8`:
+  clang emits `atomicrmw add ptr, i8`, which is the only way a `_Bool` can
+  come to hold a byte outside `{0, 1}`. The place keeps its `ptr<bool>`
+  spelling while the operation is `update<u8, ...>`, the same reinterpretation
+  `__atomic_test_and_set` already does for a `void *` flag. The value
+  parameter still has the object's declared type, so the operand converts to
+  `bool` first and then widens (`from_bool<u8>(ne<i32>(v, 0))`, clang's
+  `icmp ne` plus `zext`), and the result converts back to `bool`. Reading an
+  object that already holds a byte above 1 is the one place this differs from
+  clang, which truncates to the low bit where the conversion back asks `!= 0`;
+  such an object is a trap representation and its use is undefined. Only the
+  arithmetic fetches need this view — `load`, `store`, `exchange`,
+  `test_and_set` and `clear` cannot put a `_Bool` out of range, so they stay
+  `bool` operations.
 - The `__scoped_atomic_*` family is the `__atomic_*` one with a trailing
   synchronization-scope argument, and lowers to the same nodes with
   `sync_scope=` on them: `system` (never printed, since it is the default and
