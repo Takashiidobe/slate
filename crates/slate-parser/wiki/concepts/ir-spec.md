@@ -965,11 +965,12 @@ request even when it is below natural; MSVC raises it to natural. gcc therefore
 lays a `aligned(1) int` out at 4 but reports 1, which is why
 `TypeResolver::declared_alignment` exists alongside `effective_alignment`
 rather than reusing it. Both rules read the same request, held once per
-`BindingId` on the sema entity (`slate-parser-8lv`).
+`BindingId` on the sema entity — see the
+[declared-entity model](entity-model.md).
 
 Fixtures: `sema/ir_object_attributes.c`, `sema/ir_object_attributes_fcommon.c`,
 `sema/ir_object_alignment_gcc.c`, `sema/ir_object_alignment_sites.c`,
-`sema/x86_64-pc-windows-msvc/ir_selectany.c`.
+`sema/ir_entity_sites.c`, `sema/x86_64-pc-windows-msvc/ir_selectany.c`.
 
 **Function specifiers (`lh7.2.14`):** `FunctionSemantics` separates inlining
 preference (`hint`, `always`, `never`), definition emission, and `noreturn`.
