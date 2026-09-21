@@ -18,11 +18,15 @@ int one(void) {
 // CHECK-NEXT:         storage i32, u32 [size=4, align=4];
 // CHECK-NEXT:         storage i64, u64 [size=8, align=8];
 // CHECK-NEXT:         storage i128, u128 [size=16, align=16];
+// CHECK-NEXT:         storage bf16 [size=2, align=2];
 // CHECK-NEXT:         storage f16 [size=2, align=2];
 // CHECK-NEXT:         storage f32 [size=4, align=4];
 // CHECK-NEXT:         storage f64 [size=8, align=8];
 // CHECK-NEXT:         storage f80 [size=16, align=16];
 // CHECK-NEXT:         storage f128 [size=16, align=16];
+// CHECK-NEXT:         storage d32 [size=4, align=4];
+// CHECK-NEXT:         storage d64 [size=8, align=8];
+// CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %0 @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(1);

@@ -611,7 +611,13 @@ change pointer contracts.
 `CompilerOptions` groups operation and layout settings and preserves ordered
 compiler arguments on the translation unit. Argument provenance supplies no
 missing operation semantics. The module dump retains the effective target;
-the expression-only diagnostic mode does not print a module header.
+the expression-only diagnostic mode does not print a module header. The
+header's `storage` lines are exhaustive over the directly nameable scalar
+formats -- `bool`, every standard integer width, and all nine floating
+formats including `bf16` and the decimals -- with a line omitted only when the
+target does not support that type. It is not a summary of common types, so a
+module can never name a scalar whose size and alignment the header leaves
+unstated.
 Other flag families remain unsupported.
 
 Each `Value` owns `Span<ValueKind>`, retaining node identity, spelling and

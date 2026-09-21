@@ -28,11 +28,15 @@ int read_constant(void) {
 // DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
 // DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
 // DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f32 [size=4, align=4];
 // DEFAULT-NEXT:         storage f64 [size=8, align=8];
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %5 constant: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal] [c="const int"] [c_const="true"];
 // DEFAULT-NEXT:     global %6 null_pointer: ptr<i32> [storage=static] [const] [constexpr] = null<ptr<i32>> [linkage=internal] [c="int *const"] [c_const="true"];

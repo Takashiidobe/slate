@@ -545,11 +545,15 @@ impl fmt::Display for DisplayModule<'_> {
             ("i32, u32", Type::integer(32, true)),
             ("i64, u64", Type::integer(64, true)),
             ("i128, u128", Type::integer(128, true)),
+            ("bf16", Type::Numeric(NumericType::Float(FloatType::BF16))),
             ("f16", Type::Numeric(NumericType::Float(FloatType::F16))),
             ("f32", Type::Numeric(NumericType::Float(FloatType::F32))),
             ("f64", Type::Numeric(NumericType::Float(FloatType::F64))),
             ("f80", Type::Numeric(NumericType::Float(FloatType::F80))),
             ("f128", Type::Numeric(NumericType::Float(FloatType::F128))),
+            ("d32", Type::Numeric(NumericType::Float(FloatType::D32))),
+            ("d64", Type::Numeric(NumericType::Float(FloatType::D64))),
+            ("d128", Type::Numeric(NumericType::Float(FloatType::D128))),
         ] {
             if let Ok(layout) = target.storage_of(ty) {
                 writeln!(

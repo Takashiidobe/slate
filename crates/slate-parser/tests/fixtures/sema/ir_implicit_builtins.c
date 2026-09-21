@@ -28,11 +28,15 @@ void fail(void) {
 // IR-NEXT:         storage i32, u32 [size=4, align=4];
 // IR-NEXT:         storage i64, u64 [size=8, align=8];
 // IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
 // IR-NEXT:         storage f16 [size=2, align=2];
 // IR-NEXT:         storage f32 [size=4, align=4];
 // IR-NEXT:         storage f64 [size=8, align=8];
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %0 @use_memory(%1 destination: ptr<void> [c="void *"], %2 source: ptr<const void> [c="const void *"], %3 size: u64 [c="unsigned long"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void *, const void *, unsigned long)"] {
 // IR-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, read<ptr<void>>(%1), read<ptr<const void>>(%2), read<u64>(%3)) [c_builtin="__builtin_memcpy"];

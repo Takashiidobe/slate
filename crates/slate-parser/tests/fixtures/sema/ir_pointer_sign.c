@@ -23,11 +23,15 @@ void assign(unsigned *value) {
 // IR-NEXT:         storage i32, u32 [size=4, align=4];
 // IR-NEXT:         storage i64, u64 [size=8, align=8];
 // IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
 // IR-NEXT:         storage f16 [size=2, align=2];
 // IR-NEXT:         storage f32 [size=4, align=4];
 // IR-NEXT:         storage f64 [size=8, align=8];
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %8 .str8: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([97, 0]) [linkage=internal];
 // IR-NEXT:     global %0 utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<u8>, length=Some(2)>(%8)) [linkage=external];

@@ -22,11 +22,15 @@ int calls(void) {
 // C23-NEXT:         storage i32, u32 [size=4, align=4];
 // C23-NEXT:         storage i64, u64 [size=8, align=8];
 // C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
 // C23-NEXT:         storage f16 [size=2, align=2];
 // C23-NEXT:         storage f32 [size=4, align=4];
 // C23-NEXT:         storage f64 [size=8, align=8];
 // C23-NEXT:         storage f80 [size=16, align=16];
 // C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
 // C23-NEXT:     fn %0 @empty() -> i32 [linkage=external] [c="int(void)"];
 // C23-NEXT:     fn %1 @explicit_void() -> i32 [linkage=external] [c="int(void)"];

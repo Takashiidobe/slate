@@ -26,11 +26,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
 // DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
 // DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f32 [size=4, align=4];
 // DEFAULT-NEXT:         storage f64 [size=8, align=8];
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %1 @printf(%0 <unnamed>: ptr<const i8> [restrict] [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT:     fn %4 @add(%2 a: i32 [c="int"], %3 b: i32 [c="int"]) -> i32 [linkage=external] [c="int"];

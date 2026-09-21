@@ -58,10 +58,16 @@ target     = "target" string "{"
                { "storage" storage_of "[size=" int ", align=" int "]" ";" }
              "}" ;
 storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
-           | "i128, u128" | "f16" | "f32" | "f64" | "f80" | "f128" ;
+           | "i128, u128" | "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
+           | "d32" | "d64" | "d128" ;
 ```
 
-A `storage` line is printed only for types the target supports.
+The list is exhaustive over the scalar formats a module can name directly:
+every `bool`, standard integer width and floating format appears, in that
+order. A `storage` line is printed only for types the target supports, so a
+target that drops `f80` or `i128, u128` simply omits that line. Bit-precise
+integers, pointers, `va_list` and the composite types are not listed; their
+layouts are derived and printed at the use site.
 
 A module-level [`asm`](#statements) is a file-scope `asm("...")`, printed in
 source order before the types. It never carries qualifiers or goto labels, and

@@ -45,11 +45,15 @@ int test(cvint value, row array, int function(int)) {
 // DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
 // DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
 // DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f32 [size=4, align=4];
 // DEFAULT-NEXT:         storage f64 [size=8, align=8];
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 cvint = i32 [c="const volatile int"] [c_const="true"] [c_volatile="true"];
 // DEFAULT-NEXT:     type @type1 row = array<i32, 2> [c="cvint[2]"] [c_canon="const volatile int[2]"] [typedef_chain="cvint"] [c_const="true"] [c_volatile="true"];

@@ -25,11 +25,15 @@ int calls(short small, float real) {
 // C17-NEXT:         storage i32, u32 [size=4, align=4];
 // C17-NEXT:         storage i64, u64 [size=8, align=8];
 // C17-NEXT:         storage i128, u128 [size=16, align=16];
+// C17-NEXT:         storage bf16 [size=2, align=2];
 // C17-NEXT:         storage f16 [size=2, align=2];
 // C17-NEXT:         storage f32 [size=4, align=4];
 // C17-NEXT:         storage f64 [size=8, align=8];
 // C17-NEXT:         storage f80 [size=16, align=16];
 // C17-NEXT:         storage f128 [size=16, align=16];
+// C17-NEXT:         storage d32 [size=4, align=4];
+// C17-NEXT:         storage d64 [size=8, align=8];
+// C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
 // C17-NEXT:     fn %0 @old(unprototyped) -> i32 [linkage=external] [c="int()"];
 // C17-NEXT:     fn %1 @exact() -> i32 [linkage=external] [c="int(void)"];

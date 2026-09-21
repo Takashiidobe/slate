@@ -24,11 +24,15 @@ double conjugate_real(void) { return __real__ ~zd; }
 // IR-NEXT:         storage i32, u32 [size=4, align=4];
 // IR-NEXT:         storage i64, u64 [size=8, align=8];
 // IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
 // IR-NEXT:         storage f16 [size=2, align=2];
 // IR-NEXT:         storage f32 [size=4, align=4];
 // IR-NEXT:         storage f64 [size=8, align=8];
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %0 zd: complex<f64> [storage=static] [linkage=external];
 // IR-NEXT:     global %1 zi: complex<i32> [storage=static] [linkage=external];

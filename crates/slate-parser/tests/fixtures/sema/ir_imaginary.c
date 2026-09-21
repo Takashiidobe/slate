@@ -137,11 +137,15 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         storage i32, u32 [size=4, align=4];
 // IR-NEXT:         storage i64, u64 [size=8, align=8];
 // IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
 // IR-NEXT:         storage f16 [size=2, align=2];
 // IR-NEXT:         storage f32 [size=4, align=4];
 // IR-NEXT:         storage f64 [size=8, align=8];
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %0 global: imaginary<f64> [storage=static] [linkage=external];
 // IR-NEXT:     global %1 sizes: array<u64, 6> [storage=static] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];

@@ -34,11 +34,15 @@ int macro_mode(void) { return 2; }
 // GNU-NEXT:         storage i32, u32 [size=4, align=4];
 // GNU-NEXT:         storage i64, u64 [size=8, align=8];
 // GNU-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU-NEXT:         storage bf16 [size=2, align=2];
 // GNU-NEXT:         storage f16 [size=2, align=2];
 // GNU-NEXT:         storage f32 [size=4, align=4];
 // GNU-NEXT:         storage f64 [size=8, align=8];
 // GNU-NEXT:         storage f80 [size=16, align=16];
 // GNU-NEXT:         storage f128 [size=16, align=16];
+// GNU-NEXT:         storage d32 [size=4, align=4];
+// GNU-NEXT:         storage d64 [size=8, align=8];
+// GNU-NEXT:         storage d128 [size=16, align=16];
 // GNU-NEXT:     }
 // GNU-NEXT:     fn %0 @plain() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // GNU-NEXT:         return const<i32>(1);
@@ -82,11 +86,15 @@ int macro_mode(void) { return 2; }
 // ISO-NEXT:         storage i32, u32 [size=4, align=4];
 // ISO-NEXT:         storage i64, u64 [size=8, align=8];
 // ISO-NEXT:         storage i128, u128 [size=16, align=16];
+// ISO-NEXT:         storage bf16 [size=2, align=2];
 // ISO-NEXT:         storage f16 [size=2, align=2];
 // ISO-NEXT:         storage f32 [size=4, align=4];
 // ISO-NEXT:         storage f64 [size=8, align=8];
 // ISO-NEXT:         storage f80 [size=16, align=16];
 // ISO-NEXT:         storage f128 [size=16, align=16];
+// ISO-NEXT:         storage d32 [size=4, align=4];
+// ISO-NEXT:         storage d64 [size=8, align=8];
+// ISO-NEXT:         storage d128 [size=16, align=16];
 // ISO-NEXT:     }
 // ISO-NEXT:     fn %0 @plain() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return const<i32>(1);

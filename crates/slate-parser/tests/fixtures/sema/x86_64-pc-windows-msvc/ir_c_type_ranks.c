@@ -33,10 +33,14 @@ long long difference(const int *a, int *b) { return a - b; }
 // DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
 // DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
 // DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f32 [size=4, align=4];
 // DEFAULT-NEXT:         storage f64 [size=8, align=8];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 mixed: u32 [storage=static] [linkage=external] [c="typeof(1L + 1u)"] [c_canon="unsigned long"];
 // DEFAULT-NEXT:     global %1 size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"];

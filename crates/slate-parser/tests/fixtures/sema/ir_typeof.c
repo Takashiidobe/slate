@@ -53,11 +53,15 @@ int extents(int n) {
 // DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
 // DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
 // DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f16 [size=2, align=2];
 // DEFAULT-NEXT:         storage f32 [size=4, align=4];
 // DEFAULT-NEXT:         storage f64 [size=8, align=8];
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 word = u64 [c="unsigned long"];
 // DEFAULT-NEXT:     type @type1 alias = u64 [c="word"] [c_canon="unsigned long"] [typedef_chain="word"];

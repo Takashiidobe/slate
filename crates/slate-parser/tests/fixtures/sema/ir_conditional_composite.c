@@ -27,11 +27,15 @@ void conditional(int c, int *p, const int *q, void *v) {
 // IR-NEXT:         storage i32, u32 [size=4, align=4];
 // IR-NEXT:         storage i64, u64 [size=8, align=8];
 // IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
 // IR-NEXT:         storage f16 [size=2, align=2];
 // IR-NEXT:         storage f32 [size=4, align=4];
 // IR-NEXT:         storage f64 [size=8, align=8];
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %0 @conditional(%1 c: i32 [c="int"], %2 p: ptr<i32> [c="int *"], %3 q: ptr<const i32> [c="const int *"], %4 v: ptr<void> [c="void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int, int *, const int *, void *)"] {
 // IR-NEXT:         let %5 merged_qualifiers: ptr<const i32> [storage=automatic] [c="typeof(c ? p : q)"] [c_canon="const int *"];

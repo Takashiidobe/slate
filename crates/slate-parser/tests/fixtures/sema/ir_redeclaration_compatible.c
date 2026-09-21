@@ -31,11 +31,15 @@ enum E e;
 // COMPATIBLE-NEXT:         storage i32, u32 [size=4, align=4];
 // COMPATIBLE-NEXT:         storage i64, u64 [size=8, align=8];
 // COMPATIBLE-NEXT:         storage i128, u128 [size=16, align=16];
+// COMPATIBLE-NEXT:         storage bf16 [size=2, align=2];
 // COMPATIBLE-NEXT:         storage f16 [size=2, align=2];
 // COMPATIBLE-NEXT:         storage f32 [size=4, align=4];
 // COMPATIBLE-NEXT:         storage f64 [size=8, align=8];
 // COMPATIBLE-NEXT:         storage f80 [size=16, align=16];
 // COMPATIBLE-NEXT:         storage f128 [size=16, align=16];
+// COMPATIBLE-NEXT:         storage d32 [size=4, align=4];
+// COMPATIBLE-NEXT:         storage d64 [size=8, align=8];
+// COMPATIBLE-NEXT:         storage d128 [size=16, align=16];
 // COMPATIBLE-NEXT:     }
 // COMPATIBLE-NEXT:     fn %0 @f(%2 <unnamed>: i32) -> i32 [linkage=external];
 // COMPATIBLE-NEXT:     fn %1 @g(%3 <unnamed>: i32) -> i32 [linkage=external];
@@ -54,11 +58,15 @@ enum E e;
 // SAME_TAGS_C23-NEXT:         storage i32, u32 [size=4, align=4];
 // SAME_TAGS_C23-NEXT:         storage i64, u64 [size=8, align=8];
 // SAME_TAGS_C23-NEXT:         storage i128, u128 [size=16, align=16];
+// SAME_TAGS_C23-NEXT:         storage bf16 [size=2, align=2];
 // SAME_TAGS_C23-NEXT:         storage f16 [size=2, align=2];
 // SAME_TAGS_C23-NEXT:         storage f32 [size=4, align=4];
 // SAME_TAGS_C23-NEXT:         storage f64 [size=8, align=8];
 // SAME_TAGS_C23-NEXT:         storage f80 [size=16, align=16];
 // SAME_TAGS_C23-NEXT:         storage f128 [size=16, align=16];
+// SAME_TAGS_C23-NEXT:         storage d32 [size=4, align=4];
+// SAME_TAGS_C23-NEXT:         storage d64 [size=8, align=8];
+// SAME_TAGS_C23-NEXT:         storage d128 [size=16, align=16];
 // SAME_TAGS_C23-NEXT:     }
 // SAME_TAGS_C23-NEXT:     type @type0 S = struct {
 // SAME_TAGS_C23-NEXT:         field0 a: i32;
