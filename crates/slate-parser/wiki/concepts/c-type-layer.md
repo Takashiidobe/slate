@@ -210,10 +210,12 @@ pass under `--flavor=gcc`, and the assertion checker builds its own resolver.
 
 Two rules read it, both on `TypeResolver`:
 
-- `promotes_atomic_layout`, consulted by `qualified_storage`: clang rounds an
-  atomic object up to the next lock-free width, gcc does not promote
-  aggregates at all. See the `_Atomic` entry in [`ir-spec.md`](ir-spec.md)
-  for the measured numbers and the MSVC gap (`slate-parser-rol`).
+- `atomic_layout`, consulted by `qualified_storage`: clang rounds an atomic
+  object up to the next lock-free width, gcc does not promote aggregates at
+  all, and MSVC gives anything that is not already a lock-free width a
+  leading four-byte lock word. It dispatches on the flavor and delegates to
+  `TargetInfo::atomic_storage` or `TargetInfo::msvc_atomic_storage`. See the
+  `_Atomic` entry in [`ir-spec.md`](ir-spec.md) for the measured numbers.
 - `effective_alignment`, consulted by `resolve_object_requests`: clang honors
   an alignment attribute below the type's natural alignment, gcc and MSVC
   raise it to the natural one.
@@ -233,7 +235,7 @@ Put it in `ctype/`, as a function over `QualType` that transcribes its
 standard section, and call it from lowering. Do not reach for `ir::Type`: if
 the rule needs a size or an alignment it wants `layout()`/`storage()`, and if
 it needs to know what a type *is* it wants `CTypes`. If the answer differs
-between compilers, it belongs next to `promotes_atomic_layout` and
+between compilers, it belongs next to `atomic_layout` and
 `effective_alignment` on `TypeResolver`, decided by `CompilerFlavor` — and
 per the project rule, reject only where clang, gcc and MSVC all reject;
 otherwise accept with a named warning from `src/diagnostics.rs`.

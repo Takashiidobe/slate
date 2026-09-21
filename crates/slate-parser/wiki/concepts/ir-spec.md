@@ -1789,11 +1789,35 @@ on the type:
   `tests/fixtures/sema/ir_atomic_layout.c` (clang) and
   `ir_atomic_layout_gcc.c` (gcc).
 
-  `--flavor=msvc` stays on clang's rule for now, and is known wrong: MSVC
-  prepends a lock word to a non-lock-free atomic, giving
-  `4 + round_up(sizeof(T), 4)` at alignment 4, which changes the object
-  representation rather than only its size (`slate-parser-rol`). The two
-  personalities also disagree on how an atomic aggregate *argument* is passed
+  `--flavor=msvc` has a third rule, from MSVC's non-standard
+  `/experimental:c11atomics` opt-in. There is no power-of-two promotion: a
+  value whose size is already a lock-free width (1, 2, 4 or 8) keeps that
+  size and is aligned to it, and anything else gets a leading four-byte lock
+  word, so the object lays out exactly like `struct { int lock; T value; }` —
+  size `round_up(max(4, alignof(T)) + sizeof(T), max(4, alignof(T)))` at
+  alignment `max(4, alignof(T))`. So `char a[3]` is 8/4 where clang says 4/4
+  and gcc 3/1, `char a[16]` is 20/4 where clang says 16/16, and
+  `struct { double d; int i; }` (16/8) is 24/8. Because the lock leads the
+  object, `struct { char head; _Atomic struct { char a[3]; } value; char
+  tail; }` is 16 bytes with the value at offset 4 and the tail at 12.
+  Measured against cl.exe 19.51 `/std:c17 /experimental:c11atomics` on
+  x86_64-pc-windows-msvc; fixture
+  `tests/fixtures/sema/x86_64-pc-windows-msvc/ir_atomic_layout.c`.
+
+  We model only the size and alignment, not a hidden lock field: C forbids
+  reaching a member of an atomic aggregate, so the interior offsets are not
+  observable, and everything that is — `sizeof`, `_Alignof`, and the offsets
+  of enclosing members — comes out of the layout alone.
+
+  One measured MSVC inconsistency is deliberately not reproduced. The
+  over-alignment in the lock-free branch depends on how `_Atomic` is spelled:
+  `_Atomic struct S` (size 4, natural alignment 1) is 4/4, but `_Atomic T`
+  and `_Atomic(T)` through a typedef of the same struct are 4/1. The lock
+  branch agrees across all three spellings. Layout cannot see the spelling,
+  and an 8-byte lock-free atomic at alignment 1 cannot actually be accessed
+  atomically, so we take the elaborated-specifier answer for every spelling.
+
+  The two personalities also disagree on how an atomic aggregate *argument* is passed
   (`slate-parser-lh7.2.29`), which is still open: the flavor reaches
   `AbiClassifier`, but the C type does not, because it classifies `ir::Type`
   and `_Atomic struct S` lowers to the same `Type::Defined` as `struct S`.

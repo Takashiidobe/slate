@@ -1521,8 +1521,12 @@ impl TypeResolver {
         self.qualified_storage(ty, atomic)
     }
 
-    fn promotes_atomic_layout(&self) -> bool {
-        !matches!(self.flavor, CompilerFlavor::Gcc)
+    fn atomic_layout(&self, layout: StorageLayout) -> StorageLayout {
+        match self.flavor {
+            CompilerFlavor::Gcc => layout,
+            CompilerFlavor::Clang => self.target.atomic_storage(layout),
+            CompilerFlavor::Msvc => self.target.msvc_atomic_storage(layout),
+        }
     }
 
     pub(super) fn effective_alignment(&self, requested: u64, natural: u64) -> u64 {
@@ -1547,8 +1551,8 @@ impl TypeResolver {
         atomic: bool,
     ) -> Result<StorageLayout, ResolveError> {
         let promote = |layout| {
-            if atomic && self.promotes_atomic_layout() {
-                self.target.atomic_storage(layout)
+            if atomic {
+                self.atomic_layout(layout)
             } else {
                 layout
             }

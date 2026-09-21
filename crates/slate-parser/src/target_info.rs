@@ -100,6 +100,8 @@ impl Endian {
     }
 }
 
+const MSVC_ATOMIC_LOCK_BYTES: u64 = 4;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StorageLayout {
     pub size_bytes: u64,
@@ -413,6 +415,26 @@ impl TargetInfo {
             alignment_bytes: u32::try_from(promoted)
                 .unwrap_or(layout.alignment_bytes)
                 .max(layout.alignment_bytes),
+        }
+    }
+
+    pub fn msvc_atomic_storage(&self, layout: StorageLayout) -> StorageLayout {
+        let size = layout.size_bytes.max(1);
+        if matches!(size, 1 | 2 | 4 | 8) {
+            return StorageLayout {
+                size_bytes: size,
+                alignment_bytes: u32::try_from(size)
+                    .unwrap_or(layout.alignment_bytes)
+                    .max(layout.alignment_bytes),
+            };
+        }
+        let alignment = u64::from(layout.alignment_bytes).max(MSVC_ATOMIC_LOCK_BYTES);
+        StorageLayout {
+            size_bytes: alignment
+                .checked_add(size)
+                .and_then(|bytes| bytes.checked_next_multiple_of(alignment))
+                .unwrap_or(size),
+            alignment_bytes: u32::try_from(alignment).unwrap_or(layout.alignment_bytes),
         }
     }
 
