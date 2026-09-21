@@ -17,6 +17,7 @@ pub mod names;
 pub mod numeric;
 mod operand;
 pub mod pragmas;
+mod sequencing;
 mod type_of;
 pub mod types;
 mod validate;

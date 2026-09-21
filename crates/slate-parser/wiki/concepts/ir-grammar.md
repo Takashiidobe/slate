@@ -235,9 +235,11 @@ asm_piece  = string | "%" [ letter ] integer | "%l" integer
            | "%%" | "%=" | "%{" | "%|" | "%}" ;
 clobber    = "memory" | "cc" | "unwind" | register ;
 register   = string [ "as" identifier ] ;
-simple     = "let" binding ":" type "[synthetic]" [ "=" value ]
+simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
+             [ "=" value ]
            | "let" variable
-           | "write<" type access [ ordering ] ">(" place ", " value ")"
+           | "write<" type access [ ", unsequenced" ] [ ordering ] ">("
+             place ", " value ")"
            | "fence<scope=" ( "thread" | "signal" ) ", order=" order
              [ sync_scope ] ">"
            | value
@@ -274,6 +276,10 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   increment yields `void`.
 - `[synthetic]` lets are temporaries that lowering introduced (hoisted old
   values, short-circuit results, VLA extents). They have no source variable.
+- `unsequenced` on a temporary or a write marks a statement whose position
+  commits to an evaluation order C leaves unspecified, so a different C
+  compiler may order it differently. See the unsequenced section in
+  [`ir-spec.md`](ir-spec.md).
 - A local `let` always has `storage=automatic`.
 
 ## Places

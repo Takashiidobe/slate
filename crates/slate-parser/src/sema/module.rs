@@ -800,6 +800,7 @@ impl Lowerer {
                 id,
                 ty: count.ty.clone(),
                 initializer: Some(count),
+                unsequenced: false,
             })
         }));
         Ok(())

@@ -806,6 +806,65 @@ Hard cases hoisting must respect (evaluation order and sequencing):
 - Assignment used as a value (`x = y = 0`) → sequential statements, with the
   value read back from the assigned target.
 
+### Unsequenced expressions follow Clang
+
+The cases above are sequenced, so C fixes the order and lowering reproduces it.
+Where C leaves two side effects on one object *unsequenced* (C11 6.5p2) the
+behaviour is undefined, there is no order to reproduce, and the three oracles
+disagree. Same source, `i` starting at 1:
+
+| | result | arguments | final `i` |
+| --- | --- | --- | --- |
+| Clang 22 `-O0`/`-O2` | 12 | `f(1, 2)` | 3 |
+| GCC 16 `-O0`/`-O2` | 21 | `f(2, 1)` | 3 |
+| MSVC 19.51 `/Od`,`/O2` | 11 | `f(1, 1)` | 3 |
+| slate | 12 | `f(1, 2)` | 3 |
+
+```c
+int f(int a, int b) { return a * 10 + b; }
+int i = 1; f(i++, i++)
+```
+
+All three apply both increments and differ in what reaches the arguments: Clang
+interleaves read and write per operand left to right, GCC does the same right to
+left, MSVC takes both reads before either write.
+
+**Decided:** slate hoists left to right, which follows Clang. Emulating a flavor
+here would pin three compiler *versions'* codegen accidents rather than
+documented semantics — GCC's order falls out of its argument-pushing convention
+and is not guaranteed between releases. The flavor mechanism is for cases where
+the compilers give the same C different *defined* meanings; this is the absence
+of a meaning. Left to right is also Rust's own argument order, so it is the
+choice that translates without contortion.
+
+Because the order is arbitrary rather than required, the statements that commit
+to it are marked, the way every other UB the backend must know about is an
+attribute rather than a diagnostic (`overflow=ub`, `by_zero=ub`,
+`fallthrough=ub_if_used`):
+
+```
+let %18: i32 [synthetic, unsequenced] = read<i32>(%3);
+write<i32, unsequenced>(%3, read<i32>(%19));
+```
+
+`sema/sequencing.rs` decides it, comparing what each operand of an unsequenced
+group reads and writes. A location is a binding — or the object one pointer
+binding points at — plus the path of members and *constant* subscripts reached
+inside it, so `x.a++` and `x.b++` do not conflict even sharing a storage unit,
+`b[0]` and `b[1]` are distinct, and a computed subscript compares equal only to
+another computed one. Two locations conflict when one is a prefix of the other
+and at least one access is a write. The groups are a call's callee and
+arguments, both operands of an arithmetic or comparison operator, and an
+assignment's target against its value — the last restricted to a *second side
+effect* on the target, since C11 6.5.16p3 sequences the update after both
+operands' value computations and so leaves `i = i + 1` well defined.
+
+Checked against `gcc -Wsequence-point` over the corpus: 1963 configurations both
+accept, with no case marked here and silent there or the reverse. Clang's
+`-Wunsequenced` is narrower — it tracks plain scalars only and reports neither
+`g.a++` nor `p->a++` — so GCC is the oracle for detection even though Clang is
+the oracle for the order. Fixture: `sema/ir_unsequenced.c`.
+
 ## Types
 
 **Decided:** the shown type is the concrete, target-resolved type. The

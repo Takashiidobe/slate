@@ -69,6 +69,7 @@ impl Hoister {
                                 place,
                                 value,
                                 ordering,
+                                unsequenced: false,
                             }));
                             continue;
                         }
@@ -79,15 +80,18 @@ impl Hoister {
                     id,
                     ty,
                     initializer,
+                    unsequenced,
                 } => Statement::Temporary {
                     id,
                     ty,
                     initializer: initializer.map(|v| self.value(v, &mut out)).transpose()?,
+                    unsequenced,
                 },
                 Statement::Write {
                     place,
                     value,
                     ordering,
+                    unsequenced: _,
                 } => {
                     let store = Value {
                         ty: place.ty.clone(),

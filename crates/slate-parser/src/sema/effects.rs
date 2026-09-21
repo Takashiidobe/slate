@@ -6,6 +6,7 @@ use std::collections::HashMap;
 pub(super) struct Hoister {
     next_id: u32,
     old: Vec<Value>,
+    unsequenced: bool,
     pub(super) access: HashMap<BindingId, Access>,
 }
 
@@ -18,8 +19,20 @@ impl Hoister {
         Self {
             next_id,
             old: Vec::new(),
+            unsequenced: false,
             access,
         }
+    }
+
+    /// C11 6.5p2 leaves the relative order of these operands unspecified, so the
+    /// order hoisting commits to is arbitrary. Slate follows Clang; see
+    /// `wiki/concepts/ir-spec.md`.
+    fn grouped<T>(&mut self, unsequenced: bool, hoist: impl FnOnce(&mut Self) -> T) -> T {
+        let outer = self.unsequenced;
+        self.unsequenced = outer || unsequenced;
+        let result = hoist(self);
+        self.unsequenced = outer;
+        result
     }
 
     fn temporary(&mut self, value: Value, out: &mut Vec<Span<Statement>>) -> Value {
@@ -45,6 +58,7 @@ impl Hoister {
             id,
             ty: source.ty.clone(),
             initializer,
+            unsequenced: self.unsequenced,
         }));
         Place {
             ty: source.ty.clone(),
@@ -253,6 +267,7 @@ impl Hoister {
                     place: place.clone(),
                     value,
                     ordering: None,
+                    unsequenced: false,
                 }));
             } else {
                 self.discard(value, None, &mut body)?;
@@ -295,13 +310,19 @@ impl Hoister {
                 value,
                 ordering,
             } => {
-                let value = self.value(*value, out)?;
-                let place = self.place(place, out)?;
-                let ordering = self.ordering(ordering, out)?;
+                let conflict = super::sequencing::assignment(&place, &value);
+                let (value, place, ordering) = self.grouped(conflict, |this| {
+                    Ok::<_, ResolveError>((
+                        this.value(*value, out)?,
+                        this.place(place, out)?,
+                        this.ordering(ordering, out)?,
+                    ))
+                })?;
                 out.push(source.with_value(Statement::Write {
                     place,
                     value: value.clone(),
                     ordering,
+                    unsequenced: conflict || self.unsequenced,
                 }));
                 return Ok(value);
             }
@@ -385,6 +406,7 @@ impl Hoister {
                 postfix,
                 ordering: None,
             } => {
+                let conflict = super::sequencing::assignment(&place, &computation);
                 let place = self.stable_place(place, out)?;
                 let old = Value {
                     ty: place.ty.clone(),
@@ -393,15 +415,18 @@ impl Hoister {
                         ordering: None,
                     }),
                 };
-                let old = self.temporary(old, out);
-                self.old.push(old.clone());
-                let result = self.value(*computation, out);
-                self.old.pop();
-                let result = self.temporary(result?, out);
+                let (old, result) = self.grouped(conflict, |this| {
+                    let old = this.temporary(old, out);
+                    this.old.push(old.clone());
+                    let result = this.value(*computation, out);
+                    this.old.pop();
+                    Ok::<_, ResolveError>((old, this.temporary(result?, out)))
+                })?;
                 out.push(source.with_value(Statement::Write {
                     place,
                     value: result.clone(),
                     ordering: None,
+                    unsequenced: conflict || self.unsequenced,
                 }));
                 return Ok(if postfix { old } else { result });
             }
@@ -415,6 +440,7 @@ impl Hoister {
                             place: place.clone(),
                             value,
                             ordering: None,
+                            unsequenced: false,
                         }));
                     }
                     None if matches!(evaluation.value.node.value, ValueKind::Void) => {}
@@ -449,6 +475,7 @@ impl Hoister {
                     id,
                     ty: extent.ty.clone(),
                     initializer: Some(extent),
+                    unsequenced: false,
                 }));
                 return self.value(*value, out);
             }
@@ -494,15 +521,27 @@ impl Hoister {
                 abi,
                 arguments,
             } => {
-                let callee = match callee {
-                    Callee::Direct(id) => Callee::Direct(id),
-                    Callee::Builtin(name) => Callee::Builtin(name),
-                    Callee::Indirect(value) => Callee::Indirect(Box::new(self.value(*value, out)?)),
-                };
-                let mut lowered = Vec::new();
-                for argument in arguments {
-                    lowered.push(self.value(argument, out)?);
+                let mut group: Vec<&Value> = Vec::new();
+                if let Callee::Indirect(value) = &callee {
+                    group.push(value);
                 }
+                group.extend(arguments.iter());
+                let conflict = super::sequencing::unsequenced(&group);
+                drop(group);
+                let (callee, lowered) = self.grouped(conflict, |this| {
+                    let callee = match callee {
+                        Callee::Direct(id) => Callee::Direct(id),
+                        Callee::Builtin(name) => Callee::Builtin(name),
+                        Callee::Indirect(value) => {
+                            Callee::Indirect(Box::new(this.value(*value, out)?))
+                        }
+                    };
+                    let lowered = arguments
+                        .into_iter()
+                        .map(|argument| this.value(argument, out))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    Ok::<_, ResolveError>((callee, lowered))
+                })?;
                 ValueKind::Call {
                     callee,
                     signature,
@@ -516,8 +555,10 @@ impl Hoister {
                 right,
                 semantics,
             } => {
-                let left = self.value(*left, out)?;
-                let right = self.value(*right, out)?;
+                let conflict = super::sequencing::unsequenced(&[&left, &right]);
+                let (left, right) = self.grouped(conflict, |this| {
+                    Ok::<_, ResolveError>((this.value(*left, out)?, this.value(*right, out)?))
+                })?;
                 ValueKind::Arith {
                     op,
                     left: Box::new(left),

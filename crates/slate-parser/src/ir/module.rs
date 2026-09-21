@@ -134,12 +134,14 @@ pub enum Statement {
         id: BindingId,
         ty: Type,
         initializer: Option<Value>,
+        unsequenced: bool,
     },
     Let(Variable),
     Write {
         place: Place,
         value: Value,
         ordering: Option<Atomicity>,
+        unsequenced: bool,
     },
     Fence {
         ordering: Atomicity,

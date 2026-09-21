@@ -270,8 +270,10 @@ impl DisplayModule<'_> {
                     id,
                     ty,
                     initializer,
+                    unsequenced,
                 } => {
-                    write!(f, "let %{}: {} [synthetic]", id.0, ty)?;
+                    let order = if *unsequenced { ", unsequenced" } else { "" };
+                    write!(f, "let %{}: {} [synthetic{order}]", id.0, ty)?;
                     if let Some(value) = initializer {
                         write!(
                             f,
@@ -290,8 +292,12 @@ impl DisplayModule<'_> {
                     place,
                     value,
                     ordering,
+                    unsequenced,
                 } => {
                     write!(f, "write<{}{}", place.ty, place.access)?;
+                    if *unsequenced {
+                        f.write_str(", unsequenced")?;
+                    }
                     super::atomic::format_ordering(f, ordering.as_ref(), self.compact)?;
                     write!(
                         f,

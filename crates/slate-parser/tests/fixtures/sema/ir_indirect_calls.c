@@ -87,9 +87,9 @@ int guarded(Op op, int n) { return op ? op(n, n) : 0; }
 // IR-NEXT:         return call<i32, signature=fn(ptr<fn(i32, i32) -> i32>, i32, i32) -> i32>(%7, function_decay<ptr<fn(i32, i32) -> i32>>(%2), read<i32>(%30), read<i32>(%30));
 // IR-NEXT:     }
 // IR-NEXT:     fn %31 @sequenced(%32 ops: ptr<ptr<fn(i32, i32) -> i32>>, %33 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %40: i32 [synthetic] = read<i32>(%33);
-// IR-NEXT:         let %41: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%40), const<i32>(1));
-// IR-NEXT:         write<i32>(%33, read<i32>(%41));
+// IR-NEXT:         let %40: i32 [synthetic, unsequenced] = read<i32>(%33);
+// IR-NEXT:         let %41: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%40), const<i32>(1));
+// IR-NEXT:         write<i32, unsequenced>(%33, read<i32>(%41));
 // IR-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(deref(ptr_offset<ptr<ptr<fn(i32, i32) -> i32>>, subtract=false, element=ptr<fn(i32, i32) -> i32>, overflow=ub>(read<ptr<ptr<fn(i32, i32) -> i32>>>(%32), read<i32>(%40)))), read<i32>(%33), read<i32>(%33));
 // IR-NEXT:     }
 // IR-NEXT:     fn %34 @chained(%35 pick: ptr<fn() -> ptr<fn(i32, i32) -> i32>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
