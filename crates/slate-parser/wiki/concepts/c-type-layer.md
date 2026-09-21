@@ -37,6 +37,19 @@ mode and a canonical mode. Conventions: `int *`, `char *const`,
 from the pointee's canonical qualifiers; parameters use the adjusted pointer;
 enums and records map to `Defined(id)`; `long double` follows the target.
 
+`TypeResolver::layout` returns `None` for `void` and `object_type` turns that
+into an error, so any site that needs storage rejects void. `ir_type` does not:
+the places where a void type is legal but has no storage call it directly —
+`define_alias` (`typedef void f;`), the `extern` arm of a global declaration
+(`extern void _text;`, a GNU idiom for a linker symbol) and the two `sizeof` /
+`_Alignof` sites. `sizeof(void)` and `_Alignof(void)` are 1, and
+`require_pointer_element` accepts `void` so `void *` arithmetic works; both are
+the same GNU extension (`-Wgnu-pointer-arith` in clang, `-Wpointer-arith` in
+gcc, pedantic-only in each), and slate-parser does not yet emit that warning.
+Do not give `TargetInfo::storage_of(Type::Void)` a size instead: object,
+field, parameter and `va_arg` paths all reach it and must keep failing
+(slate-parser-dyd.6).
+
 ## Typed lowering
 
 `sema::operand::Operand` pairs an IR value with its `QualType`; `Lvalue`

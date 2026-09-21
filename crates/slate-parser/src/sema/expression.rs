@@ -1630,7 +1630,7 @@ impl Lowerer {
                     ));
                 }
                 let element = self.types.ir_type(element);
-                self.types.require_complete(&element)?;
+                self.types.require_pointer_element(&element)?;
                 let c = self.types.ctypes.ptrdiff_type(&self.context.target);
                 Ok(self.operand(
                     e,
@@ -1661,7 +1661,7 @@ impl Lowerer {
         subtract: bool,
     ) -> Result<Operand, ResolveError> {
         let element = self.types.ir_type(element);
-        self.types.require_complete(&element)?;
+        self.types.require_pointer_element(&element)?;
         let amount = self.promote(amount)?;
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
             return Err(ResolveError::Unsupported("noninteger pointer offset"));
@@ -2309,16 +2309,7 @@ impl Lowerer {
                 let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.types.ctypes.quals(resolved).is_atomic;
-                let ty = self
-                    .types
-                    .object_type(resolved, "void layout")
-                    .map_err(|error| {
-                        if matches!(e.value, ExprKind::SizeOfType { .. }) {
-                            sizeof_error(error)
-                        } else {
-                            error
-                        }
-                    })?;
+                let ty = self.types.ir_type(resolved);
                 if matches!(e.value, ExprKind::SizeOfType { .. })
                     && matches!(ty, Type::VariableArray { .. })
                 {
@@ -2327,7 +2318,7 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .qualified_storage(fixed_element(&ty).clone(), atomic)
+                    .sizeof_storage(fixed_element(&ty).clone(), atomic)
                     .map_err(|error| {
                         if matches!(e.value, ExprKind::SizeOfType { .. }) {
                             sizeof_error(error)
@@ -2434,15 +2425,24 @@ impl Lowerer {
                 let last = body
                     .iter()
                     .rposition(|statement| !matches!(statement.value, StmtKind::Comment(_)));
-                let (leading, result) = match last {
+                let (leading, labels, result) = match last {
                     Some(index) => match &body[index].value {
-                        StmtKind::Expr(result) => (&body[..index], Some(result)),
-                        _ => (&body[..], None),
+                        StmtKind::Expr(result) => (&body[..index], None, Some(result)),
+                        StmtKind::Labeled { .. } => match labeled_result(&body[index]) {
+                            Some((labels, result)) => (&body[..index], Some(labels), Some(result)),
+                            None => (&body[..], None, None),
+                        },
+                        _ => (&body[..], None, None),
                     },
-                    None => (&body[..], None),
+                    None => (&body[..], None, None),
                 };
                 let (statements, value) = self.scoped(|lower| {
-                    let statements = lower.statements(leading, lower.return_type)?;
+                    let mut statements = lower.statements(leading, lower.return_type)?;
+                    if let Some(labels) = &labels {
+                        statements.extend(
+                            lower.statements(std::slice::from_ref(labels), lower.return_type)?,
+                        );
+                    }
                     let value = match result {
                         Some(result) => lower.expr(result)?,
                         None => {
@@ -2499,6 +2499,23 @@ impl Lowerer {
                 Ok(self.operand(e, resolved, ValueKind::VaArg { list: list.place }))
             }
         }
+    }
+}
+
+fn labeled_result(statement: &crate::ast::Stmt) -> Option<(crate::ast::Stmt, &Expr)> {
+    match &statement.value {
+        StmtKind::Expr(result) => Some((statement.clone().with_value(StmtKind::Null), result)),
+        StmtKind::Labeled { label, body } => {
+            let (inner, result) = labeled_result(body)?;
+            Some((
+                statement.clone().with_value(StmtKind::Labeled {
+                    label: label.clone(),
+                    body: Box::new(inner),
+                }),
+                result,
+            ))
+        }
+        _ => None,
     }
 }
 

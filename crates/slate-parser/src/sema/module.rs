@@ -352,7 +352,7 @@ impl Lowerer {
             .entities
             .ty(&id)
             .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
-        let merged_ty = self.types.object_type(merged, "void object")?;
+        let merged_ty = self.types.ir_type(merged);
         let merged_quals = self.types.ctypes.quals(merged);
         let merged_access = self.types.access_of(merged);
         let global = global.value;
@@ -558,7 +558,11 @@ impl Lowerer {
                     "constexpr object requires an initializer",
                 ));
             }
-            let ty = self.types.object_type(resolved, "void object")?;
+            let ty = match self.types.layout(resolved) {
+                Some(ty) => ty,
+                None if storage_class == StorageClass::Extern => self.types.ir_type(resolved),
+                None => return Err(ResolveError::Invalid("object cannot have type void")),
+            };
             let id = self.declaration_id(declarator.id, name)?;
             let previous =
                 self.types

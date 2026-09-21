@@ -294,16 +294,9 @@ impl TypeResolver {
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
                 let atomic = self.ctypes.quals(resolved).is_atomic;
-                let ty =
-                    self.object_type(resolved, "void layout")
-                        .map_err(|error| match error {
-                            ResolveError::Unsupported("incomplete field type") => {
-                                ResolveError::Unsupported("sizeof of incomplete type")
-                            }
-                            error => error,
-                        })?;
+                let ty = self.ir_type(resolved);
                 let layout = self
-                    .qualified_storage(ty, atomic)
+                    .sizeof_storage(ty, atomic)
                     .map_err(|error| match error {
                         ResolveError::Unsupported("incomplete field type") => {
                             ResolveError::Unsupported("sizeof of incomplete type")
@@ -695,7 +688,7 @@ impl TypeResolver {
     }
 
     pub fn define_alias(&mut self, name: String, resolved: QualType) -> Result<(), ResolveError> {
-        let ty = self.object_type(resolved, "void typedef")?;
+        let ty = self.ir_type(resolved);
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
         let alias = self.ctypes.qual(CTypeKind::Typedef {
@@ -1347,15 +1340,30 @@ impl TypeResolver {
         Ok(self.ctypes.canonical(unqualified).with(atomic))
     }
 
-    pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {
+    pub(super) fn require_pointer_element(&self, ty: &Type) -> Result<(), ResolveError> {
         match ty {
-            Type::VariableArray { element, .. } => self.require_complete(element),
+            Type::VariableArray { element, .. } => self.require_pointer_element(element),
+            Type::Void => Ok(()),
             ty => self.storage(ty.clone()).map(|_| ()),
         }
     }
 
     pub(super) fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
         self.qualified_storage(ty, false)
+    }
+
+    pub(super) fn sizeof_storage(
+        &self,
+        ty: Type,
+        atomic: bool,
+    ) -> Result<StorageLayout, ResolveError> {
+        if matches!(ty, Type::Void) {
+            return Ok(StorageLayout {
+                size_bytes: 1,
+                alignment_bytes: 1,
+            });
+        }
+        self.qualified_storage(ty, atomic)
     }
 
     fn promotes_atomic_layout(&self) -> bool {
