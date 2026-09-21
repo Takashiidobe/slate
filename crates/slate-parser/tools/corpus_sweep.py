@@ -18,7 +18,13 @@ FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 ARGS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ARGS\s+(.*)$")
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ")
 END_RE = re.compile(r"^// SLATE-FILECHECK-END ")
-DIAGNOSTIC_RE = re.compile(r"^\s*[×⚠]\s+(.*)$")
+# a detailed "  × ..." outranks the "Error:   × semantic analysis failed" wrapper,
+# and both outrank a #warning that merely precedes the real failure
+DIAGNOSTIC_TIERS = (
+    re.compile(r"^\s+×\s+(.*)$"),
+    re.compile(r"^Error:\s*×\s+(.*)$"),
+    re.compile(r"^\s*⚠\s+(.*)$"),
+)
 LOCATION_RE = re.compile(r"\b[^\s:]+\.c:\d+(?::\d+)?\b")
 NUMBER_RE = re.compile(r"\b\d+\b")
 
@@ -119,10 +125,14 @@ def jobs(fixtures: Path) -> tuple[list[Job], int]:
 
 def root_diagnostic(stderr: str) -> str:
     lines = stderr.splitlines()
-    diagnostic = next(
-        (match.group(1) for line in lines if (match := DIAGNOSTIC_RE.match(line))),
-        "",
-    )
+    diagnostic = ""
+    for pattern in DIAGNOSTIC_TIERS:
+        diagnostic = next(
+            (match.group(1) for line in lines if (match := pattern.match(line))),
+            "",
+        )
+        if diagnostic:
+            break
     if not diagnostic:
         diagnostic = next(
             (line.split(" error: ", 1)[1] for line in lines if " error: " in line),
