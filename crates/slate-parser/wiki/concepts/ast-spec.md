@@ -298,6 +298,9 @@ parser reports an error instead of rewriting; fixtures using K&R pin
 
 A type written without declaring anything: casts, `sizeof(T)`, `_Alignof`,
 compound literals, `va_arg`, `offsetof`, `_Generic` associations, `typeof`.
+`_Alignof`, `__alignof` and `__alignof__` lex as the alignof operator in every
+mode; the unprefixed C23 spelling `alignof` is gated by `keyword_alignof`, so
+before C23 it stays an identifier and `<stdalign.h>` supplies the macro.
 
 ```
 TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // declarator is abstract

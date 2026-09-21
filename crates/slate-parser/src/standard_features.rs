@@ -16,6 +16,7 @@ impl Availability {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StandardFeatures {
+    pub keyword_alignof: Availability,
     pub keyword_bool_true_false: Availability,
     pub keyword_nullptr: Availability,
     pub keyword_static_assert: Availability,
@@ -51,6 +52,7 @@ impl StandardFeatures {
         let c23 = matches!(standard, LanguageStandard::C23 | LanguageStandard::Gnu23);
         let c23_keyword = if c23 { Standard } else { Rejected };
         Self {
+            keyword_alignof: c23_keyword,
             keyword_bool_true_false: c23_keyword,
             keyword_nullptr: c23_keyword,
             keyword_static_assert: c23_keyword,

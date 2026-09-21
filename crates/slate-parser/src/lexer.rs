@@ -708,6 +708,7 @@ impl Lexer {
             let token = match word.as_str() {
                 "sizeof" => Token::Sizeof,
                 "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
+                "alignof" if self.features.keyword_alignof.is_accepted() => Token::Alignof,
                 "_Bool" => Token::Keyword(Keyword::Bool),
                 "bool" if self.features.keyword_bool_true_false.is_accepted() => {
                     Token::Keyword(Keyword::Bool)

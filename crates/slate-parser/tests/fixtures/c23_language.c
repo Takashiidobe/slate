@@ -2571,15 +2571,18 @@ int main(void) {
 // DEFAULT-NEXT:                                                                                                       "aligned_value",
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Call {
-// DEFAULT-NEXT:                                                                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                                                                       "alignof",
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   arguments: [
-// DEFAULT-NEXT:                                                                                                       Identifier(
-// DEFAULT-NEXT:                                                                                                           "int",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   ],
+// DEFAULT-NEXT:                                                                                               right: AlignOf {
+// DEFAULT-NEXT:                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                           right: Identifier(
