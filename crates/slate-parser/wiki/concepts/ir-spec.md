@@ -1300,6 +1300,13 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   is the initializer value's type, so `(int[]){1,2}` is `array<i32, 2>`.
   Storage is `Static` outside a function body and `Automatic` inside; values
   read or decay from the place like any other object.
+- A member access on a record rvalue (`f().x`, `(s, t).x`) materializes the
+  base into `PlaceKind::Temporary { object, initializer }`, printed
+  `temporary %id = <value>`, and projects the field from it. The temporary
+  gets a fresh `BindingId` and the value's type. It is not an object: a place
+  rooted in a temporary (through fields, complex parts, lanes or swizzles, but
+  not through a `deref` of a pointer read out of it) rejects assignment with
+  `expression is not assignable` and `&` with `address of a temporary`.
 - `sizeof` of a brace-inferred array (or an unsized compound literal) in
   `static_assert` uses `TypeResolver::inferred_array_length`, which counts
   elements with the same designator and brace-elision rules.

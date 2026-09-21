@@ -243,6 +243,10 @@ pub enum PlaceKind {
         storage: StorageDuration,
         initializer: Box<Value>,
     },
+    Temporary {
+        object: BindingId,
+        initializer: Box<Value>,
+    },
     ComplexPart {
         base: Box<Place>,
         imaginary: bool,
@@ -315,6 +319,17 @@ impl Place {
                     StorageDuration::Static => "static",
                     StorageDuration::Thread => "thread",
                 },
+                initializer
+                    .display_metadata(false, None)
+                    .with_compact(compact)
+            ),
+            PlaceKind::Temporary {
+                object,
+                initializer,
+            } => write!(
+                f,
+                "temporary %{} = {}",
+                object.0,
                 initializer
                     .display_metadata(false, None)
                     .with_compact(compact)

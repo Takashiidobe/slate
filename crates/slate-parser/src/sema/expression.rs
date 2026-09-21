@@ -311,6 +311,9 @@ impl Lowerer {
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                     return Err(ResolveError::Invalid("address of a bit-field"));
                 }
+                if temporary_rooted(&place.place) {
+                    return Err(ResolveError::Invalid("address of a temporary"));
+                }
                 let c = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
@@ -1270,6 +1273,23 @@ impl Lowerer {
         ))
     }
 
+    fn materialize(&mut self, value: Operand) -> Lvalue {
+        let object = self.fresh();
+        let c = value.c;
+        self.types.entities.declare(object, c, false);
+        Lvalue {
+            c,
+            place: Place {
+                ty: value.value.ty.clone(),
+                kind: PlaceKind::Temporary {
+                    object,
+                    initializer: Box::new(value.value),
+                },
+                access: self.types.access_of(c),
+            },
+        }
+    }
+
     fn member(
         &mut self,
         e: &Expr,
@@ -1285,19 +1305,22 @@ impl Lowerer {
                 Ok(object) => object,
                 Err(error) => {
                     let value = self.expr(base)?;
-                    if !self.types.ctypes.is_vector(value.c) {
+                    if self.types.ctypes.is_record(value.c) {
+                        self.materialize(value)
+                    } else if !self.types.ctypes.is_vector(value.c) {
                         return Err(error);
+                    } else {
+                        let (c, mask) = self.swizzle(value.c, field)?;
+                        return Ok(Projection::Value(self.operand(
+                            e,
+                            c,
+                            ValueKind::Shuffle {
+                                left: Box::new(value.value),
+                                right: None,
+                                mask: ShuffleMask::Lanes(mask),
+                            },
+                        )));
                     }
-                    let (c, mask) = self.swizzle(value.c, field)?;
-                    return Ok(Projection::Value(self.operand(
-                        e,
-                        c,
-                        ValueKind::Shuffle {
-                            left: Box::new(value.value),
-                            right: None,
-                            mask: ShuffleMask::Lanes(mask),
-                        },
-                    )));
                 }
             }
         };
@@ -1693,6 +1716,9 @@ impl Lowerer {
     ) -> Result<Operand, ResolveError> {
         let place = self.place(target)?;
         self.types.require_modifiable_lvalue(place.c)?;
+        if temporary_rooted(&place.place) {
+            return Err(ResolveError::Invalid("expression is not assignable"));
+        }
         let c = self.types.ctypes.unqualified(place.c);
         let old = self.operand(target, c, ValueKind::OldValue);
         let bits = match &place.kind {
@@ -1974,6 +2000,9 @@ impl Lowerer {
                 if matches!(place.kind, PlaceKind::Lane { .. }) {
                     return Err(ResolveError::Invalid("address of a vector element"));
                 }
+                if temporary_rooted(&place.place) {
+                    return Err(ResolveError::Invalid("address of a temporary"));
+                }
                 let ty = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, ty, ValueKind::AddressOf(place.place)))
             }
@@ -2158,6 +2187,9 @@ impl Lowerer {
                 if *op == AssignOp::Assign {
                     let place = self.place(target)?;
                     self.types.require_modifiable_lvalue(place.c)?;
+                    if temporary_rooted(&place.place) {
+                        return Err(ResolveError::Invalid("expression is not assignable"));
+                    }
                     let value =
                         self.convert_expr(value_expr, value, place.c, ConversionReason::Assign)?;
                     let c = value.c;
@@ -2651,6 +2683,20 @@ impl Lowerer {
         };
         let c = self.types.ctypes.qual(CTypeKind::Void);
         Ok(self.operand(e, c, kind))
+    }
+}
+
+fn temporary_rooted(place: &Place) -> bool {
+    match &place.kind {
+        PlaceKind::Temporary { .. } => true,
+        PlaceKind::Field { base, .. }
+        | PlaceKind::ComplexPart { base, .. }
+        | PlaceKind::Lane { base, .. }
+        | PlaceKind::Swizzle { base, .. } => temporary_rooted(base),
+        PlaceKind::Binding(_)
+        | PlaceKind::Deref(_)
+        | PlaceKind::Index { .. }
+        | PlaceKind::CompoundLiteral { .. } => false,
     }
 }
 

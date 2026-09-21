@@ -288,7 +288,8 @@ place  = binding
        | ( "real(" | "imag(" ) place ")"
        | "lane(" place ", " value ")"
        | "swizzle<lanes=[" digits { ", " digits } "]>(" place ")"
-       | "compound_literal" binding "[storage=" storage "]" "=" value ;
+       | "compound_literal" binding "[storage=" storage "]" "=" value
+       | "temporary" binding "=" value ;
 access   = [ ", volatile" ] ;
 ordering = ", atomic=" order [ sync_scope ] ;
 order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
@@ -319,6 +320,11 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
   distinct, since a repeated component is not assignable; a repeated or
   out-of-range selection is a `shuffle<..>` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
+- `temporary %N = v` is the materialized result of an aggregate rvalue, such
+  as the struct returned by `f()` in `f().x`. It exists so a member can be
+  projected out of a value that has no storage of its own; unlike a compound
+  literal it is not an object, so a place rooted in one is neither assignable
+  nor addressable.
 - Lowering does not produce `index(..)` yet: all indexing is
   `deref(ptr_offset(..))`, including arrays through `array_decay`.
 - Values printed inside a place never carry metadata.

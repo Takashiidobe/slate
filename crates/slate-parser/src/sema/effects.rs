@@ -85,6 +85,13 @@ impl Hoister {
                 storage,
                 initializer: Box::new(self.value(*initializer, out)?),
             },
+            PlaceKind::Temporary {
+                object,
+                initializer,
+            } => PlaceKind::Temporary {
+                object,
+                initializer: Box::new(self.value(*initializer, out)?),
+            },
             PlaceKind::ComplexPart { base, imaginary } => PlaceKind::ComplexPart {
                 base: Box::new(self.place(*base, out)?),
                 imaginary,
@@ -132,6 +139,13 @@ impl Hoister {
             } => PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                initializer: Box::new(self.value(*initializer, out)?),
+            },
+            PlaceKind::Temporary {
+                object,
+                initializer,
+            } => PlaceKind::Temporary {
+                object,
                 initializer: Box::new(self.value(*initializer, out)?),
             },
             PlaceKind::ComplexPart { base, imaginary } => PlaceKind::ComplexPart {
@@ -673,6 +687,7 @@ fn place_effects(place: &Place) -> bool {
         PlaceKind::Binding(_) => false,
         PlaceKind::Deref(value) => effects(value),
         PlaceKind::CompoundLiteral { initializer, .. } => effects(initializer),
+        PlaceKind::Temporary { initializer, .. } => effects(initializer),
         PlaceKind::ComplexPart { base, .. } => place_effects(base),
         PlaceKind::Field { base, .. } => place_effects(base),
         PlaceKind::Index { base, index } => effects(base) || effects(index),
