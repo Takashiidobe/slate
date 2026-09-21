@@ -275,6 +275,11 @@ impl Token {
             .map(|value| value as i64)
     }
 
+    pub fn float_value_bf16(&self) -> Option<u16> {
+        self.apfloat_bits::<rustc_apfloat::ieee::BFloat>()
+            .map(|bits| bits as u16)
+    }
+
     pub fn float_value_f16(&self) -> Option<u16> {
         self.apfloat_bits::<rustc_apfloat::ieee::Half>()
             .map(|bits| bits as u16)

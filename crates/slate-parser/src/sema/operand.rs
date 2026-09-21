@@ -141,6 +141,7 @@ impl TypeResolver {
             }
             ExprKind::FloatLiteral(literal) => {
                 let kind = match literal.suffix {
+                    FloatSuffix::BF16 => FloatKind::BFloat16,
                     FloatSuffix::F16 => FloatKind::Float16,
                     FloatSuffix::F | FloatSuffix::F32 => FloatKind::Float,
                     FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => FloatKind::Double,

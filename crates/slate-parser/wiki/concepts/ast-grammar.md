@@ -337,7 +337,7 @@ IntegerSuffix  = IntegerSuffix { unsigned: bool,
 
 FloatLiteral = FloatLiteral { spelling: string, radix: ( "Decimal" | "Hex" ),
                               suffix: FloatSuffix, imaginary?: true } ;
-FloatSuffix  = "None" | "F" | "L" | "F16" | "F32" | "F64" | "F128"
+FloatSuffix  = "None" | "F" | "L" | "BF16" | "F16" | "F32" | "F64" | "F128"
              | "F32x" | "F64x" | "Q"
              | "DecimalF32" | "DecimalF64" | "DecimalF128" ;
 

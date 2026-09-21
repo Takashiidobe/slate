@@ -374,6 +374,7 @@ pub enum FloatSuffix {
     None,
     F,
     L,
+    BF16,
     F16,
     F32,
     F64,
@@ -404,6 +405,7 @@ pub struct ResolvedFloat {
 
 #[derive(custom_debug::Debug, Clone, PartialEq)]
 pub enum FloatValue {
+    BFloat16(#[debug(format = "{:#x}")] u16),
     Half(#[debug(format = "{:#x}")] u16),
     Single(f32),
     Double(f64),
@@ -414,8 +416,9 @@ pub enum FloatValue {
     Decimal128(String),
 }
 
-const FLOAT_SUFFIXES: [&str; 12] = [
-    "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
+// scanned in order by ends_with, so bf16 must precede f16
+const FLOAT_SUFFIXES: [&str; 13] = [
+    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
 ];
 
 fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
@@ -423,6 +426,7 @@ fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
         "" => FloatSuffix::None,
         "f" => FloatSuffix::F,
         "l" => FloatSuffix::L,
+        "bf16" => FloatSuffix::BF16,
         "f16" => FloatSuffix::F16,
         "f32" => FloatSuffix::F32,
         "f64" => FloatSuffix::F64,
@@ -481,6 +485,7 @@ pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprE
         FloatSuffix::F | FloatSuffix::F32 => {
             FloatValue::Single(token.float_value_f32().ok_or_else(invalid)?)
         }
+        FloatSuffix::BF16 => FloatValue::BFloat16(token.float_value_bf16().ok_or_else(invalid)?),
         FloatSuffix::F16 => FloatValue::Half(token.float_value_f16().ok_or_else(invalid)?),
         FloatSuffix::F128 | FloatSuffix::Q => {
             FloatValue::Quad(token.float_value_f128().ok_or_else(invalid)?)
@@ -768,6 +773,7 @@ fn identifier(expression: &Expr) -> Option<&str> {
 impl std::fmt::Display for ResolvedFloat {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.value {
+            FloatValue::BFloat16(bits) => write!(formatter, "bf16:{bits:#x}")?,
             FloatValue::Half(bits) => write!(formatter, "f16:{bits:#x}")?,
             FloatValue::Single(value) => write!(formatter, "{value}f")?,
             FloatValue::Double(value) => write!(formatter, "{value}")?,

@@ -121,6 +121,9 @@ impl Context {
                     return Err(ResolveError::Unsupported("target-dependent f64x literals"));
                 }
                 let (format, number) = match resolve_float_literal(literal, &self.target)?.value {
+                    FloatValue::BFloat16(bits) => {
+                        (FloatType::BF16, Number::FloatBits(u128::from(bits)))
+                    }
                     FloatValue::Half(bits) => (FloatType::F16, Number::FloatBits(u128::from(bits))),
                     FloatValue::Single(value) => (
                         FloatType::F32,

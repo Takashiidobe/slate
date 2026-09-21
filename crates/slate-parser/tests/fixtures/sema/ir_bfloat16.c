@@ -20,6 +20,14 @@ int truthy(__bf16 x) { return x ? 1 : 0; }
 int variadic(int, ...);
 int unpromoted(__bf16 x) { return variadic(0, x); }
 
+__bf16 literal = 1.5bf16;
+__bf16 literal_upper = 1.5BF16;
+__bf16 literal_hex = 0x1.8p+1bf16;
+__bf16 literal_max = 3.38953138925153547590470800371487867e+38BF16;
+int literal_imaginary_size = sizeof(__typeof__(1.5bf16i));
+int literal_generic = _Generic(1.5bf16, __bf16: 1, default: 0);
+int literal_folded[(int)3.7bf16];
+
 int classify = __builtin_classify_type(value);
 int sizes = sizeof(__bf16) + _Alignof(__bf16);
 
@@ -47,8 +55,15 @@ int sizes = sizeof(__bf16) + _Alignof(__bf16);
 // IR-NEXT:     }
 // IR-NEXT:     global %0 value: bf16 [storage=static] [linkage=external];
 // IR-NEXT:     global %1 vector: vector<bf16, 4> [storage=static] [linkage=external];
-// IR-NEXT:     global %36 classify: i32 [storage=static] = const<i32>(8) [linkage=external];
-// IR-NEXT:     global %37 sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(const<u64>(2), const<u64>(2)))) [linkage=external];
+// IR-NEXT:     global %36 literal: bf16 [storage=static] = const<bf16>(1.5) [linkage=external];
+// IR-NEXT:     global %37 literal_upper: bf16 [storage=static] = const<bf16>(1.5) [linkage=external];
+// IR-NEXT:     global %38 literal_hex: bf16 [storage=static] = const<bf16>(3) [linkage=external];
+// IR-NEXT:     global %39 literal_max: bf16 [storage=static] = const<bf16>(3.39E+38) [linkage=external];
+// IR-NEXT:     global %40 literal_imaginary_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
+// IR-NEXT:     global %41 literal_generic: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %42 literal_folded: array<i32, 3> [storage=static] [linkage=external];
+// IR-NEXT:     global %43 classify: i32 [storage=static] = const<i32>(8) [linkage=external];
+// IR-NEXT:     global %44 sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(const<u64>(2), const<u64>(2)))) [linkage=external];
 // IR-NEXT:     fn %2 @same(%3 x: bf16, %4 y: bf16) -> bf16 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore>(read<bf16>(%3), read<bf16>(%4));
 // IR-NEXT:     }
@@ -88,7 +103,7 @@ int sizes = sizeof(__bf16) + _Alignof(__bf16);
 // IR-NEXT:     fn %31 @truthy(%32 x: bf16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return conditional<i32>(ne<bf16, exceptions=ignore>(read<bf16>(%32), const<bf16>(0)), const<i32>(1), const<i32>(0));
 // IR-NEXT:     }
-// IR-NEXT:     fn %33 @variadic(%38 <unnamed>: i32, ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %33 @variadic(%45 <unnamed>: i32, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %34 @unpromoted(%35 x: bf16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32>(%33, const<i32>(0), read<bf16>(%35));
 // IR-NEXT:     }

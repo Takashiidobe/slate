@@ -546,7 +546,13 @@ f32 and above. Its rank in the usual arithmetic conversions sits below f16
 (`__bf16 + _Float16` is `_Float16`, matching clang's `FloatingRank`), and like
 `_Float16` it is not subject to the default argument promotions. `_Complex
 __bf16` is rejected, as in clang. There is no `bf16` literal suffix, so a bf16
-value can only arise from a conversion.
+value is written `1.5bf16` / `1.5BF16`, which gcc accepts and clang does not.
+The suffix is accepted in every flavor, like the gcc-only `df`/`dd`/`dl` and
+`q` suffixes already were: input is assumed to already compile. It matters
+because gcc spells its own limit macros with it (`__BFLT16_MAX__` is
+`3.389…e+38BF16`), so a gcc predefine set is unusable without it. In
+`FLOAT_SUFFIXES` the entry must precede `f16`, since the suffix is found by the
+first `ends_with` match over an ordered list.
 
 Bit-precise integers follow their own conversion rules rather than the
 standard-integer ones. These rules are **not** gated on the standard mode.
