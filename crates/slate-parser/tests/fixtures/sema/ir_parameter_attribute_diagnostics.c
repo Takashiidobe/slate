@@ -6,6 +6,8 @@
 // SLATE-FILECHECK-ERROR ERR_SYMBOL
 // SLATE-FILECHECK-DEFINES ERR_LAYOUT ERR_LAYOUT
 // SLATE-FILECHECK-ERROR ERR_LAYOUT
+// SLATE-FILECHECK-DEFINES WARN_IGNORED WARN_IGNORED
+// SLATE-FILECHECK-WARNING WARN_IGNORED
 // SLATE-FILECHECK-DEFINES ERR_UNSUPPORTED ERR_UNSUPPORTED
 // SLATE-FILECHECK-ERROR ERR_UNSUPPORTED
 // SLATE-FILECHECK-ARGS --dump-ir --compact-ir
@@ -17,9 +19,11 @@ void f(_Alignas(32) int p);
 #elif defined(ERR_SYMBOL)
 void f(int p __attribute__((section("s"))));
 #elif defined(ERR_LAYOUT)
+void f(int p __attribute__((nocommon)));
+#elif defined(WARN_IGNORED)
 void f(int p __attribute__((packed)));
 #elif defined(ERR_UNSUPPORTED)
-void f(int p __attribute__((cleanup(g))));
+void f(int p __attribute__((mode(SI))));
 #endif
 
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL
@@ -29,7 +33,7 @@ void f(int p __attribute__((cleanup(g))));
 // ERR_LAYOUT: Error:   × unsupported in numeric IR lowering: layout attribute on a parameter
 // SLATE-FILECHECK-END ERR_LAYOUT
 // SLATE-FILECHECK-BEGIN ERR_UNSUPPORTED
-// ERR_UNSUPPORTED: Error:   × unsupported in numeric IR lowering: cleanup attribute
+// ERR_UNSUPPORTED: Error:   × unsupported in numeric IR lowering: machine mode attribute
 // SLATE-FILECHECK-END ERR_UNSUPPORTED
 // SLATE-FILECHECK-BEGIN WARN_ALIGNED
 // WARN_ALIGNED: -Wparameter-alignment
@@ -51,3 +55,13 @@ void f(int p __attribute__((cleanup(g))));
 // WARN_ALIGNAS: 6 │ #elif defined(ERR_SYMBOL)
 // WARN_ALIGNAS: ╰────
 // SLATE-FILECHECK-END WARN_ALIGNAS
+// SLATE-FILECHECK-BEGIN WARN_IGNORED
+// WARN_IGNORED: -Wignored-attributes
+// WARN_IGNORED: ⚠ 'packed' attribute ignored
+// WARN_IGNORED: ╭─[tests/fixtures/sema/ir_parameter_attribute_diagnostics.c:11:8]
+// WARN_IGNORED: 10 │ #elif defined(WARN_IGNORED)
+// WARN_IGNORED: 11 │ void f(int p __attribute__((packed)));
+// WARN_IGNORED: ·        ─────────────────────────────
+// WARN_IGNORED: 12 │ #elif defined(ERR_UNSUPPORTED)
+// WARN_IGNORED: ╰────
+// SLATE-FILECHECK-END WARN_IGNORED

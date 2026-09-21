@@ -1,18 +1,44 @@
 use crate::ast::Attribute;
 
-/// What an attribute written on an object or typedef declaration means to IR lowering.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Subject {
+    Function,
+    Object { automatic: bool },
+    Parameter,
+    Typedef,
+    Record,
+}
+
 pub(super) enum Use {
-    /// Consumed by `symbol_attributes` into the entity's `SymbolAttributes`.
     Symbol,
-    /// Consumed during type resolution or by the object layout request.
     Layout,
-    /// Carries no meaning the IR needs to represent.
     Ignored,
-    /// Changes semantics in a way lowering cannot yet express.
+    Inapplicable {
+        spelling: &'static str,
+        applies_to: Option<&'static str>,
+    },
     Unsupported(&'static str),
 }
 
-pub(super) fn declaration_use(attribute: &Attribute) -> Use {
+pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
+    if let Some((spelling, applies_to)) = inapplicable(attribute, subject) {
+        return Use::Inapplicable {
+            spelling,
+            applies_to,
+        };
+    }
+    let alignment = matches!(attribute, Attribute::Aligned(_) | Attribute::AlignAs(_));
+    match (subject, general_use(attribute)) {
+        (Subject::Typedef, _) if alignment => Use::Unsupported("typedef alignment attribute"),
+        (Subject::Parameter, _) if alignment => Use::Layout,
+        (Subject::Parameter, Use::Symbol) => Use::Unsupported("symbol attribute on a parameter"),
+        (Subject::Parameter, Use::Layout) => Use::Unsupported("layout attribute on a parameter"),
+        (_, general) => general,
+    }
+}
+
+/// What the attribute means to lowering once it is known to apply.
+fn general_use(attribute: &Attribute) -> Use {
     match attribute {
         Attribute::Visibility(_)
         | Attribute::TlsModel(_)
@@ -99,33 +125,92 @@ pub(super) fn declaration_use(attribute: &Attribute) -> Use {
     }
 }
 
-pub(super) fn unsupported(attribute: &Attribute) -> Option<&'static str> {
-    match declaration_use(attribute) {
-        Use::Unsupported(reason) => Some(reason),
+fn inapplicable(
+    attribute: &Attribute,
+    subject: Subject,
+) -> Option<(&'static str, Option<&'static str>)> {
+    let function_only =
+        |spelling| (subject != Subject::Function).then_some((spelling, Some("functions")));
+    match attribute {
+        Attribute::Packed => (subject != Subject::Record).then_some(("packed", None)),
+        Attribute::TransparentUnion => {
+            (subject != Subject::Record).then_some(("transparent_union", Some("unions")))
+        }
+        Attribute::MsStruct => (subject != Subject::Record)
+            .then_some(("ms_struct", Some("structs, unions, and classes"))),
+        Attribute::GccStruct => (subject != Subject::Record)
+            .then_some(("gcc_struct", Some("structs, unions, and classes"))),
+        Attribute::ScalarStorageOrder(_) => (subject != Subject::Record)
+            .then_some(("scalar_storage_order", Some("unions and structs"))),
+
+        Attribute::Ifunc(_) => function_only("ifunc"),
+        Attribute::Malloc => function_only("malloc"),
+        Attribute::Cold => function_only("cold"),
+        Attribute::Hot => function_only("hot"),
+        Attribute::Flatten => function_only("flatten"),
+        Attribute::AlwaysInline => (subject != Subject::Function)
+            .then_some(("always_inline", Some("functions and statements"))),
+        Attribute::NoInline => {
+            (subject != Subject::Function).then_some(("noinline", Some("functions and statements")))
+        }
+        Attribute::AllocSize(_) => (subject != Subject::Function)
+            .then_some(("alloc_size", Some("non-K&R-style functions"))),
+        Attribute::AllocAlign(_) => function_only("alloc_align"),
+        Attribute::ReturnsNonNull => function_only("returns_nonnull"),
+        Attribute::ReturnsTwice => function_only("returns_twice"),
+        Attribute::NoReturn => {
+            (subject != Subject::Function).then_some(("noreturn", Some("function types")))
+        }
+        Attribute::NonNull(_) => (subject != Subject::Function && subject != Subject::Parameter)
+            .then_some(("nonnull", Some("functions, methods, and parameters"))),
+        Attribute::Constructor(_) => function_only("constructor"),
+        Attribute::Destructor(_) => function_only("destructor"),
+        Attribute::Naked => function_only("naked"),
+        Attribute::Interrupt => function_only("interrupt"),
+        Attribute::Leaf => function_only("leaf"),
+        Attribute::NoIpa => function_only("noipa"),
+        Attribute::NoClone => function_only("noclone"),
+        Attribute::NoSplitStack => function_only("no_split_stack"),
+        Attribute::Target(_) => function_only("target"),
+        Attribute::TargetClones(_) => function_only("target_clones"),
+        Attribute::CpuDispatch(_) => function_only("cpu_dispatch"),
+        Attribute::CpuSpecific(_) => function_only("cpu_specific"),
+        Attribute::OptimizeNone => function_only("optnone"),
+        Attribute::GnuInline => function_only("gnu_inline"),
+        Attribute::Format(_) => function_only("format"),
+        Attribute::Sentinel(_) => function_only("sentinel"),
+        Attribute::Pure => function_only("pure"),
+        Attribute::Const => function_only("const"),
+
+        Attribute::Common | Attribute::NoCommon => {
+            let spelling = if matches!(attribute, Attribute::Common) {
+                "common"
+            } else {
+                "nocommon"
+            };
+            (!matches!(subject, Subject::Object { .. } | Subject::Parameter))
+                .then_some((spelling, Some("variables")))
+        }
+        Attribute::Used | Attribute::Retain => {
+            let spelling = if matches!(attribute, Attribute::Used) {
+                "used"
+            } else {
+                "retain"
+            };
+            matches!(
+                subject,
+                Subject::Object { automatic: true } | Subject::Parameter | Subject::Typedef
+            )
+            .then_some((
+                spelling,
+                Some("variables with non-local storage and functions"),
+            ))
+        }
+        Attribute::Cleanup(_) => (!matches!(subject, Subject::Object { automatic: true }))
+            .then_some(("cleanup", Some("local variables"))),
+        Attribute::Visibility(_) => (subject == Subject::Typedef).then_some(("visibility", None)),
+        Attribute::Weak => (subject == Subject::Typedef).then_some(("weak", None)),
+
         _ => None,
-    }
-}
-
-/// Alignment written on a typedef belongs to the aliased type, which the
-/// structural IR type cannot carry, so it is refused rather than dropped.
-pub(super) fn typedef_unsupported(attribute: &Attribute) -> Option<&'static str> {
-    match attribute {
-        Attribute::Aligned(_) | Attribute::AlignAs(_) => Some("typedef alignment attribute"),
-        other => unsupported(other),
-    }
-}
-
-/// A parameter has no linkage and no storage of its own, so alignment is the
-/// only attribute lowering can represent on one; anything else would be
-/// dropped silently rather than applied.
-pub(super) fn parameter_unsupported(attribute: &Attribute) -> Option<&'static str> {
-    match attribute {
-        Attribute::Aligned(_) | Attribute::AlignAs(_) => None,
-        other => match declaration_use(other) {
-            Use::Ignored => None,
-            Use::Unsupported(reason) => Some(reason),
-            Use::Symbol => Some("symbol attribute on a parameter"),
-            Use::Layout => Some("layout attribute on a parameter"),
-        },
     }
 }

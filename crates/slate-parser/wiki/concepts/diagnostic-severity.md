@@ -82,6 +82,7 @@ to (1) needs no justification beyond the measurement. (3) is always a bug.
 | `compare-distinct-pointer-types` | on     | no       | a comparison between pointers whose pointees have no composite type and neither is `void`                                                                       |
 | `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
 | `parameter-alignment`         | on        | no       | an alignment attribute on a function parameter, which no two of the three compilers agree to reject |
+| `ignored-attributes`          | on        | no       | an attribute written on a subject outside clang's subject list for it; see [attribute applicability](#attribute-applicability) |
 
 `incompatible-pointer-types` and `int-conversion` were at (2): one global
 warning, chosen because MSVC only warns on all of them (C4047, C4057, C4133)
@@ -121,6 +122,52 @@ slate-parser applies it too: the request goes on the parameter's entity and
 flavor raises a below-natural request and the others report it as written.
 The IR has no parameter home slot to align, so the request is observable only
 through `_Alignof`.
+
+## Attribute applicability
+
+Whether an attribute is *applied* or *dropped* is a property of the pair
+(attribute, subject), not of the attribute alone, and getting it wrong
+produces wrong IR — a visibility, section or `used` flag on a declaration
+clang leaves alone — rather than only a missing diagnostic. `sema/attributes.rs`
+states the pair once: `Subject` names what the attribute is written on
+(`Function`, `Object { automatic }`, `Parameter`, `Typedef`, `Record`) and
+`declaration_use(attribute, subject)` answers with
+
+- `Inapplicable` — outside clang's subject list: dropped, never applied, and
+  reported as `-Wignored-attributes`;
+- `Symbol` / `Layout` / `Ignored` — applied, or carrying nothing the IR needs;
+- `Unsupported` — applicable here, but lowering cannot yet express it, which
+  is the only remaining reason to refuse a declaration.
+
+`Lowerer::check_attributes` is the single place that turns that answer into a
+warning or a `ResolveError`, and each call site filters the inapplicable
+attributes out before `symbol_attributes` and `requested_alignment` read them.
+That split is what fixes the too-strict half of slate-parser-dyd.15: before
+it, `transparent_union`, `ms_struct`, `gcc_struct`, `ifunc` and
+`scalar_storage_order` on a plain object were `Unsupported` and stopped the
+lowering, where clang merely warns and keeps going.
+
+Measured against clang 22.1.8 (2026-09-21); `ok` is silently accepted and
+`ign` is `-Wignored-attributes`:
+
+| written on | object | function | typedef | parameter |
+| --- | --- | --- | --- | --- |
+| `used`, `retain` | ok, `ign` if automatic | ok | `ign` | `ign` |
+| `common`, `nocommon` | ok | `ign` | `ign` | ok |
+| `visibility`, `weak` | ok | ok | `ign` | ok |
+| `cleanup` | `ign` unless automatic | `ign` | `ign` | `ign` |
+| `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign` | `ign` | `ign` | `ign` |
+| `malloc`, `cold`, `ifunc`, `alloc_size`, … | `ign` | ok | `ign` | `ign` |
+
+Two gaps remain, both filed rather than guessed at: clang reports
+`scalar_storage_order`, `dllimport`, `dllexport` and any unrecognized spelling
+under `-Wunknown-attributes` when the target or flavor does not register them,
+which is a different warning identity from `ignored-attributes`; and the
+record and field subjects are not diagnosed, because lowering does not route
+their attributes through `check_attributes` yet.
+
+Fixtures: `sema/ir_attribute_applicability.c` (the applied/dropped half, in
+the IR) and `sema/attribute_applicability_warnings.c` (the diagnostics).
 
 The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
 types, so they come from IR lowering rather than `TranslationUnit::analyze`.

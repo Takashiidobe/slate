@@ -1,4 +1,5 @@
 use super::SemaError;
+use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
@@ -67,6 +68,11 @@ pub fn resolve_module(
                     &function.declarator,
                     &function.attributes,
                 );
+                lower.check_attributes(
+                    attributes.iter().copied(),
+                    Subject::Function,
+                    declaration,
+                )?;
                 let mut symbol = function_symbol(attributes.iter().copied(), None)?;
                 let name = function
                     .declarator
@@ -193,20 +199,21 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
 
 fn reject_unsupported<'a>(
     attributes: impl IntoIterator<Item = &'a ast::Attribute>,
-) -> Result<(), ResolveError> {
-    reject_with(attributes, super::attributes::unsupported)
-}
-
-fn reject_with<'a>(
-    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
-    classify: impl Fn(&ast::Attribute) -> Option<&'static str>,
+    subject: Subject,
 ) -> Result<(), ResolveError> {
     for attribute in attributes {
-        if let Some(reason) = classify(attribute) {
+        if let Use::Unsupported(reason) = super::attributes::declaration_use(attribute, subject) {
             return Err(ResolveError::Unsupported(reason));
         }
     }
     Ok(())
+}
+
+fn applies(attribute: &ast::Attribute, subject: Subject) -> bool {
+    !matches!(
+        super::attributes::declaration_use(attribute, subject),
+        Use::Inapplicable { .. }
+    )
 }
 
 fn symbol_attributes<'a>(
@@ -254,11 +261,7 @@ fn symbol_attributes<'a>(
             | ast::Attribute::AlignAs(_)
             | ast::Attribute::Common
             | ast::Attribute::NoCommon => {}
-            other => {
-                if let Some(reason) = super::attributes::unsupported(other) {
-                    return Err(ResolveError::Unsupported(reason));
-                }
-            }
+            _ => {}
         }
     }
     Ok(symbol)
@@ -295,6 +298,33 @@ fn function_symbol<'a>(
 }
 
 impl Lowerer {
+    fn check_attributes<'a, T>(
+        &mut self,
+        attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+        subject: Subject,
+        anchor: &Span<T>,
+    ) -> Result<(), ResolveError> {
+        for attribute in attributes {
+            match super::attributes::declaration_use(attribute, subject) {
+                Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
+                Use::Inapplicable {
+                    spelling,
+                    applies_to,
+                } => {
+                    let message = match applies_to {
+                        Some(subjects) => {
+                            format!("'{spelling}' attribute ignored; it applies only to {subjects}")
+                        }
+                        None => format!("'{spelling}' attribute ignored"),
+                    };
+                    self.warn(Warning::IgnoredAttributes, &message, anchor);
+                }
+                Use::Symbol | Use::Layout | Use::Ignored => {}
+            }
+        }
+        Ok(())
+    }
+
     fn resolve_object_requests(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         let msvc_target = self.context.target.environment == TargetEnvironment::Msvc;
         for global in &mut self.module.globals {
@@ -435,7 +465,7 @@ impl Lowerer {
                     .iter()
                     .chain(&parameter.attributes)
             };
-            reject_with(attributes(), super::attributes::parameter_unsupported)?;
+            self.check_attributes(attributes(), Subject::Parameter, parameter)?;
             let alignment = super::types::requested_alignment(&mut self.types, attributes())?;
             if let Some(alignment) = alignment {
                 let rejected_by = if attributes()
@@ -512,7 +542,7 @@ impl Lowerer {
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         if item.declarators.is_empty() {
-            reject_unsupported(&item.specifiers.attributes)?;
+            reject_unsupported(&item.specifiers.attributes, Subject::Record)?;
             if let ast::TypeSpecifier::Tag(ast::TagSpecifier::Reference {
                 kind,
                 name,
@@ -533,7 +563,7 @@ impl Lowerer {
                 .iter()
                 .chain(&declarator.attributes);
             if storage_class == StorageClass::Typedef {
-                reject_with(attributes.clone(), super::attributes::typedef_unsupported)?;
+                self.check_attributes(attributes.clone(), Subject::Typedef, declarator)?;
             }
             let thread = item.specifiers.is_thread_local
                 || attributes
@@ -602,6 +632,7 @@ impl Lowerer {
                     &declarator.declarator,
                     &declarator.attributes,
                 );
+                self.check_attributes(attributes.iter().copied(), Subject::Function, declarator)?;
                 let mut symbol =
                     function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
                 self.types.pragmas.apply(name, &mut symbol);
@@ -660,21 +691,22 @@ impl Lowerer {
             } else {
                 StorageDuration::Static
             };
-            reject_unsupported(attributes.clone())?;
+            let subject = Subject::Object {
+                automatic: storage == StorageDuration::Automatic,
+            };
+            self.check_attributes(attributes.clone(), subject, declarator)?;
+            let attributes = || attributes.clone().filter(|a| applies(a, subject));
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }
-            let mut symbol = symbol_attributes(attributes.clone(), declarator.asm_label.as_ref())?;
+            let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())?;
             self.types.pragmas.apply(name, &mut symbol);
             let request = super::entity::ObjectRequest {
-                alignment: super::types::requested_alignment(&mut self.types, attributes.clone())?,
-                common: if attributes
-                    .clone()
-                    .any(|attribute| matches!(attribute, ast::Attribute::Common))
+                alignment: super::types::requested_alignment(&mut self.types, attributes())?,
+                common: if attributes().any(|attribute| matches!(attribute, ast::Attribute::Common))
                 {
                     Some(true)
-                } else if attributes
-                    .clone()
+                } else if attributes()
                     .any(|attribute| matches!(attribute, ast::Attribute::NoCommon))
                 {
                     Some(false)

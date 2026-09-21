@@ -17,10 +17,11 @@ pub enum Warning {
     CompareDistinctPointerTypes,
     ConflictingTypes,
     ParameterAlignment,
+    IgnoredAttributes,
 }
 
 impl Warning {
-    pub const ALL: [Self; 13] = [
+    pub const ALL: [Self; 14] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -34,6 +35,7 @@ impl Warning {
         Self::CompareDistinctPointerTypes,
         Self::ConflictingTypes,
         Self::ParameterAlignment,
+        Self::IgnoredAttributes,
     ];
 
     pub fn name(self) -> &'static str {
@@ -53,6 +55,7 @@ impl Warning {
             Self::CompareDistinctPointerTypes => "compare-distinct-pointer-types",
             Self::ConflictingTypes => "conflicting-types",
             Self::ParameterAlignment => "parameter-alignment",
+            Self::IgnoredAttributes => "ignored-attributes",
         }
     }
 
