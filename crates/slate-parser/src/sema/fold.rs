@@ -5,7 +5,7 @@ use crate::ir::{
 use num_bigint::{BigInt, Sign};
 use rustc_apfloat::{
     Float, Status,
-    ieee::{Double, Half, Quad, Single, X87DoubleExtended},
+    ieee::{BFloat, Double, Half, Quad, Single, X87DoubleExtended},
 };
 
 const MAX_WIDTH: u32 = 65_536;
@@ -146,6 +146,7 @@ fn float_to_integer(value: &Value, width: u32, signed: bool) -> Option<BigInt> {
     };
     // The IR format already incorporates the target's long-double selection.
     match format {
+        FloatType::BF16 => convert_float::<BFloat>(bits, negate, width, signed),
         FloatType::F16 => convert_float::<Half>(bits, negate, width, signed),
         FloatType::F32 => convert_float::<Single>(bits, negate, width, signed),
         FloatType::F64 => convert_float::<Double>(bits, negate, width, signed),

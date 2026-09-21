@@ -178,6 +178,7 @@ impl Type {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum FloatType {
+    BF16,
     F16,
     F32,
     F64,
@@ -195,6 +196,7 @@ impl FloatType {
 
     pub fn exact_integer_bits(self) -> u32 {
         match self {
+            Self::BF16 => 8,
             Self::F16 => 11,
             Self::F32 => 24,
             Self::F64 => 53,
@@ -206,8 +208,22 @@ impl FloatType {
         }
     }
 
+    pub fn exponent_bits(self) -> u32 {
+        match self {
+            Self::F16 => 5,
+            Self::BF16 | Self::F32 | Self::D32 => 8,
+            Self::D64 => 10,
+            Self::F64 => 11,
+            Self::D128 => 14,
+            Self::F80 | Self::F128 => 15,
+        }
+    }
+
     pub fn widens_from(self, from: Self) -> bool {
-        self.is_decimal() == from.is_decimal() && from < self
+        self.is_decimal() == from.is_decimal()
+            && self != from
+            && self.exact_integer_bits() >= from.exact_integer_bits()
+            && self.exponent_bits() >= from.exponent_bits()
     }
 }
 
@@ -224,6 +240,7 @@ impl Number {
 impl fmt::Display for FloatType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            Self::BF16 => "bf16",
             Self::F16 => "f16",
             Self::F32 => "f32",
             Self::F64 => "f64",

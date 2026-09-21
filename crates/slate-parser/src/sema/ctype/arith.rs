@@ -240,10 +240,11 @@ impl CTypes {
 
 fn float_rank(kind: FloatKind) -> u32 {
     match kind {
-        FloatKind::Fp16 | FloatKind::Float16 => 0,
-        FloatKind::Float | FloatKind::Decimal32 => 1,
-        FloatKind::Double | FloatKind::Decimal64 => 2,
-        FloatKind::LongDouble => 3,
-        FloatKind::Float128 | FloatKind::Decimal128 => 4,
+        FloatKind::BFloat16 => 0,
+        FloatKind::Fp16 | FloatKind::Float16 => 1,
+        FloatKind::Float | FloatKind::Decimal32 => 2,
+        FloatKind::Double | FloatKind::Decimal64 => 3,
+        FloatKind::LongDouble => 4,
+        FloatKind::Float128 | FloatKind::Decimal128 => 5,
     }
 }

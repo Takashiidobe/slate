@@ -164,6 +164,7 @@ pub fn rank_width(rank: IntRank, target: &TargetInfo) -> u32 {
 
 pub fn float_type(kind: FloatKind, target: &TargetInfo) -> FloatType {
     match kind {
+        FloatKind::BFloat16 => FloatType::BF16,
         FloatKind::Float16 | FloatKind::Fp16 => FloatType::F16,
         FloatKind::Float => FloatType::F32,
         FloatKind::Double => FloatType::F64,

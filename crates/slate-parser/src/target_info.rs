@@ -159,6 +159,7 @@ impl ScalarLayouts {
             }
         }
         for (format, size, alignment) in [
+            (FloatType::BF16, 2, 2),
             (FloatType::F16, 2, 2),
             (FloatType::F32, 4, 4),
             (FloatType::F64, 8, 8),

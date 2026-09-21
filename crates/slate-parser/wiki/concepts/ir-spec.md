@@ -456,8 +456,8 @@ warnings from. C89 and C99 only diverge where `long` is
 narrower than `long long`, i.e. ILP32 and LLP64 targets, not LP64. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
 (including signed zero); NaNs retain hexadecimal bits to preserve payloads.
-The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64
-conversion. NaNs retain hexadecimal bits in every format.
+The bf16, f16, f80, and f128 printer uses `rustc_apfloat` directly, without an
+f64 conversion. NaNs retain hexadecimal bits in every format.
 These lower to one `ValueKind::Arith` node keyed by `ArithOp`
 (`add`/`sub`/`mul`/`div`/`rem`/`and`/`or`/`xor`/`shl`/`shr`), all carrying `ArithSema` metadata. They are
 not folded or reassociated. Signed overflow defaults to
@@ -519,7 +519,7 @@ ordinary binary expressions. The expression-only diagnostic view has no
 places and therefore still rejects updates.
 
 The initial numeric type stores integer width/signedness/bit-precision or
-one of eight floating formats: binary f16, f32, f64, f80, f128 and decimal
+one of nine floating formats: binary bf16, f16, f32, f64, f80, f128 and decimal
 d32, d64, d128 (`_Decimal32/64/128`, size and alignment 4/8/16 on every
 target; availability is not target-gated). Decimal literals (`1.5DF`) keep
 their digit spelling as `const<d32>(1.5)` and are never converted to binary.
@@ -535,6 +535,18 @@ with size 16 align 8, and arm32 rejects `__int128` while still accepting
 `_BitInt(128)`. Bit-precise layouts come from `ScalarLayouts::bit_precise`,
 which rounds the width up to the widest standard integer's alignment. These denote value formats, not
 storage sizes.
+
+`__bf16` lowers to `bf16`, its own format rather than an alias of `f16`: it is
+a truncated f32, so it has 8 mantissa bits and f32's 8 exponent bits, while
+f16 has 11 mantissa bits and 5 exponent bits. Neither format can hold every
+value of the other, so `FloatType::widens_from` compares mantissa and exponent
+width instead of the enum's declaration order — bf16 and f16 are incomparable,
+and a conversion either way prints as `float_narrow`. `bf16` widens only to
+f32 and above. Its rank in the usual arithmetic conversions sits below f16
+(`__bf16 + _Float16` is `_Float16`, matching clang's `FloatingRank`), and like
+`_Float16` it is not subject to the default argument promotions. `_Complex
+__bf16` is rejected, as in clang. There is no `bf16` literal suffix, so a bf16
+value can only arise from a conversion.
 
 Bit-precise integers follow their own conversion rules rather than the
 standard-integer ones. These rules are **not** gated on the standard mode.

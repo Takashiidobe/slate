@@ -299,6 +299,7 @@ fn words(quals: Qualifiers) -> Vec<&'static str> {
 
 fn float_name(kind: FloatKind) -> &'static str {
     match kind {
+        FloatKind::BFloat16 => "__bf16",
         FloatKind::Float16 => "_Float16",
         FloatKind::Fp16 => "__fp16",
         FloatKind::Float => "float",

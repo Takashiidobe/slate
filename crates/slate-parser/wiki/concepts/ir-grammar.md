@@ -83,7 +83,8 @@ type          = "void" | "bool" | "va_list" | numeric
               | type_ref ;
 numeric       = int_type | float_type ;
 int_type      = ( "i" | "u" ) digits [ "b" ] ;
-float_type    = "f16" | "f32" | "f64" | "f80" | "f128" | "d32" | "d64" | "d128" ;
+float_type    = "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
+              | "d32" | "d64" | "d128" ;
 access_prefix = "volatile " | "atomic " | "volatile atomic " ;
 fn_type       = "fn(" [ fn_params ] ") -> " type ;
 fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;

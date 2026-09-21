@@ -126,6 +126,7 @@ pub enum IntRank {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum FloatKind {
+    BFloat16,
     Float16,
     Fp16,
     Float,

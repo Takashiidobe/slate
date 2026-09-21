@@ -57,6 +57,18 @@ A new `TypeSpecifier` variant fails at `src/sema/types.rs` `base()`, the
 `TypeSpecifier` to `CTypeKind` map, on top of the AST-side sites in
 [[ast-enum-touchpoints]].
 
+A new `ir::FloatType` variant — a float *format*, not a family — fails at only
+one site, `src/sema/fold.rs` `float_to_integer`. Everything else it needs is a
+non-exhaustive list you have to find: `Display`, `exact_integer_bits` and
+`exponent_bits` in `src/ir/numeric.rs`, the storage table in
+`src/target_info.rs`, the constant printer's `format_apfloat` dispatch in
+`src/ir/mod.rs`, `float_rank` in `src/sema/ctype/arith.rs`, and the hardcoded
+`storage` header list in `src/ir/module_print.rs` (which omits the decimal
+formats and bf16). `FloatType` derives `Ord`, but `widens_from` deliberately
+does **not** use it: it compares mantissa and exponent width, because bf16 and
+f16 are incomparable and declaration order would call one a widening of the
+other.
+
 Handling those makes a declaration lower. It does **not** make any operation on
 the type correct.
 

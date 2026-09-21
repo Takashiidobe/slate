@@ -34,7 +34,7 @@ pub use numeric::{
 };
 use rustc_apfloat::{
     Float,
-    ieee::{Half, Quad, X87DoubleExtended},
+    ieee::{BFloat, Half, Quad, X87DoubleExtended},
 };
 use std::fmt;
 
@@ -549,6 +549,7 @@ impl Value {
                     FloatType::F64 if !f64::from_bits(*bits as u64).is_nan() => {
                         write!(f, "const<{}>({:?})", self.ty, f64::from_bits(*bits as u64))
                     }
+                    FloatType::BF16 => format_apfloat::<BFloat>(f, self.ty.clone(), *bits),
                     FloatType::F16 => format_apfloat::<Half>(f, self.ty.clone(), *bits),
                     FloatType::F80 => {
                         format_apfloat::<X87DoubleExtended>(f, self.ty.clone(), *bits)

@@ -941,6 +941,7 @@ impl TypeResolver {
                 }
             }
             TypeSpecifier::Floating(float) => CTypeKind::Float(match float {
+                FloatingType::BFloat16 => FloatKind::BFloat16,
                 FloatingType::Float16 => FloatKind::Float16,
                 FloatingType::Fp16 => FloatKind::Fp16,
                 FloatingType::Float => FloatKind::Float,
