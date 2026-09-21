@@ -1293,7 +1293,17 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
   anonymous records; unnamed bit-fields are skipped) or array element was
   omitted. Unions carry only the selected member and never `zero_fill`.
 - A later initializer for the same target replaces the earlier one. A
-  partially overlapping range is `Unsupported`.
+  partially overlapping range is split so the members stay disjoint: the parts
+  outside the new designation keep their old value, the parts inside are
+  reinitialized. Only the scalars an initializer actually reaches are
+  overwritten, so `{[2 ... 4]... = 1, [2] = 2}` leaves the rest of `[2]` alone
+  while `{... , [2] = {2}}` (braced) replaces it whole.
+- A designation moves the current object to the subobject it names, so
+  following items without designators continue *inside* it and then walk back
+  out one level at a time: `{[1][0] = 1, 2, 3}` on `int[3][2]` fills
+  `[1][0], [1][1], [2][0]`. A range designation replays the whole remaining
+  path over every part of the range — each element merging with what it
+  already holds — but the continuation lands only in the range's last element.
 - `T a[] = ...` completes the array length from the last initialized
   element. `char`-like arrays from string literals (also `{"..."}`) stay
   `CodeUnits` on the declared array type, zero-padded or truncated to length.
