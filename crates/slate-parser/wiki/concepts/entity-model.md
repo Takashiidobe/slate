@@ -48,6 +48,39 @@ accepted.
 speculatively evaluated expression (`sizeof`, `_Generic`, an unevaluated
 `typeof`) whose bindings are rolled back.
 
+`names.rs::redeclares` decides whether a second declaration shares the first
+one's entity, and it treats `Object` and `Function` as one kind. A declarator
+only *looks* like a function when it is written with parameters, so
+`extern __typeof(f) f` and a typedef'd function type arrive as objects; whether
+the two types actually agree is `merge_redeclaration`'s question, and
+`int x; void x(void);` still gets a conflict there. Name resolution runs before
+any type is resolved, so it cannot answer it and must not pre-empt it
+(slate-parser-dyd.12).
+
+## Prototype scope
+
+C11 6.2.1p4: names declared in a function declarator's parameter list have
+block scope ending at the `)`. Three passes push that scope independently, and
+all three had leaked it:
+
+- `names.rs::declarator` around the `Declarator::Function` parameter loop.
+- `types.rs::resolve` likewise, through `TypeResolver::with_scope`.
+- `module.rs`, which resolves parameters a *second* time to build `Parameters`:
+  inside `scoped` for a prototype, and for a definition inside one scope that
+  also covers the body, since a definition's parameter scope extends into it.
+
+That second resolution is why `types.rs::define_tag` re-declares its tag name
+and enumerators on the memoized path. A tag body is resolved once, keyed by
+AST `TagId`, but its *names* belong to whichever scope the specifier is written
+in, and for a definition that is the function scope rather than the discarded
+prototype scope the first resolution ran in.
+
+Without this a file-scope `typedef double T` was destroyed by an unrelated
+`int f(enum { T = 2 } v);` later in the file. Fixture:
+`sema/ir_prototype_scope_redeclaration.c`, where `int a[sizeof(T)]` in the same
+prototype is `array=4` (the enumerator) while `T after_prototype` is still
+`f64` (the typedef).
+
 ## Tags
 
 Tags are not in this table. A tag has no `BindingId`; its identity is a

@@ -112,8 +112,8 @@ pub fn resolve_module(
                 lower.function_name = Some(name.to_string());
                 lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
                 lower.return_type = return_type.as_ref().map(|_| return_c);
-                let parameters = lower.parameters(params, Some(&mut prologue));
-                let body = parameters.and_then(|parameters| {
+                let body = lower.scoped(|lower| {
+                    let parameters = lower.parameters(params, Some(&mut prologue))?;
                     let body = lower.scoped(|lower| {
                         lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
                     })?;
@@ -594,7 +594,7 @@ impl Lowerer {
                 self.types.pragmas.apply(name, &mut symbol);
                 self.record_function(id, &item.specifiers, &attributes, false, global)?;
                 let parameters = match declarator.declarator.function_parameters() {
-                    Some(params) => self.parameters(params, None)?,
+                    Some(params) => self.scoped(|lower| lower.parameters(params, None))?,
                     None if !prototyped => Parameters::Unprototyped,
                     None => Parameters::Prototype {
                         fixed: parameter_types

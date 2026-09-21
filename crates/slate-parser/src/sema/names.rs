@@ -431,12 +431,16 @@ impl Resolver {
             Declarator::Function { inner, parameters } => {
                 self.visit_declarator(inner)?;
                 if let ParameterList::Prototype { parameters, .. } = parameters {
-                    for parameter in parameters {
+                    self.push_scope();
+                    let result = parameters.iter().try_for_each(|parameter| {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
                         if self.collecting_labels {
                             self.visit_declarator(&parameter.declarator)?;
                         }
-                    }
+                        Ok(())
+                    });
+                    self.pop_scope();
+                    result?;
                 }
                 Ok(())
             }
@@ -610,7 +614,7 @@ impl Resolver {
         span: &Span<T>,
     ) -> Result<Entry, ResolveError> {
         if let Some(existing) = self.ordinary.last().unwrap().get(name).cloned() {
-            if (self.ordinary.len() == 1 || linked) && existing.kind == kind {
+            if (self.ordinary.len() == 1 || linked) && redeclares(existing.kind, kind) {
                 self.resolution.declarations.insert(span.id, existing.id);
                 return Ok(existing);
             }
@@ -620,7 +624,7 @@ impl Resolver {
             });
         }
         let entry = match self.linked.get(name) {
-            Some(entry) if linked && entry.kind == kind => entry.clone(),
+            Some(entry) if linked && redeclares(entry.kind, kind) => entry.clone(),
             _ => self.new_entry(name, kind, span),
         };
         if linked {
@@ -856,6 +860,11 @@ impl Visitor for Resolver {
     fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Self::Error> {
         self.declarator(declarator)
     }
+}
+
+fn redeclares(existing: BindingKind, declared: BindingKind) -> bool {
+    let has_linkage = |kind| matches!(kind, BindingKind::Object | BindingKind::Function);
+    existing == declared || (has_linkage(existing) && has_linkage(declared))
 }
 
 fn copy_span<T, U>(span: &Span<T>, value: U) -> Span<U> {

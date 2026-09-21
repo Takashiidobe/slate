@@ -166,6 +166,16 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn with_scope<T>(
+        &mut self,
+        resolve: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
+    ) -> Result<T, ResolveError> {
+        self.push_scope();
+        let result = resolve(self);
+        self.pop_scope();
+        result
+    }
+
     pub(super) fn declare(&mut self, name: &str, entry: Ordinary) {
         if let Some(scope) = self.ordinary.last_mut() {
             scope.insert(name.to_owned(), entry);
@@ -1055,15 +1065,18 @@ impl TypeResolver {
                 self.derive(core, q)
             }
             Declarator::Function { inner, parameters } => {
-                let mut params = Vec::new();
-                for parameter in parameters.parameters() {
-                    let resolved =
-                        self.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
-                    if self.ctypes.is_void(resolved) {
-                        return Err(ResolveError::Unsupported("void parameter"));
+                let params = self.with_scope(|this| {
+                    let mut params = Vec::new();
+                    for parameter in parameters.parameters() {
+                        let resolved =
+                            this.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
+                        if this.ctypes.is_void(resolved) {
+                            return Err(ResolveError::Unsupported("void parameter"));
+                        }
+                        params.push(resolved);
                     }
-                    params.push(resolved);
-                }
+                    Ok(params)
+                })?;
                 let prototyped = self.features.empty_parens_are_prototype
                     || !matches!(parameters, ParameterList::Empty);
                 let (core, ret) = self.apply_pointers(inner, q);
@@ -1127,9 +1140,28 @@ impl TypeResolver {
         id
     }
 
+    fn redeclare_tag_names(&mut self, tag: &TagDefinition, id: TypeId) {
+        if let Some(name) = &tag.name {
+            self.declare_tag((tag.kind, name.clone()), id);
+        }
+        let TagBody::Enum { enumerators, .. } = &tag.body else {
+            return;
+        };
+        for item in enumerators {
+            let EnumItemKind::Enumerator(enumerator) = &item.value else {
+                continue;
+            };
+            let Some(operand) = self.enumerators.get(&item.id).cloned() else {
+                continue;
+            };
+            self.declare(&enumerator.name, Ordinary::Constant(operand));
+        }
+    }
+
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
-        if let Some(id) = self.tag_ids.get(&tag.id) {
-            return Ok(*id);
+        if let Some(id) = self.tag_ids.get(&tag.id).copied() {
+            self.redeclare_tag_names(tag, id);
+            return Ok(id);
         }
         let previous = tag.name.as_ref().and_then(|name| {
             self.tag_names
