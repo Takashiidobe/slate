@@ -1076,6 +1076,7 @@ impl Lowerer {
                 })
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
+                let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let access = self.types.access_of(resolved);
                 let _declared = self.types.object_type(resolved, "void compound literal")?;
@@ -1085,6 +1086,7 @@ impl Lowerer {
                     &Initializer::List(initializer.clone()),
                     &anchor,
                 )?;
+                let value = self.captured(e, extents, value);
                 let object = self.fresh();
                 let ty = value.ty.clone();
                 let c = self.with_length(resolved, &ty);
@@ -1792,17 +1794,25 @@ impl Lowerer {
         extents: Vec<(BindingId, Value)>,
         value: Operand,
     ) -> Operand {
+        Operand {
+            c: value.c,
+            value: self.captured(e, extents, value.value),
+        }
+    }
+
+    fn captured(&mut self, e: &Expr, extents: Vec<(BindingId, Value)>, value: Value) -> Value {
         extents
             .into_iter()
             .rev()
             .fold(value, |value, (id, extent)| {
-                self.operand(
+                let ty = value.ty.clone();
+                self.value(
                     e,
-                    value.c,
+                    ty,
                     ValueKind::Capture {
                         id,
                         extent: Box::new(extent),
-                        value: Box::new(value.value),
+                        value: Box::new(value),
                     },
                 )
             })
