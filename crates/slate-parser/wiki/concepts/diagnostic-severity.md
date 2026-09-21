@@ -2,7 +2,7 @@
 
 Extension and compatibility acceptances carry a named identity so command-line
 flags can suppress them or promote them to errors. `src/diagnostics.rs` owns
-both halves: the `Warning` enum (identity, default-on rule, pedantic
+both halves: the `Warning` enum (identity, default severity, pedantic
 membership) and `DiagnosticOptions` (the resolved severity map).
 
 `DiagnosticOptions` lives on `CompilerOptions`, so it reaches sema through
@@ -10,15 +10,30 @@ membership) and `DiagnosticOptions` (the resolved severity map).
 
 ## Severity resolution
 
+Every warning has a *default severity* for a given standard and compiler
+flavor: `Ignored`, `Warning`, or `Error`. `Error` is clang's `DefaultError`
+and gcc's `permerror` — on by default *as an error*, but still an ordinary
+warning as far as the flags are concerned.
+
 ```
 severity(w) =
   None                       if -Wno-<w>
   Error                      if -Werror=<w>, or -Werror while enabled,
+                             or default_severity(w) is Error,
                              or -pedantic-errors and w is pedantic
-  Warning                    if -W<w>, or default-on for the standard,
+  Warning                    if -W<w>, or default_severity(w) is Warning,
                              or -pedantic and w is pedantic
   None                       otherwise
 ```
+
+`-W<w>` enables at the default severity, so it leaves a default-error warning
+an error; only `-Wno-error=<w>` demotes one, and only `-Wno-<w>` silences it.
+Verified against clang 22.1.8 and gcc 16.2.1 on `-Wint-conversion`.
+
+`default_severity` takes the flavor as well as the standard, which is what
+lets one warning be an error under clang and a warning under MSVC without a
+second diagnostic identity. `DiagnosticContext` carries the three inputs
+(options, standard, flavor) so a new warning does not thread them itself.
 
 `None` means the diagnostic is not produced at all. An explicit `-Wno-<w>`
 wins over the pedantic group regardless of flag order; otherwise later flags
@@ -37,6 +52,19 @@ is reported. So `Availability::Extension` never degrades to `Rejected`, and
 `StandardFeatures` does not read `DiagnosticOptions`. An earlier design note
 on slate-parser-47s.8 claimed the opposite; it was wrong.
 
+## Three ways to answer a severity question
+
+1. **Correct per compiler and flags.** The most work, and the goal wherever
+   the split is measurable and the flavor axis already reaches the decision.
+2. **Permissive.** One answer, no stricter than the most permissive compiler.
+   Cheap, and where most of this lands: polish costs more than it returns for
+   a diagnostic nobody configures.
+3. **Too strict for all three.** The bug. A configuration is rejected that no
+   real compiler rejects, and real code stops ingesting.
+
+(2) is an accepted cost, not the correct answer — so moving a warning from (2)
+to (1) needs no justification beyond the measurement. (3) is always a bug.
+
 ## Warnings in use
 
 | Warning                       | Default   | Pedantic | Raised when                                                                                                                 |
@@ -48,21 +76,33 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 | `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |
 | `incompatible-pointer-types-discards-qualifiers` | on | yes | the same conversions dropping pointee `const`/`volatile`, or differing in qualifiers below the first pointer level |
-| `incompatible-pointer-types`  | on        | no       | an implicit pointer conversion whose pointees have no composite type (`unsigned * → long *`, `struct A * → struct B *`), or which drops `_Atomic` from the pointee |
-| `int-conversion`              | on        | no       | an implicit conversion between an integer and a pointer across an assignment, argument, return or initializer                                                  |
+| `incompatible-pointer-types`  | error, warning under msvc and gcc c89 | no | an implicit pointer conversion whose pointees have no composite type (`unsigned * → long *`, `struct A * → struct B *`), or which drops `_Atomic` from the pointee |
+| `int-conversion`              | error, warning under msvc and gcc c89 | no | an implicit conversion between an integer and a pointer across an assignment, argument, return or initializer                                                  |
 | `pointer-integer-compare`     | on        | no       | a comparison between a pointer and an integer that is not a null pointer constant                                                                               |
 | `compare-distinct-pointer-types` | on     | no       | a comparison between pointers whose pointees have no composite type and neither is `void`                                                                       |
 | `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
 | `parameter-alignment`         | on        | no       | an alignment attribute on a function parameter, which no two of the three compilers agree to reject |
 
-`incompatible-pointer-types` and `int-conversion` cover cases clang 22 and gcc
-16 both reject. They are warnings here because MSVC 14.51 only warns on every
-one of them (C4047, C4057, C4133), and the project's rule is to reject only
-where all three compilers agree. They are default-on but not pedantic, since
-they report genuinely incompatible C rather than an extension. The same rule
-resolves slate-parser-hdt in the opposite direction from its original note:
-dropping `_Atomic` from a pointee is a warning, not an error, because MSVC
-accepts it silently.
+`incompatible-pointer-types` and `int-conversion` were at (2): one global
+warning, chosen because MSVC only warns on all of them (C4047, C4057, C4133)
+while clang and gcc reject. Severity is now flavor-aware, so they are at (1)
+instead (measured 2026-09-21, slate-parser-dyd.43):
+
+| | clang 22.1.8 | gcc 16.2.1 | MSVC 19.51 |
+| --- | --- | --- | --- |
+| `int-conversion` | error, every `-std` | error, except c89/gnu89 → warning | warning C4047 |
+| `incompatible-pointer-types` | error, every `-std` | same c89/gnu89 demotion | warning C4133 |
+
+gcc's demotion keys off the same `stdc_version().is_none()` predicate
+`c99-compat` uses. Neither warning is pedantic: they report genuinely
+incompatible C rather than an extension.
+
+This also reverses slate-parser-hdt a second time. Dropping `_Atomic` from a
+pointee is an error under the clang and gcc flavors, which both reject it;
+MSVC casts no vote, since it does not parse `_Atomic` at all. Fixtures:
+`error/conversion_default_errors.c`, `error/conversion_default_errors_gcc.c`,
+`sema/conversion_severity_gcc.c`, `sema/conversion_severity_msvc.c`,
+`sema/conversion_no_error_downgrade.c`, `sema/conversion_suppressed.c`.
 
 `parameter-alignment` covers both spellings of an alignment request on a
 parameter, which split the compilers differently but never reach a rejecting

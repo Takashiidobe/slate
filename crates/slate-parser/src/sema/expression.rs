@@ -7,7 +7,7 @@ use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::compiler_args::LanguageStandard;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
-use crate::diagnostics::{DiagnosticOptions, Warning};
+use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::ir::*;
 use num_bigint::BigInt;
 use std::collections::HashMap;
@@ -872,10 +872,14 @@ impl Lowerer {
     }
 
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
+        let diagnostics = DiagnosticContext {
+            options: &self.diagnostic_options,
+            standard: self.standard,
+            flavor: self.types.compiler_flavor(),
+        };
         self.diagnostics.extend(warning.diagnose(
             message,
-            &self.diagnostic_options,
-            self.standard,
+            diagnostics,
             node.provenance,
             node.expansion,
         ));

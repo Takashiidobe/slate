@@ -1,4 +1,4 @@
-use crate::compiler_args::LanguageStandard;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use miette::Severity;
 use std::collections::BTreeMap;
 
@@ -71,22 +71,42 @@ impl Warning {
         )
     }
 
-    fn enabled_by_default(self, standard: LanguageStandard) -> bool {
+    fn default_severity(
+        self,
+        standard: LanguageStandard,
+        flavor: CompilerFlavor,
+    ) -> DefaultSeverity {
         match self {
-            Self::LongLong => false,
-            Self::BitIntExtension => false,
-            Self::C99Compat => standard.stdc_version().is_none(),
-            Self::ImplicitlyUnsignedLiteral
-            | Self::C23Extensions
-            | Self::PointerSign
-            | Self::IncompatiblePointerTypesDiscardsQualifiers
-            | Self::IncompatiblePointerTypes
-            | Self::IntConversion
-            | Self::PointerIntegerCompare
-            | Self::CompareDistinctPointerTypes
-            | Self::ConflictingTypes
-            | Self::ParameterAlignment => true,
+            Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
+            Self::C99Compat if standard.stdc_version().is_some() => DefaultSeverity::Ignored,
+            Self::IncompatiblePointerTypes | Self::IntConversion => match flavor {
+                CompilerFlavor::Msvc => DefaultSeverity::Warning,
+                CompilerFlavor::Gcc if standard.stdc_version().is_none() => {
+                    DefaultSeverity::Warning
+                }
+                _ => DefaultSeverity::Error,
+            },
+            _ => DefaultSeverity::Warning,
         }
+    }
+}
+
+/// what a warning is before any -W flag applies. `Error` is clang's DefaultError
+/// and gcc's permerror: still silenced by -Wno-X and demoted by -Wno-error=X.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum DefaultSeverity {
+    Ignored,
+    Warning,
+    Error,
+}
+
+impl DefaultSeverity {
+    fn is_enabled(self) -> bool {
+        self != Self::Ignored
+    }
+
+    fn is_error(self) -> bool {
+        self == Self::Error
     }
 }
 
@@ -118,18 +138,34 @@ impl DiagnosticOptions {
     pub fn set_error(&mut self, warning: Warning, error: bool) {
         self.settings.entry(warning).or_default().error = Some(error);
     }
+}
 
-    pub fn severity(&self, warning: Warning, standard: LanguageStandard) -> Option<Severity> {
-        let setting = self.settings.get(&warning).copied().unwrap_or_default();
-        let pedantic_group = warning.is_pedantic() && (self.pedantic || self.pedantic_errors);
-        if !setting.enabled.unwrap_or(
-            warning.enabled_by_default(standard) || pedantic_group || setting.error == Some(true),
-        ) {
+/// the diagnostic options together with what they are interpreted against: a
+/// warning's default severity depends on the standard and the compiler flavor.
+#[derive(Clone, Copy)]
+pub struct DiagnosticContext<'a> {
+    pub options: &'a DiagnosticOptions,
+    pub standard: LanguageStandard,
+    pub flavor: CompilerFlavor,
+}
+
+impl DiagnosticContext<'_> {
+    pub fn severity(&self, warning: Warning) -> Option<Severity> {
+        let options = self.options;
+        let setting = options.settings.get(&warning).copied().unwrap_or_default();
+        let default = warning.default_severity(self.standard, self.flavor);
+        let pedantic_group = warning.is_pedantic() && (options.pedantic || options.pedantic_errors);
+        if !setting
+            .enabled
+            .unwrap_or(default.is_enabled() || pedantic_group || setting.error == Some(true))
+        {
             return None;
         }
-        let error = setting
-            .error
-            .unwrap_or(self.werror || (self.pedantic_errors && warning.is_pedantic()));
+        let error = setting.error.unwrap_or(
+            options.werror
+                || default.is_error()
+                || (options.pedantic_errors && warning.is_pedantic()),
+        );
         Some(if error {
             Severity::Error
         } else {

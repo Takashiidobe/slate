@@ -1,7 +1,7 @@
 use crate::ast::*;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr::{CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp};
-use crate::diagnostics::{DiagnosticOptions, Warning};
+use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
@@ -114,6 +114,7 @@ impl TranslationUnit {
             features,
             diagnostics: &self.options.diagnostics,
             standard: self.standard,
+            flavor,
         };
         let mut errors = super::assertion::validate(self);
         for decl in &self.decls {
@@ -310,8 +311,7 @@ fn check_unnamed_parameters(
         }
         errors.extend(Warning::C23Extensions.diagnose(
             "omitting the parameter name in a function definition is a C23 extension",
-            context.diagnostics,
-            context.standard,
+            context.diagnostics(),
             parameter.provenance,
             parameter.expansion,
         ));
@@ -328,13 +328,7 @@ fn check_extensions(
     let Some((warning, message)) = extension_warning(ty, context.features) else {
         return;
     };
-    errors.extend(warning.diagnose(
-        message,
-        context.diagnostics,
-        context.standard,
-        provenance,
-        loc,
-    ));
+    errors.extend(warning.diagnose(message, context.diagnostics(), provenance, loc));
 }
 
 #[derive(Clone, Copy)]
@@ -344,6 +338,17 @@ struct TypeContext<'a> {
     features: StandardFeatures,
     diagnostics: &'a DiagnosticOptions,
     standard: LanguageStandard,
+    flavor: CompilerFlavor,
+}
+
+impl<'a> TypeContext<'a> {
+    fn diagnostics(&self) -> DiagnosticContext<'a> {
+        DiagnosticContext {
+            options: self.diagnostics,
+            standard: self.standard,
+            flavor: self.flavor,
+        }
+    }
 }
 
 fn check_declarator(
@@ -620,12 +625,11 @@ impl Warning {
     pub(super) fn diagnose(
         self,
         message: impl Into<String>,
-        diagnostics: &DiagnosticOptions,
-        standard: LanguageStandard,
+        diagnostics: DiagnosticContext<'_>,
         provenance: Provenance,
         loc: Loc,
     ) -> Option<SemaError> {
-        let severity = diagnostics.severity(self, standard)?;
+        let severity = diagnostics.severity(self)?;
         let mut diagnostic = error(provenance, loc, message);
         diagnostic.severity = severity;
         diagnostic.warning = Some(self);
@@ -837,6 +841,16 @@ struct LiteralContext<'a> {
     flavor: CompilerFlavor,
 }
 
+impl<'a> LiteralContext<'a> {
+    fn diagnostics(&self) -> DiagnosticContext<'a> {
+        DiagnosticContext {
+            options: self.diagnostics,
+            standard: self.standard,
+            flavor: self.flavor,
+        }
+    }
+}
+
 fn check_literal_expr(expr: &Expr, context: LiteralContext<'_>) -> Vec<(Option<Warning>, String)> {
     match &expr.value {
         ExprKind::IntegerLiteral(literal) => integer_literal_diagnostics(literal, context),
@@ -869,8 +883,7 @@ fn push_literal_diagnostics(
             None => errors.push(error(provenance, expr.expansion, message)),
             Some(warning) => errors.extend(warning.diagnose(
                 message,
-                context.diagnostics,
-                context.standard,
+                context.diagnostics(),
                 provenance,
                 expr.expansion,
             )),
