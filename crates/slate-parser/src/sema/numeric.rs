@@ -1,4 +1,6 @@
-use super::validate::{fits_rank, integer_rank_width, select_integer_candidate};
+use super::validate::{
+    bit_int_literal_width, fits_rank, integer_rank_width, select_integer_candidate,
+};
 use crate::ast::{Expr, ExprKind};
 use crate::const_expr::{
     BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat, UnaryOp,
@@ -87,23 +89,31 @@ impl Context {
     pub(super) fn resolve_literal(&self, expression: &Expr) -> Result<Value, ResolveError> {
         let (ty, kind) = match &expression.value {
             ExprKind::IntegerLiteral(literal) => {
-                if literal.suffix.size == IntegerSizeSuffix::BitInt {
-                    return Err(ResolveError::Unsupported("bit-precise integer literals"));
-                }
-                let (width, signed) =
+                let bit_precise = literal.suffix.size == IntegerSizeSuffix::BitInt;
+                let (width, signed) = if bit_precise {
+                    bit_int_literal_width(literal)
+                        .map(|width| (width, !literal.suffix.unsigned))
+                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
+                } else {
                     select_integer_candidate(literal, &self.target, self.features)
                         .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
-                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
+                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
+                };
+                let numeric = NumericType::Integer {
+                    width,
+                    signed,
+                    bit_precise,
+                };
                 let number = Number::Integer(literal.value.clone());
                 if literal.imaginary {
                     imaginary_literal(
                         expression,
-                        NumericType::integer(width, signed),
+                        numeric,
                         Number::Integer(BigUint::default()),
                         number,
                     )
                 } else {
-                    (Type::integer(width, signed), ValueKind::Constant(number))
+                    (Type::Numeric(numeric), ValueKind::Constant(number))
                 }
             }
             ExprKind::FloatLiteral(literal) => {
@@ -336,9 +346,6 @@ impl Context {
             ));
         }
         if let Type::Complex(component) = operand.ty {
-            if arith != UnaryArithOp::Neg {
-                return Err(ResolveError::Unsupported("complex bitwise complement"));
-            }
             let semantics = match component {
                 NumericType::Float(_) => ArithSema::ComplexFloating(self.floating),
                 NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {

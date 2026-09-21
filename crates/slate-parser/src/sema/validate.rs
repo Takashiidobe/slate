@@ -645,6 +645,15 @@ pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>
     }
 }
 
+pub(super) const BIT_INT_MAX_WIDTH: u32 = 65535;
+
+pub(super) fn bit_int_literal_width(literal: &IntegerLiteral) -> Option<u32> {
+    let signed = !literal.suffix.unsigned;
+    let width = literal.value.bits() + u64::from(signed);
+    let width = u32::try_from(width.max(1 + u64::from(signed))).ok()?;
+    (width <= BIT_INT_MAX_WIDTH).then_some(width)
+}
+
 pub(super) fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
     match rank {
         IntegerRank::Short => target.short_width,
@@ -750,7 +759,16 @@ fn integer_literal_diagnostics(
     context: LiteralContext<'_>,
 ) -> Vec<(Option<Warning>, String)> {
     if literal.suffix.size == IntegerSizeSuffix::BitInt {
-        return Vec::new();
+        return match bit_int_literal_width(literal) {
+            Some(_) => Vec::new(),
+            None => vec![(
+                None,
+                format!(
+                    "integer literal `{}` is too large to be represented in any _BitInt type",
+                    literal.spelling
+                ),
+            )],
+        };
     }
     match select_integer_candidate(literal, context.target, context.features) {
         None => vec![(

@@ -540,6 +540,16 @@ types were checked to be byte-identical across c89/c99/c11/c17/c23 and their
 gnu variants in both compilers. Lowering therefore applies them
 unconditionally, and `TranslationUnit.standard` does not reach this path.
 
+A `wb`/`uwb` literal takes the narrowest bit-precise type that holds its
+value (C23 6.4.4.1p6): `N` is the value's bit count for `uwb`, one more than
+that for `wb`, floored at 1 and 2 respectively, so `1wb` is `i2b`, `0uwb` is
+`u1b`, and `0xffwb` is `i9b`. The radix never makes an unsuffixed literal
+unsigned the way it does for standard integers — only `u` does. A value
+needing more than `BIT_INT_MAX_WIDTH` (65535) bits is diagnosed as too large
+for any `_BitInt` type rather than falling back to a standard integer.
+Fixture: `tests/fixtures/sema/ir_bitint_literals.c`; widths verified against
+clang 22.1.8.
+
 They are exempt from the integer promotions (C23 6.3.1.1), so `_BitInt(8) + _BitInt(8)` stays `i8b`, and `~a`, `-a`, `+a`,
 and a shift's left operand keep their declared width instead of widening to
 `i32`. The exemption covers the default argument promotions too: a
@@ -839,7 +849,13 @@ complex/complex conversions, `+ - * /`, `== !=`, truth tests, unary negation,
 and `__real__`/`__imag__` reads and writes. Mixed scalar/complex arithmetic
 retains the scalar operand, which matters for floating multiplication and
 division. `ArithSema::ComplexFloating` carries rounding and exception policy;
-`ComplexInteger` carries overflow and division-by-zero policy. The component
+`ComplexInteger` carries overflow and division-by-zero policy. GNU `~` on a
+complex operand is conjugation, not a bitwise complement, for both floating
+and integer components (gcc and clang both implement it that way); it prints
+as `not<complex<...>>` and is the only unary operator besides `neg` a complex
+operand accepts. `_Imaginary` still rejects `~`, matching clang, which has no
+imaginary support at all. Fixture:
+`tests/fixtures/sema/ir_complex_conjugate.c`. The component
 of a complex conversion is converted on each side, with the conversion
 contract recorded on the operation. `tests/fixtures/sema/ir_complex.c` pins
 these forms, the common complex sizes, and GNU integer-complex spelling.
@@ -1449,6 +1465,15 @@ type carrying the union of both pointee qualifier sets, with `void *` winning
 over an object pointer. `(void *)0` is a null pointer constant, so
 `c ? (int *)0 : (void *)0` is `int *`, not `void *` — verified against clang
 22 and gcc 16. Fixture: `tests/fixtures/sema/ir_conditional_composite.c`.
+
+The GNU omitted-middle form `a ?: b` evaluates `a` once and uses it as both
+the truth test and the then-operand. It lowers to a `capture<%id>` around the
+`conditional`, the same let-binding node VLA extents use, with the test and
+the then-operand both reading `%id`; everything after that is the ordinary
+conditional walk above, so the result type is still the usual-arithmetic or
+composite-pointer type of `a` and `b`. This is the IR's answer to clang's
+`BinaryConditionalOperator`/`OpaqueValueExpr` pair. Fixture:
+`tests/fixtures/sema/ir_gnu_conditional.c`.
 
 ### Promotions
 

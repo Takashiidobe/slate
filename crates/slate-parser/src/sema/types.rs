@@ -535,6 +535,39 @@ impl TypeResolver {
                 let right = self.assertion_operand_type(right)?;
                 Ok(self.ctypes.lvalue_conversion(right))
             }
+            ExprKind::Unary {
+                op: crate::const_expr::UnaryOp::AddrOf,
+                operand,
+            } => {
+                let pointee = self.assertion_operand_type(operand)?;
+                Ok(self.ctypes.pointer(pointee))
+            }
+            ExprKind::Member { base, field, arrow } => {
+                let base = self.assertion_operand_type(base)?;
+                let base = if *arrow {
+                    self.ctypes
+                        .pointee(base)
+                        .ok_or(ResolveError::Unsupported("sizeof member of nonpointer"))?
+                } else {
+                    base
+                };
+                self.field_of(base, &field.value)
+                    .ok_or(ResolveError::Unsupported("sizeof of unknown member"))
+            }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                ..
+            } => {
+                let left = match then_value {
+                    Some(then_value) => self.assertion_operand_type(then_value)?,
+                    None => self.assertion_operand_type(condition)?,
+                };
+                if self.ctypes.is_record(left) {
+                    return Ok(left);
+                }
+                self.constant_value(e).map(|value| value.c)
+            }
             _ => self.constant_value(e).map(|value| value.c),
         }
     }
@@ -623,6 +656,33 @@ impl TypeResolver {
                 self.ctypes.quals(*field).is_const || self.has_const_member(*field, seen)
             })
         })
+    }
+
+    fn field_of(&self, q: QualType, name: &str) -> Option<QualType> {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(q) else {
+            return None;
+        };
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.definitions[id.0 as usize].kind
+        else {
+            return None;
+        };
+        let types = self.record_fields.get(id)?;
+        let quals = self.ctypes.quals(q);
+        for (index, field) in fields.iter().enumerate() {
+            let member = types.get(index).copied()?;
+            if field.name.as_deref() == Some(name) {
+                return Some(member.with(quals));
+            }
+            if field.name.is_none()
+                && let Some(found) = self.field_of(member, name)
+            {
+                return Some(found.with(quals));
+            }
+        }
+        None
     }
 
     pub(super) fn offsetof_member(
@@ -853,7 +913,8 @@ impl TypeResolver {
             TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
                 let width = u32::try_from(self.constant_integer(width)?)
                     .map_err(|_| ResolveError::Unsupported("invalid _BitInt width"))?;
-                if width < if *signed { 2 } else { 1 } || width > 65535 {
+                if width < if *signed { 2 } else { 1 } || width > super::validate::BIT_INT_MAX_WIDTH
+                {
                     return Err(ResolveError::Unsupported("invalid _BitInt width"));
                 }
                 CTypeKind::BitInt {

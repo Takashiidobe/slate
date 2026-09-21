@@ -2233,12 +2233,37 @@ impl Lowerer {
                 then_value,
                 else_value,
             } => {
-                let Some(then_value) = then_value else {
-                    return Err(ResolveError::Unsupported("GNU omitted conditional operand"));
+                let (test, mut left, then_value, shared) = match then_value {
+                    Some(then_value) => {
+                        let test = self.expr(condition)?;
+                        let test = self.condition(test.value, None)?;
+                        (test, self.expr(then_value)?, then_value, None)
+                    }
+                    None => {
+                        let shared = self.expr(condition)?;
+                        let id = self.fresh();
+                        self.types.entities.declare(id, shared.c, false);
+                        let place = Place {
+                            ty: shared.value.ty.clone(),
+                            kind: PlaceKind::Binding(id),
+                            access: self.types.access_of(shared.c),
+                        };
+                        let read = |this: &mut Self| {
+                            this.operand(
+                                condition,
+                                shared.c,
+                                ValueKind::Read {
+                                    place: place.clone(),
+                                    ordering: None,
+                                },
+                            )
+                        };
+                        let left = read(self);
+                        let test = read(self).value;
+                        let test = self.condition(test, None)?;
+                        (test, left, condition, Some((id, shared.value)))
+                    }
                 };
-                let condition = self.expr(condition)?;
-                let condition = self.condition(condition.value, None)?;
-                let mut left = self.expr(then_value)?;
                 let mut right = self.expr(else_value)?;
                 if matches!(
                     left.ty,
@@ -2278,13 +2303,26 @@ impl Lowerer {
                         "conditional operands have incompatible types",
                     ));
                 }
-                Ok(self.operand(
+                let result = self.operand(
                     e,
                     left.c,
                     ValueKind::Conditional {
-                        condition: Box::new(condition),
+                        condition: Box::new(test),
                         then_value: Box::new(left.value),
                         else_value: Box::new(right.value),
+                    },
+                );
+                let Some((id, extent)) = shared else {
+                    return Ok(result);
+                };
+                let c = result.c;
+                Ok(self.operand(
+                    e,
+                    c,
+                    ValueKind::Capture {
+                        id,
+                        extent: Box::new(extent),
+                        value: Box::new(result.value),
                     },
                 ))
             }

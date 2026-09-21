@@ -108,23 +108,31 @@ impl TypeResolver {
     pub(super) fn literal(&mut self, context: &Context, e: &Expr) -> Result<Operand, ResolveError> {
         let kind = match &e.value {
             ExprKind::IntegerLiteral(literal) => {
-                if literal.suffix.size == crate::const_expr::IntegerSizeSuffix::BitInt {
-                    return Err(ResolveError::Unsupported("bit-precise integer literals"));
-                }
-                let (rank, signed) = super::validate::select_integer_candidate(
-                    literal,
-                    &context.target,
-                    context.features,
-                )
-                .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
-                let rank = match rank {
-                    IntegerRank::Short => IntRank::Short,
-                    IntegerRank::Int => IntRank::Int,
-                    IntegerRank::Long => IntRank::Long,
-                    IntegerRank::LongLong => IntRank::LongLong,
-                    IntegerRank::Int128 => IntRank::Int128,
+                let component = if literal.suffix.size
+                    == crate::const_expr::IntegerSizeSuffix::BitInt
+                {
+                    let width = super::validate::bit_int_literal_width(literal)
+                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
+                    CTypeKind::BitInt {
+                        width,
+                        signed: !literal.suffix.unsigned,
+                    }
+                } else {
+                    let (rank, signed) = super::validate::select_integer_candidate(
+                        literal,
+                        &context.target,
+                        context.features,
+                    )
+                    .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
+                    let rank = match rank {
+                        IntegerRank::Short => IntRank::Short,
+                        IntegerRank::Int => IntRank::Int,
+                        IntegerRank::Long => IntRank::Long,
+                        IntegerRank::LongLong => IntRank::LongLong,
+                        IntegerRank::Int128 => IntRank::Int128,
+                    };
+                    CTypeKind::Int { rank, signed }
                 };
-                let component = CTypeKind::Int { rank, signed };
                 if literal.imaginary {
                     CTypeKind::Complex(self.ctypes.intern(component))
                 } else {
