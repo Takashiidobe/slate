@@ -53,6 +53,7 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `pointer-integer-compare`     | on        | no       | a comparison between a pointer and an integer that is not a null pointer constant                                                                               |
 | `compare-distinct-pointer-types` | on     | no       | a comparison between pointers whose pointees have no composite type and neither is `void`                                                                       |
 | `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
+| `parameter-alignment`         | on        | no       | an alignment attribute on a function parameter, which no two of the three compilers agree to reject |
 
 `incompatible-pointer-types` and `int-conversion` cover cases clang 22 and gcc
 16 both reject. They are warnings here because MSVC 14.51 only warns on every
@@ -62,6 +63,24 @@ they report genuinely incompatible C rather than an extension. The same rule
 resolves slate-parser-hdt in the opposite direction from its original note:
 dropping `_Atomic` from a pointee is a warning, not an error, because MSVC
 accepts it silently.
+
+`parameter-alignment` covers both spellings of an alignment request on a
+parameter, which split the compilers differently but never reach a rejecting
+majority (measured 2026-09-21, clang 22.1.8 / gcc 16.2.1 / MSVC 19.51):
+
+| written on a parameter | clang | gcc | MSVC |
+| --- | --- | --- | --- |
+| `_Alignas(N) int p` | error | error | accepted, `__alignof(p)` is `N` raised to natural |
+| `int p __attribute__((aligned(N)))` | accepted, `_Alignof(p)` is `N` as written | error | not parsed at all |
+
+MSVC's rejection of the second is a syntax error for `__attribute__`, not a
+judgement about parameter alignment, so it is not a vote to reject. Every
+compiler that understands either spelling *applies* the alignment, so
+slate-parser applies it too: the request goes on the parameter's entity and
+`_Alignof` reads it back through `declared_alignment`, which is why the MSVC
+flavor raises a below-natural request and the others report it as written.
+The IR has no parameter home slot to align, so the request is observable only
+through `_Alignof`.
 
 The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
 types, so they come from IR lowering rather than `TranslationUnit::analyze`.

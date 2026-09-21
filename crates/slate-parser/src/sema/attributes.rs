@@ -114,3 +114,18 @@ pub(super) fn typedef_unsupported(attribute: &Attribute) -> Option<&'static str>
         other => unsupported(other),
     }
 }
+
+/// A parameter has no linkage and no storage of its own, so alignment is the
+/// only attribute lowering can represent on one; anything else would be
+/// dropped silently rather than applied.
+pub(super) fn parameter_unsupported(attribute: &Attribute) -> Option<&'static str> {
+    match attribute {
+        Attribute::Aligned(_) | Attribute::AlignAs(_) => None,
+        other => match declaration_use(other) {
+            Use::Ignored => None,
+            Use::Unsupported(reason) => Some(reason),
+            Use::Symbol => Some("symbol attribute on a parameter"),
+            Use::Layout => Some("layout attribute on a parameter"),
+        },
+    }
+}

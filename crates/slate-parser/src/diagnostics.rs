@@ -16,10 +16,11 @@ pub enum Warning {
     PointerIntegerCompare,
     CompareDistinctPointerTypes,
     ConflictingTypes,
+    ParameterAlignment,
 }
 
 impl Warning {
-    pub const ALL: [Self; 12] = [
+    pub const ALL: [Self; 13] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -32,6 +33,7 @@ impl Warning {
         Self::PointerIntegerCompare,
         Self::CompareDistinctPointerTypes,
         Self::ConflictingTypes,
+        Self::ParameterAlignment,
     ];
 
     pub fn name(self) -> &'static str {
@@ -50,6 +52,7 @@ impl Warning {
             Self::PointerIntegerCompare => "pointer-integer-compare",
             Self::CompareDistinctPointerTypes => "compare-distinct-pointer-types",
             Self::ConflictingTypes => "conflicting-types",
+            Self::ParameterAlignment => "parameter-alignment",
         }
     }
 
@@ -81,7 +84,8 @@ impl Warning {
             | Self::IntConversion
             | Self::PointerIntegerCompare
             | Self::CompareDistinctPointerTypes
-            | Self::ConflictingTypes => true,
+            | Self::ConflictingTypes
+            | Self::ParameterAlignment => true,
         }
     }
 }

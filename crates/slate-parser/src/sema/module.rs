@@ -428,8 +428,30 @@ impl Lowerer {
         }
         let mut fixed = Vec::new();
         for parameter in params.parameters() {
-            if !parameter.specifiers.attributes.is_empty() {
-                return Err(ResolveError::Unsupported("parameter attributes"));
+            let attributes = || {
+                parameter
+                    .specifiers
+                    .attributes
+                    .iter()
+                    .chain(&parameter.attributes)
+            };
+            reject_with(attributes(), super::attributes::parameter_unsupported)?;
+            let alignment = super::types::requested_alignment(&mut self.types, attributes())?;
+            if let Some(alignment) = alignment {
+                let rejected_by = if attributes()
+                    .any(|attribute| matches!(attribute, ast::Attribute::AlignAs(_)))
+                {
+                    "clang and gcc"
+                } else {
+                    "gcc"
+                };
+                self.warn(
+                    Warning::ParameterAlignment,
+                    &format!(
+                        "alignment of {alignment} on a function parameter is rejected by {rejected_by}"
+                    ),
+                    parameter,
+                );
             }
             if let Some(prologue) = prologue.as_deref_mut() {
                 let anchor = parameter.derive(());
@@ -451,6 +473,13 @@ impl Lowerer {
                 adjusted,
                 parameter.specifiers.storage == StorageClass::Register,
             );
+            self.types.entities.merge_request(
+                id,
+                super::entity::ObjectRequest {
+                    alignment,
+                    common: None,
+                },
+            )?;
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
