@@ -1748,12 +1748,15 @@ impl Lowerer {
         ))
     }
 
-    fn unevaluated_type(&mut self, operand: &Expr) -> Result<QualType, ResolveError> {
+    fn unevaluated_type(
+        &mut self,
+        operand: &Expr,
+    ) -> Result<(QualType, Option<Value>), ResolveError> {
         if let ExprKind::Paren(inner) = &operand.value {
             return self.unevaluated_type(inner);
         }
         if let ExprKind::StringLiteral(lit) = &operand.value {
-            return Ok(self.types.string_type(lit));
+            return Ok((self.types.string_type(lit), None));
         }
         let globals = self.module.globals.len();
         let next_id = self.next_id;
@@ -1768,13 +1771,31 @@ impl Lowerer {
             }) => Err(ResolveError::Invalid(
                 "application of sizeof or alignof to a bit-field",
             )),
-            Ok(place) => Ok(place.c),
-            Err(_) => self.expr(operand).map(|value| value.c),
+            Ok(lvalue) => {
+                let ty = self.types.ir_type(lvalue.c);
+                let address = self.value(
+                    operand,
+                    Type::Pointer {
+                        pointee: Box::new(ty),
+                        is_const: false,
+                        access: Access::default(),
+                    },
+                    ValueKind::AddressOf(lvalue.place),
+                );
+                Ok((lvalue.c, address))
+            }
+            Err(_) => self.expr(operand).map(|value| (value.c, value.value)),
         };
+        let evaluated = result.as_ref().is_ok_and(|(c, _)| {
+            self.next_id != next_id && matches!(self.types.ir_type(*c), Type::VariableArray { .. })
+        });
+        if evaluated {
+            return result.map(|(c, value)| (c, Some(value)));
+        }
         self.module.globals.truncate(globals);
         self.next_id = next_id;
         self.types.entities.discard_after(next_id);
-        result
+        result.map(|(c, _)| (c, None))
     }
 
     fn type_name_extents(
@@ -2427,13 +2448,26 @@ impl Lowerer {
                 Ok(self.layout_constant(e, value, key, ty.to_string()))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let c = self.unevaluated_type(operand)?;
+                let (c, evaluated) = self.unevaluated_type(operand)?;
                 let ty = self.types.ir_type(c);
                 let access = self.types.access_of(c);
                 if matches!(e.value, ExprKind::SizeOfExpr(_))
                     && matches!(ty, Type::VariableArray { .. })
                 {
-                    return self.runtime_size(e, &ty);
+                    let size = self.runtime_size(e, &ty)?;
+                    let Some(evaluated) = evaluated else {
+                        return Ok(size);
+                    };
+                    let size_ty = size.value.ty.clone();
+                    let value = self.value(
+                        e,
+                        size_ty,
+                        ValueKind::Sequence {
+                            left: Box::new(evaluated),
+                            right: Box::new(size.value),
+                        },
+                    );
+                    return Ok(Operand { value, c: size.c });
                 }
                 let layout = self
                     .types
