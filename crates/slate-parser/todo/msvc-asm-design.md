@@ -1,5 +1,12 @@
 # MSVC Inline ASM design
 
+> Scope (see `ir-asm-design.md`): MSVC `__asm` is the one frontend that must
+> read instructions, because it supplies no constraints. It needs identifier
+> resolution, the set of registers mentioned, and a flags/implicit-def table —
+> not the typed instruction IR sketched below; it feeds the shared *operand*
+> model. The MASM/`ml64` PROC/directive/unwind sections are out of scope: that
+> is a standalone assembler file format, not C.
+
 For x86-32 MSVC `__asm`, treat it as a separate frontend syntax that lowers into the same shared asm IR as GCC/Clang. Unlike GCC asm, there are no explicit constraints: the asm body directly references C variables, registers, labels, and symbols, so the frontend has to resolve identifiers against C scope and infer reads/writes/clobbers from the parsed instructions.
 
 ```c

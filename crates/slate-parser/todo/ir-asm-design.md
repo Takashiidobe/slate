@@ -1,203 +1,101 @@
 # IR asm design
 
-The IR should sit between GCC/Clang extended asm and Rust `asm!`/`naked_asm!`. Unlike CIR, I would not leave the body as an opaque normalized string: parse just enough target assembly that the Rust backend mostly pattern-matches an instruction/template IR rather than reparsing AT&T/Intel syntax.
+The IR should sit between GCC/Clang extended asm and Rust `asm!`/`naked_asm!`.
 
-For a normal register read/write operand:
+**The body stays text.** Rust `asm!` is itself a template-with-placeholders
+format, so translating `"movl 8(%[base],%[index],4), %[out]"` into
+`"movl 8({base},{index},4), {out:e}"` is a substitution at the operand-reference
+sites. Parsing the body into a typed instruction IR and re-rendering it returns
+the same string while acquiring a per-target assembler and a large `Opaque`
+escape hatch. `AsmPiece::{Text, Operand}` is already the right shape.
 
-```c
-// C
-asm("addl %[src], %[dst]"
-    : [dst] "+r"(x)
-    : [src] "r"(y));
-```
+**The operands are what need structure.** Everything the Rust backend has to
+decide should be decided once during lowering.
+
+## Operands
+
+One list in GCC numbering order (outputs then inputs), so
+`AsmPiece::Operand { index }` is a direct subscript. Each entry carries:
 
 ```text
-// IR
+operand {
+    name       = [name]          // %[name], if given
+    direction  = in | out | lateout | inout | inlateout
+    class      = reg | reg_abcd | xmm_reg | ... | mem | imm | explicit(rax)
+    width      = 8 | 16 | 32 | 64 | ...
+    modifier   = <explicit GCC modifier char, if any>
+    value      = <Value for reads, Place for writes>
+}
+```
+
+`direction` folds the `=`/`+`/`&` modifiers, and the mapping is inverted from
+the naive reading — GCC's plain `=` lets the allocator reuse an input's
+register, which is Rust's *late* form:
+
+```text
+"=r"  -> lateout        "=&r" -> out
+"+r"  -> inlateout      "+&r" -> inout
+```
+
+A `Matching(n)` tie plus its separate input entry is one `inout` operand;
+collapse it here. `%` (commutative) and `-` (pic) stay as separate flags, they
+are not direction.
+
+`class` replaces the raw constraint letters: `r`→`reg`, `q`→`reg_abcd`,
+`x`→`xmm_reg`, `a`→`explicit(rax)`, `i`→`imm`, `m`→`mem`. Keep the original
+letters for diagnostics and as a fallback. Multi-alternative constraints
+(`"r,m"`) have no Rust equivalent, so pick one alternative here and keep the
+rejected ones.
+
+`width` is not optional. In AT&T, `%0` for an `int` prints `%eax`, but Rust's
+`{0}` for `in(reg)` always prints the full-width register — without an explicit
+`:e`/`:x`/`:r` modifier derived from the width, the emitted asm silently uses
+the wrong register size.
+
+A `mem` operand is an address, not a loaded value: `in(reg) &raw mut x`, with
+the reference site rewritten from `{x}` to `({x})`.
+
+## Node
+
+```text
 asm x86 att {
+    options { volatile, nomem, preserves_flags, ... }
+
     operands {
-        %dst: i32 = inout reg(gpr) { value = x }
-        %src: i32 = in    reg(gpr) { value = y }
+        %dst: i32 = inlateout reg    { place = x }
+        %src: i32 = in        reg    { value = y }
+        %lo:  u64 = inlateout rax    { place = lo }
     }
 
-    body {
-        add.i32 %src, %dst
-    }
+    clobbers { memory, flags, reg(rcx) }
+
+    body { "addl ", %src, ", ", %dst }
 }
 ```
 
-```rust
-// Rust
-asm!(
-    "addl {src:e}, {dst:e}",
-    src = in(reg) y,
-    dst = inout(reg) x,
-    options(att_syntax),
-);
-```
+Target and dialect belong on the node: they decide `options(att_syntax)`, the
+register-class mapping, and per-target clobber rules. One such rule: on x86,
+GCC treats flags as clobbered by extended asm whether or not `"cc"` was
+written, so `preserves_flags` can never be inferred there.
 
-The important frontend mappings are direct: `"r"` → `reg(gpr)`, `"+r"` → `inout reg(gpr)`, `"=r"` → `out reg(gpr)`, `"=&r"` → an early-clobber/`lateout`-style semantic, fixed constraints such as `"a"` → `reg(rax)`, numeric constraints such as `"0"` → `tied_to(%0)`, and `"m"` → a memory operand rather than merely preserving the letter `m`.
+Rust `asm!` options (`nomem`, `readonly`, `pure`, `nostack`, `preserves_flags`)
+are computed here from the volatile qualifier and the clobber list.
 
-```c
-// C
-asm("movl (%[ptr]), %[dst]"
-    : [dst] "=r"(value)
-    : [ptr] "r"(ptr)
-    : "memory", "cc");
-```
+## naked
 
-```text
-// IR
-asm x86 att {
-    operands {
-        %dst: i32 = out reg(gpr) { value = value }
-        %ptr: ptr = in  reg(gpr) { value = ptr }
-    }
+`naked_asm!` selection belongs on the *function*, not the asm statement: the
+condition is that the function is `__attribute__((naked))` and its body is a
+single basic asm. Record it as an IR function kind.
 
-    clobbers {
-        memory
-        flags
-    }
+## Frontends
 
-    body {
-        mov.i32 mem[%ptr], %dst
-    }
-}
-```
+MSVC `__asm` is the one frontend that must read instructions, because it
+supplies no constraints and reads/writes/clobbers have to be inferred. Even
+there the job is identifier resolution (which tokens are C places), the set of
+registers mentioned, and a flags/implicit-def table — not a typed instruction
+IR. It feeds this same operand model. See `msvc-asm-design.md`.
 
-```rust
-// Rust
-asm!(
-    "movl ({ptr}), {dst:e}",
-    ptr = in(reg) ptr,
-    dst = out(reg) value,
-    options(att_syntax),
-);
-```
+Out of scope: the MASM/`ml64` PROC/directive/unwind layer. That is a standalone
+assembler file format, not C.
 
-The mini-parser should therefore turn template syntax into only a small number of useful nodes: `Instruction`, `OperandRef`, `Register`, `Immediate`, `Memory`, `Label`, and perhaps `Opaque`. You do not need instruction semantics comparable to LLVM MC. You mainly want to turn text like `"movl 8(%rax,%rcx,4), %edx"` into something like `mov.i32 Memory { base: rax, index: rcx, scale: 4, displacement: 8 }, Reg(edx)`, and `%[foo]`, `%0`, `%c0`, etc. into explicit operand references/modifiers.
-
-```text
-// textual asm
-"movl 8(%[base],%[index],4), %[out]"
-```
-
-```text
-// parsed body IR
-mov.i32
-    mem {
-        base  = %base
-        index = %index
-        scale = 4
-        disp  = 8
-    },
-    %out
-```
-
-```rust
-// emitter only has to render the structured nodes
-asm!(
-    "movl 8({base},{index},4), {out:e}",
-    base  = in(reg) base,
-    index = in(reg) index,
-    out   = out(reg) out,
-    options(att_syntax),
-);
-```
-
-I would also make constraint semantics first-class instead of retaining CIR's combined LLVM-style constraint string:
-
-```c
-asm("mulq %[rhs]"
-    : "+a"(lo), "=d"(hi)
-    : [rhs] "r"(rhs)
-    : "cc");
-```
-
-```text
-asm x86 att {
-    operands {
-        %lo:  u64 = inout reg(rax) { value = lo }
-        %hi:  u64 = out   reg(rdx) { value = hi }
-        %rhs: u64 = in    reg(gpr) { value = rhs }
-    }
-
-    clobbers { flags }
-
-    body {
-        mul.u64 %rhs
-    }
-}
-```
-
-```rust
-asm!(
-    "mulq {rhs}",
-    rhs = in(reg) rhs,
-    inout("rax") lo,
-    lateout("rdx") hi,
-    options(att_syntax),
-);
-```
-
-For `naked_asm!`, keep the same parsed body IR, but separate it from C-expression operand binding. That allows the same assembler parser to handle function-body asm while the emitter chooses a different Rust surface:
-
-```c
-__attribute__((naked))
-void entry(void) {
-    asm volatile(
-        "push %rbp\n"
-        "mov %rsp, %rbp\n"
-        "jmp target"
-    );
-}
-```
-
-```text
-asm x86 att {
-    kind = naked
-
-    body {
-        push reg(rbp)
-        mov  reg(rsp), reg(rbp)
-        jmp  symbol(target)
-    }
-}
-```
-
-```rust
-#[unsafe(naked)]
-extern "C" fn entry() {
-    core::arch::naked_asm!(
-        "push rbp",
-        "mov rbp, rsp",
-        "jmp {target}",
-        target = sym target,
-    );
-}
-```
-
-So the core translation should be:
-
-```text
-GCC/Clang source        frontend IR                    parsed asm IR
-
-"+r"(x)          ->     inout reg(gpr), x
-"=&r"(x)         ->     out early_clobber reg(gpr), x
-"a"(x)           ->     in reg(rax), x
-"0"(x)           ->     in tied_to(%0), x
-"m"(x)           ->     in memory(x)
-"+m"(x)          ->     inout memory(x)
-"cc"             ->     clobber flags
-"memory"         ->     clobber memory
-"%[foo]"         ->     operand reference %foo
-"%c[foo]"        ->     operand reference %foo + modifier
-"42"             ->     immediate 42
-"%eax"           ->     physical register eax
-"8(%rax,%rcx,4)" ->                                memory(base=rax,
-                                                        index=rcx,
-                                                        scale=4,
-                                                        disp=8)
-"addl %1,%0"     ->                                add.i32 %1, %0
-```
-
-That leaves the Rust backend with almost no GCC-specific knowledge: it matches `in/out/inout + register class`, renders parsed instruction operands, and chooses `asm!` versus `naked_asm!`. Keep an `OpaqueAsmFragment` fallback so unsupported directives/instructions can still round-trip without forcing the mini-parser to become a full assembler.
+Tracked as `slate-parser-25m.10` through `.18`.
