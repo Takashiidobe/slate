@@ -178,7 +178,12 @@ bare function name in every personality. `__PRETTY_FUNCTION__` differs by
 personality and is one of the places a flavor changes meaning: GCC spells it
 as the bare name in C, while Clang spells the whole declaration
 (`unsigned long n(int)`), which sema renders with
-`CTypes::declaration_spelling`.
+`CTypes::declaration_spelling`. None of the three is a declared entity, so
+they are bound in `Lowerer::place` ahead of name resolution and each
+occurrence emits its own `.strN`; a use outside a function is rejected, where
+Clang warns and recovers. `tests/fixtures/sema/ir_function_name_builtins.c`
+pins the Clang spelling together with `sizeof`, indexing and a static
+initializer, and `ir_function_name_builtins_gcc.c` pins the GCC one.
 
 `__builtin_choose_expr(cond, a, b)` also resolves during lowering and never
 reaches the IR. It is a Clang keyword rather than a `Builtins.td` record, so
