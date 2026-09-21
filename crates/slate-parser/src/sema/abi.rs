@@ -190,7 +190,7 @@ impl<'a> AbiClassifier<'a> {
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
         if operand.atomic
-            && matches!(convention, AbiConvention::Win64 | AbiConvention::WinArm64)
+            && convention == AbiConvention::WinArm64
             && self.is_record_or_complex(&operand.ty)
         {
             return Err(ResolveError::Unsupported("atomic aggregate Windows ABI"));
@@ -419,10 +419,8 @@ fn record_abi(
     result: bool,
     convention: AbiConvention,
 ) -> AbiPass {
-    if !flat {
-        return AbiPass::NativeC;
-    }
     match convention {
+        // win64 classifies on size alone, so it needs no field walk to be sure
         AbiConvention::Win64 => {
             if matches!(size, 1 | 2 | 4 | 8) {
                 AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
@@ -432,6 +430,7 @@ fn record_abi(
                 AbiPass::ByReference { align }
             }
         }
+        _ if !flat => AbiPass::NativeC,
         AbiConvention::SysV64 => {
             if size > 16 {
                 if result {

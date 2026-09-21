@@ -936,6 +936,20 @@ it is explicit so Rust lowering does not mistake a guessed coercion for a
 verified one. Call nodes keep their own ABI signature because an indirect
 callee or a variadic call can differ from the enclosing function.
 
+`native_c` is an abstention, not a passing shape: the `flat` gate in
+`record_abi` (all fields `Numeric`/`Bool`/`Pointer`, non-recursive) asks
+whether the classifier trusts itself to name the register pieces, and it is
+checked before the convention is. That proxy is right for `sysv64`, where
+eightbyte classification really does need a field walk, and wrong for
+`win64`, which classifies on size alone -- one register at 1, 2, 4 or 8 bytes,
+indirect otherwise -- with no field walk at all. So the `win64` arm runs
+*before* the gate, and `struct { char a[3]; }` gets the same `byref` as
+`struct { char a, b, c; }` instead of abstaining. Fixture
+`tests/fixtures/sema/x86_64-pc-windows-msvc/ir_record_abi_shape.c` pins the
+shapes against clang. `win_arm64` is still behind the gate because its HFA
+check does need a field walk, and ours is non-recursive
+(`slate-parser-o9q`).
+
 The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
 AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
 128-bit integers where Clang supports them, and flat records. For example,
@@ -1823,9 +1837,15 @@ on the type:
   the lowered `ir::Type` has lost them — `_Atomic struct S` is the same
   `Type::Defined` as `struct S`. Under clang an atomic record or complex
   argument is MEMORY on SysV64 and x86 cdecl regardless of size; under gcc it
-  classifies as the unqualified record. On the Windows conventions
-  (`Win64`, `WinArm64`) `abi_pass` rejects atomic records outright rather than
-  guess, so the MSVC half of the argument question is still unanswered.
+  classifies as the unqualified record. On `win64` the lock-prefixed
+  layout is simply what gets classified, so an atomic aggregate can land in a
+  register where the plain record goes indirect: `struct { char a, b, c; }` is
+  3 bytes and indirect, `_Atomic` of it is 8 and passes in one register.
+  Returns agree. Measured against cl.exe 19.51 `/experimental:c11atomics`,
+  including the sizes copied for the indirect cases (12 for a 5-byte record,
+  32 for a 24-byte one), which is what pins the parameter object as the
+  lock-prefixed one. `abi_pass` still rejects atomic records on `WinArm64`
+  (`slate-parser-o9q`).
 
 `tests/fixtures/sema/ir_qualified_access.c`,
 `tests/fixtures/sema/ir_array_parameter.c` and

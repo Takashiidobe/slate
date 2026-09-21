@@ -228,8 +228,10 @@ not layout, so they stay where they are.
 `AbiClassifier` reads it too, since it holds a `&TypeResolver`. Argument
 classification runs on `ir::Type`, which has lost `_Atomic` on aggregates, so
 `AbiOperand` carries the qualifier alongside the type: clang makes an atomic
-record argument MEMORY, gcc classifies it as the unqualified record, and the
-Windows conventions reject it rather than guess.
+record argument MEMORY, gcc classifies it as the unqualified record, and MSVC
+classifies the lock-prefixed layout under `win64`'s ordinary size rule, since
+`layout()` is already atomic-aware. `win_arm64` still rejects it
+(`slate-parser-o9q`).
 
 ## Adding a rule
 
