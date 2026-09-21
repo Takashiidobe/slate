@@ -1817,10 +1817,15 @@ on the type:
   and an 8-byte lock-free atomic at alignment 1 cannot actually be accessed
   atomically, so we take the elaborated-specifier answer for every spelling.
 
-  The two personalities also disagree on how an atomic aggregate *argument* is passed
-  (`slate-parser-lh7.2.29`), which is still open: the flavor reaches
-  `AbiClassifier`, but the C type does not, because it classifies `ir::Type`
-  and `_Atomic struct S` lowers to the same `Type::Defined` as `struct S`.
+  The personalities also disagree on how an atomic aggregate *argument* is
+  passed, and that is settled separately (`slate-parser-lh7.2.29`, closed):
+  `AbiOperand` carries an `atomic` flag taken from the C qualifiers, because
+  the lowered `ir::Type` has lost them — `_Atomic struct S` is the same
+  `Type::Defined` as `struct S`. Under clang an atomic record or complex
+  argument is MEMORY on SysV64 and x86 cdecl regardless of size; under gcc it
+  classifies as the unqualified record. On the Windows conventions
+  (`Win64`, `WinArm64`) `abi_pass` rejects atomic records outright rather than
+  guess, so the MSVC half of the argument question is still unanswered.
 
 `tests/fixtures/sema/ir_qualified_access.c`,
 `tests/fixtures/sema/ir_array_parameter.c` and

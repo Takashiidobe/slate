@@ -225,9 +225,11 @@ mentions `CompilerFlavor` at all. The flavor checks that remain in
 `src/sema/validate.rs` are about character literals and specific diagnostics,
 not layout, so they stay where they are.
 
-Personality is *reachable* from `AbiClassifier` too, since it holds a
-`&TypeResolver`, but argument classification still runs on `ir::Type` and so
-cannot see `_Atomic` on an aggregate (`slate-parser-lh7.2.29`).
+`AbiClassifier` reads it too, since it holds a `&TypeResolver`. Argument
+classification runs on `ir::Type`, which has lost `_Atomic` on aggregates, so
+`AbiOperand` carries the qualifier alongside the type: clang makes an atomic
+record argument MEMORY, gcc classifies it as the unqualified record, and the
+Windows conventions reject it rather than guess.
 
 ## Adding a rule
 
