@@ -1,15 +1,16 @@
 use std::collections::HashMap;
 
 use crate::ast::{
-    AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
-    FieldItemKind, FixedPointKind, FixedPointRank, FloatingType, IntegerRank, IntegerType,
-    ParameterList, TagBody, TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName,
-    TypeOfOperand, TypeSpecifier,
+    AlignAsOperand, ArrayDeclarator, ArraySize, Attribute, DeclarationSpecifiers, Declarator,
+    EnumItemKind, FieldItemKind, FixedPointKind, FixedPointRank, FloatingType, IntegerRank,
+    IntegerType, ParameterList, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
+    TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
-    Access, BindingId, BitFieldUnit, Enumerator, Field, Number, NumericType, RecordKind,
-    RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
+    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, Enumerator, Field, Number,
+    NumericType, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value,
+    ValueKind,
 };
 use crate::target_info::{StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
@@ -21,6 +22,13 @@ use super::ctype::{
 use super::numeric::ResolveError;
 use super::operand::Operand;
 use crate::standard_features::StandardFeatures;
+
+pub(super) struct ParameterShape {
+    pub adjusted: QualType,
+    pub ty: Type,
+    pub qualifiers: Qualifiers,
+    pub array: Option<ArrayParameter>,
+}
 
 pub struct TypeResolver {
     target: TargetInfo,
@@ -1102,6 +1110,36 @@ impl TypeResolver {
         resolved
     }
 
+    pub(super) fn parameter_shape(
+        &mut self,
+        resolved: QualType,
+        declared_array: ArrayDeclarator,
+    ) -> Result<ParameterShape, ResolveError> {
+        let written = self.object_type(resolved, "void parameter")?;
+        let array = match &written {
+            Type::Array { length, .. } => Some(ArrayParameter {
+                extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
+                guaranteed: declared_array.is_static,
+            }),
+            Type::VariableArray { extent, .. } => Some(ArrayParameter {
+                extent: ArrayExtent::Variable(*extent),
+                guaranteed: declared_array.is_static,
+            }),
+            _ => None,
+        };
+        let qualifiers = match written {
+            Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers.into(),
+            _ => self.ctypes.quals(resolved),
+        };
+        let adjusted = self.adjusted_parameter(resolved, qualifiers);
+        Ok(ParameterShape {
+            ty: self.ir_type(adjusted),
+            adjusted,
+            qualifiers,
+            array,
+        })
+    }
+
     pub(super) fn adjusted_parameter(&mut self, q: QualType, array: Qualifiers) -> QualType {
         if let Some((element, _)) = self.ctypes.element(q) {
             return self.ctypes.pointer(element).with(array);
@@ -2069,7 +2107,7 @@ fn resolve_parameters(
     module: &mut crate::ir::Module,
     next_binding: &mut u32,
 ) -> Result<crate::ir::Parameters, ResolveError> {
-    use crate::ir::{ArrayExtent, ArrayParameter, BindingId, Parameter, Parameters};
+    use crate::ir::{BindingId, Parameter, Parameters};
     if matches!(signature, ParameterList::Empty) && !resolver.features.empty_parens_are_prototype {
         return Ok(Parameters::Unprototyped);
     }
@@ -2077,37 +2115,22 @@ fn resolve_parameters(
     for parameter in signature.parameters() {
         let start = resolver.definitions.len();
         let resolved = resolver.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
-        let declared_array = parameter.declarator.array_parameter();
-        let qualifiers = match declared_array {
-            Some(array) => array.qualifiers.into(),
-            None => resolver.ctypes.quals(resolved),
-        };
-        let ty = resolver.object_type(resolved, "void parameter")?;
-        let array = match &ty {
-            Type::Array { length, .. } => Some(ArrayParameter {
-                extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
-                guaranteed: declared_array.is_some_and(|array| array.is_static),
-            }),
-            Type::VariableArray { extent, .. } => Some(ArrayParameter {
-                extent: ArrayExtent::Variable(*extent),
-                guaranteed: declared_array.is_some_and(|array| array.is_static),
-            }),
-            _ => None,
-        };
+        let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
+        let shape = resolver.parameter_shape(resolved, declared_array)?;
         for definition in &resolver.definitions[start..] {
             module.types.push(parameter.derive(definition.clone()));
         }
         let lowered = parameter.derive(Parameter {
             id: BindingId(*next_binding),
             name: parameter.declarator.name().map(str::to_owned),
-            ty,
-            restrict: qualifiers.is_restrict,
-            is_const: qualifiers.is_const,
+            ty: shape.ty,
+            restrict: shape.qualifiers.is_restrict,
+            is_const: shape.qualifiers.is_const,
             access: Access {
-                volatile: qualifiers.is_volatile,
-                atomic: qualifiers.is_atomic,
+                volatile: shape.qualifiers.is_volatile,
+                atomic: shape.qualifiers.is_atomic,
             },
-            array,
+            array: shape.array,
         });
         module.annotate(&lowered, resolver.render(resolved).entries());
         fixed.push(lowered);

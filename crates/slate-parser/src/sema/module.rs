@@ -438,25 +438,9 @@ impl Lowerer {
             let start = self.types.definitions.len();
             let resolved =
                 self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
-            let written = self.types.object_type(resolved, "void parameter")?;
             let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
-            let array = match &written {
-                Type::Array { length, .. } => Some(ArrayParameter {
-                    extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
-                    guaranteed: declared_array.is_static,
-                }),
-                Type::VariableArray { extent, .. } => Some(ArrayParameter {
-                    extent: ArrayExtent::Variable(*extent),
-                    guaranteed: declared_array.is_static,
-                }),
-                _ => None,
-            };
-            let qualifiers = match written {
-                Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers.into(),
-                _ => self.types.ctypes.quals(resolved),
-            };
-            let adjusted = self.types.adjusted_parameter(resolved, qualifiers);
-            let ty = self.types.ir_type(adjusted);
+            let shape = self.types.parameter_shape(resolved, declared_array)?;
+            let adjusted = shape.adjusted;
             let name = parameter.declarator.name();
             let id = match (prologue.is_some(), name) {
                 (true, Some(name)) => self.declaration_id(parameter.id, name)?,
@@ -474,14 +458,14 @@ impl Lowerer {
             let lowered = parameter.derive(Parameter {
                 id,
                 name: name.map(str::to_owned),
-                ty,
-                restrict: qualifiers.is_restrict,
-                is_const: qualifiers.is_const,
+                ty: shape.ty,
+                restrict: shape.qualifiers.is_restrict,
+                is_const: shape.qualifiers.is_const,
                 access: Access {
-                    volatile: qualifiers.is_volatile,
-                    atomic: qualifiers.is_atomic,
+                    volatile: shape.qualifiers.is_volatile,
+                    atomic: shape.qualifiers.is_atomic,
                 },
-                array,
+                array: shape.array,
             });
             let c_entries = self.types.render(resolved).entries();
             self.module.annotate(&lowered, c_entries);

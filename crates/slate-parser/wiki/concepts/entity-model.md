@@ -125,13 +125,13 @@ synthetic object with no C declaration behind it:
 
 | Site | Status |
 | --- | --- |
-| `module.rs::parameters` | parameter; qualifiers from the adjusted `QualType` it declares into the table two lines above |
+| `module.rs::parameters` | parameter; type, qualifiers and array shape from `TypeResolver::parameter_shape`, which also returns the adjusted `QualType` it declares into the table |
 | `module.rs::declaration` (`Variable`, and the two `Global` wrappers) | file scope, block scope and static local; type and qualifiers from the declared `QualType`, `[align=N]` and `common` from the request |
 | `expression.rs::place` (`PlaceKind::CompoundLiteral`) | compound literal; the object is declared into the table and its `access` comes from the same `QualType` |
 | `expression.rs` string-literal backing `Global` | synthetic: a `.strN` object no C declaration names, all properties constant by construction |
 | `atomic.rs` builtin trampoline `Parameter`s | synthetic, same reason |
 | `module.rs` unnamed prototype `Parameter`s | a prototype written as a function *type* has no parameter declarations, and canonicalization has already stripped top-level parameter qualifiers |
-| `types.rs::resolve_parameters` | the standalone `resolve_type_module`/`resolve_module` path, which has no `Lowerer` and so no entity table, and hands out `BindingId`s from a counter. A second copy of parameter lowering — filed as slate-parser-dev |
+| `types.rs::resolve_parameters` | the standalone `resolve_type_module` path, which has no `Lowerer` and so no entity table, and hands out `BindingId`s from a counter. It shares the `QualType` -> `ir::Parameter` projection with `module.rs::parameters` via `parameter_shape`; what stays split is id allocation and the entity declaration |
 | `types.rs` record `Field`s (`fields.push`) | fields have no `BindingId`; their qualifiers and alignment requests live in the record definition, next to the offsets they determine |
 | `effects.rs` `PlaceKind::CompoundLiteral` | not a declaration site: effect normalization rebuilds an existing place |
 | `module.rs`/`types.rs` `ArrayParameter` | not a declaration site: the grep's `Parameter {` matches the array-extent shape too |
