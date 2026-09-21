@@ -342,6 +342,13 @@ impl TypeResolver {
                             semantics: crate::ir::ArithSema::Exact,
                         },
                     ),
+                    UnaryOp::Real | UnaryOp::Imag if !self.ctypes.is_complex_domain(operand.c) => {
+                        let operand = self.promote_operand(context, operand, None)?;
+                        if *op == UnaryOp::Real {
+                            return Ok(operand);
+                        }
+                        (operand.c, ValueKind::Constant(Number::Integer(0u8.into())))
+                    }
                     _ => return Err(ResolveError::Unsupported("nonconstant unary expression")),
                 }
             }
@@ -523,6 +530,10 @@ impl TypeResolver {
                     .map(|(element, _)| element)
                     .or_else(|| self.ctypes.pointee(base))
                     .ok_or(ResolveError::Unsupported("sizeof index of nonarray"))
+            }
+            ExprKind::Comma { right, .. } => {
+                let right = self.assertion_operand_type(right)?;
+                Ok(self.ctypes.lvalue_conversion(right))
             }
             _ => self.constant_value(e).map(|value| value.c),
         }
@@ -1120,7 +1131,7 @@ impl TypeResolver {
                             .bit_width
                             .as_ref()
                             .map(|expr| {
-                                let value = crate::const_expr::Parser::evaluate_ast(expr)?;
+                                let value = self.constant_integer(expr)?;
                                 u32::try_from(value).map_err(|_| {
                                     ResolveError::Unsupported("invalid bit-field width")
                                 })
@@ -1185,10 +1196,9 @@ impl TypeResolver {
                         continue;
                     };
                     let value = if let Some(expr) = &enumerator.value {
-                        i64::try_from(self.constant_integer(&substitute_enumerators(expr, &prior))?)
-                            .map_err(|_| {
-                                ResolveError::Unsupported("enum value outside supported i64 range")
-                            })?
+                        i64::try_from(self.constant_integer(expr)?).map_err(|_| {
+                            ResolveError::Unsupported("enum value outside supported i64 range")
+                        })?
                     } else {
                         previous
                             .checked_add(1)
@@ -1196,6 +1206,20 @@ impl TypeResolver {
                     };
                     previous = value;
                     prior.insert(enumerator.name.clone(), value);
+                    let int_ty = self.ctypes.int();
+                    let ty = self.ir_type(int_ty);
+                    self.declare(
+                        &enumerator.name,
+                        Ordinary::Constant(Operand {
+                            value: Value {
+                                ty,
+                                node: item.derive(ValueKind::Constant(Number::SignedInteger(
+                                    BigInt::from(value),
+                                ))),
+                            },
+                            c: int_ty,
+                        }),
+                    );
                     values.push((item, enumerator, value));
                 }
                 let is_fixed = fixed_underlying.is_some();
@@ -1686,7 +1710,7 @@ pub(super) fn requested_alignment<'a>(
     for attribute in attributes {
         let value = match attribute {
             Attribute::Aligned(expr) | Attribute::AlignAs(AlignAsOperand::Expr(expr)) => {
-                u64::try_from(crate::const_expr::Parser::evaluate_ast(expr)?)
+                u64::try_from(resolver.constant_integer(expr)?)
                     .map_err(|_| ResolveError::Unsupported("invalid alignment"))?
             }
             Attribute::AlignAs(AlignAsOperand::Type { ty }) => {
@@ -1719,57 +1743,6 @@ fn field_request(
     let first = requested_alignment(resolver, declaration)?;
     let second = requested_alignment(resolver, field)?;
     Ok((packed, first.into_iter().chain(second).max()))
-}
-
-fn substitute_enumerators(
-    expression: &crate::ast::Expr,
-    values: &HashMap<String, i64>,
-) -> crate::ast::Expr {
-    use crate::ast::ExprKind;
-    let mut result = expression.clone();
-    result.value = match &expression.value {
-        ExprKind::Identifier(name) if values.contains_key(name) => {
-            let value = values[name];
-            let literal = ExprKind::IntegerLiteral(crate::const_expr::IntegerLiteral::decimal(
-                value.saturating_abs(),
-            ));
-            if value < 0 {
-                ExprKind::Unary {
-                    op: crate::const_expr::UnaryOp::Minus,
-                    operand: Box::new(expression.as_ref().clone().with_value(literal)),
-                }
-            } else {
-                literal
-            }
-        }
-        ExprKind::Paren(inner) => ExprKind::Paren(substitute_enumerators(inner, values)),
-        ExprKind::Unary { op, operand } => ExprKind::Unary {
-            op: *op,
-            operand: substitute_enumerators(operand, values),
-        },
-        ExprKind::Binary { op, left, right } => ExprKind::Binary {
-            op: *op,
-            left: substitute_enumerators(left, values),
-            right: substitute_enumerators(right, values),
-        },
-        ExprKind::Conditional {
-            condition,
-            then_value,
-            else_value,
-        } => ExprKind::Conditional {
-            condition: substitute_enumerators(condition, values),
-            then_value: then_value
-                .as_ref()
-                .map(|value| substitute_enumerators(value, values)),
-            else_value: substitute_enumerators(else_value, values),
-        },
-        ExprKind::Cast { ty, value } => ExprKind::Cast {
-            ty: ty.clone(),
-            value: substitute_enumerators(value, values),
-        },
-        _ => expression.value.clone(),
-    };
-    result
 }
 
 /// Layout identity in MSVC's sense: the same storage shape, ignoring integer

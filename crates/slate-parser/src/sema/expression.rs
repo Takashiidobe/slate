@@ -2043,9 +2043,23 @@ impl Lowerer {
                     return self.read(e, place);
                 }
                 let value = self.expr(operand)?;
+                let real = matches!(
+                    &e.value,
+                    ExprKind::Unary {
+                        op: UnaryOp::Real,
+                        ..
+                    }
+                );
                 let Type::Complex(_component) = value.ty else {
-                    return Err(ResolveError::Unsupported(
-                        "complex component of non-complex value",
+                    let value = self.promote(value)?;
+                    if real {
+                        return Ok(value);
+                    }
+                    let c = value.c;
+                    return Ok(self.operand(
+                        e,
+                        c,
+                        ValueKind::Constant(Number::Integer(0u8.into())),
                     ));
                 };
                 let c = self.types.ctypes.arithmetic_component(value.c);
@@ -2053,13 +2067,7 @@ impl Lowerer {
                     e,
                     c,
                     ValueKind::Convert {
-                        kind: if matches!(
-                            &e.value,
-                            ExprKind::Unary {
-                                op: UnaryOp::Real,
-                                ..
-                            }
-                        ) {
+                        kind: if real {
                             ConversionKind::ComplexToReal
                         } else {
                             ConversionKind::ComplexToImag

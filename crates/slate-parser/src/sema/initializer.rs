@@ -4,7 +4,7 @@ use super::numeric::ResolveError;
 use super::operand::Operand;
 use super::types::TypeResolver;
 use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
-use crate::const_expr::{Encoding, Parser};
+use crate::const_expr::Encoding;
 use crate::ir::*;
 
 enum Shape {
@@ -285,6 +285,20 @@ impl TypeResolver {
         }
     }
 
+    fn array_index(&mut self, expr: &Expr, length: Option<u64>) -> Result<u64, ResolveError> {
+        let index = self
+            .constant_integer(expr)
+            .ok()
+            .and_then(|index| u64::try_from(index).ok())
+            .ok_or(ResolveError::Unsupported(
+                "non-constant or negative array designator",
+            ))?;
+        if length.is_some_and(|length| index >= length) {
+            return Err(ResolveError::Unsupported("array designator out of range"));
+        }
+        Ok(index)
+    }
+
     pub(super) fn inferred_array_length(
         &mut self,
         element: &Type,
@@ -299,11 +313,11 @@ impl TypeResolver {
                     next += 1;
                 }
                 Some(Designator::Array(at)) => {
-                    next = array_index(at, None)? + 1;
+                    next = self.array_index(at, None)? + 1;
                     index += 1;
                 }
                 Some(Designator::ArrayRange { end, .. }) => {
-                    next = array_index(end, None)? + 1;
+                    next = self.array_index(end, None)? + 1;
                     index += 1;
                 }
                 Some(Designator::Field(_)) => {
@@ -622,7 +636,7 @@ impl Lowerer {
     }
 
     fn resolve(
-        &self,
+        &mut self,
         builder: &Builder,
         designator: &Designator,
     ) -> Result<Vec<Step>, ResolveError> {
@@ -636,7 +650,7 @@ impl Lowerer {
                 },
                 Designator::Array(index),
             ) => {
-                let index = array_index(index, *length)?;
+                let index = self.types.array_index(index, *length)?;
                 Ok(vec![(AggregateTarget::Index(index), sized(element)?)])
             }
             (
@@ -645,8 +659,8 @@ impl Lowerer {
                 },
                 Designator::ArrayRange { start, end },
             ) => {
-                let start = array_index(start, *length)?;
-                let end = array_index(end, *length)?;
+                let start = self.types.array_index(start, *length)?;
+                let end = self.types.array_index(end, *length)?;
                 if end < start {
                     return Err(ResolveError::Unsupported("empty designated range"));
                 }
@@ -733,17 +747,4 @@ impl Lowerer {
         let value = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
         Ok(Some((ty, value)))
     }
-}
-
-fn array_index(expr: &Expr, length: Option<u64>) -> Result<u64, ResolveError> {
-    let index = Parser::evaluate_ast(expr)
-        .ok()
-        .and_then(|index| u64::try_from(index).ok())
-        .ok_or(ResolveError::Unsupported(
-            "non-constant or negative array designator",
-        ))?;
-    if length.is_some_and(|length| index >= length) {
-        return Err(ResolveError::Unsupported("array designator out of range"));
-    }
-    Ok(index)
 }

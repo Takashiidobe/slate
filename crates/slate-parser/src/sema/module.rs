@@ -2,7 +2,7 @@ use super::SemaError;
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
-use super::types::TypeResolver;
+use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
@@ -709,6 +709,18 @@ impl Lowerer {
                     (ty, Some(value))
                 }
             };
+            if item.specifiers.is_constexpr
+                && let Some(value) = &initializer
+                && is_folded(value)
+            {
+                self.types.declare(
+                    name,
+                    Ordinary::Constant(super::operand::Operand {
+                        value: value.clone(),
+                        c: resolved,
+                    }),
+                );
+            }
             let variable = Variable {
                 id,
                 name: name.into(),

@@ -152,6 +152,13 @@ impl Checker<'_> {
                 } else if !self.types.ctypes.is_void(resolved) {
                     let completed = self.completed_array(resolved, declarator.initializer.as_ref());
                     self.types.declare(name, Ordinary::Object(completed));
+                    if declaration.specifiers.is_constexpr
+                        && let Some(Initializer::Expr(expr)) = &declarator.initializer
+                        && ice_shape(&mut self.types, expr).is_constant()
+                        && let Ok(value) = self.types.constant_value(expr)
+                    {
+                        self.types.declare(name, Ordinary::Constant(value));
+                    }
                 }
             }
             if let Some(initializer) = &declarator.initializer {

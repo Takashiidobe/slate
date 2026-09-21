@@ -94,6 +94,7 @@ impl Resolver {
             DeclKind::Declaration(inner) => self.declaration(inner, declaration),
             DeclKind::Function(function) => {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
+                crate::visit::walk_attributes(self, &function.specifiers.attributes)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
                 self.bind_ordinary(name, BindingKind::Function, true, declaration)?;
                 let outer_labels = std::mem::take(&mut self.labels);
@@ -138,6 +139,7 @@ impl Resolver {
             return Ok(());
         }
         self.type_specifier(&declaration.specifiers.ty, span)?;
+        crate::visit::walk_attributes(self, &declaration.specifiers.attributes)?;
         let base_kind = if declaration.specifiers.storage == StorageClass::Typedef {
             BindingKind::Typedef
         } else {
@@ -145,6 +147,7 @@ impl Resolver {
         };
         for declarator in &declaration.declarators {
             self.visit_declarator(&declarator.declarator)?;
+            crate::visit::walk_attributes(self, &declarator.attributes)?;
             let kind = if base_kind == BindingKind::Object
                 && declarator.declarator.function_parameters().is_some()
             {
@@ -410,9 +413,14 @@ impl Resolver {
     fn declarator(&mut self, declarator: &Declarator) -> Result<(), ResolveError> {
         match declarator {
             Declarator::Abstract | Declarator::Name(_) => Ok(()),
-            Declarator::Grouped(inner)
-            | Declarator::Attributed { inner, .. }
-            | Declarator::Pointer { inner, .. } => self.visit_declarator(inner),
+            Declarator::Grouped(inner) => self.visit_declarator(inner),
+            Declarator::Attributed { inner, attributes }
+            | Declarator::Pointer {
+                inner, attributes, ..
+            } => {
+                self.visit_declarator(inner)?;
+                crate::visit::walk_attributes(self, attributes)
+            }
             Declarator::Array { inner, size, .. } => {
                 self.visit_declarator(inner)?;
                 if let ArraySize::Expression(value) = size {

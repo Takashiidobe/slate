@@ -364,7 +364,10 @@ one byte offset per field, bit offsets for bit-fields, and byte extents for
 contiguous bit-field storage units. It applies packed,
 aligned, and `_Alignas` requests, including local field alignment. Unnamed
 members and zero-width bit-fields remain in the field list. Enum values are
-evaluated in declaration order, including references to prior enumerators;
+evaluated in declaration order, each enumerator entering the ordinary scope
+as an `int` constant the moment its value is known, so a later enumerator
+sees it with its type (`enum { A = 1, B = sizeof(A) }`) rather than as a
+substituted literal;
 the underlying integer type is selected from the represented range unless
 the source fixes it: with a negative value `int`, else `long`; with none,
 `unsigned int` (so `enum { A, B }` is `u32`), else `unsigned long`. Values
@@ -1300,6 +1303,18 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   is the initializer value's type, so `(int[]){1,2}` is `array<i32, 2>`.
   Storage is `Static` outside a function body and `Automatic` inside; values
   read or decay from the place like any other object.
+- Layout constants — bit-field widths, array bounds, array designators and
+  `aligned`/`_Alignas` — all fold through `TypeResolver::constant_integer`,
+  which is target-aware and sees predefined macros, prior enumerators and
+  `constexpr` objects. The token-level folder in `const_expr.rs` is for the
+  preprocessor and knows none of those; it is not used for layout.
+  Attribute operands are name-resolved like any other expression, so
+  `__attribute__((aligned(sizeof(x))))` finds `x`.
+- A `constexpr` object whose initializer folds is declared as an ordinary
+  constant, so it is usable as an integer constant expression
+  (`constexpr int w = 7; int a[w];`).
+- `__real__`/`__imag__` accept a real operand, as GCC does: `__real__ x` is
+  the promoted operand and `__imag__ x` is zero of that type.
 - A member access on a record rvalue (`f().x`, `(s, t).x`) materializes the
   base into `PlaceKind::Temporary { object, initializer }`, printed
   `temporary %id = <value>`, and projects the field from it. The temporary
