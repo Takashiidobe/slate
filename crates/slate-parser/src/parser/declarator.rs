@@ -335,6 +335,7 @@ impl<'a> DeclaratorParser<'a> {
                             | Keyword::Signed
                             | Keyword::Unsigned
                             | Keyword::Float16
+                            | Keyword::BFloat16
                             | Keyword::Float64x
                             | Keyword::Float128
                             | Keyword::Float128Ext

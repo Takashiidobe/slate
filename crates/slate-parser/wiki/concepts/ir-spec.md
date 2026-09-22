@@ -545,7 +545,7 @@ and a conversion either way prints as `float_narrow`. `bf16` widens only to
 f32 and above. Its rank in the usual arithmetic conversions sits below f16
 (`__bf16 + _Float16` is `_Float16`, matching clang's `FloatingRank`), and like
 `_Float16` it is not subject to the default argument promotions. `_Complex
-__bf16` is rejected, as in clang. There is no `bf16` literal suffix, so a bf16
+__bf16` is represented as `complex<bf16>`. There is no `bf16` literal suffix, so a bf16
 value is written `1.5bf16` / `1.5BF16`, which gcc accepts and clang does not.
 The suffix is accepted in every flavor, like the gcc-only `df`/`dd`/`dl` and
 `q` suffixes already were: input is assumed to already compile. It matters
