@@ -1,6 +1,6 @@
 use super::ctype::QualType;
 use super::numeric::ResolveError;
-use crate::ir::BindingId;
+use crate::ir::{BindingId, Linkage, StorageDuration, SymbolAttributes};
 use std::collections::HashMap;
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -16,11 +16,15 @@ impl ObjectRequest {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub(super) struct Entity {
     pub ty: QualType,
     pub request: ObjectRequest,
     pub is_register: bool,
+    pub linkage: Option<Linkage>,
+    pub storage: Option<StorageDuration>,
+    pub definition: bool,
+    pub symbol: SymbolAttributes,
 }
 
 #[derive(Debug, Default)]
@@ -51,6 +55,10 @@ impl Entities {
                         ty,
                         request: ObjectRequest::default(),
                         is_register,
+                        linkage: None,
+                        storage: None,
+                        definition: false,
+                        symbol: SymbolAttributes::default(),
                     },
                 );
                 None
@@ -89,5 +97,44 @@ impl Entities {
 
     pub(super) fn discard_after(&mut self, next_id: u32) {
         self.entities.retain(|id, _| id.0 < next_id);
+    }
+
+    pub(super) fn merge_declaration(
+        &mut self,
+        id: BindingId,
+        linkage: Linkage,
+        storage: Option<StorageDuration>,
+        definition: bool,
+        symbol: SymbolAttributes,
+    ) {
+        if let Some(entity) = self.entities.get_mut(&id) {
+            entity.linkage = Some(match (entity.linkage, linkage) {
+                (Some(Linkage::Internal), _) | (_, Linkage::Internal) => Linkage::Internal,
+                _ => Linkage::External,
+            });
+            if storage == Some(StorageDuration::Thread) || entity.storage.is_none() {
+                entity.storage = storage;
+            }
+            entity.definition |= definition;
+            entity.symbol.merge(symbol);
+        }
+    }
+
+    pub(super) fn linkage(&self, id: BindingId) -> Option<Linkage> {
+        self.entities.get(&id).and_then(|entity| entity.linkage)
+    }
+
+    pub(super) fn storage(&self, id: BindingId) -> Option<StorageDuration> {
+        self.entities.get(&id).and_then(|entity| entity.storage)
+    }
+
+    pub(super) fn definition(&self, id: BindingId) -> bool {
+        self.entities
+            .get(&id)
+            .is_some_and(|entity| entity.definition)
+    }
+
+    pub(super) fn symbol(&self, id: BindingId) -> Option<&SymbolAttributes> {
+        self.entities.get(&id).map(|entity| &entity.symbol)
     }
 }

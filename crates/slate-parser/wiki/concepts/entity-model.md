@@ -7,7 +7,15 @@ redeclarations. The table lives in `src/sema/entity.rs` and hangs off
 ## What an entity holds
 
 ```rust
-struct Entity { ty: QualType, request: ObjectRequest, is_register: bool }
+struct Entity {
+    ty: QualType,
+    request: ObjectRequest,
+    is_register: bool,
+    linkage: Option<Linkage>,
+    storage: Option<StorageDuration>,
+    definition: bool,
+    symbol: SymbolAttributes,
+}
 struct ObjectRequest { alignment: Option<u64>, common: Option<bool> }
 ```
 
@@ -30,6 +38,8 @@ record:
 | register-address constraint | `is_register` |
 | `__alignof__` of an object | `declared_alignment(request.alignment, natural)` |
 | the access map handed to effects normalization | `entities.types()`, once, after lowering |
+| `Global` / `Function` linkage and symbol attributes | merged declaration state on the entity |
+| `Global` storage duration and definition state | merged declaration state on the entity |
 
 Two alignment rules read the one request, because they genuinely differ: see
 the `lh7.2.31` paragraph in [`ir-spec.md`](ir-spec.md).
@@ -142,11 +152,13 @@ field's own request, held in the record definition) and the
 `requested_alignment(self, &tag.attributes)` calls, which are a *tag's*
 alignment, not an object's.
 
-Two properties an object has are *not* on the entity. Linkage, storage
-duration, definition state and symbol attributes are computed per declaration
-in `module.rs` and merged in place on `ir::Global`/`ir::Function` by
-`declare_global`/`declare_function`, which makes `module.globals` a second
-per-object store keyed by `BindingId` (slate-parser-rjy).
+Linkage, storage duration, definition state and symbol attributes merge into
+the entity alongside its type and object request. `ir::Global` and
+`ir::Function` retain those values as the lowered module representation, but
+are projections of the entity; redeclaration merging does not use them as a
+second source of semantic state. Initializers and function bodies remain on
+their IR declarations because they are emitted payloads, not entity
+properties.
 
 ## Declaration sites
 

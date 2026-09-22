@@ -327,8 +327,28 @@ impl Lowerer {
 
     fn resolve_object_requests(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         let msvc_target = self.context.target.environment == TargetEnvironment::Msvc;
+        for function in &mut self.module.functions {
+            let id = function.value.id;
+            if let Some(linkage) = self.types.entities.linkage(id) {
+                function.value.linkage = linkage;
+            }
+            if let Some(symbol) = self.types.entities.symbol(id) {
+                function.value.symbol = symbol.clone();
+            }
+        }
         for global in &mut self.module.globals {
             let global = &mut global.value;
+            let id = global.variable.id;
+            if let Some(linkage) = self.types.entities.linkage(id) {
+                global.linkage = linkage;
+                if let Some(storage) = self.types.entities.storage(id) {
+                    global.variable.storage = storage;
+                }
+                global.definition = self.types.entities.definition(id);
+                if let Some(symbol) = self.types.entities.symbol(id) {
+                    global.symbol = symbol.clone();
+                }
+            }
             let request = self.types.entities.request(&global.variable.id);
             if let Some(requested) = request.alignment {
                 let natural = u64::from(
@@ -360,6 +380,13 @@ impl Lowerer {
         previous: Option<QualType>,
     ) -> Result<(), ResolveError> {
         let id = global.value.variable.id;
+        self.types.entities.merge_declaration(
+            id,
+            global.value.linkage,
+            Some(global.value.variable.storage),
+            global.value.definition,
+            global.value.symbol.clone(),
+        );
         let declared = self
             .types
             .entities
@@ -397,14 +424,6 @@ impl Lowerer {
             }
             existing.variable.initializer = global.variable.initializer;
         }
-        if global.variable.storage == StorageDuration::Thread {
-            existing.variable.storage = StorageDuration::Thread;
-        }
-        existing.definition |= global.definition;
-        if matches!(global.linkage, Linkage::Internal) {
-            existing.linkage = Linkage::Internal;
-        }
-        existing.symbol.merge(global.symbol);
         Ok(())
     }
 
@@ -414,6 +433,13 @@ impl Lowerer {
         previous: Option<QualType>,
     ) -> Result<(), ResolveError> {
         let id = function.value.id;
+        self.types.entities.merge_declaration(
+            id,
+            function.value.linkage,
+            None,
+            function.value.body.is_some(),
+            function.value.symbol.clone(),
+        );
         if let Some(declared) = self.types.entities.ty(&id)
             && let Some(message) = self.types.merge_redeclaration(id, previous, declared)?
         {
@@ -430,20 +456,12 @@ impl Lowerer {
         };
         let existing = &mut self.module.functions[index];
         let function = function.value;
-        let linkage = match (existing.value.linkage, function.linkage) {
-            (Linkage::External, Linkage::External) => Linkage::External,
-            _ => Linkage::Internal,
-        };
-        let mut symbol = std::mem::take(&mut existing.value.symbol);
-        symbol.merge(function.symbol.clone());
         let replaces = function.body.is_some()
             || (existing.value.body.is_none()
                 && matches!(existing.value.parameters, Parameters::Unprototyped));
         if replaces {
             existing.value = function;
         }
-        existing.value.linkage = linkage;
-        existing.value.symbol = symbol;
         Ok(())
     }
 
@@ -825,6 +843,13 @@ impl Lowerer {
                     definition: true,
                     common: false,
                 });
+                self.types.entities.merge_declaration(
+                    global.value.variable.id,
+                    global.value.linkage,
+                    Some(global.value.variable.storage),
+                    global.value.definition,
+                    global.value.symbol.clone(),
+                );
                 self.module.annotate(&global, c_entries);
                 self.module.globals.push(global);
             }
