@@ -1338,9 +1338,12 @@ These rules follow [GCC's inline documentation](https://gcc.gnu.org/onlinedocs/g
 `always_inline` and `noinline` resolve into the preference enum independently of
 emission; contradictory preferences are diagnosed. `_Noreturn`, `[[noreturn]]`,
 and the GNU attribute merge across declarations into the same flag. Reaching the
-end of such a body is `fallthrough=ub`. Function attributes also survive as
-`c_attributes` metadata, including attributes not otherwise interpreted by sema;
-retention does not implement attribute-specific ABI or optimization behavior.
+end of such a body is `fallthrough=ub`. Function, parameter, and object
+declaration attributes also survive as `c_attributes` metadata, including
+attributes not otherwise interpreted by sema; retention does not implement
+attribute-specific ABI or optimization behavior.
+Integer constant expressions in expression-valued attributes are folded before
+they are retained, so metadata carries their resolved integer values.
 
 `Variable.constexpr` distinguishes C23 constexpr objects from ordinary const
 objects. Their types are implicitly const-qualified, file-scope objects have

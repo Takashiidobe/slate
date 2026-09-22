@@ -62,9 +62,9 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::NoCommon => Use::Layout,
 
         Attribute::Mode(_) => Use::Unsupported("machine mode attribute"),
-        Attribute::AddressSpace(_) => Use::Unsupported("address space attribute"),
+        Attribute::AddressSpace(_) => Use::Ignored,
         Attribute::Cleanup(_) => Use::Ignored,
-        Attribute::ScalarStorageOrder(_) => Use::Unsupported("scalar storage order attribute"),
+        Attribute::ScalarStorageOrder(_) => Use::Ignored,
         Attribute::TransparentUnion => Use::Unsupported("transparent union attribute"),
         Attribute::MsStruct | Attribute::GccStruct => Use::Unsupported("record layout attribute"),
         Attribute::Ifunc(_) => Use::Unsupported("ifunc attribute"),
@@ -140,9 +140,6 @@ fn inapplicable(
             .then_some(("ms_struct", Some("structs, unions, and classes"))),
         Attribute::GccStruct => (subject != Subject::Record)
             .then_some(("gcc_struct", Some("structs, unions, and classes"))),
-        Attribute::ScalarStorageOrder(_) => (subject != Subject::Record)
-            .then_some(("scalar_storage_order", Some("unions and structs"))),
-
         Attribute::Ifunc(_) => function_only("ifunc"),
         Attribute::Malloc => function_only("malloc"),
         Attribute::Cold => function_only("cold"),

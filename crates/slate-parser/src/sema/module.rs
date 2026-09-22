@@ -7,10 +7,12 @@ use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
+use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetEnvironment;
+use num_bigint::Sign;
 use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
@@ -175,7 +177,7 @@ pub fn resolve_module(
         }
     }
     lower.resolve_object_requests(unit)?;
-    lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
+    lower.finish_functions(unit.options.effective_inline_semantics(unit.standard))?;
     let declared: Vec<_> = lower.types.entities.types().collect();
     let access = declared
         .into_iter()
@@ -296,6 +298,98 @@ fn function_symbol<'a>(
 }
 
 impl Lowerer {
+    fn c_attribute_metadata<'a>(
+        &mut self,
+        attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
+    ) -> Result<Option<(String, String)>, ResolveError> {
+        self.render_c_attributes(attributes.into_iter().map(|attribute| &attribute.value))
+    }
+
+    pub(super) fn render_c_attributes<'a>(
+        &mut self,
+        attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+    ) -> Result<Option<(String, String)>, ResolveError> {
+        let mut folded = Vec::new();
+        for attribute in attributes {
+            folded.push(self.fold_c_attribute(attribute)?);
+        }
+        Ok((!folded.is_empty()).then(|| ("c_attributes".into(), format!("{folded:?}"))))
+    }
+
+    fn fold_attribute_expr(&mut self, expression: &ast::Expr) -> Result<ast::Expr, ResolveError> {
+        let value = self.types.constant_integer(expression)?;
+        let magnitude = value.magnitude().clone();
+        let literal = Box::new(
+            expression.derive(ast::ExprKind::IntegerLiteral(IntegerLiteral {
+                spelling: magnitude.to_string(),
+                value: magnitude,
+                radix: Radix::Decimal,
+                suffix: IntegerSuffix {
+                    unsigned: false,
+                    size: IntegerSizeSuffix::None,
+                },
+                imaginary: false,
+            })),
+        );
+        if value.sign() == Sign::Minus {
+            Ok(Box::new(expression.derive(ast::ExprKind::Unary {
+                op: crate::const_expr::UnaryOp::Minus,
+                operand: literal,
+            })))
+        } else {
+            Ok(literal)
+        }
+    }
+
+    fn fold_c_attribute(
+        &mut self,
+        attribute: &ast::Attribute,
+    ) -> Result<ast::Attribute, ResolveError> {
+        let fold = |this: &mut Self, expression: &ast::Expr| this.fold_attribute_expr(expression);
+        Ok(match attribute {
+            ast::Attribute::AddressSpace(expression) => {
+                ast::Attribute::AddressSpace(fold(self, expression)?)
+            }
+            ast::Attribute::PassObjectSize { size_type, dynamic } => {
+                ast::Attribute::PassObjectSize {
+                    size_type: fold(self, size_type)?,
+                    dynamic: *dynamic,
+                }
+            }
+            ast::Attribute::Aligned(expression) => ast::Attribute::Aligned(fold(self, expression)?),
+            ast::Attribute::AlignAs(ast::AlignAsOperand::Expr(expression)) => {
+                ast::Attribute::AlignAs(ast::AlignAsOperand::Expr(fold(self, expression)?))
+            }
+            ast::Attribute::VectorSize(expression) => {
+                ast::Attribute::VectorSize(fold(self, expression)?)
+            }
+            ast::Attribute::AssumeAligned(expressions) => ast::Attribute::AssumeAligned(
+                expressions
+                    .iter()
+                    .map(|expression| fold(self, expression))
+                    .collect::<Result<_, _>>()?,
+            ),
+            ast::Attribute::AllocSize(expressions) => ast::Attribute::AllocSize(
+                expressions
+                    .iter()
+                    .map(|expression| fold(self, expression))
+                    .collect::<Result<_, _>>()?,
+            ),
+            ast::Attribute::AllocAlign(expression) => {
+                ast::Attribute::AllocAlign(fold(self, expression)?)
+            }
+            ast::Attribute::ExtVectorType(expression) => {
+                ast::Attribute::ExtVectorType(fold(self, expression)?)
+            }
+            ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(expression)) => {
+                ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(fold(
+                    self, expression,
+                )?))
+            }
+            attribute => attribute.clone(),
+        })
+    }
+
     fn check_attributes<'a>(
         &mut self,
         attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
@@ -541,7 +635,10 @@ impl Lowerer {
                 },
                 array: shape.array,
             });
-            let c_entries = self.types.render(resolved).entries();
+            let mut c_entries = self.types.render(resolved).entries();
+            if let Some(metadata) = self.c_attribute_metadata(attributes())? {
+                c_entries.push(metadata);
+            }
             self.module.annotate(&lowered, c_entries);
             fixed.push(lowered);
         }
@@ -594,7 +691,7 @@ impl Lowerer {
             }
             let start = self.types.definitions.len();
             let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
-            let c_entries = self.types.render(resolved).entries();
+            let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
                 self.types.define_alias(name.into(), resolved)?;
                 for definition in &self.types.definitions[start..] {
@@ -711,6 +808,9 @@ impl Lowerer {
             };
             self.check_attributes(attributes.clone(), subject)?;
             let attributes = || attributes.clone().filter(|a| applies(a, subject));
+            if let Some(metadata) = self.c_attribute_metadata(attributes())? {
+                c_entries.push(metadata);
+            }
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }

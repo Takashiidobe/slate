@@ -107,7 +107,16 @@ impl Lowerer {
         Ok(())
     }
 
-    pub(super) fn finish_functions(&mut self, mode: InlineSemantics) {
+    pub(super) fn finish_functions(&mut self, mode: InlineSemantics) -> Result<(), ResolveError> {
+        let retained_attributes: Vec<_> = self
+            .function_declarations
+            .iter()
+            .map(|(id, state)| (*id, state.attributes.clone()))
+            .collect();
+        let mut rendered_attributes = Vec::new();
+        for (id, attributes) in retained_attributes {
+            rendered_attributes.push((id, self.render_c_attributes(attributes.iter())?));
+        }
         for function in &mut self.module.functions {
             let Some(state) = self.function_declarations.get(&function.value.id) else {
                 continue;
@@ -131,13 +140,18 @@ impl Lowerer {
             if state.noreturn && function.body.is_some() {
                 function.value.fallthrough = Some(Fallthrough::Undefined);
             }
-            if !state.attributes.is_empty() {
+            if let Some(Some(metadata)) = rendered_attributes
+                .iter()
+                .find(|(id, _)| *id == function.value.id)
+                .map(|(_, metadata)| metadata)
+            {
                 self.module
                     .metadata
                     .entry(function.id)
                     .or_default()
-                    .push(("c_attributes".into(), format!("{:?}", state.attributes)));
+                    .push(metadata.clone());
             }
         }
+        Ok(())
     }
 }
