@@ -130,6 +130,7 @@ pub struct Variable {
     pub access: Access,
     pub constexpr: bool,
     pub alignment: Option<u64>,
+    pub cleanup: Option<String>,
     pub initializer: Option<Value>,
 }
 

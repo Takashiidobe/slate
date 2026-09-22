@@ -795,6 +795,10 @@ impl Lowerer {
                 },
                 constexpr: item.specifiers.is_constexpr,
                 alignment: automatic_alignment,
+                cleanup: attributes().find_map(|attribute| match &attribute.value {
+                    ast::Attribute::Cleanup(function) => Some(function.clone()),
+                    _ => None,
+                }),
                 initializer,
             };
             if storage != StorageDuration::Automatic

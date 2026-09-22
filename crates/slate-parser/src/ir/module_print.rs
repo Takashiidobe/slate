@@ -154,6 +154,9 @@ impl DisplayModule<'_> {
         if let Some(alignment) = variable.alignment {
             write!(f, " [align={alignment}]")?;
         }
+        if let Some(function) = &variable.cleanup {
+            write!(f, " [cleanup={function}]")?;
+        }
         if let Some(value) = &variable.initializer {
             write!(
                 f,

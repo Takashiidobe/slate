@@ -148,7 +148,7 @@ global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
 variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
                [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
-               [ "[align=" int "]" ] [ "=" value ] ;
+               [ "[align=" int "]" ] [ "[cleanup=" name "]" ] [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
 symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]

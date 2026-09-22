@@ -1267,7 +1267,7 @@ classification is what decides; `Ignored` covers diagnostic-only attributes
 (`deprecated`, `nodiscard`, `maybe_unused`, `warn_unused_result`, unknown and
 vendor attributes), aliasing hints the IR does not model (`may_alias`), and
 function attributes written where they have no object meaning. `Unsupported`
-names what is missing instead: `machine mode attribute`, `cleanup attribute`,
+names what is missing instead: `machine mode attribute`,
 `address space attribute`, `transparent union attribute`, `scalar storage order
 attribute`, `record layout attribute`, `ifunc attribute`, `code segment
 attribute`. Functions are not classified this way -- `function_symbol` keeps its

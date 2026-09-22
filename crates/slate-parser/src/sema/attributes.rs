@@ -63,7 +63,7 @@ fn general_use(attribute: &Attribute) -> Use {
 
         Attribute::Mode(_) => Use::Unsupported("machine mode attribute"),
         Attribute::AddressSpace(_) => Use::Unsupported("address space attribute"),
-        Attribute::Cleanup(_) => Use::Unsupported("cleanup attribute"),
+        Attribute::Cleanup(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Unsupported("scalar storage order attribute"),
         Attribute::TransparentUnion => Use::Unsupported("transparent union attribute"),
         Attribute::MsStruct | Attribute::GccStruct => Use::Unsupported("record layout attribute"),
