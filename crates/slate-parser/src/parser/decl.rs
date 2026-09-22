@@ -238,7 +238,7 @@ impl Parser {
         } else {
             None
         };
-        Ok(Span::cover(
+        Ok(self.cover_tokens(
             ParsedDeclarator {
                 declarator,
                 bit_width,
@@ -246,7 +246,9 @@ impl Parser {
                 attributes,
                 initializer,
             },
-            &tokens[start..parser.pos],
+            tokens,
+            start,
+            parser.pos,
         ))
     }
 
@@ -366,7 +368,7 @@ impl Parser {
                     decls.push(self.declaration_annotation(annotation)?);
                 }
             }
-            decls.push(span_tokens(decl, &tokens[start..*position]));
+            decls.push(span_tokens(decl, &tokens[start..*position], Some(self)));
             decls.extend(comments);
         }
         if linkage {

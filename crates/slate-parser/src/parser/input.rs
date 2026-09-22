@@ -1,4 +1,4 @@
-use crate::ast::{Comment, CommentGroup, Span};
+use crate::ast::{Comment, CommentGroup, Span, SpanRangeIndex};
 use crate::lexer::Token;
 use crate::pp::{PPNode, PPNodeKind};
 use std::cell::RefCell;
@@ -16,6 +16,7 @@ pub(super) type Annotations = BTreeMap<usize, Vec<Span<Annotation>>>;
 pub(super) struct ParserInput {
     pub tokens: Vec<Span<Token>>,
     pub(super) annotations: RefCell<Annotations>,
+    span_ranges: SpanRangeIndex,
 }
 
 impl ParserInput {
@@ -54,7 +55,29 @@ impl ParserInput {
                 }
             }
         }
+        input.span_ranges = SpanRangeIndex::new(&input.tokens);
         input
+    }
+
+    pub fn cover_tokens<T>(
+        &self,
+        value: T,
+        tokens: &[Span<Token>],
+        start: usize,
+        end: usize,
+    ) -> Span<T> {
+        let Some(base) = self.position(tokens, 0) else {
+            return match tokens.get(start..end) {
+                Some(range) => Span::cover(value, range),
+                None => Span::cover(value, &[] as &[Span<Token>]),
+            };
+        };
+        self.span_ranges
+            .cover(value, &self.tokens, base + start, base + end)
+    }
+
+    pub fn has_token_slice(&self, tokens: &[Span<Token>]) -> bool {
+        self.position(tokens, 0).is_some()
     }
 
     fn position(&self, tokens: &[Span<Token>], index: usize) -> Option<usize> {

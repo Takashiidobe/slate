@@ -105,14 +105,12 @@ increment and body, then the enclosing bindings are restored.
   and `Declaration` inherit the enclosing `Decl` or `Stmt` span and carry no
   duplicate provenance. Debug output includes provenance only when
   `system_header` is `Some`.
-- `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition:
-Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
-  produced a token, e.g. `int m = INT_MAX;` gives the folded literal's `Span`
-  a `macro_origin` of `{ name: "INT_MAX", definition: <limits.h provenance> }`
-  so Slate can pattern-match macro name + system header. `name`/`definition` are the
-  outermost macro invoked at the use site; `parent` chains through whatever
-  further macros its replacement expanded through (e.g. `INT_MAX` expanding
-  through `__INT_MAX__`), innermost last. Set in `pp/expand.rs::expand_macros`
+- `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition,
+  inner }`) identifies which macro produced a token. `name` and `definition`
+  identify the outermost macro invoked at the use site, so Slate can match
+  `INT_MAX` directly; `inner` links through macros in its replacement such as
+  `__INT_MAX__`. The linked inner chain shares its parents during expansion.
+  Set in `pp/expand.rs::expand_macros`
   on every replacement token, then flows into AST `Span`s for free because
   `Span::cover` propagates `macro_origin` when every covered token agrees on
   it (`None` on a node built from tokens with mixed origins). Not yet

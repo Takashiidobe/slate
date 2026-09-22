@@ -423,7 +423,11 @@ impl<'a> DeclaratorParser<'a> {
             attributes,
             body,
         };
-        let id = parser.define_tag(span_tokens(definition, &self.tokens[start..self.pos]));
+        let id = parser.define_tag(span_tokens(
+            definition,
+            &self.tokens[start..self.pos],
+            self.context,
+        ));
         Ok(TypeSpecifier::Tag(TagSpecifier::Definition(id)))
     }
 
@@ -499,6 +503,7 @@ impl<'a> DeclaratorParser<'a> {
                     declarators,
                 }),
                 &self.tokens[start..end],
+                self.context,
             ));
             fields.extend(
                 parser
@@ -566,6 +571,7 @@ impl<'a> DeclaratorParser<'a> {
                     value,
                 }),
                 &self.tokens[start..self.pos],
+                self.context,
             ));
             if self.matches(Token::Comma) {
                 continue;
@@ -1062,6 +1068,7 @@ impl<'a> DeclaratorParser<'a> {
                     attributes,
                 },
                 &self.tokens[parameter_start..self.pos],
+                self.context,
             ));
             if self.matches(Token::RParen) {
                 break;

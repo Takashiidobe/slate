@@ -302,11 +302,11 @@ impl Lowerer {
         if let ExprKind::Identifier(name) = &callee.value {
             metadata.push(("c_builtin".into(), name.clone()));
             if let Some(origin) = &callee.macro_origin {
-                let mut innermost = origin.as_ref();
-                while let Some(parent) = &innermost.parent {
-                    innermost = parent;
-                }
-                metadata.push(("c_macro".into(), innermost.name.clone()));
+                let name = origin
+                    .inner
+                    .as_ref()
+                    .map_or(&origin.name, |inner| &inner.name);
+                metadata.push(("c_macro".into(), name.to_string()));
             }
         }
         let value = self.atomic_operation(e, builtin, arguments)?;

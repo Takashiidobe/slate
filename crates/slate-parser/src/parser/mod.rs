@@ -213,6 +213,20 @@ fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
 }
 
 impl Parser {
+    pub(crate) fn cover_tokens<T>(
+        &self,
+        value: T,
+        tokens: &[Span<Token>],
+        start: usize,
+        end: usize,
+    ) -> Span<T> {
+        self.input.cover_tokens(value, tokens, start, end)
+    }
+
+    pub(crate) fn has_token_slice(&self, tokens: &[Span<Token>]) -> bool {
+        self.input.has_token_slice(tokens)
+    }
+
     pub(crate) fn checkpoint(&self) -> ParseCheckpoint<'_> {
         ParseCheckpoint {
             parser: self,
@@ -428,8 +442,15 @@ pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {
     }
 }
 
-fn span_tokens<T>(value: T, tokens: &[Span<Token>]) -> Span<T> {
-    Span::cover(value, tokens)
+pub(crate) fn span_tokens<T>(
+    value: T,
+    tokens: &[Span<Token>],
+    context: Option<&Parser>,
+) -> Span<T> {
+    match context {
+        Some(context) => context.cover_tokens(value, tokens, 0, tokens.len()),
+        None => Span::cover(value, tokens),
+    }
 }
 
 fn synthetic_span<T>(value: T) -> Span<T> {

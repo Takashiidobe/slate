@@ -64,7 +64,7 @@ fn asm_string(tokens: &[Span<Token>], pos: &mut usize) -> Result<Span<String>, S
     if *pos == start {
         return Err("expected string literal in `asm`".into());
     }
-    Ok(span_tokens(value, &tokens[start..*pos]))
+    Ok(span_tokens(value, &tokens[start..*pos], None))
 }
 
 impl DeclaratorParser<'_> {
@@ -96,7 +96,11 @@ impl DeclaratorParser<'_> {
         } else {
             AsmLabel::Symbol(label)
         };
-        Ok(Some(span_tokens(label, &tokens[start..self.pos])))
+        Ok(Some(span_tokens(
+            label,
+            &tokens[start..self.pos],
+            self.context,
+        )))
     }
 }
 
@@ -141,7 +145,11 @@ impl Parser {
         let mut position = cursor.pos + 1;
         let mut qualifiers = Vec::new();
         while let Some(qualifier) = asm_qualifier(tokens.get(position).map(|token| &token.value)) {
-            qualifiers.push(span_tokens(qualifier, &tokens[position..=position]));
+            qualifiers.push(span_tokens(
+                qualifier,
+                &tokens[position..=position],
+                Some(self),
+            ));
             position += 1;
         }
         if tokens.get(position).map(|token| &token.value) != Some(&Token::LParen) {
@@ -218,7 +226,7 @@ impl Parser {
             loop {
                 let start = cursor.pos;
                 let label = cursor.expect_ident("expected identifier")?;
-                labels.push(span_tokens(label, &tokens[start..cursor.pos]));
+                labels.push(span_tokens(label, &tokens[start..cursor.pos], Some(self)));
                 if !cursor.consume(Token::Comma) {
                     break;
                 }
@@ -296,7 +304,7 @@ impl Parser {
             let name = if cursor.consume(Token::LBracket) {
                 let start = cursor.pos;
                 let name = cursor.expect_ident("expected identifier")?;
-                let name = span_tokens(name, &tokens[start..cursor.pos]);
+                let name = span_tokens(name, &tokens[start..cursor.pos], Some(self));
                 cursor.expect(Token::RBracket, "expected `]`")?;
                 Some(name)
             } else {

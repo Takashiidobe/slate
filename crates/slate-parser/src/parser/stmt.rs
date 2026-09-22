@@ -83,7 +83,7 @@ impl Parser {
                     (
                         specifiers.clone(),
                         declarator,
-                        Span::cover((), &tokens[declarator_start..parser.pos]),
+                        self.cover_tokens((), tokens, declarator_start, parser.pos),
                     ),
                 );
                 if !parser.matches(Token::Comma) {
@@ -169,7 +169,7 @@ impl Parser {
                 .into_iter()
                 .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
             stmts.extend(pragmas);
-            stmts.push(span_tokens(stmt, &tokens[start..position]));
+            stmts.push(span_tokens(stmt, &tokens[start..position], Some(self)));
             stmts.extend(comments);
         }
         stmts.extend(self.statement_annotations(tokens, tokens.len(), tokens.len())?);
@@ -192,6 +192,7 @@ impl Parser {
         Ok(Box::new(span_tokens(
             stmt,
             &cursor.tokens[start..cursor.pos],
+            Some(self),
         )))
     }
 
@@ -204,6 +205,7 @@ impl Parser {
         Ok(Box::new(span_tokens(
             stmt,
             &cursor.tokens[start..cursor.pos],
+            Some(self),
         )))
     }
 
@@ -275,7 +277,11 @@ impl Parser {
         if let Some(Token::Ident(name)) = tokens.value_at(cursor.pos)
             && tokens.value_at(cursor.pos + 1) == Some(&Token::Colon)
         {
-            let label = span_tokens(name.clone(), &tokens[cursor.pos..cursor.pos + 1]);
+            let label = span_tokens(
+                name.clone(),
+                &tokens[cursor.pos..cursor.pos + 1],
+                Some(self),
+            );
             cursor.pos += 2;
             let body = self.parse_labeled_body(cursor)?;
             return Ok(StmtKind::Labeled { label, body });
@@ -290,9 +296,11 @@ impl Parser {
                 .filter(|part| !part.is_empty())
                 .map(|part| match part {
                     [single] => match &single.value {
-                        Token::Ident(name) => {
-                            Ok(span_tokens(name.clone(), std::slice::from_ref(single)))
-                        }
+                        Token::Ident(name) => Ok(span_tokens(
+                            name.clone(),
+                            std::slice::from_ref(single),
+                            Some(self),
+                        )),
                         _ => Err(self.error_at_tokens(tokens, cursor.pos, "expected label name")),
                     },
                     _ => Err(self.error_at_tokens(tokens, cursor.pos, "expected label name")),
@@ -324,7 +332,11 @@ impl Parser {
             {
                 cursor.pos = position;
                 let statement = self.parse_one_stmt(cursor)?;
-                let body = Box::new(span_tokens(statement, &tokens[position..cursor.pos]));
+                let body = Box::new(span_tokens(
+                    statement,
+                    &tokens[position..cursor.pos],
+                    Some(self),
+                ));
                 checkpoint.commit();
                 return Ok(StmtKind::Attributed { attributes, body });
             }
@@ -387,7 +399,7 @@ impl Parser {
                 cursor.pos += 1;
                 let label_start = cursor.pos;
                 let label = cursor.expect_ident("expected label after `goto`")?;
-                let label = span_tokens(label, &tokens[label_start..cursor.pos]);
+                let label = span_tokens(label, &tokens[label_start..cursor.pos], Some(self));
                 cursor.expect(Token::Semi, "expected `;` after `goto` label")?;
                 Ok(StmtKind::Goto(label))
             }
@@ -539,11 +551,13 @@ impl Parser {
                     Some(Box::new(span_tokens(
                         StmtKind::Decl(declaration),
                         init_tokens,
+                        Some(self),
                     )))
                 } else {
                     Some(Box::new(span_tokens(
                         StmtKind::Expr(self.parse_expression(init_tokens)?),
                         init_tokens,
+                        Some(self),
                     )))
                 };
                 let condition = if condition_tokens.is_empty() {

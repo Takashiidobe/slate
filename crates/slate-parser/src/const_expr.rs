@@ -1,6 +1,6 @@
 use crate::ast::{
     Designator, Expr, ExprKind, GenericAssociation, GenericControl, Initializer, InitializerItem,
-    IntegerType, Span, TypeName, TypeSpecifier,
+    IntegerType, Span, SpanRangeIndex, TypeName, TypeSpecifier,
 };
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -798,6 +798,7 @@ pub struct LocatedConstExprError {
 
 pub struct Parser<'a> {
     tokens: &'a [Span<Token>],
+    span_ranges: Option<SpanRangeIndex>,
     position: usize,
     context: Option<&'a crate::parser::Parser>,
     nesting: Cell<u32>,
@@ -835,9 +836,10 @@ impl<'a> Parser<'a> {
         start: usize,
         context: Option<&'a crate::parser::Parser>,
     ) -> Result<(Expr, usize), ConstExprError> {
-        let mut parser = Self::new(&tokens[start..], context);
+        let mut parser = Self::new(tokens, context);
+        parser.position = start;
         let expression = parser.parse_assignment()?;
-        Ok((expression, start + parser.position))
+        Ok((expression, parser.position))
     }
 
     pub(crate) fn parse_initializer(
@@ -1207,8 +1209,10 @@ impl<'a> Parser<'a> {
     }
 
     fn new(tokens: &'a [Span<Token>], context: Option<&'a crate::parser::Parser>) -> Self {
+        let indexed_by_context = context.is_some_and(|parser| parser.has_token_slice(tokens));
         Self {
             tokens,
+            span_ranges: (!indexed_by_context).then(|| SpanRangeIndex::new(tokens)),
             position: 0,
             context,
             nesting: Cell::new(0),
@@ -1235,7 +1239,17 @@ impl<'a> Parser<'a> {
     }
 
     fn node(&self, kind: ExprKind, start: usize) -> Expr {
-        Box::new(Span::cover(kind, &self.tokens[start..self.position]))
+        Box::new(self.cover_span(kind, start, self.position))
+    }
+
+    fn cover_span<T>(&self, value: T, start: usize, end: usize) -> Span<T> {
+        if let Some(span_ranges) = &self.span_ranges {
+            span_ranges.cover(value, self.tokens, start, end)
+        } else if let Some(context) = self.context {
+            context.cover_tokens(value, self.tokens, start, end)
+        } else {
+            Span::cover(value, &self.tokens[start..end])
+        }
     }
 
     fn failure_position(&self, error: &ConstExprError) -> usize {
@@ -1448,10 +1462,7 @@ impl<'a> Parser<'a> {
                 {
                     let start = self.position;
                     self.position += 2;
-                    designators.push(Designator::Field(Span::cover(
-                        name,
-                        &self.tokens[start..start + 1],
-                    )));
+                    designators.push(Designator::Field(self.cover_span(name, start, start + 1)));
                 } else {
                     break;
                 }
@@ -1581,7 +1592,7 @@ impl<'a> Parser<'a> {
                 let label_start = self.position;
                 return match self.take() {
                     Some(Token::Ident(label)) => {
-                        let label = Span::cover(label, &self.tokens[label_start..self.position]);
+                        let label = self.cover_span(label, label_start, self.position);
                         Ok(self.node(ExprKind::LabelAddress(label), start))
                     }
                     Some(token) => Err(ConstExprError::UnexpectedToken(token)),
@@ -1664,7 +1675,7 @@ impl<'a> Parser<'a> {
     fn expect_field_name(&mut self) -> Result<Span<String>, ConstExprError> {
         let start = self.position;
         match self.take() {
-            Some(Token::Ident(name)) => Ok(Span::cover(name, &self.tokens[start..self.position])),
+            Some(Token::Ident(name)) => Ok(self.cover_span(name, start, self.position)),
             Some(token) => Err(ConstExprError::UnexpectedToken(token)),
             None => Err(ConstExprError::ExpectedIdentifier),
         }

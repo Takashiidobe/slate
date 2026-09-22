@@ -1,5 +1,5 @@
 use super::{MacroDef, Preprocessor, stringized_source};
-use crate::ast::{MacroOrigin, Span};
+use crate::ast::{MacroOrigin, MacroOriginLink, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -9,15 +9,22 @@ fn origin_for_expansion(
     provenance: crate::ast::Provenance,
     token: &Span<Token>,
 ) -> Rc<MacroOrigin> {
-    let link = MacroOrigin {
-        name: name.to_string(),
-        definition: provenance,
-        parent: None,
-    };
-    Rc::new(match &token.macro_origin {
-        Some(existing) => existing.append(link),
-        None => link,
-    })
+    match &token.macro_origin {
+        Some(existing) => Rc::new(MacroOrigin {
+            name: existing.name.clone(),
+            definition: existing.definition,
+            inner: Some(Rc::new(MacroOriginLink {
+                name: Rc::from(name),
+                definition: provenance,
+                parent: existing.inner.clone(),
+            })),
+        }),
+        None => Rc::new(MacroOrigin {
+            name: Rc::from(name),
+            definition: provenance,
+            inner: None,
+        }),
+    }
 }
 
 struct Invocation {
@@ -154,12 +161,12 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             }
-            let Some(macro_entry) = self.macros.get(name).cloned() else {
+            let Some(macro_entry) = self.macros.get(name) else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
             };
-            let macro_def = macro_entry.definition;
+            let macro_def = &macro_entry.definition;
             if disabled.contains(name) {
                 expanded.push(token.clone());
                 i += 1;
@@ -211,7 +218,7 @@ impl Preprocessor<'_> {
                 .iter()
                 .map(|argument| self.expand_macros(argument, disabled))
                 .collect::<Vec<_>>();
-            let mut macro_def = macro_def;
+            let mut macro_def = macro_def.clone();
             let origin = origin_for_expansion(name, macro_entry.provenance, token);
             for replacement in &mut macro_def.replacement {
                 replacement.expansion = token.expansion;
