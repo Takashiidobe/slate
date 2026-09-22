@@ -528,6 +528,7 @@ FloatLiteral {
     spelling: String,
     radix: Decimal | Hex,
     suffix: None | F | L | F16 | F32 | F64 | F128 | F32x | F64x | Q | DecimalF32 | DecimalF64 | DecimalF128,
+    fixed_suffix: Option<{ kind: Fract | Accum, rank: Short | Default | Long | LongLong, unsigned: bool }>,
     imaginary: bool,
 }
 

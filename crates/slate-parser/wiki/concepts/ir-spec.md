@@ -1155,9 +1155,12 @@ describes and is enough for translation. A fixed-point operand mixed with a
 complex or imaginary operand is rejected. `tests/fixtures/sema/ir_fixed_point.c`
 and `ir_fixed_point_invalid.c` pin these forms.
 
-**Not yet implemented:** N1169 fixed-point literals (`0.5r`, `1.5k`, and
-their `u`/`h`/`l`/`ll` spellings) are not lexed, so a fixed-point value can
-only come from a conversion; tracked by `slate-parser-lh7.2.17.8`.
+N1169 fixed-point literal suffixes (`r`/`k`, with optional `u` and
+`h`/`l`/`ll`) are parsed into the same fixed-point type metadata. Decimal
+digits are converted directly to the IR storage integer at the destination
+scale, truncating discarded fractional bits toward zero. The literal spelling
+remains in the AST for diagnostics. Hexadecimal fixed-point literals and
+overflow diagnostics remain unsupported.
 
 ### Records
 

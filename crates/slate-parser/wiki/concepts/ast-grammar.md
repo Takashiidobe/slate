@@ -336,7 +336,11 @@ IntegerSuffix  = IntegerSuffix { unsigned: bool,
                                  size: ( "None" | "Long" | "LongLong" | "BitInt" ) } ;
 
 FloatLiteral = FloatLiteral { spelling: string, radix: ( "Decimal" | "Hex" ),
-                              suffix: FloatSuffix, imaginary?: true } ;
+                              suffix: FloatSuffix, fixed_suffix?: FixedPointLiteralSuffix,
+                              imaginary?: true } ;
+FixedPointLiteralSuffix = FixedPointLiteralSuffix { kind: ( "Fract" | "Accum" ),
+                                                   rank: FixedPointRank,
+                                                   unsigned: bool } ;
 FloatSuffix  = "None" | "F" | "L" | "BF16" | "F16" | "F32" | "F64" | "F128"
              | "F32x" | "F64x" | "Q"
              | "DecimalF32" | "DecimalF64" | "DecimalF128" ;

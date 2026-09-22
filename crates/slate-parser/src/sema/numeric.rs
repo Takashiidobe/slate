@@ -1,16 +1,16 @@
 use super::validate::{
     bit_int_literal_width, fits_rank, integer_rank_width, select_integer_candidate,
 };
-use crate::ast::{Expr, ExprKind};
+use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank};
 use crate::const_expr::{
-    BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat, UnaryOp,
-    resolve_float,
+    BinaryOp, ConstExprError, FixedPointLiteralSuffix, FloatLiteral, FloatSuffix, FloatValue,
+    IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
 };
 use crate::ir::{
     AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, ConversionKind,
-    ConversionReason, ConversionSema, Exceptions, Fits, FixedOverflow, FixedRounding, FloatType,
-    FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill, Type,
-    UbPolicy, UnaryArithOp, Value, ValueKind,
+    ConversionReason, ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType,
+    FixedRounding, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow,
+    Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -117,6 +117,33 @@ impl Context {
                 }
             }
             ExprKind::FloatLiteral(literal) => {
+                if let Some(suffix) = literal.fixed_suffix {
+                    let number = fixed_literal_value(literal, suffix)?;
+                    let fract_width = 8u32
+                        << match suffix.rank {
+                            FixedPointRank::Short => 0,
+                            FixedPointRank::Default => 1,
+                            FixedPointRank::Long => 2,
+                            FixedPointRank::LongLong => 3,
+                        };
+                    let width = fract_width
+                        * if suffix.kind == FixedPointKind::Accum {
+                            2
+                        } else {
+                            1
+                        };
+                    let signed = !suffix.unsigned;
+                    let fixed = FixedPointType {
+                        width,
+                        scale: fract_width - u32::from(signed),
+                        signed,
+                        saturating: false,
+                    };
+                    return Ok(Value {
+                        ty: Type::FixedPoint(fixed),
+                        node: expression.derive(ValueKind::Constant(number)),
+                    });
+                }
                 if literal.suffix == FloatSuffix::F64x {
                     return Err(ResolveError::Unsupported("target-dependent f64x literals"));
                 }
@@ -1222,6 +1249,74 @@ impl Context {
             node: anchor.with_value(self.comparison(CompareOp::Ne, ty, value, zero)),
         }
     }
+}
+
+fn fixed_literal_value(
+    literal: &FloatLiteral,
+    suffix: FixedPointLiteralSuffix,
+) -> Result<Number, ResolveError> {
+    let lower = literal.spelling.to_ascii_lowercase();
+    let marker = lower.rfind(['r', 'k']).ok_or_else(|| {
+        ResolveError::Literal(ConstExprError::InvalidFloatLiteral(
+            literal.spelling.clone(),
+        ))
+    })?;
+    let mut start = marker;
+    while start > 0 && matches!(lower.as_bytes()[start - 1], b'u' | b'h' | b'l') {
+        start -= 1;
+    }
+    let body = &literal.spelling[..start];
+    let (mantissa, exponent) = body
+        .split_once(['e', 'E'])
+        .map_or((body, 0i32), |(mantissa, exponent)| {
+            (mantissa, exponent.parse().unwrap_or(i32::MIN))
+        });
+    if exponent == i32::MIN || mantissa.starts_with("0x") || mantissa.starts_with("0X") {
+        return Err(ResolveError::Literal(ConstExprError::InvalidFloatLiteral(
+            literal.spelling.clone(),
+        )));
+    }
+    let mut digits = String::new();
+    let mut fractional = 0i32;
+    let mut after_dot = false;
+    for ch in mantissa.chars() {
+        match ch {
+            '.' => after_dot = true,
+            '\'' => {}
+            '0'..='9' => {
+                digits.push(ch);
+                if after_dot {
+                    fractional += 1;
+                }
+            }
+            _ => {
+                return Err(ResolveError::Literal(ConstExprError::InvalidFloatLiteral(
+                    literal.spelling.clone(),
+                )));
+            }
+        }
+    }
+    let mut numerator = BigUint::parse_bytes(digits.as_bytes(), 10).ok_or_else(|| {
+        ResolveError::Literal(ConstExprError::InvalidFloatLiteral(
+            literal.spelling.clone(),
+        ))
+    })?;
+    let decimal_scale = fractional - exponent;
+    let fract_width = 8u32
+        << match suffix.rank {
+            FixedPointRank::Short => 0,
+            FixedPointRank::Default => 1,
+            FixedPointRank::Long => 2,
+            FixedPointRank::LongLong => 3,
+        };
+    let scale = fract_width - u32::from(!suffix.unsigned);
+    numerator <<= scale as usize;
+    if decimal_scale > 0 {
+        numerator /= BigUint::from(10u8).pow(decimal_scale as u32);
+    } else if decimal_scale < 0 {
+        numerator *= BigUint::from(10u8).pow((-decimal_scale) as u32);
+    }
+    Ok(Number::Integer(numerator))
 }
 
 fn fixed_overflow(fixed: crate::ir::FixedPointType) -> FixedOverflow {

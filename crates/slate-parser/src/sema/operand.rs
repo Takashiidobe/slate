@@ -1,8 +1,8 @@
 use super::ctype::QualType;
-use super::ctype::{CTypeKind, FloatKind, IntRank};
+use super::ctype::{CTypeKind, FixedKind, FixedRank, FixedType, FloatKind, IntRank};
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, IntegerRank};
+use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
 use crate::const_expr::{BinaryOp, FloatSuffix, UnaryOp};
 use crate::ir::{ConversionReason, ValueKind};
 use crate::ir::{Place, Value};
@@ -140,25 +140,46 @@ impl TypeResolver {
                 }
             }
             ExprKind::FloatLiteral(literal) => {
-                let kind = match literal.suffix {
-                    FloatSuffix::BF16 => FloatKind::BFloat16,
-                    FloatSuffix::F16 => FloatKind::Float16,
-                    FloatSuffix::F | FloatSuffix::F32 => FloatKind::Float,
-                    FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => FloatKind::Double,
-                    FloatSuffix::L => FloatKind::LongDouble,
-                    FloatSuffix::F128 | FloatSuffix::Q => FloatKind::Float128,
-                    FloatSuffix::DecimalF32 => FloatKind::Decimal32,
-                    FloatSuffix::DecimalF64 => FloatKind::Decimal64,
-                    FloatSuffix::DecimalF128 => FloatKind::Decimal128,
-                    FloatSuffix::F64x => {
-                        return Err(ResolveError::Unsupported("target-dependent f64x literals"));
-                    }
-                };
-                let component = CTypeKind::Float(kind);
-                if literal.imaginary {
-                    CTypeKind::Complex(self.ctypes.intern(component))
+                if let Some(suffix) = literal.fixed_suffix {
+                    CTypeKind::FixedPoint(FixedType {
+                        kind: match suffix.kind {
+                            FixedPointKind::Fract => FixedKind::Fract,
+                            FixedPointKind::Accum => FixedKind::Accum,
+                        },
+                        rank: match suffix.rank {
+                            FixedPointRank::Short => FixedRank::Short,
+                            FixedPointRank::Default => FixedRank::Default,
+                            FixedPointRank::Long => FixedRank::Long,
+                            FixedPointRank::LongLong => FixedRank::LongLong,
+                        },
+                        signed: !suffix.unsigned,
+                        saturating: false,
+                    })
                 } else {
-                    component
+                    let kind = match literal.suffix {
+                        FloatSuffix::BF16 => FloatKind::BFloat16,
+                        FloatSuffix::F16 => FloatKind::Float16,
+                        FloatSuffix::F | FloatSuffix::F32 => FloatKind::Float,
+                        FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => {
+                            FloatKind::Double
+                        }
+                        FloatSuffix::L => FloatKind::LongDouble,
+                        FloatSuffix::F128 | FloatSuffix::Q => FloatKind::Float128,
+                        FloatSuffix::DecimalF32 => FloatKind::Decimal32,
+                        FloatSuffix::DecimalF64 => FloatKind::Decimal64,
+                        FloatSuffix::DecimalF128 => FloatKind::Decimal128,
+                        FloatSuffix::F64x => {
+                            return Err(ResolveError::Unsupported(
+                                "target-dependent f64x literals",
+                            ));
+                        }
+                    };
+                    let component = CTypeKind::Float(kind);
+                    if literal.imaginary {
+                        CTypeKind::Complex(self.ctypes.intern(component))
+                    } else {
+                        component
+                    }
                 }
             }
             ExprKind::BoolLiteral(_) => CTypeKind::Bool,

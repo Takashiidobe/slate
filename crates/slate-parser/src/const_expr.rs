@@ -1,6 +1,6 @@
 use crate::ast::{
-    Designator, Expr, ExprKind, GenericAssociation, GenericControl, Initializer, InitializerItem,
-    IntegerType, Span, SpanRangeIndex, TypeName, TypeSpecifier,
+    Designator, Expr, ExprKind, FixedPointKind, FixedPointRank, GenericAssociation, GenericControl,
+    Initializer, InitializerItem, IntegerType, Span, SpanRangeIndex, TypeName, TypeSpecifier,
 };
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -392,8 +392,17 @@ pub struct FloatLiteral {
     pub spelling: String,
     pub radix: FloatRadix,
     pub suffix: FloatSuffix,
+    #[debug(skip_if = Option::is_none)]
+    pub fixed_suffix: Option<FixedPointLiteralSuffix>,
     #[debug(skip_if = crate::ast::is_false)]
     pub imaginary: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FixedPointLiteralSuffix {
+    pub kind: FixedPointKind,
+    pub rank: FixedPointRank,
+    pub unsigned: bool,
 }
 
 #[derive(custom_debug::Debug, Clone, PartialEq)]
@@ -459,7 +468,8 @@ fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
 
 impl FloatLiteral {
     pub fn parse_unevaluated(spelling: &str) -> Self {
-        let (digits, suffix, imaginary) = split_float_spelling(spelling);
+        let (fixed_suffix, base_spelling) = split_fixed_suffix(spelling);
+        let (digits, suffix, imaginary) = split_float_spelling(&base_spelling);
         let radix = if digits.starts_with("0x") || digits.starts_with("0X") {
             FloatRadix::Hex
         } else {
@@ -468,10 +478,56 @@ impl FloatLiteral {
         Self {
             spelling: spelling.to_string(),
             radix,
-            suffix: float_suffix_from_token(suffix),
+            suffix: if fixed_suffix.is_some() {
+                FloatSuffix::None
+            } else {
+                float_suffix_from_token(suffix)
+            },
+            fixed_suffix,
             imaginary,
         }
     }
+}
+
+fn split_fixed_suffix(spelling: &str) -> (Option<FixedPointLiteralSuffix>, String) {
+    let lower = spelling.to_ascii_lowercase();
+    let chars: Vec<char> = lower.chars().collect();
+    let Some(last) = chars.last().copied() else {
+        return (None, spelling.to_string());
+    };
+    let kind = match last {
+        'r' => FixedPointKind::Fract,
+        'k' => FixedPointKind::Accum,
+        _ => return (None, spelling.to_string()),
+    };
+    let marker = chars.len() - 1;
+    let suffix_start = chars[..marker]
+        .iter()
+        .rposition(|c| !matches!(c, 'u' | 'h' | 'l'))
+        .map_or(0, |i| i + 1);
+    let mut letters: String = chars[suffix_start..marker].iter().collect();
+    let unsigned = letters.contains('u');
+    letters.retain(|c| c != 'u');
+    let rank = match letters.as_str() {
+        "" => FixedPointRank::Default,
+        "h" => FixedPointRank::Short,
+        "l" => FixedPointRank::Long,
+        "ll" => FixedPointRank::LongLong,
+        _ => return (None, spelling.to_string()),
+    };
+    let start = suffix_start;
+    let prefix: String = chars[..start].iter().collect();
+    if prefix.is_empty() || !prefix.chars().any(|c| c.is_ascii_digit()) {
+        return (None, spelling.to_string());
+    }
+    (
+        Some(FixedPointLiteralSuffix {
+            kind,
+            rank,
+            unsigned,
+        }),
+        prefix,
+    )
 }
 
 pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprError> {

@@ -827,6 +827,9 @@ fn check_literal_expr(expr: &Expr, context: LiteralContext<'_>) -> Vec<(Option<W
                 .collect()
         }
         ExprKind::FloatLiteral(literal) => {
+            if literal.fixed_suffix.is_some() {
+                return Vec::new();
+            }
             super::numeric::resolve_float_literal(literal, context.target)
                 .err()
                 .map(|error| (None, error.to_string()))
