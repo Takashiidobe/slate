@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::ast::{
     AlignAsOperand, ArrayDeclarator, ArraySize, Attribute, DeclarationSpecifiers, Declarator,
     EnumItemKind, FieldItemKind, FixedPointKind, FixedPointRank, FloatingType, IntegerRank,
-    IntegerType, ParameterList, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
+    IntegerType, ParameterList, Span, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
@@ -1287,7 +1287,7 @@ impl TypeResolver {
                 let packed = tag
                     .attributes
                     .iter()
-                    .any(|attribute| matches!(attribute, Attribute::Packed));
+                    .any(|attribute| matches!(&attribute.value, Attribute::Packed));
                 if self.pragmas.is_ms_struct(tag.id) {
                     return Err(ResolveError::Unsupported("ms_struct record layout"));
                 }
@@ -1840,11 +1840,11 @@ fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {
 
 pub(super) fn requested_alignment<'a>(
     resolver: &mut TypeResolver,
-    attributes: impl IntoIterator<Item = &'a Attribute>,
+    attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
 ) -> Result<Option<u64>, ResolveError> {
     let mut requested: Option<u64> = None;
     for attribute in attributes {
-        let value = match attribute {
+        let value = match &attribute.value {
             Attribute::Aligned(expr) | Attribute::AlignAs(AlignAsOperand::Expr(expr)) => {
                 u64::try_from(resolver.constant_integer(expr)?)
                     .map_err(|_| ResolveError::Unsupported("invalid alignment"))?
@@ -1869,13 +1869,13 @@ pub(super) fn requested_alignment<'a>(
 
 fn field_request(
     resolver: &mut TypeResolver,
-    declaration: &[Attribute],
-    field: &[Attribute],
+    declaration: &[Span<Attribute>],
+    field: &[Span<Attribute>],
 ) -> Result<(bool, Option<u64>), ResolveError> {
     let packed = declaration
         .iter()
         .chain(field)
-        .any(|attribute| matches!(attribute, Attribute::Packed));
+        .any(|attribute| matches!(&attribute.value, Attribute::Packed));
     let first = requested_alignment(resolver, declaration)?;
     let second = requested_alignment(resolver, field)?;
     Ok((packed, first.into_iter().chain(second).max()))

@@ -406,10 +406,10 @@ pub fn walk_declarator<V: Visitor + ?Sized>(
 
 pub fn walk_attributes<V: Visitor + ?Sized>(
     visitor: &mut V,
-    attributes: &[Attribute],
+    attributes: &[Span<Attribute>],
 ) -> Result<(), V::Error> {
     for attribute in attributes {
-        visitor.visit_attribute(attribute)?;
+        visitor.visit_attribute(&attribute.value)?;
     }
     Ok(())
 }

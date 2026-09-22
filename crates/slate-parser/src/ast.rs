@@ -306,9 +306,9 @@ pub enum StmtKind {
     Expr(Expr),
     Decl(Declaration),
     StaticAssert(StaticAssert),
-    Attribute(Vec<Attribute>),
+    Attribute(Vec<Span<Attribute>>),
     Attributed {
-        attributes: Vec<Attribute>,
+        attributes: Vec<Span<Attribute>>,
         body: Box<Stmt>,
     },
     Block(Vec<Stmt>),
@@ -888,7 +888,7 @@ pub struct FunctionDefinition {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
     #[debug(skip_if = Vec::is_empty)]
     pub body: Vec<Stmt>,
 }
@@ -1076,12 +1076,12 @@ pub enum Declarator {
     Grouped(Box<Declarator>),
     Attributed {
         inner: Box<Declarator>,
-        attributes: Vec<Attribute>,
+        attributes: Vec<Span<Attribute>>,
     },
     Pointer {
         qualifiers: Qualifiers,
         #[debug(skip_if = Vec::is_empty)]
-        attributes: Vec<Attribute>,
+        attributes: Vec<Span<Attribute>>,
         inner: Box<Declarator>,
     },
     Array {
@@ -1262,7 +1262,7 @@ pub struct ParameterDeclarationKind {
     #[debug(skip_if = Option::is_none)]
     pub declared_specifiers: Option<DeclarationSpecifiers>,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -1281,7 +1281,7 @@ pub struct DeclarationSpecifiers {
     #[debug(skip_if = is_false)]
     pub is_constexpr: bool,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -1307,7 +1307,7 @@ pub struct InitDeclaratorKind {
     #[debug(skip_if = Option::is_none)]
     pub asm_label: Option<Span<AsmLabel>>,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
     #[debug(skip_if = Option::is_none)]
     pub initializer: Option<Initializer>,
 }
@@ -1339,7 +1339,7 @@ pub struct TagDefinition {
     pub kind: TagKind,
     pub name: Option<String>,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
     pub body: TagBody,
 }
 
@@ -1391,14 +1391,14 @@ pub struct FieldDeclaratorKind {
     #[debug(skip_if = Option::is_none)]
     pub bit_width: Option<Expr>,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
     #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
+    pub attributes: Vec<Span<Attribute>>,
     pub value: Option<Expr>,
 }
 

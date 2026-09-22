@@ -1,6 +1,6 @@
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
-use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, StorageClass};
+use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClass};
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage};
 
@@ -23,8 +23,8 @@ enum DefinitionSpecifiers {
 pub(super) fn attributes<'a>(
     specifiers: &'a DeclarationSpecifiers,
     declarator: &'a Declarator,
-    trailing: &'a [Attribute],
-) -> Vec<&'a Attribute> {
+    trailing: &'a [Span<Attribute>],
+) -> Vec<&'a Span<Attribute>> {
     let mut attributes = specifiers
         .attributes
         .iter()
@@ -55,7 +55,7 @@ impl Lowerer {
         &mut self,
         id: BindingId,
         specifiers: &DeclarationSpecifiers,
-        attributes: &[&Attribute],
+        attributes: &[&Span<Attribute>],
         definition: bool,
         file_scope: bool,
     ) -> Result<(), ResolveError> {
@@ -76,12 +76,12 @@ impl Lowerer {
             });
         }
         for attribute in attributes {
-            match attribute {
+            match &attribute.value {
                 Attribute::GnuInline => {
                     state.semantics_override = Some(InlineSemantics::SupressDef)
                 }
                 Attribute::AlwaysInline | Attribute::NoInline => {
-                    let preference = if matches!(attribute, Attribute::AlwaysInline) {
+                    let preference = if matches!(&attribute.value, Attribute::AlwaysInline) {
                         Inlining::Always
                     } else {
                         Inlining::Never
@@ -100,8 +100,8 @@ impl Lowerer {
                 Attribute::NoReturn => state.noreturn = true,
                 _ => {}
             }
-            if !state.attributes.contains(attribute) {
-                state.attributes.push((*attribute).clone());
+            if !state.attributes.contains(&attribute.value) {
+                state.attributes.push(attribute.value.clone());
             }
         }
         Ok(())

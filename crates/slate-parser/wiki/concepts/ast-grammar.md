@@ -85,7 +85,7 @@ DeclKind = "Comment(" CommentGroup ")"
 FunctionDefinition = FunctionDefinition {
                        specifiers: DeclarationSpecifiers,
                        declarator: Declarator,
-                       attributes?: vec<Attribute>,
+                       attributes?: vec<span<Attribute>>,
                        body?: vec<stmt> } ;
 Declaration        = Declaration {
                        specifiers: DeclarationSpecifiers,
@@ -93,7 +93,7 @@ Declaration        = Declaration {
 InitDeclaratorKind = InitDeclaratorKind {
                        declarator: Declarator,
                        asm_label?: Some(span<AsmLabel>),
-                       attributes?: vec<Attribute>,
+                       attributes?: vec<span<Attribute>>,
                        initializer?: Some(Initializer) } ;
 StaticAssert       = StaticAssert { condition: expr, message?: Some(string) } ;
 
@@ -117,7 +117,7 @@ DeclarationSpecifiers = DeclarationSpecifiers {
                           is_inline?: true,
                           is_noreturn?: true,
                           is_constexpr?: true,
-                          attributes?: vec<Attribute> } ;
+                          attributes?: vec<span<Attribute>> } ;
 Qualifiers   = Qualifiers { is_const?: true, is_volatile?: true,
                             is_restrict?: true, is_atomic?: true } ;
 StorageClass = "Typedef" | "Extern" | "Static" | "Auto" | "Register" ;
@@ -180,8 +180,8 @@ TagKind      = "Struct" | "Union" | "Enum" ;
 Declarator = "Abstract"
            | "Name(" string ")"
            | "Grouped(" Declarator ")"
-           | Attributed { inner: Declarator, attributes: vec<Attribute> }
-           | Pointer { qualifiers: Qualifiers, attributes?: vec<Attribute>,
+           | Attributed { inner: Declarator, attributes: vec<span<Attribute>> }
+           | Pointer { qualifiers: Qualifiers, attributes?: vec<span<Attribute>>,
                        inner: Declarator }
            | Array { inner: Declarator, size: ArraySize,
                      qualifiers?: Qualifiers, is_static?: true }
@@ -195,7 +195,7 @@ ParameterDeclarationKind = ParameterDeclarationKind {
                              specifiers: DeclarationSpecifiers,
                              declarator: Declarator,
                              declared_specifiers?: Some(DeclarationSpecifiers),
-                             attributes?: vec<Attribute> } ;
+                             attributes?: vec<span<Attribute>> } ;
 ```
 
 - Declarators keep the written nesting, not the derivation order:
@@ -211,7 +211,7 @@ ParameterDeclarationKind = ParameterDeclarationKind {
 
 ```ebnf
 TagDefinition = TagDefinition { id: TagId, kind: TagKind, name: opt<string>,
-                                attributes?: vec<Attribute>, body: TagBody } ;
+                                attributes?: vec<span<Attribute>>, body: TagBody } ;
 TagBody       = "Record(" vec<span<FieldItemKind>> ")"
               | Enum { fixed_type?: Some(TypeName),
                        enumerators: vec<span<EnumItemKind>> } ;
@@ -221,10 +221,10 @@ FieldDecl           = FieldDecl { specifiers: DeclarationSpecifiers,
                                   declarators?: vec<span<FieldDeclaratorKind>> } ;
 FieldDeclaratorKind = FieldDeclaratorKind { declarator: Declarator,
                                             bit_width?: Some(expr),
-                                            attributes?: vec<Attribute> } ;
+                                            attributes?: vec<span<Attribute>> } ;
 
 EnumItemKind = "Comment(" CommentGroup ")" | "Enumerator(" Enumerator ")" ;
-Enumerator   = Enumerator { name: string, attributes?: vec<Attribute>,
+Enumerator   = Enumerator { name: string, attributes?: vec<span<Attribute>>,
                             value: opt<expr> } ;
 ```
 
@@ -239,8 +239,8 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | "Expr(" expr ")"
          | "Decl(" Declaration ")"
          | "StaticAssert(" StaticAssert ")"
-         | "Attribute(" vec<Attribute> ")"
-         | Attributed { attributes: vec<Attribute>, body: stmt }
+         | "Attribute(" vec<span<Attribute>> ")"
+         | Attributed { attributes: vec<span<Attribute>>, body: stmt }
          | "Block(" vec<stmt> ")"
          | If { condition: expr, then_branch: stmt, else_branch: opt<stmt> }
          | While { condition: expr, body: stmt }

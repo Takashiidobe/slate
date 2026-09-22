@@ -697,7 +697,11 @@ impl Lowerer {
                 .ctypes
                 .classify_conversion(value.c, c, conversion_context(reason), null)?;
         if let Some((warning, message)) = conversion.warning {
-            self.warn(warning, message, &value.value.node);
+            if let Some(e) = e {
+                self.warn(warning, message, e);
+            } else {
+                self.warn(warning, message, &value.value.node);
+            }
         }
         Ok(Operand {
             value: self.emit_cast(conversion.kind, value, c, reason)?,

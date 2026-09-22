@@ -80,7 +80,7 @@ impl<'a> DeclaratorParser<'a> {
         self.pos
     }
 
-    pub(crate) fn parse_attributes(&mut self) -> Result<Vec<Attribute>, String> {
+    pub(crate) fn parse_attributes(&mut self) -> Result<Vec<Span<Attribute>>, String> {
         let (attributes, position) =
             parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment, self.context)?;
         self.pos = position;
@@ -409,7 +409,7 @@ impl<'a> DeclaratorParser<'a> {
         &self,
         kind: TagKind,
         name: Option<String>,
-        attributes: Vec<Attribute>,
+        attributes: Vec<Span<Attribute>>,
         body: TagBody,
         start: usize,
     ) -> Result<TypeSpecifier, DeclaratorError> {
@@ -937,7 +937,7 @@ impl<'a> DeclaratorParser<'a> {
 
     fn parse_pointer_qualifiers(
         &mut self,
-    ) -> Result<(Qualifiers, Vec<Attribute>), DeclaratorError> {
+    ) -> Result<(Qualifiers, Vec<Span<Attribute>>), DeclaratorError> {
         let mut qualifiers = Qualifiers::default();
         let mut attributes = Vec::new();
         loop {

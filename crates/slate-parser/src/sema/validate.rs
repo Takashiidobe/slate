@@ -125,18 +125,8 @@ impl TranslationUnit {
                 }
                 DeclKind::Function(function) => {
                     let provenance = decl.provenance;
-                    check_attributes(
-                        &function.specifiers.attributes,
-                        provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    check_attributes(
-                        &function.attributes,
-                        provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
+                    check_attributes(&function.specifiers.attributes, &mut errors);
+                    check_attributes(&function.attributes, &mut errors);
                     check_type(
                         &function.specifiers.ty,
                         types,
@@ -174,12 +164,7 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
-                    check_attributes(
-                        &specifiers.attributes,
-                        provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
+                    check_attributes(&specifiers.attributes, &mut errors);
                     visit_literals(declaration, literals, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
@@ -204,12 +189,7 @@ impl TranslationUnit {
                             decl.expansion,
                             &mut errors,
                         );
-                        check_attributes(
-                            &init_declarator.attributes,
-                            init_declarator.provenance,
-                            decl.expansion,
-                            &mut errors,
-                        );
+                        check_attributes(&init_declarator.attributes, &mut errors);
                         if flavor == CompilerFlavor::Clang {
                             check_register_variable(
                                 self,
@@ -365,18 +345,18 @@ fn check_declarator(
             check_declarator(inner, context, provenance, loc, errors);
             for parameter in parameters.parameters() {
                 check_type(&parameter.specifiers.ty, context, provenance, loc, errors);
-                check_attributes(&parameter.attributes, provenance, loc, errors);
+                check_attributes(&parameter.attributes, errors);
                 check_declarator(&parameter.declarator, context, provenance, loc, errors);
             }
         }
         Declarator::Attributed { inner, attributes } => {
-            check_attributes(attributes, provenance, loc, errors);
+            check_attributes(attributes, errors);
             check_declarator(inner, context, provenance, loc, errors);
         }
         Declarator::Pointer {
             inner, attributes, ..
         } => {
-            check_attributes(attributes, provenance, loc, errors);
+            check_attributes(attributes, errors);
             check_declarator(inner, context, provenance, loc, errors);
         }
         Declarator::Grouped(inner) | Declarator::Array { inner, .. } => {
@@ -386,37 +366,32 @@ fn check_declarator(
     }
 }
 
-fn check_attributes(
-    attributes: &[Attribute],
-    provenance: Provenance,
-    loc: Loc,
-    errors: &mut Vec<SemaError>,
-) {
+fn check_attributes(attributes: &[Span<Attribute>], errors: &mut Vec<SemaError>) {
     for attribute in attributes {
-        if let Attribute::Invalid { name, .. } = attribute {
+        if let Attribute::Invalid { name, .. } = &attribute.value {
             errors.push(error(
-                provenance,
-                loc,
+                attribute.provenance,
+                attribute.expansion,
                 format!("invalid arguments for attribute `{name}`"),
             ));
         }
         if let Attribute::Aligned(expression)
         | Attribute::VectorSize(expression)
-        | Attribute::AlignAs(AlignAsOperand::Expr(expression)) = attribute
+        | Attribute::AlignAs(AlignAsOperand::Expr(expression)) = &attribute.value
             && !is_integer_constant_expression(expression)
         {
             errors.push(error(
-                provenance,
-                loc,
+                attribute.provenance,
+                attribute.expansion,
                 "layout attribute requires an integer constant expression",
             ));
         }
-        if let Attribute::AllocSize(expressions) = attribute
+        if let Attribute::AllocSize(expressions) = &attribute.value
             && !(1..=2).contains(&expressions.len())
         {
             errors.push(error(
-                provenance,
-                loc,
+                attribute.provenance,
+                attribute.expansion,
                 "alloc_size expects one or two arguments",
             ));
         }
@@ -489,7 +464,7 @@ fn check_tag_definition(
     errors: &mut Vec<SemaError>,
 ) {
     let provenance = tag.provenance;
-    check_attributes(&tag.attributes, provenance, loc, errors);
+    check_attributes(&tag.attributes, errors);
     let fields = match &tag.body {
         TagBody::Record(fields) => fields,
         TagBody::Enum {
@@ -501,12 +476,7 @@ fn check_tag_definition(
             }
             for item in enumerators {
                 if let EnumItemKind::Enumerator(enumerator) = &item.value {
-                    check_attributes(
-                        &enumerator.attributes,
-                        item.provenance,
-                        item.expansion,
-                        errors,
-                    );
+                    check_attributes(&enumerator.attributes, errors);
                 }
             }
             return;
@@ -529,12 +499,7 @@ fn check_tag_definition(
                 .iter()
                 .flat_map(|declarator| &declarator.attributes),
         );
-        check_attributes(
-            &attributes.cloned().collect::<Vec<_>>(),
-            field_item.provenance,
-            field_item.expansion,
-            errors,
-        );
+        check_attributes(&attributes.cloned().collect::<Vec<_>>(), errors);
     }
 }
 

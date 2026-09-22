@@ -17,6 +17,12 @@ void assigned(unsigned *value, const int *constant, volatile int *shared, const 
     (void)added_const, (void)explicit_cast, (void)compatible;
 }
 int compared(int *left, unsigned *right) { return left == (int *)right; }
+int *initialized_from_cast(unsigned *value) {
+    int *result = (unsigned *)value;
+    return result;
+}
+void take_unsigned(unsigned *value);
+void passed_cast_argument(int *value) { take_unsigned((int *)value); }
 
 // SLATE-FILECHECK-BEGIN WARN
 // WARN: -Wpointer-sign
@@ -74,5 +80,21 @@ int compared(int *left, unsigned *right) { return left == (int *)right; }
 // WARN: 10 │     const unsigned *added_const = sign;
 // WARN: ·                                   ────
 // WARN: 11 │     unsigned *explicit_cast = (unsigned *)sign;
+// WARN: ╰────
+// WARN: -Wpointer-sign
+// WARN: ⚠ conversion between pointers to integer types with different sign
+// WARN: ╭─[tests/fixtures/sema/ir_pointer_conversion_warnings.c:18:19]
+// WARN: 17 │ int *initialized_from_cast(unsigned *value) {
+// WARN: 18 │     int *result = (unsigned *)value;
+// WARN: ·                   ─────────────────
+// WARN: 19 │     return result;
+// WARN: ╰────
+// WARN: -Wpointer-sign
+// WARN: ⚠ conversion between pointers to integer types with different sign
+// WARN: ╭─[tests/fixtures/sema/ir_pointer_conversion_warnings.c:22:55]
+// WARN: 21 │ void take_unsigned(unsigned *value);
+// WARN: 22 │ void passed_cast_argument(int *value) { take_unsigned((int *)value); }
+// WARN: ·                                                       ────────────
+// WARN: 23 │
 // WARN: ╰────
 // SLATE-FILECHECK-END WARN

@@ -84,7 +84,8 @@ increment and body, then the enclosing bindings are restored.
 - `Span<T> { id, value, spelling, expansion, provenance, macro_origin }`: `spelling` is
   where the tokens are written (possibly inside a macro definition).
   `expansion` is where they appear in the including file. **Every**
-  declaration, declarator, statement and expression node is spanned.
+  declaration, declarator, statement, expression and individual attribute is
+  spanned.
 - `id: NodeId`, a globally unique id allocated when the `Span` is built
   (`Span::new`/`Span::cover`; `Span::with_value`/`Span::map` keep the
   original id since they relabel the same node; `Span::derive` copies the
@@ -177,7 +178,7 @@ Declaration {
 InitDeclarator {
     declarator: Declarator,
     asm_label: Option<AsmLabel>,        // `asm("sym")`, register variables
-    attributes: Vec<Attribute>,         // attributes after the declarator
+    attributes: Vec<Span<Attribute>>,         // attributes after the declarator
     initializer: Option<Initializer>,
     provenance,
 }
@@ -204,7 +205,7 @@ DeclarationSpecifiers {
     constexpr: bool,
     qualifiers: Qualifiers,             // const, volatile, restrict, _Atomic (qualifier form)
     ty: TypeSpecifier,
-    attributes: Vec<Attribute>,
+    attributes: Vec<Span<Attribute>>,
 }
 ```
 
@@ -310,7 +311,7 @@ TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // decl
 FunctionDefinition {
     specifiers: DeclarationSpecifiers,
     declarator: Declarator,                 // outermost derived layer is Function
-    attributes: Vec<Attribute>,
+    attributes: Vec<Span<Attribute>>,
     body: CompoundStatement,
     provenance,
 }
@@ -334,7 +335,7 @@ TagDefinition {
     id: TagId,
     kind: TagKind,
     name: Option<String>,
-    attributes: Vec<Attribute>,
+    attributes: Vec<Span<Attribute>>,
     body: TagBody,
     provenance,
 }
@@ -417,7 +418,7 @@ StmtKind =
     | Break
     | Return(Expr)
     | ReturnVoid
-    | Attribute(Vec<Attribute>)                // standalone [[fallthrough]];
+    | Attribute(Vec<Span<Attribute>>)          // standalone [[fallthrough]];
     | Attributed { attributes, body: Box<Stmt> } // attributes on a non-null statement
     | Asm(GnuAsm)
 
@@ -558,8 +559,9 @@ Designator indices are expressions, not evaluated integers.
 
 `Attribute` is a closed set of known GNU/C23 attributes with parsed
 arguments. Unknown attributes are `Unknown { name, arguments }`, malformed
-ones `Invalid`. Attribute _placement_ is preserved: specifiers, declarators,
-init-declarators, tag definitions, statements. `GnuAsm` holds the parsed
+ones `Invalid`. Each attribute retains its spelling span, and attribute
+_placement_ is preserved: specifiers, declarators, init-declarators, tag
+definitions, statements. `GnuAsm` holds the parsed
 template, operands with constraints, clobbers and labels.
 
 ## Validation (`sema.rs`)

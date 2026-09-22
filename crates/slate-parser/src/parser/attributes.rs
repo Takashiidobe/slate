@@ -8,7 +8,7 @@ impl Parser {
         &self,
         tokens: &[Span<Token>],
         position: usize,
-    ) -> Result<(Vec<Attribute>, usize), String> {
+    ) -> Result<(Vec<Span<Attribute>>, usize), String> {
         parse_attribute_groups(tokens, position, self.biggest_alignment, Some(self))
     }
 }
@@ -89,17 +89,25 @@ pub(super) fn parse_attribute_groups(
     position: usize,
     biggest_alignment: i64,
     context: Option<&Parser>,
-) -> Result<(Vec<Attribute>, usize), String> {
+) -> Result<(Vec<Span<Attribute>>, usize), String> {
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
     loop {
         if let Some(convention) = keyword_calling_convention(cursor.peek()) {
+            let start = cursor.pos;
             cursor.pos += 1;
-            attributes.push(Attribute::CallingConvention(convention));
+            attributes.push(locate_attribute(
+                tokens,
+                start,
+                cursor.pos,
+                Attribute::CallingConvention(convention),
+            ));
         } else if cursor.consume(&Token::Ident("__declspec".into())) {
             cursor.expect(Token::LParen, "expected `(` after __declspec")?;
             while !cursor.consume(&Token::RParen) {
+                let start = cursor.pos;
                 let name = cursor.expect_ident("expected declspec name")?;
+                let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after declspec arguments")?;
                 let canonical = match name.as_str() {
@@ -107,18 +115,25 @@ pub(super) fn parse_attribute_groups(
                     "allocate" => "section",
                     _ => &name,
                 };
-                attributes.push(parse_attribute_spelling(
-                    &name,
-                    canonical,
-                    arguments,
-                    biggest_alignment,
-                    context,
-                )?);
+                attributes.push(locate_attribute(
+                    tokens,
+                    start,
+                    end,
+                    parse_attribute_spelling(
+                        &name,
+                        canonical,
+                        arguments,
+                        biggest_alignment,
+                        context,
+                    )?,
+                ));
                 cursor.consume(&Token::Comma);
             }
         } else if cursor.consume(&Token::Ident("_Alignas".into()))
             || cursor.consume(&Token::Ident("alignas".into()))
         {
+            let end = cursor.pos;
+            let start = end - 1;
             let arguments =
                 cursor.parse_parenthesized_arguments("expected `)` after `_Alignas` argument")?;
             if arguments.is_empty() {
@@ -128,7 +143,12 @@ pub(super) fn parse_attribute_groups(
                 Some(ty) => AlignAsOperand::Type { ty },
                 None => AlignAsOperand::Expr(parse_attribute_expression(arguments, context)?),
             };
-            attributes.push(Attribute::AlignAs(operand));
+            attributes.push(locate_attribute(
+                tokens,
+                start,
+                end,
+                Attribute::AlignAs(operand),
+            ));
         } else if cursor.consume(&Token::Ident("__attribute__".into()))
             || cursor.consume(&Token::Ident("__attribute".into()))
         {
@@ -139,15 +159,17 @@ pub(super) fn parse_attribute_groups(
                 continue;
             }
             loop {
+                let start = cursor.pos;
                 let name = cursor.expect_ident("expected attribute name")?;
+                let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(parse_attribute(
-                    &name,
-                    arguments,
-                    biggest_alignment,
-                    context,
-                )?);
+                attributes.push(locate_attribute(
+                    tokens,
+                    start,
+                    end,
+                    parse_attribute(&name, arguments, biggest_alignment, context)?,
+                ));
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -167,6 +189,7 @@ pub(super) fn parse_attribute_groups(
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
+                let start = cursor.pos;
                 let mut name = cursor.expect_ident("expected C23 attribute name")?;
                 if cursor.consume(&Token::Colon) {
                     cursor.expect(Token::Colon, "expected `::` in attribute name")?;
@@ -174,9 +197,10 @@ pub(super) fn parse_attribute_groups(
                     name.push_str("::");
                     name.push_str(&last);
                 }
+                let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(match c23_attribute_name(&name) {
+                let attribute = match c23_attribute_name(&name) {
                     Some(canonical) => parse_attribute_spelling(
                         &name,
                         canonical,
@@ -185,7 +209,8 @@ pub(super) fn parse_attribute_groups(
                         context,
                     )?,
                     None => unknown_attribute(&name, arguments),
-                });
+                };
+                attributes.push(locate_attribute(tokens, start, end, attribute));
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -198,6 +223,20 @@ pub(super) fn parse_attribute_groups(
         }
     }
     Ok((attributes, cursor.pos))
+}
+
+fn locate_attribute(
+    tokens: &[Span<Token>],
+    start: usize,
+    end: usize,
+    attribute: Attribute,
+) -> Span<Attribute> {
+    let mut span = tokens[start].derive(attribute);
+    if let Some(last) = tokens.get(end.saturating_sub(1)) {
+        span.spelling = span.spelling.through(last.spelling);
+        span.expansion = span.expansion.through(last.expansion);
+    }
+    span
 }
 
 pub(super) fn parse_attribute(
@@ -472,10 +511,10 @@ fn parse_attribute_value(
 
 pub(crate) fn apply_vector_attributes(
     mut ty: TypeSpecifier,
-    attributes: &[Attribute],
+    attributes: &[Span<Attribute>],
 ) -> TypeSpecifier {
     for attribute in attributes {
-        let size = match attribute {
+        let size = match &attribute.value {
             Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
             Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
             _ => continue,

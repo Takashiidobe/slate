@@ -564,7 +564,7 @@ struct ParsedDeclarator {
     declarator: Declarator,
     bit_width: Option<Expr>,
     asm_label: Option<Span<AsmLabel>>,
-    attributes: Vec<Attribute>,
+    attributes: Vec<Span<Attribute>>,
     initializer: Option<Initializer>,
 }
 

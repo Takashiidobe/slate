@@ -467,10 +467,10 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn attributes_retain(&self, attributes: &[Attribute]) -> bool {
+    fn attributes_retain(&self, attributes: &[Span<Attribute>]) -> bool {
         attributes.iter().any(|attribute| {
             matches!(
-                attribute,
+                &attribute.value,
                 Attribute::Used
                     | Attribute::Retain
                     | Attribute::Constructor(_)
@@ -482,9 +482,9 @@ impl<'a> Reachability<'a> {
         })
     }
 
-    fn mark_attributes(&mut self, attributes: &[Attribute]) {
+    fn mark_attributes(&mut self, attributes: &[Span<Attribute>]) {
         for attribute in attributes {
-            match attribute {
+            match &attribute.value {
                 Attribute::Alias(name)
                 | Attribute::WeakRef(name)
                 | Attribute::Ifunc(name)

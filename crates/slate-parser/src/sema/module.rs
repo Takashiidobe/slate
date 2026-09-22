@@ -68,11 +68,7 @@ pub fn resolve_module(
                     &function.declarator,
                     &function.attributes,
                 );
-                lower.check_attributes(
-                    attributes.iter().copied(),
-                    Subject::Function,
-                    declaration,
-                )?;
+                lower.check_attributes(attributes.iter().copied(), Subject::Function)?;
                 let mut symbol = function_symbol(attributes.iter().copied(), None)?;
                 let name = function
                     .declarator
@@ -198,26 +194,28 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
 }
 
 fn reject_unsupported<'a>(
-    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+    attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
     subject: Subject,
 ) -> Result<(), ResolveError> {
     for attribute in attributes {
-        if let Use::Unsupported(reason) = super::attributes::declaration_use(attribute, subject) {
+        if let Use::Unsupported(reason) =
+            super::attributes::declaration_use(&attribute.value, subject)
+        {
             return Err(ResolveError::Unsupported(reason));
         }
     }
     Ok(())
 }
 
-fn applies(attribute: &ast::Attribute, subject: Subject) -> bool {
+fn applies(attribute: &Span<ast::Attribute>, subject: Subject) -> bool {
     !matches!(
-        super::attributes::declaration_use(attribute, subject),
+        super::attributes::declaration_use(&attribute.value, subject),
         Use::Inapplicable { .. }
     )
 }
 
 fn symbol_attributes<'a>(
-    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+    attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
     let mut symbol = SymbolAttributes::default();
@@ -228,7 +226,7 @@ fn symbol_attributes<'a>(
         symbol.asm_name = Some(name.clone());
     }
     for attribute in attributes {
-        match attribute {
+        match &attribute.value {
             ast::Attribute::Visibility(name) => {
                 symbol.visibility = Some(match name.as_str() {
                     "default" => Visibility::Default,
@@ -268,20 +266,20 @@ fn symbol_attributes<'a>(
 }
 
 fn function_symbol<'a>(
-    attributes: impl IntoIterator<Item = &'a ast::Attribute> + Clone,
+    attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>> + Clone,
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
     if attributes
         .clone()
         .into_iter()
-        .any(|attribute| matches!(attribute, ast::Attribute::ThreadLocal))
+        .any(|attribute| matches!(&attribute.value, ast::Attribute::ThreadLocal))
     {
         return Err(ResolveError::Invalid("thread-local function"));
     }
     symbol_attributes(
         attributes.into_iter().filter(|attribute| {
             matches!(
-                attribute,
+                &attribute.value,
                 ast::Attribute::Visibility(_)
                     | ast::Attribute::Weak
                     | ast::Attribute::Alias(_)
@@ -298,14 +296,13 @@ fn function_symbol<'a>(
 }
 
 impl Lowerer {
-    fn check_attributes<'a, T>(
+    fn check_attributes<'a>(
         &mut self,
-        attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+        attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
         subject: Subject,
-        anchor: &Span<T>,
     ) -> Result<(), ResolveError> {
         for attribute in attributes {
-            match super::attributes::declaration_use(attribute, subject) {
+            match super::attributes::declaration_use(&attribute.value, subject) {
                 Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
                 Use::Inapplicable {
                     spelling,
@@ -317,7 +314,7 @@ impl Lowerer {
                         }
                         None => format!("'{spelling}' attribute ignored"),
                     };
-                    self.warn(Warning::IgnoredAttributes, &message, anchor);
+                    self.warn(Warning::IgnoredAttributes, &message, attribute);
                 }
                 Use::Symbol | Use::Layout | Use::Ignored => {}
             }
@@ -483,11 +480,11 @@ impl Lowerer {
                     .iter()
                     .chain(&parameter.attributes)
             };
-            self.check_attributes(attributes(), Subject::Parameter, parameter)?;
+            self.check_attributes(attributes(), Subject::Parameter)?;
             let alignment = super::types::requested_alignment(&mut self.types, attributes())?;
             if let Some(alignment) = alignment {
                 let rejected_by = if attributes()
-                    .any(|attribute| matches!(attribute, ast::Attribute::AlignAs(_)))
+                    .any(|attribute| matches!(&attribute.value, ast::Attribute::AlignAs(_)))
                 {
                     "clang and gcc"
                 } else {
@@ -581,12 +578,12 @@ impl Lowerer {
                 .iter()
                 .chain(&declarator.attributes);
             if storage_class == StorageClass::Typedef {
-                self.check_attributes(attributes.clone(), Subject::Typedef, declarator)?;
+                self.check_attributes(attributes.clone(), Subject::Typedef)?;
             }
             let thread = item.specifiers.is_thread_local
                 || attributes
                     .clone()
-                    .any(|attribute| matches!(attribute, ast::Attribute::ThreadLocal));
+                    .any(|attribute| matches!(&attribute.value, ast::Attribute::ThreadLocal));
             let name = declarator
                 .declarator
                 .name()
@@ -650,7 +647,7 @@ impl Lowerer {
                     &declarator.declarator,
                     &declarator.attributes,
                 );
-                self.check_attributes(attributes.iter().copied(), Subject::Function, declarator)?;
+                self.check_attributes(attributes.iter().copied(), Subject::Function)?;
                 let mut symbol =
                     function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
                 self.types.pragmas.apply(name, &mut symbol);
@@ -712,7 +709,7 @@ impl Lowerer {
             let subject = Subject::Object {
                 automatic: storage == StorageDuration::Automatic,
             };
-            self.check_attributes(attributes.clone(), subject, declarator)?;
+            self.check_attributes(attributes.clone(), subject)?;
             let attributes = || attributes.clone().filter(|a| applies(a, subject));
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
@@ -721,11 +718,12 @@ impl Lowerer {
             self.types.pragmas.apply(name, &mut symbol);
             let request = super::entity::ObjectRequest {
                 alignment: super::types::requested_alignment(&mut self.types, attributes())?,
-                common: if attributes().any(|attribute| matches!(attribute, ast::Attribute::Common))
+                common: if attributes()
+                    .any(|attribute| matches!(&attribute.value, ast::Attribute::Common))
                 {
                     Some(true)
                 } else if attributes()
-                    .any(|attribute| matches!(attribute, ast::Attribute::NoCommon))
+                    .any(|attribute| matches!(&attribute.value, ast::Attribute::NoCommon))
                 {
                     Some(false)
                 } else {
@@ -1101,7 +1099,7 @@ impl Lowerer {
                 StmtKind::Attribute(attributes)
                     if attributes
                         .iter()
-                        .all(|a| matches!(a, ast::Attribute::Fallthrough)) =>
+                        .all(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
                 {
                     if self.switches.is_empty() {
                         return Err(ResolveError::Unsupported("fallthrough outside switch"));
