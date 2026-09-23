@@ -74,7 +74,8 @@ def target_for(fixture: Path) -> str | None:
 def jobs(fixtures: Path) -> tuple[list[Job], int]:
     result = []
     expected_errors = 0
-    for fixture in sorted(fixtures.rglob("*.c")):
+    fixture_paths = [fixtures] if fixtures.is_file() else sorted(fixtures.rglob("*.c"))
+    for fixture in fixture_paths:
         source = fixture.read_text(errors="surrogateescape")
         errors = {match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))}
         standards = {
@@ -140,6 +141,11 @@ def root_diagnostic(stderr: str) -> str:
         )
     if not diagnostic:
         diagnostic = next(
+            (match.group(1) for line in lines if (match := re.search(r"\berror\s+C\d+:\s*(.*)", line, re.IGNORECASE))),
+            "",
+        )
+    if not diagnostic:
+        diagnostic = next(
             (line.removeprefix("Error: ") for line in lines if line.startswith("Error: ")),
             lines[-1] if lines else "no diagnostic",
         )
@@ -153,10 +159,13 @@ def warnings(stderr: str, tool: str) -> list[str]:
         return sorted({line.strip()[2:] for line in stderr.splitlines() if line.strip().startswith("-W")})
     result = set()
     for line in stderr.splitlines():
-        if " warning:" not in line:
-            continue
-        option = re.search(r"\[-W([^]]+)\]", line)
-        result.add(option.group(1) if option else re.sub(r"^.* warning: ", "", line).strip())
+        if tool == "msvc":
+            match = re.search(r"\bwarning\s+(C\d+):\s*(.*)", line, re.IGNORECASE)
+            if match:
+                result.add(match.group(1).upper())
+        elif " warning:" in line:
+            option = re.search(r"\[-W([^]]+)\]", line)
+            result.add(option.group(1) if option else re.sub(r"^.* warning: ", "", line).strip())
     return sorted(result)
 
 
@@ -224,6 +233,31 @@ def run_ir(job: Job, parser: str) -> Result:
     )
 
 
+def run_gcc(job: Job, gcc: str) -> Result:
+    gcc_job = Job(
+        fixture=job.fixture,
+        prefix=job.prefix,
+        defines=job.defines,
+        standard=job.standard,
+        flavor=job.flavor,
+        target=None,
+        isystem=tuple(path for path in job.isystem if "/lib/clang/" not in path),
+        extra_args=job.extra_args,
+    )
+    args = [gcc, "-fsyntax-only", job.fixture, *common_args(gcc_job), *slate_libc_defines(gcc_job)]
+    args.extend(arg for arg in job.extra_args if arg.startswith("-W"))
+    completed = subprocess.run(args, text=True, capture_output=True)
+    return Result(
+        fixture=job.fixture,
+        prefix=job.prefix,
+        tool="gcc",
+        accepted=completed.returncode == 0,
+        root="" if completed.returncode == 0 else root_diagnostic(completed.stderr),
+        stderr=completed.stderr[-4000:],
+        warnings=warnings(completed.stderr, "gcc"),
+    )
+
+
 def run_clang(job: Job, clang: str) -> Result:
     args = [clang, "-fsyntax-only", job.fixture, *common_args(job), *slate_libc_defines(job)]
     if job.flavor == "msvc":
@@ -239,6 +273,78 @@ def run_clang(job: Job, clang: str) -> Result:
         stderr=completed.stderr[-4000:],
         warnings=warnings(completed.stderr, "clang"),
     )
+
+
+def msvc_args(job: Job, msvc: str) -> list[str]:
+    args = [msvc, "/nologo", "/Zs", "/TC"]
+    args.extend(f"/D{define.removeprefix('-D')}" for define in job.defines)
+    args.extend(
+        f"/I{path}"
+        for path in job.isystem
+        if "/lib/clang/" not in path and "slate/libc-shim" not in path
+    )
+    standard = job.standard.removeprefix("gnu") if job.standard else None
+    if standard in {"c11", "c17"}:
+        args.append(f"/std:{standard}")
+    elif standard in {"c89", "c99", "c23"}:
+        args.append("/std:c17")
+    return args
+
+
+def run_msvc_batch(batch: list[Job], msvc: str) -> list[Result]:
+    args = msvc_args(batch[0], msvc)
+    args.extend(str(Path(job.fixture).resolve()) for job in batch)
+    completed = subprocess.run(args, text=True, capture_output=True)
+    output = completed.stdout + completed.stderr
+    if completed.returncode == 0:
+        return [Result(job.fixture, job.prefix, "msvc", True, "", output[-4000:], warnings(output, "msvc")) for job in batch]
+    failures: dict[str, list[str]] = defaultdict(list)
+    for line in output.splitlines():
+        match = re.search(r"^(.+?\.c)\(\d+\):\s*error\s+C\d+:\s*.*$", line, re.IGNORECASE)
+        if match:
+            location = match.group(1).replace("\\", "/").casefold()
+            for job in batch:
+                if location.endswith(job.fixture.replace("\\", "/").casefold()):
+                    failures[job.fixture].append(line)
+                    break
+    if len(batch) > 1 and not failures:
+        middle = len(batch) // 2
+        return run_msvc_batch(batch[:middle], msvc) + run_msvc_batch(batch[middle:], msvc)
+    if len(batch) > 1 and len(failures) < len(batch):
+        known = [
+            Result(job.fixture, job.prefix, "msvc", False, root_diagnostic("\n".join(failures[job.fixture])), "\n".join(failures[job.fixture])[-4000:], warnings(output, "msvc"))
+            for job in batch if job.fixture in failures
+        ]
+        unresolved = [job for job in batch if job.fixture not in failures]
+        return known + run_msvc_batch(unresolved, msvc)
+    if len(batch) > 1:
+        return [
+            Result(job.fixture, job.prefix, "msvc", False, root_diagnostic("\n".join(failures[job.fixture])), "\n".join(failures[job.fixture])[-4000:], warnings(output, "msvc"))
+            for job in batch
+        ]
+    job = batch[0]
+    return [
+        Result(
+            fixture=job.fixture,
+            prefix=job.prefix,
+            tool="msvc",
+            accepted=False,
+            root=root_diagnostic(output),
+            stderr=output[-4000:],
+            warnings=warnings(output, "msvc"),
+        )
+    ]
+
+
+def msvc_batches(corpus: list[Job], msvc: str, batch_size: int = 32) -> list[list[Job]]:
+    groups: dict[tuple[str, ...], list[Job]] = defaultdict(list)
+    for job in corpus:
+        groups[tuple(msvc_args(job, msvc))].append(job)
+    return [
+        group[start : start + batch_size]
+        for group in groups.values()
+        for start in range(0, len(group), batch_size)
+    ]
 
 
 def write_report(path: Path, results: list[Result], expected_errors: int, versions: dict[str, str]) -> None:
@@ -265,6 +371,25 @@ def write_report(path: Path, results: list[Result], expected_errors: int, versio
             "- Slate IR accepts / Clang rejects: "
             + str(sum(indexed[(fixture, prefix, "slate-ir")].accepted and not indexed[(fixture, prefix, "clang")].accepted for fixture, prefix in pairs))
         )
+    for tool in ("gcc", "msvc"):
+        if all((fixture, prefix, candidate) in indexed for fixture, prefix in pairs for candidate in ("slate-ir", tool)):
+            lines.append(
+                f"- Slate IR rejects / {tool} accepts: "
+                + str(sum(not indexed[(fixture, prefix, "slate-ir")].accepted and indexed[(fixture, prefix, tool)].accepted for fixture, prefix in pairs))
+            )
+            lines.append(
+                f"- Slate IR accepts / {tool} rejects: "
+                + str(sum(indexed[(fixture, prefix, "slate-ir")].accepted and not indexed[(fixture, prefix, tool)].accepted for fixture, prefix in pairs))
+            )
+        if all((fixture, prefix, candidate) in indexed for fixture, prefix in pairs for candidate in ("clang", tool)):
+            lines.append(
+                f"- Clang rejects / {tool} accepts: "
+                + str(sum(not indexed[(fixture, prefix, "clang")].accepted and indexed[(fixture, prefix, tool)].accepted for fixture, prefix in pairs))
+            )
+            lines.append(
+                f"- Clang accepts / {tool} rejects: "
+                + str(sum(indexed[(fixture, prefix, "clang")].accepted and not indexed[(fixture, prefix, tool)].accepted for fixture, prefix in pairs))
+            )
     lines.append(f"- expected-error configurations skipped: {expected_errors}")
     for tool, version in sorted(versions.items()):
         lines.append(f"- {tool} version: `{version}`")
@@ -286,7 +411,11 @@ def write_report(path: Path, results: list[Result], expected_errors: int, versio
     path.write_text("\n".join(lines) + "\n")
 
 
-def version(command: str) -> str:
+def version(command: str, tool: str) -> str:
+    if tool == "msvc":
+        completed = subprocess.run([command], text=True, capture_output=True)
+        lines = (completed.stdout + completed.stderr).splitlines()
+        return next((line for line in lines if line.startswith("Microsoft (R)")), lines[0] if lines else "unknown")
     completed = subprocess.run([command, "--version"], text=True, capture_output=True)
     return completed.stdout.splitlines()[0] if completed.stdout else "unknown"
 
@@ -301,23 +430,37 @@ def main() -> None:
     parser.add_argument("--fixtures", type=Path, default=Path("tests/fixtures"))
     parser.add_argument("--slate-parser", default="target/release/slate-parser")
     parser.add_argument("--clang", default="clang")
-    parser.add_argument("--tool", choices=("ir", "clang", "both"), default="both")
+    parser.add_argument("--gcc", default="gcc")
+    parser.add_argument("--msvc", default="tools/cl.exe")
+    parser.add_argument("--tool", choices=("ir", "clang", "gcc", "msvc", "both", "all"), default="both")
     parser.add_argument("--jobs", type=int, default=min(12, os.cpu_count() or 1))
     parser.add_argument("--report", type=Path, default=Path("target/corpus-sweep.md"))
     parser.add_argument("--json", type=Path, default=Path("target/corpus-sweep.json"))
     args = parser.parse_args()
     corpus, expected_errors = jobs(args.fixtures)
     runners = []
+    msvc_requested = args.tool in {"msvc", "all"}
     if args.tool in {"ir", "both"}:
         runners.append((run_ir, args.slate_parser))
-    if args.tool in {"clang", "both"}:
+    if args.tool in {"clang", "both", "all"}:
         runners.append((run_clang, args.clang))
+    if args.tool in {"gcc", "both", "all"}:
+        runners.append((run_gcc, args.gcc))
     work = [(runner, command, job) for runner, command in runners for job in corpus]
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
         results = list(pool.map(lambda item: item[0](item[2], item[1]), work))
+    if msvc_requested:
+        batches = msvc_batches(corpus, args.msvc)
+        for batch in batches:
+            results.extend(run_msvc_batch(batch, args.msvc))
     versions = {"slate-parser": f"git {git_revision()} ({args.slate_parser})"}
-    if args.tool in {"clang", "both"}:
-        versions["clang"] = version(args.clang)
+    if args.tool in {"clang", "both", "all"}:
+        versions["clang"] = version(args.clang, "clang")
+    if args.tool in {"gcc", "both", "all"}:
+        versions["gcc"] = version(args.gcc, "gcc")
+    if args.tool in {"msvc", "all"}:
+        versions["msvc"] = version(args.msvc, "msvc")
+        versions["msvc language modes"] = "C11/C17; C89/C99/C23 configurations use C17"
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.json.parent.mkdir(parents=True, exist_ok=True)
     write_report(args.report, results, expected_errors, versions)

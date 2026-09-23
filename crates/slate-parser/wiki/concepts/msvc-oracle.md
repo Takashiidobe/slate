@@ -2,8 +2,8 @@
 
 Real `cl.exe` runs on Linux under native Wine via
 [mstorsjo/msvc-wine](https://github.com/mstorsjo/msvc-wine). `tools/cl.exe`
-is a thin wrapper over its generated `bin/x64/cl`. It is not wired into the
-fixtures yet; it is a debugging aid.
+is a thin wrapper over its generated `bin/x64/cl`. The optional corpus sweep
+runs it as a syntax oracle.
 
 ## Install
 
@@ -29,9 +29,23 @@ target architecture for `tools/cl.exe`.
 
 There is no AST dump, so it cannot replace `clang -ast-dump`.
 
+## Corpus sweep
+
+Check one fixture without compiling or linking an executable:
+
+```
+python3 tools/corpus_sweep.py --tool msvc --fixtures tests/fixtures/add.c
+```
+
+`/Zs` stops after syntax checking. Fixtures with identical defines, include paths,
+and language mode are sent to `cl.exe` in batches of up to 32. If a batch fails,
+the sweep splits it to identify which fixtures failed. C89, C99, and C23 fixture
+modes use MSVC's C17 mode because those modes are unavailable in `cl.exe`.
+
 ## Gotchas
 
 - C mode defaults to a pre-C11 dialect. Pass `/std:c11` or `/std:c17`
   for `_Static_assert`, or you get a cascade of C2143 syntax errors.
 - Avoid `/Zi`: it needs `mspdbsrv`, which is flaky under Wine. Use `/Z7`.
-- Each invocation costs about 0.9 s of Wine startup.
+- Each invocation has Wine startup overhead, so the corpus sweep batches compatible
+  fixtures. Use `--fixtures <path/to/file.c>` for a fast targeted check.
