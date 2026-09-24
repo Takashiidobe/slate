@@ -4,8 +4,8 @@ use super::types::TypeResolver;
 use crate::ast::Span;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
-    AbiChunk, AbiConvention, AbiPass, AbiSignature, Field, FloatType, NumericType, Type,
-    TypeDefinitionKind, Value,
+    AbiChunk, AbiConvention, AbiPass, AbiSignature, Field, FloatType, NumericType, RecordKind,
+    Type, TypeDefinitionKind, Value,
 };
 use crate::target_info::{TargetEnvironment, TargetFamily, TargetInfo};
 
@@ -189,12 +189,6 @@ impl<'a> AbiClassifier<'a> {
         result: bool,
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
-        if operand.atomic
-            && convention == AbiConvention::WinArm64
-            && self.is_record_or_complex(&operand.ty)
-        {
-            return Err(ResolveError::Unsupported("atomic aggregate Windows ABI"));
-        }
         if self.atomic_is_memory(operand, convention) {
             let align = self.layout(operand)?.alignment_bytes;
             return Ok(if result {
@@ -205,6 +199,24 @@ impl<'a> AbiClassifier<'a> {
                 }
             } else {
                 AbiPass::ByValue { align }
+            });
+        }
+        if operand.atomic
+            && self.types.flavor != CompilerFlavor::Gcc
+            && matches!(convention, AbiConvention::Aapcs64 | AbiConvention::WinArm64)
+            && self.is_record_or_complex(&operand.ty)
+        {
+            let layout = self.layout(operand)?;
+            return Ok(if layout.size_bytes <= 16 {
+                AbiPass::Coerce(vec![AbiChunk::Integer((layout.size_bytes * 8) as u32)])
+            } else if result {
+                AbiPass::SRet {
+                    align: layout.alignment_bytes,
+                }
+            } else {
+                AbiPass::ByReference {
+                    align: layout.alignment_bytes,
+                }
             });
         }
         let ty = &operand.ty;
@@ -238,29 +250,22 @@ impl<'a> AbiClassifier<'a> {
                 ),
                 TypeDefinitionKind::Enum { .. } => Ok(AbiPass::Scalar),
                 TypeDefinitionKind::Record {
+                    kind,
                     fields: Some(fields),
                     layout: Some(record_layout),
                     ..
                 } => {
                     let layout = self.layout(operand)?;
-                    let homogeneous = if fields.len() >= 2 && fields.len() <= 4 {
-                        let mut formats = fields.iter().map(|field| match &field.ty {
-                            Type::Numeric(NumericType::Float(format))
-                                if field.bit_width.is_none() =>
-                            {
-                                Some(*format)
-                            }
-                            _ => None,
-                        });
-                        let first = formats.next().flatten();
-                        first.filter(|kind| formats.all(|format| format == Some(*kind)))
-                    } else {
+                    let homogeneous = if operand.atomic && self.types.flavor != CompilerFlavor::Gcc
+                    {
                         None
+                    } else {
+                        self.homogeneous_record(*kind, fields)
                     };
                     Ok(record_abi(
                         layout.size_bytes,
                         layout.alignment_bytes,
-                        homogeneous.map(|format| (format, fields.len())),
+                        homogeneous,
                         sysv_record_chunks(fields, &record_layout.offsets, layout.size_bytes),
                         record_field_chunks(fields, self.target.pointer_width),
                         fields.iter().all(|field| {
@@ -279,6 +284,59 @@ impl<'a> AbiClassifier<'a> {
                 Err(ResolveError::Unsupported("unadjusted ABI parameter type"))
             }
         }
+    }
+
+    fn homogeneous_type(&self, ty: &Type) -> Option<(FloatType, usize)> {
+        match ty {
+            Type::Numeric(NumericType::Float(format)) => Some((*format, 1)),
+            Type::Array {
+                element,
+                length: Some(length @ 1..=4),
+            } => {
+                let (format, count) = self.homogeneous_type(element)?;
+                let count = count.checked_mul(usize::try_from(*length).ok()?)?;
+                (count <= 4).then_some((format, count))
+            }
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.homogeneous_type(inner),
+                TypeDefinitionKind::Record {
+                    kind,
+                    fields: Some(fields),
+                    ..
+                } => self.homogeneous_record(*kind, fields),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    fn homogeneous_record(
+        &self,
+        kind: RecordKind,
+        fields: &[Span<Field>],
+    ) -> Option<(FloatType, usize)> {
+        let mut members = fields.iter().map(|field| {
+            field
+                .bit_width
+                .is_none()
+                .then(|| self.homogeneous_type(&field.ty))
+                .flatten()
+        });
+        let (format, mut count) = members.next().flatten()?;
+        for member in members {
+            let (next_format, next_count) = member?;
+            if next_format != format {
+                return None;
+            }
+            count = match kind {
+                RecordKind::Struct => count.checked_add(next_count)?,
+                RecordKind::Union => count.max(next_count),
+            };
+            if count > 4 {
+                return None;
+            }
+        }
+        Some((format, count))
     }
 
     fn vector_abi(
@@ -430,7 +488,9 @@ fn record_abi(
                 AbiPass::ByReference { align }
             }
         }
-        _ if !flat => AbiPass::NativeC,
+        _ if !flat && !matches!(convention, AbiConvention::Aapcs64 | AbiConvention::WinArm64) => {
+            AbiPass::NativeC
+        }
         AbiConvention::SysV64 => {
             if size > 16 {
                 if result {

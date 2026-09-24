@@ -962,17 +962,16 @@ callee or a variadic call can differ from the enclosing function.
 
 `native_c` is an abstention, not a passing shape: the `flat` gate in
 `record_abi` (all fields `Numeric`/`Bool`/`Pointer`, non-recursive) asks
-whether the classifier trusts itself to name the register pieces, and it is
-checked before the convention is. That proxy is right for `sysv64`, where
-eightbyte classification really does need a field walk, and wrong for
-`win64`, which classifies on size alone -- one register at 1, 2, 4 or 8 bytes,
-indirect otherwise -- with no field walk at all. So the `win64` arm runs
-*before* the gate, and `struct { char a[3]; }` gets the same `byref` as
-`struct { char a, b, c; }` instead of abstaining. Fixture
-`tests/fixtures/sema/x86_64-pc-windows-msvc/ir_record_abi_shape.c` pins the
-shapes against clang. `win_arm64` is still behind the gate because its HFA
-check does need a field walk, and ours is non-recursive
-(`slate-parser-o9q`).
+whether the classifier trusts itself to name the register pieces. It applies
+to `sysv64`, x86 cdecl, and AAPCS32, whose coercions need a field walk.
+`win64` classifies on size alone -- one register at 1, 2, 4 or 8 bytes,
+indirect otherwise. AArch64 classifies homogeneous floating aggregates first,
+then other records by size. Its HFA walk descends through arrays, aliases,
+nested structs, and unions, and accepts one to four members of the same float
+format. Clang and MSVC atomic records use their qualified layout and do not
+use HFA passing; GCC preserves the ordinary record passing shape.
+The Windows x86-64 and both AArch64 `ir_record_abi_shape.c` fixtures pin these
+shapes against clang.
 
 The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
 AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
@@ -1874,8 +1873,10 @@ on the type:
   Returns agree. Measured against cl.exe 19.51 `/experimental:c11atomics`,
   including the sizes copied for the indirect cases (12 for a 5-byte record,
   32 for a 24-byte one), which is what pins the parameter object as the
-  lock-prefixed one. `abi_pass` still rejects atomic records on `WinArm64`
-  (`slate-parser-o9q`).
+  lock-prefixed one. On AArch64, clang classifies atomic records and complex
+  values as integer values or indirect objects using their qualified layout;
+  MSVC does this for atomic records. GCC uses the ordinary record or complex
+  ABI, including HFA passing.
 
 `tests/fixtures/sema/ir_qualified_access.c`,
 `tests/fixtures/sema/ir_array_parameter.c` and
