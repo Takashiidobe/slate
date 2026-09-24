@@ -202,6 +202,17 @@ impl<'a> Preprocessor<'a> {
                     "",
                     "",
                 ),
+                (
+                    TargetOs::Darwin,
+                    TargetEnvironment::Darwin,
+                    TargetFamily::X86_64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-x86_64-apple-darwin-predefines>",
+                    include_str!("../predefines/clang-22.1.8_x86_64_apple_darwin.h"),
+                    "",
+                    "",
+                ),
                 (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
                     "<clang-armv7-linux-gnueabihf-predefines>",
                     include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),

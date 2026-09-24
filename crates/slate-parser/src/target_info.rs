@@ -260,6 +260,7 @@ impl TargetInfo {
             "i386-unknown-linux-gnu" | "i686-unknown-linux-gnu" => Self::x86_linux(triple),
             "aarch64-unknown-linux-gnu" => Self::aarch64_linux(),
             "aarch64-apple-darwin" => Self::aarch64_apple_darwin(),
+            "x86_64-apple-darwin" => Self::x86_64_apple_darwin(),
             "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
                 Self::arm32_linux(triple)
             }
@@ -375,6 +376,17 @@ impl TargetInfo {
             os: TargetOs::Darwin,
             environment: TargetEnvironment::Darwin,
             isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Darwin),
+        }
+    }
+
+    fn x86_64_apple_darwin() -> Self {
+        Self {
+            triple: "x86_64-apple-darwin".into(),
+            os: TargetOs::Darwin,
+            environment: TargetEnvironment::Darwin,
+            long_double: LongDoubleFormat::X87,
+            isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Darwin),
+            ..Self::default()
         }
     }
 
