@@ -184,7 +184,11 @@ fn sysroot_include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
             sysroot.join("usr/include"),
         ]
     } else {
-        let mut candidates = vec![sysroot.join("usr/include"), sysroot.join("include")];
+        let mut candidates = vec![
+            sysroot.join("SDK/usr/include"),
+            sysroot.join("usr/include"),
+            sysroot.join("include"),
+        ];
         if let Some(arch) = target.strip_suffix("-unknown-linux-gnu") {
             candidates.push(
                 sysroot

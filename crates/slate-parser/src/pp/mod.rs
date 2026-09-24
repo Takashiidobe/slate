@@ -191,6 +191,17 @@ impl<'a> Preprocessor<'a> {
                     include_str!("../predefines/slate_aarch64_linux_defaults.h"),
                     include_str!("../predefines/slate_gnu_namespace_linux.h"),
                 ),
+                (
+                    TargetOs::Darwin,
+                    TargetEnvironment::Darwin,
+                    TargetFamily::AArch64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-aarch64-apple-darwin-predefines>",
+                    include_str!("../predefines/clang-22.1.8_aarch64_apple_darwin.h"),
+                    "",
+                    "",
+                ),
                 (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
                     "<clang-armv7-linux-gnueabihf-predefines>",
                     include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),

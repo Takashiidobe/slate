@@ -30,6 +30,7 @@ pub struct TargetInfo {
 pub enum TargetOs {
     Linux,
     Windows,
+    Darwin,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -38,6 +39,7 @@ pub enum TargetEnvironment {
     GnuEabi,
     GnuEabiHf,
     Msvc,
+    Darwin,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -257,6 +259,7 @@ impl TargetInfo {
             "x86_64-unknown-linux-gnu" => Self::default(),
             "i386-unknown-linux-gnu" | "i686-unknown-linux-gnu" => Self::x86_linux(triple),
             "aarch64-unknown-linux-gnu" => Self::aarch64_linux(),
+            "aarch64-apple-darwin" => Self::aarch64_apple_darwin(),
             "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
                 Self::arm32_linux(triple)
             }
@@ -342,6 +345,36 @@ impl TargetInfo {
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
             isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Gnu),
+        }
+    }
+
+    fn aarch64_apple_darwin() -> Self {
+        Self {
+            triple: "aarch64-apple-darwin".into(),
+            endian: Endian::Little,
+            long_double: LongDoubleFormat::Binary64,
+            char_signed: true,
+            signed_right_shift: ShiftFill::SignExtend,
+            short_width: 16,
+            int_width: 32,
+            long_width: 64,
+            long_long_width: 64,
+            pointer_width: 64,
+            wchar_signed: true,
+            wchar_width: 32,
+            scalars: ScalarLayouts::for_family(TargetFamily::AArch64),
+            pointer: StorageLayout {
+                size_bytes: 8,
+                alignment_bytes: 8,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 16,
+                zero_width_bitfield_aligns_record: true,
+            },
+            family: TargetFamily::AArch64,
+            os: TargetOs::Darwin,
+            environment: TargetEnvironment::Darwin,
+            isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Darwin),
         }
     }
 
