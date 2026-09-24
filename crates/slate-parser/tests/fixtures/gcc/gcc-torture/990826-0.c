@@ -30,7 +30,6 @@ reports concerning the INT() function, just so you know.
 */
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -42,6 +41,7 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:                   ty: Floating(
 // DEFAULT-NEXT:                       Double,
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -59,7 +59,9 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:                                                       Double,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__x",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
@@ -69,7 +71,7 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1:]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -77,6 +79,38 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: Const,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -86,7 +120,7 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -102,79 +136,7 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Double,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "floor",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Floating(
-// DEFAULT-NEXT:                                                       Double,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },

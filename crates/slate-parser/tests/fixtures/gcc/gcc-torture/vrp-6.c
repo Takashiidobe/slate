@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
 
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[{{[0-9]+}}]: Declaration(
@@ -307,15 +306,45 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 4294967295,
-// DEFAULT-NEXT:                                           radix: Hex,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: true,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                   left: Paren(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 2147483647,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "2147483647",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 2,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: true,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "2U",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "0xffffffffU",
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 1,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: true,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "1U",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   right: IntegerLiteral(

@@ -179,41 +179,34 @@ def common_args(job: Job) -> list[str]:
     return args
 
 
-def slate_libc_defines(job: Job) -> list[str]:
-    if not any("slate/libc-shim" in path for path in job.isystem):
-        return []
+def sysroot_include_paths(job: Job) -> list[str]:
     target = job.target or "x86_64-unknown-linux-gnu"
-    fields = target.split("-")
-    arch = fields[0]
-    vendor = fields[1] if len(fields) > 1 else "unknown"
-    kernel = fields[2] if len(fields) > 2 else "linux"
-    environment = fields[3] if len(fields) > 3 else "gnu"
-    arch_names = {
-        "x86_64": "X86_64",
-        "i686": "X86",
-        "aarch64": "AARCH64",
-        "arm": "ARM",
-        "riscv64": "RISCV64",
-        "riscv32": "RISCV32",
-    }
-    result = [
-        f"-D__SLATE_ARCH_{arch_names.get(arch, arch.upper())}=1",
-        f"-D__SLATE_VENDOR_{vendor.upper()}=1",
-        f"-D__SLATE_KERNEL_{kernel.upper()}=1",
-        f"-D__SLATE_WORDSIZE_{'64' if arch in {'x86_64', 'aarch64', 'riscv64'} else '32'}=1",
-        "-D__SLATE_ENDIAN_LITTLE=1",
-    ]
-    if kernel in {"linux", "freebsd"}:
-        result.append("-D__SLATE_OBJ_ELF=1")
-    elif kernel == "windows":
-        result.append("-D__SLATE_OBJ_COFF=1")
-    elif kernel == "darwin":
-        result.append("-D__SLATE_OBJ_MACHO=1")
-    libc = "GLIBC" if environment == "gnu" else environment.upper()
-    result.append(f"-D__SLATE_LIBC_{libc}=1")
-    if libc == "GLIBC":
-        result.append("-D__SLATE_GLIBC_MINOR__=0")
-    return result
+    sysroots = Path(os.environ.get(
+        "SLATE_SYSROOTS",
+        str(Path(__file__).resolve().parents[1] / "../slate-sysroots/sysroots"),
+    ))
+    root = sysroots / target
+    if job.flavor == "msvc":
+        candidates = [
+            root / "crt/include",
+            root / "sdk/include/ucrt",
+            root / "sdk/include/shared",
+            root / "sdk/include/um",
+            root / "sdk/include/winrt",
+            root / "sdk/include/cppwinrt",
+        ]
+    else:
+        candidates = [root / "SDK/usr/include", root / "usr/include", root / "include"]
+        if target.endswith("-unknown-linux-gnu"):
+            arch = target.removesuffix("-unknown-linux-gnu")
+            candidates.append(root / "usr" / f"{arch}-linux-gnu/include")
+    return [str(path) for path in candidates if path.is_dir()]
+
+
+def external_common_args(job: Job) -> list[str]:
+    args = common_args(job)
+    args.extend(f"-isystem{path}" for path in sysroot_include_paths(job))
+    return args
 
 
 def run_ir(job: Job, parser: str) -> Result:
@@ -241,10 +234,10 @@ def run_gcc(job: Job, gcc: str) -> Result:
         standard=job.standard,
         flavor=job.flavor,
         target=None,
-        isystem=tuple(path for path in job.isystem if "/lib/clang/" not in path),
+        isystem=job.isystem,
         extra_args=job.extra_args,
     )
-    args = [gcc, "-fsyntax-only", job.fixture, *common_args(gcc_job), *slate_libc_defines(gcc_job)]
+    args = [gcc, "-fsyntax-only", job.fixture, *external_common_args(gcc_job)]
     args.extend(arg for arg in job.extra_args if arg.startswith("-W"))
     completed = subprocess.run(args, text=True, capture_output=True)
     return Result(
@@ -259,7 +252,7 @@ def run_gcc(job: Job, gcc: str) -> Result:
 
 
 def run_clang(job: Job, clang: str) -> Result:
-    args = [clang, "-fsyntax-only", job.fixture, *common_args(job), *slate_libc_defines(job)]
+    args = [clang, "-fsyntax-only", job.fixture, *external_common_args(job)]
     if job.flavor == "msvc":
         args.extend(["-fms-extensions", "-fms-compatibility"])
     args.extend(arg for arg in job.extra_args if arg.startswith("-W"))
@@ -280,8 +273,8 @@ def msvc_args(job: Job, msvc: str) -> list[str]:
     args.extend(f"/D{define.removeprefix('-D')}" for define in job.defines)
     args.extend(
         f"/I{path}"
-        for path in job.isystem
-        if "/lib/clang/" not in path and "slate/libc-shim" not in path
+        for path in [*job.isystem, *sysroot_include_paths(job)]
+        if "/lib/clang/" not in path
     )
     standard = job.standard.removeprefix("gnu") if job.standard else None
     if standard in {"c11", "c17"}:

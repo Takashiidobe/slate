@@ -58,10 +58,10 @@ void f(int p __attribute__((mode(SI))));
 // SLATE-FILECHECK-BEGIN WARN_IGNORED
 // WARN_IGNORED: -Wignored-attributes
 // WARN_IGNORED: ⚠ 'packed' attribute ignored
-// WARN_IGNORED: ╭─[tests/fixtures/sema/ir_parameter_attribute_diagnostics.c:11:8]
+// WARN_IGNORED: ╭─[tests/fixtures/sema/ir_parameter_attribute_diagnostics.c:11:29]
 // WARN_IGNORED: 10 │ #elif defined(WARN_IGNORED)
 // WARN_IGNORED: 11 │ void f(int p __attribute__((packed)));
-// WARN_IGNORED: ·        ─────────────────────────────
+// WARN_IGNORED: ·                             ──────
 // WARN_IGNORED: 12 │ #elif defined(ERR_UNSUPPORTED)
 // WARN_IGNORED: ╰────
 // SLATE-FILECHECK-END WARN_IGNORED

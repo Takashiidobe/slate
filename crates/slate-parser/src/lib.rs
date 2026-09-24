@@ -1,5 +1,6 @@
 pub mod ast;
 pub mod compiler_args;
+pub mod compiler_headers;
 pub mod compiler_options;
 pub mod const_expr;
 pub mod diagnostics;
@@ -14,6 +15,7 @@ pub mod render;
 pub mod rules;
 pub mod sema;
 pub mod standard_features;
+pub mod sysroot;
 pub mod target;
 pub mod target_info;
 pub mod visit;

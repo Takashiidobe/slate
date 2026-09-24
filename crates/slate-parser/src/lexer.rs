@@ -27,8 +27,6 @@ pub enum Keyword {
     Float,
     Float16,
     Fp16,
-    Float64x,
-    Float128,
     Float128Ext,
     Decimal32,
     Decimal64,
@@ -106,8 +104,6 @@ impl From<Keyword> for &'static str {
             Keyword::Float => "float",
             Keyword::Float16 => "_Float16",
             Keyword::Fp16 => "__fp16",
-            Keyword::Float64x => "_Float64x",
-            Keyword::Float128 => "_Float128",
             Keyword::Float128Ext => "__float128",
             Keyword::Decimal32 => "_Decimal32",
             Keyword::Decimal64 => "_Decimal64",
@@ -717,13 +713,12 @@ impl Lexer {
                 "char" => Token::Keyword(Keyword::Char),
                 "double" => Token::Keyword(Keyword::Double),
                 "float" => Token::Keyword(Keyword::Float),
-                "_Float16" => Token::Keyword(Keyword::Float16),
+                "_Float16" if self.features.keyword_float16.is_accepted() => {
+                    Token::Keyword(Keyword::Float16)
+                }
                 "__fp16" => Token::Keyword(Keyword::Fp16),
-                "_Float32" => Token::Keyword(Keyword::Float),
-                "_Float64" => Token::Keyword(Keyword::Double),
-                "_Float32x" => Token::Keyword(Keyword::Double),
-                "_Float64x" => Token::Keyword(Keyword::Float64x),
-                "_Float128" | "_Float128x" => Token::Keyword(Keyword::Float128),
+                "_Float32" | "_Float64" | "_Float32x" | "_Float64x" | "_Float128"
+                | "_Float128x" => Token::Ident(word.clone()),
                 "__float128" => Token::Keyword(Keyword::Float128Ext),
                 "_Decimal32" if self.features.decimal_floating_point.is_accepted() => {
                     Token::Keyword(Keyword::Decimal32)
@@ -738,9 +733,9 @@ impl Lexer {
                 "long" => Token::Keyword(Keyword::Long),
                 "return" => Token::Keyword(Keyword::Return),
                 "short" => Token::Keyword(Keyword::Short),
-                "signed" => Token::Keyword(Keyword::Signed),
+                "signed" | "__signed" | "__signed__" => Token::Keyword(Keyword::Signed),
                 "typedef" => Token::Keyword(Keyword::Typedef),
-                "unsigned" => Token::Keyword(Keyword::Unsigned),
+                "unsigned" | "__unsigned" | "__unsigned__" => Token::Keyword(Keyword::Unsigned),
                 "void" => Token::Keyword(Keyword::Void),
                 "_Complex" | "__complex__" | "__complex" => Token::Keyword(Keyword::Complex),
                 "struct" => Token::Keyword(Keyword::Struct),

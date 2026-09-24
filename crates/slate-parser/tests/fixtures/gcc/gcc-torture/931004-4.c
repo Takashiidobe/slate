@@ -1,7 +1,6 @@
 #include <stdarg.h>
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 void abort(void);
 void exit(int);

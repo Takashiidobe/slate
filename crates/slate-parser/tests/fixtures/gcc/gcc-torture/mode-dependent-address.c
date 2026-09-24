@@ -52,7 +52,6 @@ int main(void) {
 
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[{{[0-9]+}}]: Spanned {
@@ -315,7 +314,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                               [[#FILE2:]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -331,52 +330,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "__uint8_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "uint8_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE2]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -405,7 +359,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                               [[#FILE2]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -421,7 +375,52 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "__uint8_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "uint8_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE3:]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE3]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -450,7 +449,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                               [[#FILE3]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -466,7 +465,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE3]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -495,7 +494,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                               [[#FILE3]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -511,7 +510,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE3]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -527,7 +526,7 @@ int main(void) {
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:                   is_noreturn: true,
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -538,16 +537,48 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               parameters: Void,
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4:]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoReturn,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2:]],
+// DEFAULT-NEXT:                               [[#FILE4]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE2]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -557,13 +588,13 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE4]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE2]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },

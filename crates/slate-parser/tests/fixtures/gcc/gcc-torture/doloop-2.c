@@ -17,7 +17,6 @@ int main(void) {
 }
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -183,15 +182,45 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 65535,
-// DEFAULT-NEXT:                                   radix: Hex,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32767,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32767",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 2,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "2",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "0xffff",
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: IntegerLiteral(

@@ -27,7 +27,6 @@ int main(void) {
   return f() + g1.x + g2.x + g.y + s.z + t.t + (pt != 0) + e1 + e2 + (fp != 0) + *b1 - 4;
 }
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 

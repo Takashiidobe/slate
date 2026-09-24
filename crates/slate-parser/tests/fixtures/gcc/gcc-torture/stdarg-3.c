@@ -149,7 +149,6 @@ int main(void) {
 
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: tag[{{[0-9]+}}]: TagDefinition {

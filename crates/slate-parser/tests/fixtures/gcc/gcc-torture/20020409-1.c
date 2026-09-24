@@ -1,4 +1,3 @@
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 /* PR c/5078 */
@@ -70,12 +69,12 @@ int f(int i)
 // DEFAULT-NEXT:                                   left: IntegerLiteral(
 // DEFAULT-NEXT:                                       IntegerLiteral {
 // DEFAULT-NEXT:                                           value: 2147483647,
-// DEFAULT-NEXT:                                           radix: Hex,
+// DEFAULT-NEXT:                                           radix: Decimal,
 // DEFAULT-NEXT:                                           suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                               unsigned: false,
 // DEFAULT-NEXT:                                               size: None,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                           spelling: "2147483647",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   right: IntegerLiteral(

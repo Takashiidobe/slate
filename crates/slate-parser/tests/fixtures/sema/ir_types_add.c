@@ -1,5 +1,4 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 // SLATE-FILECHECK-ARGS --dump-ir-types --show-metadata
 
 #include <stdio.h>
@@ -36,7 +35,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @printf(%0 <unnamed>: ptr<const i8> [restrict] [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
+// DEFAULT-NEXT:     fn %1 @printf(%0 __format: ptr<const i8> [restrict] [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT:     fn %4 @add(%2 a: i32 [c="int"], %3 b: i32 [c="int"]) -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT: }

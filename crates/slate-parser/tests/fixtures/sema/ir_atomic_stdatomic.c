@@ -1,6 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir --show-metadata
-// SLATE-FILECHECK-ISYSTEM /usr/lib/clang/22/include
 #include <stdatomic.h>
 
 atomic_int counter;

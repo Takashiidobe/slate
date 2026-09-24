@@ -14,5 +14,6 @@ int *to_pointer(int value) { return value; }
 // WARN: 3 │ // the msvc flavor keeps both as warnings. Measured 2026-09-21.
 // WARN: 4 │ int *to_pointer(int value) { return value; }
 // WARN: ·                                     ─────
+// WARN: 5 │
 // WARN: ╰────
 // SLATE-FILECHECK-END WARN

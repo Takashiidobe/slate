@@ -19,7 +19,6 @@ int main() {
 }
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -150,9 +149,9 @@ int main() {
 // DEFAULT-NEXT:                                           radix: Decimal,
 // DEFAULT-NEXT:                                           suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                               size: Long,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                           spelling: "1L",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -191,9 +190,9 @@ int main() {
 // DEFAULT-NEXT:                                               radix: Decimal,
 // DEFAULT-NEXT:                                               suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                                   size: Long,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "1",
+// DEFAULT-NEXT:                                               spelling: "1L",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },

@@ -31,6 +31,8 @@ pub enum TargetOs {
     Linux,
     Windows,
     Darwin,
+    Android,
+    FreeBsd,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,6 +42,8 @@ pub enum TargetEnvironment {
     GnuEabiHf,
     Msvc,
     Darwin,
+    Android,
+    FreeBsd,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -261,6 +265,10 @@ impl TargetInfo {
             "aarch64-unknown-linux-gnu" => Self::aarch64_linux(),
             "aarch64-apple-darwin" => Self::aarch64_apple_darwin(),
             "x86_64-apple-darwin" => Self::x86_64_apple_darwin(),
+            "aarch64-linux-android" => Self::aarch64_android(),
+            "x86_64-linux-android" => Self::x86_64_android(),
+            "aarch64-unknown-freebsd" => Self::aarch64_freebsd(),
+            "x86_64-unknown-freebsd" => Self::x86_64_freebsd(),
             "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
                 Self::arm32_linux(triple)
             }
@@ -386,6 +394,46 @@ impl TargetInfo {
             environment: TargetEnvironment::Darwin,
             long_double: LongDoubleFormat::X87,
             isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Darwin),
+            ..Self::default()
+        }
+    }
+
+    fn aarch64_android() -> Self {
+        let mut target = Self::aarch64_linux();
+        target.triple = "aarch64-linux-android".into();
+        target.os = TargetOs::Android;
+        target.environment = TargetEnvironment::Android;
+        target.isa = TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Android);
+        target
+    }
+
+    fn x86_64_android() -> Self {
+        Self {
+            triple: "x86_64-linux-android".into(),
+            long_double: LongDoubleFormat::Binary128,
+            os: TargetOs::Android,
+            environment: TargetEnvironment::Android,
+            isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Android),
+            ..Self::default()
+        }
+    }
+
+    fn aarch64_freebsd() -> Self {
+        let mut target = Self::aarch64_linux();
+        target.triple = "aarch64-unknown-freebsd".into();
+        target.os = TargetOs::FreeBsd;
+        target.environment = TargetEnvironment::FreeBsd;
+        target.isa = TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::FreeBsd);
+        target
+    }
+
+    fn x86_64_freebsd() -> Self {
+        Self {
+            triple: "x86_64-unknown-freebsd".into(),
+            long_double: LongDoubleFormat::X87,
+            os: TargetOs::FreeBsd,
+            environment: TargetEnvironment::FreeBsd,
+            isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::FreeBsd),
             ..Self::default()
         }
     }

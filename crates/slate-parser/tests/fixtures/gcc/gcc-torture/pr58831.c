@@ -33,7 +33,6 @@ int main(void) {
 
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[{{[0-9]+}}]: Spanned {
@@ -41,7 +40,7 @@ int main(void) {
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:                   is_noreturn: true,
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -66,7 +65,9 @@ int main(void) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__assertion",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -96,7 +97,9 @@ int main(void) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__file",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -118,11 +121,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ty: Integer(
 // DEFAULT-NEXT:                                                       Ranked {
 // DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                           signed: false,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__line",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
@@ -151,7 +156,9 @@ int main(void) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__function",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -170,6 +177,38 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoReturn,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -456,66 +495,36 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Paren(
-// DEFAULT-NEXT:                       Cast {
-// DEFAULT-NEXT:                           ty: TypeName {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                       Comma {
+// DEFAULT-NEXT:                           left: Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Paren(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Or,
-// DEFAULT-NEXT:                                   left: Paren(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "r",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Paren(
-// DEFAULT-NEXT:                                       Comma {
-// DEFAULT-NEXT:                                           left: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__assert_fail",
+// DEFAULT-NEXT:                               value: SizeOfExpr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           condition: Paren(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "r",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   StringLiteral(
-// DEFAULT-NEXT:                                                       StringLiteral {
-// DEFAULT-NEXT:                                                           encoding: Plain,
-// DEFAULT-NEXT:                                                           code_units: [
-// DEFAULT-NEXT:                                                               114,
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "r",
-// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   StringLiteral(
-// DEFAULT-NEXT:                                                       StringLiteral {
-// DEFAULT-NEXT:                                                           encoding: Plain,
-// DEFAULT-NEXT:                                                           code_units: [
-// DEFAULT:                                                           ],
-// DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "{{.*}}",
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   IntegerLiteral(
-// DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 12,
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                               unsigned: false,
-// DEFAULT-NEXT:                                                               size: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "12",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "__func__",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
 // DEFAULT-NEXT:                                                   value: 0,
 // DEFAULT-NEXT:                                                   radix: Decimal,
@@ -528,7 +537,63 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: StatementExpression(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   If {
+// DEFAULT-NEXT:                                       condition: Identifier(
+// DEFAULT-NEXT:                                           "r",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       then_branch: Null,
+// DEFAULT-NEXT:                                       else_branch: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "__assert_fail",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       StringLiteral(
+// DEFAULT-NEXT:                                                           StringLiteral {
+// DEFAULT-NEXT:                                                               encoding: Plain,
+// DEFAULT-NEXT:                                                               code_units: [
+// DEFAULT-NEXT:                                                                   114,
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               pieces: [
+// DEFAULT-NEXT:                                                                   "r",
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       StringLiteral(
+// DEFAULT-NEXT:                                                           StringLiteral {
+// DEFAULT-NEXT:                                                               encoding: Plain,
+// DEFAULT-NEXT:                                                               code_units: [
+// DEFAULT:                                                               ],
+// DEFAULT-NEXT:                                                               pieces: [
+// DEFAULT-NEXT:                                                                   "{{.*}}",
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 12,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "12",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "__PRETTY_FUNCTION__",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

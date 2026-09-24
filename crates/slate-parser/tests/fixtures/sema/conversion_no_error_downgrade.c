@@ -13,5 +13,6 @@ int *to_pointer(int value) { return value; }
 // WARN: 3 │ // both clang and gcc. -W<w> on its own leaves it an error.
 // WARN: 4 │ int *to_pointer(int value) { return value; }
 // WARN: ·                                     ─────
+// WARN: 5 │
 // WARN: ╰────
 // SLATE-FILECHECK-END WARN

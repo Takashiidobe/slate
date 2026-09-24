@@ -41,5 +41,6 @@ int *discards_const(const int *value) { return value; }
 // WARN: 7 │ char *signed_char(signed char *value) { return value; }
 // WARN: 8 │ int *discards_const(const int *value) { return value; }
 // WARN: ·                                                ─────
+// WARN: 9 │
 // WARN: ╰────
 // SLATE-FILECHECK-END WARN

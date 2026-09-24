@@ -2,9 +2,11 @@ use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
 use slate_parser::compiler_args::CompilerFlavor;
+use slate_parser::compiler_headers;
 use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
+use slate_parser::sysroot;
 use slate_parser::target_info::TargetInfo;
 use std::ffi::OsString;
 use std::io::Write;
@@ -183,6 +185,16 @@ fn fixture_args(fixture: &Path) -> Vec<String> {
             .map(str::to_string),
     );
     args
+}
+
+fn fixture_target(fixture: &Path) -> String {
+    fixture
+        .parent()
+        .and_then(Path::file_name)
+        .and_then(|name| name.to_str())
+        .filter(|name| TargetInfo::for_triple(name).is_ok())
+        .unwrap_or("x86_64-unknown-linux-gnu")
+        .to_string()
 }
 
 fn warning_configurations(source: &str) -> Vec<String> {
@@ -504,8 +516,15 @@ fn assert_evaluated_matches_clang(
     ) {
         return;
     }
+    let flavor = flavor.map_or_else(CompilerFlavor::default, |name| {
+        name.parse().expect("valid fixture flavor")
+    });
+    let target = fixture_target(fixture);
+    let mut system: Vec<PathBuf> = isystem.iter().map(PathBuf::from).collect();
+    system.extend(compiler_headers::include_paths(&target, flavor));
+    system.extend(sysroot::include_paths(&target, flavor));
     let search = SearchPaths {
-        system: isystem.iter().map(std::path::PathBuf::from).collect(),
+        system,
         ..SearchPaths::default()
     };
     let mut parser = Parser::new(search)
@@ -514,9 +533,8 @@ fn assert_evaluated_matches_clang(
                 .iter()
                 .map(|define| define.trim_start_matches("-D").to_string()),
         )
-        .with_flavor(flavor.map_or_else(CompilerFlavor::default, |name| {
-            name.parse().expect("valid fixture flavor")
-        }));
+        .with_target(TargetInfo::for_triple(&target).expect("valid fixture target"))
+        .with_flavor(flavor);
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let ours = summarize_evaluated(&ast);
     let theirs = summarize_clang(&run_clang_ast(fixture, defines, isystem));
@@ -537,6 +555,15 @@ fn assert_evaluated_matches_clang(
 
 fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> ClangNode {
     let mut command = Command::new("clang");
+    let target = fixture_target(fixture);
+    command.arg(format!("--target={target}"));
+    if let Some(resource_include) = compiler_headers::include_paths(&target, CompilerFlavor::Clang)
+        .into_iter()
+        .next()
+        && let Some(resource_dir) = resource_include.parent()
+    {
+        command.arg("-resource-dir").arg(resource_dir);
+    }
     if fixture.file_stem().and_then(|name| name.to_str()) == Some("c23-literals") {
         command.arg("-std=c2x");
     }
@@ -545,6 +572,9 @@ fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> Clan
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
     for path in isystem {
+        command.arg("-isystem").arg(path);
+    }
+    for path in sysroot::include_paths(&target, CompilerFlavor::Clang) {
         command.arg("-isystem").arg(path);
     }
     let output = command

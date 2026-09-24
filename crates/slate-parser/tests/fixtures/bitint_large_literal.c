@@ -8,7 +8,6 @@ unsigned _BitInt(8) unsigned_mixed_uwb = 6uWb;
 unsigned _BitInt(8) unsigned_mixed_wbu = 7wBu;
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

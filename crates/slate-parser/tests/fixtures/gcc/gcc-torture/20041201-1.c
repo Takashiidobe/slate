@@ -12,7 +12,6 @@ int checkScc2(Scc2 s) { return s.a != 1 + 2i || s.b != 3 + 4i; }
 int main(void) { return checkScc2(s); }
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 

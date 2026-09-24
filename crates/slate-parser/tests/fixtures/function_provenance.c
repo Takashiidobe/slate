@@ -215,7 +215,7 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM tests/fixtures/function-provenance-headers ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+// SLATE-FILECHECK-ISYSTEM tests/fixtures/function-provenance-headers
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 

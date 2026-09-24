@@ -213,6 +213,50 @@ impl<'a> Preprocessor<'a> {
                     "",
                     "",
                 ),
+                (
+                    TargetOs::Android,
+                    TargetEnvironment::Android,
+                    TargetFamily::AArch64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-aarch64-linux-android-predefines>",
+                    include_str!("../predefines/clang-22.1.8_aarch64_linux_android.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::Android,
+                    TargetEnvironment::Android,
+                    TargetFamily::X86_64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-x86_64-linux-android-predefines>",
+                    include_str!("../predefines/clang-22.1.8_x86_64_linux_android.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::FreeBsd,
+                    TargetEnvironment::FreeBsd,
+                    TargetFamily::AArch64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-aarch64-unknown-freebsd-predefines>",
+                    include_str!("../predefines/clang-22.1.8_aarch64_unknown_freebsd.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::FreeBsd,
+                    TargetEnvironment::FreeBsd,
+                    TargetFamily::X86_64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-x86_64-unknown-freebsd-predefines>",
+                    include_str!("../predefines/clang-22.1.8_x86_64_unknown_freebsd.h"),
+                    "",
+                    "",
+                ),
                 (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
                     "<clang-armv7-linux-gnueabihf-predefines>",
                     include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),

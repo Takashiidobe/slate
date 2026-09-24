@@ -116,7 +116,6 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -125,163 +124,12 @@ int main(void) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       LongDouble,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "creall",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Complex(
-// DEFAULT-NEXT:                                                       Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0:]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       LongDouble,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "cimagl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Complex(
-// DEFAULT-NEXT:                                                       Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Complex(
 // DEFAULT-NEXT:                       Floating(
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -302,18 +150,18 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                   [[#FILE0:]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1:]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -321,6 +169,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -330,7 +195,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -346,7 +211,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -360,6 +225,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -380,7 +246,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -391,7 +257,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -399,6 +265,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -408,7 +291,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -424,7 +307,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -438,6 +321,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -458,7 +342,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -469,7 +353,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -477,6 +361,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -486,7 +387,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -502,7 +403,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -516,6 +417,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -536,7 +438,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -547,7 +449,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -555,6 +457,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -564,7 +483,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -580,7 +499,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -594,6 +513,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -614,7 +534,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -625,7 +545,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -633,6 +553,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -642,7 +579,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -658,7 +595,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -672,6 +609,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -692,7 +630,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -703,7 +641,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -711,6 +649,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -720,7 +675,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -736,7 +691,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -750,6 +705,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -770,7 +726,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -781,7 +737,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -789,6 +745,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -798,7 +771,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -814,7 +787,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -828,6 +801,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -848,7 +822,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -859,7 +833,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -867,6 +841,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -876,7 +867,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -892,7 +883,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -906,6 +897,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -926,7 +918,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -937,7 +929,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -945,6 +937,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -954,7 +963,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -970,7 +979,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -984,6 +993,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1004,7 +1014,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1015,7 +1025,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1023,6 +1033,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1032,7 +1059,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1048,7 +1075,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1062,6 +1089,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1082,7 +1110,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1093,7 +1121,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1101,6 +1129,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1110,7 +1155,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1126,7 +1171,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1140,6 +1185,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1160,7 +1206,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1171,7 +1217,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1179,6 +1225,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1188,7 +1251,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1204,7 +1267,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1218,6 +1281,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1238,7 +1302,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1249,7 +1313,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1257,6 +1321,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1266,7 +1347,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1282,7 +1363,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1296,6 +1377,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1316,7 +1398,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1327,7 +1409,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1335,6 +1417,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1344,7 +1443,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1360,83 +1459,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       LongDouble,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "cabsl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Complex(
-// DEFAULT-NEXT:                                                       Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1450,6 +1473,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1470,7 +1494,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                                   "__x",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1481,7 +1505,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1496,7 +1520,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "y",
+// DEFAULT-NEXT:                                                   "__y",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1507,7 +1531,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1515,6 +1539,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1524,7 +1565,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1540,7 +1581,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1554,6 +1595,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1574,7 +1616,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1585,7 +1627,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1593,6 +1635,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1602,7 +1661,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1618,7 +1677,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1630,6 +1689,101 @@ int main(void) {
 // DEFAULT-NEXT:                   ty: Floating(
 // DEFAULT-NEXT:                       LongDouble,
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "cabsl",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Complex(
+// DEFAULT-NEXT:                                                       Floating(
+// DEFAULT-NEXT:                                                           LongDouble,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__z",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1650,7 +1804,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1661,7 +1815,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1669,6 +1823,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1678,7 +1849,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1694,83 +1865,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       LongDouble,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "cimagl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Complex(
-// DEFAULT-NEXT:                                                       Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1784,6 +1879,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1804,7 +1900,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1815,7 +1911,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1823,6 +1919,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1832,7 +1945,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1848,7 +1961,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1862,6 +1975,7 @@ int main(void) {
 // DEFAULT-NEXT:                           LongDouble,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1882,7 +1996,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1893,7 +2007,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1901,6 +2015,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1910,7 +2041,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1926,7 +2057,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1938,6 +2069,101 @@ int main(void) {
 // DEFAULT-NEXT:                   ty: Floating(
 // DEFAULT-NEXT:                       LongDouble,
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "cimagl",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Complex(
+// DEFAULT-NEXT:                                                       Floating(
+// DEFAULT-NEXT:                                                           LongDouble,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__z",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -1958,7 +2184,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                                   "__z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1969,7 +2195,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                       [[#FILE1]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -1977,6 +2203,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -1986,7 +2229,7 @@ int main(void) {
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                                   [[#FILE1]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -2002,7 +2245,7 @@ int main(void) {
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:                   [[#FILE1]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -2017,6 +2260,7 @@ int main(void) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -2043,18 +2287,20 @@ int main(void) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__format",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1:]],
+// DEFAULT-NEXT:                                                   [[#FILE2:]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                       [[#FILE2]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -2066,13 +2312,13 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE1]],
+// DEFAULT-NEXT:                               [[#FILE2]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                                   [[#FILE2]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -2082,13 +2328,13 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE1]],
+// DEFAULT-NEXT:               [[#FILE2]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:                   [[#FILE2]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -2349,47 +2595,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                               "CMPLXL",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "1.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "1.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "2.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "2.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -2416,47 +2638,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                               "CMPLXL",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "3.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "3.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           operand: FloatLiteral(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   spelling: "1.0L",
-// DEFAULT-NEXT:                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                   suffix: L,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: FloatLiteral(
+// DEFAULT-NEXT:                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                           spelling: "1.0L",
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: L,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
@@ -3237,47 +3435,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                               "CMPLXL",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "3.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "3.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "4.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "4.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -3771,47 +3945,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                               "CMPLXL",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "3.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "3.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               LongDouble,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               FloatLiteral(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       spelling: "4.0L",
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: L,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Paren(
-// DEFAULT-NEXT:                                                       FloatLiteral(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               spelling: "4.0L",
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: L,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -4024,47 +4174,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4099,47 +4225,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "1.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "1.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4174,92 +4276,44 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "2.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "2.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "3.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "3.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4294,47 +4348,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4369,47 +4399,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4444,47 +4450,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4520,47 +4502,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4596,47 +4554,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "1.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "1.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4672,47 +4606,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4748,47 +4658,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4824,47 +4710,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4900,47 +4762,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -4977,47 +4815,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -5054,47 +4868,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "1.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "1.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
@@ -5131,47 +4921,23 @@ int main(void) {
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_complex",
+// DEFAULT-NEXT:                                           "CMPLXL",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           FloatLiteral(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   spelling: "0.0L",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: L,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Paren(
-// DEFAULT-NEXT:                                                   FloatLiteral(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           spelling: "0.0L",
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: L,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],

@@ -46,7 +46,6 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -344,6 +343,7 @@ int main(void) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -370,7 +370,9 @@ int main(void) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__format",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -600,27 +602,6 @@ int main(void) {
 // DEFAULT-NEXT:               parameters: Void,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic push",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic ignored \"-Wc23-extensions\"",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
 // DEFAULT-NEXT:                       callee: Identifier(

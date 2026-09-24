@@ -15,61 +15,5548 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT: tag[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: TagDefinition {
+// DEFAULT-NEXT:           id: TagId(
+// DEFAULT-NEXT:               [[#TAG0:]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: Enum,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           body: Enum {
+// DEFAULT-NEXT:               enumerators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISupper",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 0,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "0",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0:]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISlower",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 1,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISalpha",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 2,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISdigit",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 3,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISxdigit",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 4,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "4",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 4,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "4",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 4,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "4",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISspace",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 5,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "5",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 5,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "5",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 5,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "5",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISprint",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 6,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "6",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 6,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "6",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 6,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "6",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISgraph",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 7,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "7",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 7,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "7",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 7,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "7",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISblank",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 8,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "8",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_IScntrl",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 9,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "9",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 9,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "9",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 9,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "9",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISpunct",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 10,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "10",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 10,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "10",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 10,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "10",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Enumerator(
+// DEFAULT-NEXT:                           Enumerator {
+// DEFAULT-NEXT:                               name: "_ISalnum",
+// DEFAULT-NEXT:                               value: Some(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Spanned {
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Spanned {
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Spanned {
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 11,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "11",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Spanned {
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 8,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Spanned {
+// DEFAULT-NEXT:                                                           value: Paren(
+// DEFAULT-NEXT:                                                               Spanned {
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Spanned {
+// DEFAULT-NEXT:                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Spanned {
+// DEFAULT-NEXT:                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 11,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "11",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               kind: System,
+// DEFAULT-NEXT:                                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       kind: System,
+// DEFAULT-NEXT:                                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                                           FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Spanned {
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                                               file: FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               kind: System,
+// DEFAULT-NEXT:                                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                                   FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                                       file: FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       kind: System,
+// DEFAULT-NEXT:                                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                       system_header: Some(
+// DEFAULT-NEXT:                                                                           FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           provenance: Provenance {
+// DEFAULT-NEXT:                                                               file: FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               kind: System,
+// DEFAULT-NEXT:                                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                               system_header: Some(
+// DEFAULT-NEXT:                                                                   FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Spanned {
+// DEFAULT-NEXT:                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 11,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "11",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 8,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       [[#FILE0]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                   system_header: Some(
+// DEFAULT-NEXT:                                                       FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE0]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE0]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE0]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Integer(
 // DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                           rank: Short,
+// DEFAULT-NEXT:                           signed: false,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                       is_const: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: InitDeclaratorKind {
 // DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "isalpha",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE0:]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "__ctype_b_loc",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               parameters: Void,
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: Const,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE0]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -109,6 +5596,7 @@ int main(void) {
 // DEFAULT-NEXT:                           signed: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -133,7 +5621,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "category",
+// DEFAULT-NEXT:                                                   "__category",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -164,7 +5652,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                   inner: Name(
-// DEFAULT-NEXT:                                                       "locale",
+// DEFAULT-NEXT:                                                       "__locale",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
@@ -184,6 +5672,23 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -224,6 +5729,7 @@ int main(void) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -250,7 +5756,9 @@ int main(void) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__format",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -380,18 +5888,60 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Call {
-// DEFAULT-NEXT:                       callee: Paren(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "isalpha",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   condition: Paren(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: BitAnd,
+// DEFAULT-NEXT:                           left: Index {
+// DEFAULT-NEXT:                               base: Paren(
+// DEFAULT-NEXT:                                   Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__ctype_b_loc",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               index: Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: Paren(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "c",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Short,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "_ISalpha",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: Block(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Expr(

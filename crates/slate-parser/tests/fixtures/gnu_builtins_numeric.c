@@ -107,7 +107,6 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -122,6 +121,7 @@ int main(void) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -148,7 +148,9 @@ int main(void) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__format",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -1491,12 +1493,12 @@ int main(void) {
 // DEFAULT-NEXT:                               IntegerLiteral(
 // DEFAULT-NEXT:                                   IntegerLiteral {
 // DEFAULT-NEXT:                                       value: 2147483647,
-// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       radix: Decimal,
 // DEFAULT-NEXT:                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                           unsigned: false,
 // DEFAULT-NEXT:                                           size: None,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                       spelling: "2147483647",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               IntegerLiteral(
@@ -1709,12 +1711,12 @@ int main(void) {
 // DEFAULT-NEXT:                               IntegerLiteral(
 // DEFAULT-NEXT:                                   IntegerLiteral {
 // DEFAULT-NEXT:                                       value: 9223372036854775807,
-// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       radix: Decimal,
 // DEFAULT-NEXT:                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                           unsigned: false,
 // DEFAULT-NEXT:                                           size: LongLong,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "0x7fffffffffffffffLL",
+// DEFAULT-NEXT:                                       spelling: "9223372036854775807LL",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               IntegerLiteral(
@@ -1884,12 +1886,12 @@ int main(void) {
 // DEFAULT-NEXT:                               IntegerLiteral(
 // DEFAULT-NEXT:                                   IntegerLiteral {
 // DEFAULT-NEXT:                                       value: 9223372036854775807,
-// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       radix: Decimal,
 // DEFAULT-NEXT:                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                           unsigned: false,
 // DEFAULT-NEXT:                                           size: LongLong,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "0x7fffffffffffffffLL",
+// DEFAULT-NEXT:                                       spelling: "9223372036854775807LL",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               IntegerLiteral(

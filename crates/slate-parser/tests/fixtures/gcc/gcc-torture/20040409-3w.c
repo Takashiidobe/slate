@@ -52,7 +52,6 @@ int main() {
 }
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -124,25 +123,25 @@ int main() {
 // DEFAULT-NEXT:                                           op: Minus,
 // DEFAULT-NEXT:                                           operand: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 1,
+// DEFAULT-NEXT:                                                   value: 2147483647,
 // DEFAULT-NEXT:                                                   radix: Decimal,
 // DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                       unsigned: false,
 // DEFAULT-NEXT:                                                       size: None,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "1",
+// DEFAULT-NEXT:                                                   spelling: "2147483647",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 2147483647,
-// DEFAULT-NEXT:                                               radix: Hex,
+// DEFAULT-NEXT:                                               value: 1,
+// DEFAULT-NEXT:                                               radix: Decimal,
 // DEFAULT-NEXT:                                               suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                   unsigned: false,
 // DEFAULT-NEXT:                                                   size: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                               spelling: "1",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -203,25 +202,25 @@ int main() {
 // DEFAULT-NEXT:                                           op: Minus,
 // DEFAULT-NEXT:                                           operand: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 1,
+// DEFAULT-NEXT:                                                   value: 2147483647,
 // DEFAULT-NEXT:                                                   radix: Decimal,
 // DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                       unsigned: false,
 // DEFAULT-NEXT:                                                       size: None,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "1",
+// DEFAULT-NEXT:                                                   spelling: "2147483647",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 2147483647,
-// DEFAULT-NEXT:                                               radix: Hex,
+// DEFAULT-NEXT:                                               value: 1,
+// DEFAULT-NEXT:                                               radix: Decimal,
 // DEFAULT-NEXT:                                               suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                   unsigned: false,
 // DEFAULT-NEXT:                                                   size: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                               spelling: "1",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -290,25 +289,25 @@ int main() {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: IntegerLiteral(
 // DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 1,
+// DEFAULT-NEXT:                                                           value: 2147483647,
 // DEFAULT-NEXT:                                                           radix: Decimal,
 // DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                               unsigned: false,
 // DEFAULT-NEXT:                                                               size: None,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "1",
+// DEFAULT-NEXT:                                                           spelling: "2147483647",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 2147483647,
-// DEFAULT-NEXT:                                                       radix: Hex,
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
 // DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                           unsigned: false,
 // DEFAULT-NEXT:                                                           size: None,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                                       spelling: "1",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -395,25 +394,25 @@ int main() {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: IntegerLiteral(
 // DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 1,
+// DEFAULT-NEXT:                                                           value: 2147483647,
 // DEFAULT-NEXT:                                                           radix: Decimal,
 // DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                               unsigned: false,
 // DEFAULT-NEXT:                                                               size: None,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "1",
+// DEFAULT-NEXT:                                                           spelling: "2147483647",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 2147483647,
-// DEFAULT-NEXT:                                                       radix: Hex,
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
 // DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                           unsigned: false,
 // DEFAULT-NEXT:                                                           size: None,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "0x7fffffff",
+// DEFAULT-NEXT:                                                       spelling: "1",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },

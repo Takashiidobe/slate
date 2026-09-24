@@ -150,7 +150,6 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -160,155 +159,10 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:           id: TagId(
 // DEFAULT-NEXT:               [[#TAG0:]],
 // DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "__sigset_t",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           body: Record(
-// DEFAULT-NEXT:               [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: Field(
-// DEFAULT-NEXT:                           FieldDecl {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Long,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Array {
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "__bits",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               size: Expression(
-// DEFAULT-NEXT:                                                   Spanned {
-// DEFAULT-NEXT:                                                       value: Binary {
-// DEFAULT-NEXT:                                                           op: Div,
-// DEFAULT-NEXT:                                                           left: Spanned {
-// DEFAULT-NEXT:                                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                       value: 128,
-// DEFAULT-NEXT:                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                           size: None,
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       spelling: "128",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                       [[#FILE0:]],
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   kind: System,
-// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                       FileId(
-// DEFAULT-NEXT:                                                                           [[#FILE1:]],
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Spanned {
-// DEFAULT-NEXT:                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                                   signed: false,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   kind: System,
-// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                       FileId(
-// DEFAULT-NEXT:                                                                           [[#FILE1]],
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       provenance: Provenance {
-// DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE0]],
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           kind: System,
-// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                           system_header: Some(
-// DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE0]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: TagDefinition {
-// DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               [[#TAG1:]],
-// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Union,
-// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "pthread_attr_t",
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           body: Record(
 // DEFAULT-NEXT:               [
 // DEFAULT-NEXT:                   Spanned {
@@ -343,13 +197,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                               [[#FILE0:]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                   [[#FILE1:]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -452,10 +306,392 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
 // DEFAULT-NEXT:       value: TagDefinition {
 // DEFAULT-NEXT:           id: TagId(
+// DEFAULT-NEXT:               [[#TAG1:]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           body: Record(
+// DEFAULT-NEXT:               [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Array {
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "__val",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               size: Expression(
+// DEFAULT-NEXT:                                                   Spanned {
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Spanned {
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: Div,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 1024,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "1024",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE2:]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                           Spanned {
+// DEFAULT-NEXT:                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 8,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                                       value: SizeOfType {
+// DEFAULT-NEXT:                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           kind: System,
+// DEFAULT-NEXT:                                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                                               FileId(
+// DEFAULT-NEXT:                                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                                       [[#FILE2]],
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   kind: System,
+// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                                       FileId(
+// DEFAULT-NEXT:                                                                                           [[#FILE1]],
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                                   file: FileId(
+// DEFAULT-NEXT:                                                                       [[#FILE2]],
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   kind: System,
+// DEFAULT-NEXT:                                                                   line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                   system_header: Some(
+// DEFAULT-NEXT:                                                                       FileId(
+// DEFAULT-NEXT:                                                                           [[#FILE1]],
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: TagDefinition {
+// DEFAULT-NEXT:           id: TagId(
 // DEFAULT-NEXT:               [[#TAG2:]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           body: Record(
+// DEFAULT-NEXT:               [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "ss_sp",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE3:]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4:]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "ss_flags",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE3]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "size_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "ss_size",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE3]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: TagDefinition {
+// DEFAULT-NEXT:           id: TagId(
+// DEFAULT-NEXT:               [[#TAG3:]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "_libc_fpxreg",
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           body: Record(
 // DEFAULT-NEXT:               [
 // DEFAULT-NEXT:                   Spanned {
@@ -491,13 +727,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2:]],
+// DEFAULT-NEXT:                                                               [[#FILE5:]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3:]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -507,17 +743,45 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Short,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
 // DEFAULT-NEXT:                                   Spanned {
 // DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
 // DEFAULT-NEXT:                                           declarator: Name(
@@ -526,22 +790,50 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Short,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
 // DEFAULT-NEXT:                                   Spanned {
 // DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
 // DEFAULT-NEXT:                                           declarator: Array {
 // DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "padding",
+// DEFAULT-NEXT:                                                   "__glibc_reserved1",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               size: Expression(
 // DEFAULT-NEXT:                                                   Spanned {
@@ -558,13 +850,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -574,13 +866,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -590,13 +882,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -606,13 +898,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE5]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -620,21 +912,20 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
 // DEFAULT-NEXT:       value: TagDefinition {
 // DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               [[#TAG3:]],
+// DEFAULT-NEXT:               [[#TAG4:]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "_libc_xmmreg",
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           body: Record(
 // DEFAULT-NEXT:               [
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint32_t",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -659,13 +950,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -675,13 +966,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -691,13 +982,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -707,13 +998,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE5]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -721,11 +1012,11 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
 // DEFAULT-NEXT:       value: TagDefinition {
 // DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               [[#TAG4:]],
+// DEFAULT-NEXT:               [[#TAG5:]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "_fpstate",
+// DEFAULT-NEXT:               "_libc_fpstate",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           body: Record(
 // DEFAULT-NEXT:               [
@@ -733,11 +1024,8 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Short,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint16_t",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -749,70 +1037,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "swd",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "ftw",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "fop",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -822,13 +1053,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -837,11 +1068,140 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: LongLong,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint16_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "swd",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint16_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "ftw",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint16_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "fop",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint64_t",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -853,32 +1213,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "rdp",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -888,13 +1229,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -903,11 +1244,52 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint64_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rdp",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint32_t",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -919,32 +1301,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "mxcr_mask",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -954,13 +1317,57 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint32_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "mxcr_mask",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -970,11 +1377,10 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Definition(
-// DEFAULT-NEXT:                                           TagId(
-// DEFAULT-NEXT:                                               [[#TAG2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "_libc_fpxreg",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -999,13 +1405,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1015,13 +1421,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1031,13 +1437,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1047,11 +1453,10 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Definition(
-// DEFAULT-NEXT:                                           TagId(
-// DEFAULT-NEXT:                                               [[#TAG3]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "_libc_xmmreg",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -1076,13 +1481,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1092,13 +1497,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1108,13 +1513,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1123,11 +1528,8 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint32_t",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
@@ -1135,7 +1537,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
 // DEFAULT-NEXT:                                           declarator: Array {
 // DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "padding",
+// DEFAULT-NEXT:                                                   "__glibc_reserved1",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               size: Expression(
 // DEFAULT-NEXT:                                                   Spanned {
@@ -1152,13 +1554,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1168,13 +1570,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1184,13 +1586,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1200,13 +1602,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE5]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1214,7 +1616,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
 // DEFAULT-NEXT:       value: TagDefinition {
 // DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               [[#TAG5:]],
+// DEFAULT-NEXT:               [[#TAG6:]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: None,
@@ -1237,13 +1639,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1253,13 +1655,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1281,13 +1683,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1297,13 +1699,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1341,13 +1743,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1357,13 +1759,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1373,13 +1775,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1389,176 +1791,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE5]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: TagDefinition {
-// DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               [[#TAG6:]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "sigaltstack",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           body: Record(
-// DEFAULT-NEXT:               [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: Field(
-// DEFAULT-NEXT:                           FieldDecl {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Void,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "ss_sp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: Field(
-// DEFAULT-NEXT:                           FieldDecl {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "ss_flags",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: Field(
-// DEFAULT-NEXT:                           FieldDecl {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "size_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "ss_size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1570,7 +1809,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "__ucontext",
+// DEFAULT-NEXT:               "ucontext_t",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           body: Record(
 // DEFAULT-NEXT:               [
@@ -1594,13 +1833,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1610,13 +1849,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1628,7 +1867,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   ty: Tag(
 // DEFAULT-NEXT:                                       Reference {
 // DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "__ucontext",
+// DEFAULT-NEXT:                                           name: "ucontext_t",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -1644,13 +1883,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1660,13 +1899,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1688,13 +1927,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1704,13 +1943,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1732,13 +1971,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1748,13 +1987,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1776,13 +2015,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1792,13 +2031,60 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Tag(
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "_libc_fpstate",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "__fpregs_mem",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1809,7 +2095,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                   ty: Integer(
 // DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           rank: LongLong,
 // DEFAULT-NEXT:                                           signed: false,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -1819,30 +2105,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
 // DEFAULT-NEXT:                                           declarator: Array {
 // DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "__fpregs_mem",
+// DEFAULT-NEXT:                                                   "__ssp",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               size: Expression(
 // DEFAULT-NEXT:                                                   Spanned {
 // DEFAULT-NEXT:                                                       value: IntegerLiteral(
 // DEFAULT-NEXT:                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                               value: 68,
+// DEFAULT-NEXT:                                                               value: 4,
 // DEFAULT-NEXT:                                                               radix: Decimal,
 // DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                                   unsigned: false,
 // DEFAULT-NEXT:                                                                   size: None,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               spelling: "68",
+// DEFAULT-NEXT:                                                               spelling: "4",
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
-// DEFAULT-NEXT:                                                               [[#FILE2]],
+// DEFAULT-NEXT:                                                               [[#FILE5]],
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
 // DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
-// DEFAULT-NEXT:                                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1852,13 +2138,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
+// DEFAULT-NEXT:                                               [[#FILE5]],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
 // DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1868,13 +2154,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
+// DEFAULT-NEXT:                               [[#FILE5]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -1884,13 +2170,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
+// DEFAULT-NEXT:               [[#FILE5]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -1951,19 +2237,40 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Definition(
-// DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               [[#TAG0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Short,
+// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
 // DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "__uint16_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE6:]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE6]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -1978,10 +2285,10 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Reference {
-// DEFAULT-NEXT:                           kind: Struct,
-// DEFAULT-NEXT:                           name: "__sigset_t",
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: false,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   storage: Typedef,
@@ -1990,7 +2297,151 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: InitDeclaratorKind {
 // DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "__sigset_t",
+// DEFAULT-NEXT:                               "__uint32_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE6]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE6]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Long,
+// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "__uint64_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE6]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE6]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Long,
+// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "size_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE7:]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE7]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Long,
+// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "pthread_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
@@ -2026,10 +2477,37 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Long,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Reference {
+// DEFAULT-NEXT:                           kind: Union,
+// DEFAULT-NEXT:                           name: "pthread_attr_t",
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   storage: Typedef,
@@ -2038,7 +2516,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: InitDeclaratorKind {
 // DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "__size_t",
+// DEFAULT-NEXT:                               "pthread_attr_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
@@ -2087,12 +2565,12 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: InitDeclaratorKind {
 // DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "__pthread_attr_t",
+// DEFAULT-NEXT:                               "__sigset_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                               [[#FILE2]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -2108,190 +2586,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Long,
-// DEFAULT-NEXT:                           signed: false,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "__pthread_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "__pthread_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "pthread_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "__pthread_attr_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "pthread_attr_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "__size_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "size_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
+// DEFAULT-NEXT:               [[#FILE2]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -2312,6 +2607,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -2333,7 +2629,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__newthread",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -2363,7 +2661,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__attr",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -2390,7 +2690,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       inner: Grouped(
 // DEFAULT-NEXT:                                                           Pointer {
 // DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               inner: Name(
+// DEFAULT-NEXT:                                                                   "__start_routine",
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -2445,7 +2747,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__arg",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -2464,6 +2768,43 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NonNull(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -2499,7 +2840,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:                   is_noreturn: true,
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -2517,7 +2858,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__retval",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
@@ -2536,6 +2879,23 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoReturn,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -2576,6 +2936,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -2593,7 +2954,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                       "pthread_t",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__th",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
@@ -2617,7 +2980,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                   inner: Pointer {
 // DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                       inner: Name(
+// DEFAULT-NEXT:                                                           "__thread_return",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
@@ -2671,8 +3036,53 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "__sigset_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "sigset_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE8:]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE9:]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE8]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE9]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:                   is_noreturn: true,
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -2683,10 +3093,541 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               parameters: Void,
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE9]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE9]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoReturn,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE9]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE9]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE4:]],
+// DEFAULT-NEXT:                               [[#FILE9]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE9]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE9]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE9]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG2]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "stack_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: LongLong,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "greg_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "greg_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "gregset_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 23,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "23",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE5]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG3]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG4]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Reference {
+// DEFAULT-NEXT:                           kind: Struct,
+// DEFAULT-NEXT:                           name: "_libc_fpstate",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "fpregset_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG6]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "mcontext_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Tag(
+// DEFAULT-NEXT:                       Definition(
+// DEFAULT-NEXT:                           TagId(
+// DEFAULT-NEXT:                               [[#TAG7]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Typedef,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "ucontext_t",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE5]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE5]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "getcontext",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "ucontext_t",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__ucp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE4]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE4]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -2717,583 +3658,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       value: Declaration(
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "__sigset_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "sigset_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE0]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE0]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Reference {
-// DEFAULT-NEXT:                           kind: Struct,
-// DEFAULT-NEXT:                           name: "sigaltstack",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "stack_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE5:]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE5]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: LongLong,
-// DEFAULT-NEXT:                           signed: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "greg_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Array {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "gregset_t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               size: Expression(
-// DEFAULT-NEXT:                                   Spanned {
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 23,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "23",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       provenance: Provenance {
-// DEFAULT-NEXT:                                           file: FileId(
-// DEFAULT-NEXT:                                               [[#FILE2]],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                                           system_header: Some(
-// DEFAULT-NEXT:                                               FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Definition(
-// DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               [[#TAG4]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "fpregset_t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Definition(
-// DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               [[#TAG5]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "mcontext_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Definition(
-// DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               [[#TAG6]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Tag(
-// DEFAULT-NEXT:                       Definition(
-// DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               [[#TAG7]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   storage: Typedef,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "ucontext_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE2]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE2]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Integer(
 // DEFAULT-NEXT:                       Ranked {
 // DEFAULT-NEXT:                           rank: Int,
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "getcontext",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "ucontext_t",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "makecontext",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "ucontext_t",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Void,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Function {
-// DEFAULT-NEXT:                                                   inner: Grouped(
-// DEFAULT-NEXT:                                                       Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   parameters: Void,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   variadic: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -3316,18 +3687,20 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__ucp",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
+// DEFAULT-NEXT:                                                       [[#FILE4]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -3335,16 +3708,33 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                               [[#FILE4]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -3354,13 +3744,13 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:               [[#FILE4]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -3375,6 +3765,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   storage: Extern,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               declarators: [
 // DEFAULT-NEXT:                   Spanned {
@@ -3393,19 +3784,23 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                       is_restrict: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__oucp",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
+// DEFAULT-NEXT:                                                       [[#FILE4]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -3421,19 +3816,23 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                       is_restrict: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__ucp",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE3]],
+// DEFAULT-NEXT:                                                   [[#FILE4]],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
 // DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE3]],
+// DEFAULT-NEXT:                                                       [[#FILE4]],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -3441,16 +3840,33 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                               [[#FILE4]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE3]],
+// DEFAULT-NEXT:                                   [[#FILE4]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -3460,13 +3876,164 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:               [[#FILE4]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE3]],
+// DEFAULT-NEXT:                   [[#FILE4]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Void,
+// DEFAULT-NEXT:                   storage: Extern,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "makecontext",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "ucontext_t",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "__ucp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE4]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Function {
+// DEFAULT-NEXT:                                                   inner: Grouped(
+// DEFAULT-NEXT:                                                       Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Name(
+// DEFAULT-NEXT:                                                               "__func",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   parameters: Void,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE4]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "__argc",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE4]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE4]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   variadic: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NoThrow,
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE4]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE4]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE4]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE4]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE4]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE4]],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
@@ -4732,7 +5299,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: Some(
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       NullPtrLiteral,
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 0,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -4754,7 +5344,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: Some(
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       NullPtrLiteral,
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 0,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -4776,7 +5389,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: Some(
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       NullPtrLiteral,
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 0,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -4831,7 +5467,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       left: Identifier(
 // DEFAULT-NEXT:                                           "stack",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: NullPtrLiteral,
+// DEFAULT-NEXT:                                       right: Paren(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Void,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 0,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "0",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   then_branch: Block(
 // DEFAULT-NEXT:                                       [
@@ -4883,7 +5542,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: NullPtrLiteral,
+// DEFAULT-NEXT:                                                   right: Paren(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Void,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 0,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               body: Expr(
 // DEFAULT-NEXT:                                                   Unary {
@@ -4975,7 +5657,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           "pthread_exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5052,7 +5757,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           "pthread_exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5233,7 +5961,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5544,7 +6295,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           field: "ss_sp",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: NullPtrLiteral,
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: Expr(
 // DEFAULT-NEXT:                       Call {
@@ -5607,7 +6381,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "uc_link",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       value: NullPtrLiteral,
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -5660,7 +6457,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5762,7 +6582,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           field: "ss_sp",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: NullPtrLiteral,
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: Expr(
 // DEFAULT-NEXT:                       Call {
@@ -5825,7 +6668,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "uc_link",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       value: NullPtrLiteral,
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -5859,7 +6725,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5923,7 +6812,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           NullPtrLiteral,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -5991,7 +6903,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       "tid",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               NullPtrLiteral,
+// DEFAULT-NEXT:                               Paren(
+// DEFAULT-NEXT:                                   Cast {
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Void,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 0,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "0",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "start_thread",
 // DEFAULT-NEXT:                               ),
@@ -6047,7 +6982,30 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "tid",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               NullPtrLiteral,
+// DEFAULT-NEXT:                               Paren(
+// DEFAULT-NEXT:                                   Cast {
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Void,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 0,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "0",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },

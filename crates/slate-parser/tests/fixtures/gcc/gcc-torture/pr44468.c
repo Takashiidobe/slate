@@ -52,7 +52,6 @@ int         main() {
 
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
@@ -772,48 +771,6 @@ int         main() {
 // DEFAULT-NEXT:               parameters: Empty,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic push",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic ignored \"-Wc23-extensions\"",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic push",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic ignored \"-Wc23-extensions\"",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang diagnostic pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: Or,

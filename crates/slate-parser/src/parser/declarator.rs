@@ -136,8 +136,6 @@ impl<'a> DeclaratorParser<'a> {
             }
             Token::Keyword(Keyword::Float16) => TypeSpecifier::Floating(FloatingType::Float16),
             Token::Keyword(Keyword::Fp16) => TypeSpecifier::Floating(FloatingType::Fp16),
-            Token::Keyword(Keyword::Float64x) => TypeSpecifier::Floating(FloatingType::Float64x),
-            Token::Keyword(Keyword::Float128) => TypeSpecifier::Floating(FloatingType::Float128),
             Token::Keyword(Keyword::Float128Ext) => {
                 TypeSpecifier::Floating(FloatingType::Float128Ext)
             }
@@ -336,8 +334,6 @@ impl<'a> DeclaratorParser<'a> {
                             | Keyword::Unsigned
                             | Keyword::Float16
                             | Keyword::BFloat16
-                            | Keyword::Float64x
-                            | Keyword::Float128
                             | Keyword::Float128Ext
                     ))
                 ) {
@@ -720,6 +716,11 @@ impl<'a> DeclaratorParser<'a> {
             Some(Token::Ident(name)) => {
                 self.pos += 1;
                 Declarator::Name(name)
+            }
+            Some(Token::Keyword(keyword @ Keyword::Float16)) => {
+                self.pos += 1;
+                let name: &'static str = keyword.into();
+                Declarator::Name(name.into())
             }
             Some(Token::LParen) if allow_abstract && self.opens_parameter_list(self.pos + 1) => {
                 Declarator::Abstract

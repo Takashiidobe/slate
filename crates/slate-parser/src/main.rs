@@ -1,9 +1,11 @@
 use miette::Severity;
-use slate_parser::compiler_args::{CompilerArgParser, CompilerFlavor};
+use slate_parser::compiler_args::CompilerArgParser;
+use slate_parser::compiler_headers;
 use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors};
 use slate_parser::render::Renderer;
+use slate_parser::sysroot;
 use std::env;
 use std::fs;
 use std::io;
@@ -101,7 +103,11 @@ fn run() -> miette::Result<()> {
     }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
-    system.extend(sysroot_include_paths(
+    system.extend(compiler_headers::include_paths(
+        &compiler_args.target.triple,
+        compiler_args.flavor,
+    ));
+    system.extend(sysroot::include_paths(
         &compiler_args.target.triple,
         compiler_args.flavor,
     ));
@@ -166,42 +172,6 @@ fn run() -> miette::Result<()> {
         .render(&ast)
         .map_err(|error| miette::miette!(error))?;
     Ok(())
-}
-
-fn sysroot_include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
-    let sysroot = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../slate-sysroots/sysroots")
-        .join(target);
-    let candidates = if flavor == CompilerFlavor::Msvc {
-        vec![
-            sysroot.join("crt/include"),
-            sysroot.join("sdk/include/ucrt"),
-            sysroot.join("sdk/include/shared"),
-            sysroot.join("sdk/include/um"),
-            sysroot.join("sdk/include/winrt"),
-            sysroot.join("sdk/include/cppwinrt"),
-            sysroot.join("include"),
-            sysroot.join("usr/include"),
-        ]
-    } else {
-        let mut candidates = vec![
-            sysroot.join("SDK/usr/include"),
-            sysroot.join("usr/include"),
-            sysroot.join("include"),
-        ];
-        if let Some(arch) = target.strip_suffix("-unknown-linux-gnu") {
-            candidates.push(
-                sysroot
-                    .join("usr")
-                    .join(format!("{arch}-linux-gnu/include")),
-            );
-        }
-        candidates
-    };
-    candidates
-        .into_iter()
-        .filter(|path| path.is_dir())
-        .collect()
 }
 
 fn report_directives(diagnostics: &[DirectiveDiagnostic]) -> miette::Result<()> {
