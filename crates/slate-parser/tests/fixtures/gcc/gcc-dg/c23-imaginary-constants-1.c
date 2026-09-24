@@ -2,6 +2,8 @@
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic" } */
 
+// SLATE-FILECHECK-FLAVOR gcc
+
 _Complex float a =
     1.if; /* { dg-warning "imaginary constants are a C2Y feature or GCC extension" } */
 _Complex float b =

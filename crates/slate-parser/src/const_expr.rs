@@ -726,7 +726,7 @@ fn encode(value: u32, width: u32, units: &mut Vec<u32>) {
 }
 
 fn strip_imaginary(digits: &str) -> (&str, bool) {
-    match digits.strip_suffix(['i', 'j']) {
+    match digits.strip_suffix(['i', 'I', 'j', 'J']) {
         Some(stripped) => (stripped, true),
         None => (digits, false),
     }
@@ -1934,6 +1934,7 @@ impl<'a> Parser<'a> {
         let name_start = self.position;
         let name = match self.take() {
             Some(Token::Ident(value)) => value,
+            Some(token @ Token::Keyword(_)) => String::from(&token),
             Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
             None => return Err(ConstExprError::ExpectedIntegerExpression),
         };
