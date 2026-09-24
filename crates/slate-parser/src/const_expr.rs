@@ -450,11 +450,27 @@ fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
 }
 
 fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
-    let lowered = spelling.replace('\'', "").to_ascii_lowercase();
-    let (digits, imaginary) = strip_imaginary(&lowered);
+    let spelling = spelling.replace('\'', "");
+    let imaginary_start = spelling
+        .char_indices()
+        .next_back()
+        .filter(|(_, ch)| matches!(ch, 'i' | 'I' | 'j' | 'J'))
+        .map(|(index, _)| index);
+    let (digits, imaginary) = match imaginary_start {
+        Some(index) => (&spelling[..index], true),
+        None => (spelling.as_str(), false),
+    };
     let suffix = FLOAT_SUFFIXES
         .into_iter()
-        .find(|suffix| digits.ends_with(suffix))
+        .find(|suffix| {
+            digits.ends_with(suffix)
+                || digits.ends_with(&suffix.to_ascii_uppercase())
+                || match *suffix {
+                    "f32x" => digits.ends_with("F32x"),
+                    "f64x" => digits.ends_with("F64x"),
+                    _ => false,
+                }
+        })
         .unwrap_or("");
     let digits = &digits[..digits.len() - suffix.len()];
     let (digits, imaginary) = if imaginary {
@@ -463,7 +479,7 @@ fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
         let (digits, imaginary) = strip_imaginary(digits);
         (digits.to_string(), imaginary)
     };
-    (digits, suffix, imaginary)
+    (digits.to_ascii_lowercase(), suffix, imaginary)
 }
 
 impl FloatLiteral {
