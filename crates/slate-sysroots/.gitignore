@@ -1,3 +1,6 @@
 /target
 /sysroots/*
 !/sysroots/.gitkeep
+/compiler-headers/**/*
+!/compiler-headers/README.md
+!/compiler-headers/.gitkeep
