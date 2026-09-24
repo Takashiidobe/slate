@@ -351,6 +351,18 @@ impl X86Isa {
             }
         }
         if flavor == CompilerFlavor::Gcc {
+            if self.features.contains(X86Feature::Fma) {
+                defines.extend([
+                    "__FP_FAST_FMA=1".into(),
+                    "__FP_FAST_FMAF=1".into(),
+                    "__FP_FAST_FMAF32=1".into(),
+                    "__FP_FAST_FMAF32x=1".into(),
+                    "__FP_FAST_FMAF64=1".into(),
+                ]);
+            }
+            if family == TargetFamily::X86_64 {
+                defines.push("__MMX_WITH_SSE__=1".into());
+            }
             defines.push(format!(
                 "__BIGGEST_ALIGNMENT__={}",
                 self.vector_register_bytes()

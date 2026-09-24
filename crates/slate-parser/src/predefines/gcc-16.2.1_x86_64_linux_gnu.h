@@ -124,7 +124,6 @@
 #define __UINT_LEAST32_MAX__ 0xffffffffU
 #define __FLT32X_HAS_DENORM__ 1
 #define __INT_FAST16_TYPE__ long int
-#define __MMX_WITH_SSE__ 1
 #define __LDBL_HAS_DENORM__ 1
 #define __SEG_GS 1
 #define __BFLT16_EPSILON__ 7.81250000000000000000000000000000000e-3BF16
