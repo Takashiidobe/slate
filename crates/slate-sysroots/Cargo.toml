@@ -1,0 +1,12 @@
+[package]
+name = "slate-sysroots"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ar = "0.9"
+directories = "6.0.0"
+sha2 = "0.10"
+tar = "0.4"
+ureq = "3.4"
+xz2 = "0.1"
