@@ -1,4 +1,4 @@
-use super::ctype::{CTypeKind, QualType};
+use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::operand::Operand;
@@ -307,6 +307,7 @@ impl<'a> Cursor<'a> {
 }
 
 struct Walk {
+    c: QualType,
     shape: Shape,
     next: u64,
     reach: u64,
@@ -324,6 +325,46 @@ impl TypeResolver {
         match ty {
             Type::Defined(id) => self.definitions.get(id.0 as usize).map(|d| &d.kind),
             _ => None,
+        }
+    }
+
+    fn initializes_whole(&self, value: QualType, target: QualType) -> bool {
+        self.ctypes.compatible_unqualified(
+            self.ctypes.unqualified_view(value),
+            self.ctypes.unqualified_view(target),
+        )
+    }
+
+    fn walk(&self, c: QualType) -> Result<Walk, ResolveError> {
+        Ok(Walk {
+            c,
+            shape: self.shape(&self.ir_type(c))?,
+            next: 0,
+            reach: 0,
+        })
+    }
+
+    fn subobject_type(
+        &self,
+        c: QualType,
+        target: AggregateTarget,
+    ) -> Result<QualType, ResolveError> {
+        match (self.ctypes.canonical_kind(c), target) {
+            (CTypeKind::Record { id, .. }, AggregateTarget::Field(index)) => self
+                .record_fields
+                .get(id)
+                .and_then(|fields| fields.get(index))
+                .copied()
+                .ok_or(ResolveError::Unsupported("missing initializer field type")),
+            (CTypeKind::Vector { element, .. }, _) => Ok(*element),
+            (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
+                .ctypes
+                .element(c)
+                .map(|(element, _)| element)
+                .ok_or(ResolveError::Unsupported(
+                    "missing initializer element type",
+                )),
+            _ => Err(ResolveError::Unsupported("invalid initializer subobject")),
         }
     }
 
@@ -462,18 +503,14 @@ impl TypeResolver {
 
     pub(super) fn inferred_array_length(
         &mut self,
-        element: &Type,
+        element: QualType,
         items: &[InitializerItem],
     ) -> Result<u64, ResolveError> {
-        let ty = Type::Array {
-            element: Box::new(element.clone()),
-            length: None,
-        };
-        let mut walk = Walk {
-            shape: self.shape(&ty)?,
-            next: 0,
-            reach: 0,
-        };
+        let c = self.ctypes.qual(CTypeKind::Array {
+            element,
+            extent: Extent::Incomplete,
+        });
+        let mut walk = self.walk(c)?;
         let mut index = 0;
         self.walk_fill(&mut walk, items, &mut index, true)?;
         Ok(walk.reach)
@@ -502,8 +539,9 @@ impl TypeResolver {
                 }
                 break;
             }
-            let (target, ty) = shape_next_target(&walk.shape, walk.next)?;
-            *index = self.consumed(&ty, items, *index)?;
+            let (target, _) = shape_next_target(&walk.shape, walk.next)?;
+            let c = self.subobject_type(walk.c, target)?;
+            *index = self.consumed(c, items, *index)?;
             walk.advance(target);
         }
         Ok(())
@@ -535,18 +573,15 @@ impl TypeResolver {
         items: &[InitializerItem],
         index: &mut usize,
     ) -> Result<(), ResolveError> {
-        let (target, ty) = steps
+        let (target, _) = steps
             .first()
             .cloned()
             .ok_or(ResolveError::Unsupported("empty designator path"))?;
+        let c = self.subobject_type(walk.c, target)?;
         if steps.len() == 1 {
-            *index = self.consumed(&ty, items, *index)?;
+            *index = self.consumed(c, items, *index)?;
         } else {
-            let mut sub = Walk {
-                shape: self.shape(&ty)?,
-                next: 0,
-                reach: 0,
-            };
+            let mut sub = self.walk(c)?;
             self.walk_place(&mut sub, &steps[1..], items, index)?;
             self.walk_fill(&mut sub, items, index, false)?;
         }
@@ -556,14 +591,14 @@ impl TypeResolver {
 
     fn consumed(
         &mut self,
-        ty: &Type,
+        c: QualType,
         items: &[InitializerItem],
         index: usize,
     ) -> Result<usize, ResolveError> {
         let Initializer::Expr(expr) = &items[index].value else {
             return Ok(index + 1);
         };
-        let children: Vec<Type> = match self.shape(ty)? {
+        let children: Vec<AggregateTarget> = match self.shape(&self.ir_type(c))? {
             Shape::Scalar => return Ok(index + 1),
             Shape::Array {
                 element, length, ..
@@ -576,63 +611,42 @@ impl TypeResolver {
                 let length = length.ok_or(ResolveError::Unsupported(
                     "flexible array member initializer",
                 ))?;
-                (0..length).map(|_| element.clone()).collect()
+                (0..length).map(AggregateTarget::Index).collect()
             }
             shape @ (Shape::Struct(_) | Shape::Union(_)) => {
                 let (Shape::Struct(fields) | Shape::Union(fields)) = &shape else {
                     return Ok(index + 1);
                 };
                 let value = self.assertion_operand_type(expr)?;
-                if self.unaliased(&self.ir_type(value)) == self.unaliased(ty) {
+                if self.initializes_whole(value, c) {
                     return Ok(index + 1);
                 }
-                let fields = fields.iter().filter(|field| initializable(field));
                 let take = if matches!(shape, Shape::Union(_)) {
                     1
                 } else {
                     usize::MAX
                 };
-                fields.take(take).map(|field| field.ty.clone()).collect()
+                fields
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, field)| initializable(field))
+                    .take(take)
+                    .map(|(position, _)| AggregateTarget::Field(position))
+                    .collect()
             }
         };
         let mut index = index;
-        for (position, child) in children.iter().enumerate() {
+        for (position, child) in children.into_iter().enumerate() {
             if position > 0 && (index >= items.len() || !items[index].designators.is_empty()) {
                 break;
             }
-            index = self.consumed(child, items, index)?;
+            index = self.consumed(self.subobject_type(c, child)?, items, index)?;
         }
         Ok(index)
     }
 }
 
 impl Lowerer {
-    fn subobject_type(
-        &self,
-        c: QualType,
-        target: AggregateTarget,
-    ) -> Result<QualType, ResolveError> {
-        match (self.types.ctypes.canonical_kind(c), target) {
-            (CTypeKind::Record { id, .. }, AggregateTarget::Field(index)) => self
-                .types
-                .record_fields
-                .get(id)
-                .and_then(|fields| fields.get(index))
-                .copied()
-                .ok_or(ResolveError::Unsupported("missing initializer field type")),
-            (CTypeKind::Vector { element, .. }, _) => Ok(*element),
-            (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
-                .types
-                .ctypes
-                .element(c)
-                .map(|(element, _)| element)
-                .ok_or(ResolveError::Unsupported(
-                    "missing initializer element type",
-                )),
-            _ => Err(ResolveError::Unsupported("invalid initializer subobject")),
-        }
-    }
-
     pub(super) fn initializer_value(
         &mut self,
         c: QualType,
@@ -782,7 +796,7 @@ impl Lowerer {
         target: AggregateTarget,
         cursor: &mut Cursor<'_>,
     ) -> Result<(), ResolveError> {
-        let c = self.subobject_type(builder.c, target)?;
+        let c = self.types.subobject_type(builder.c, target)?;
         if let Some(entry) = self.item_entry(c, cursor)? {
             return builder.write(target, entry);
         }
@@ -834,12 +848,8 @@ impl Lowerer {
         };
         let whole = match shape {
             Shape::Scalar => true,
-            Shape::Struct(_) | Shape::Union(_) => {
-                self.types.unaliased(&value.ty) == self.types.unaliased(&ty)
-            }
-            Shape::Array { vector, .. } => {
-                vector && self.types.unaliased(&value.ty) == self.types.unaliased(&ty)
-            }
+            Shape::Struct(_) | Shape::Union(_) => self.types.initializes_whole(value.c, c),
+            Shape::Array { vector, .. } => vector && self.types.initializes_whole(value.c, c),
         };
         if whole {
             cursor.index += 1;
@@ -862,7 +872,7 @@ impl Lowerer {
         if steps.len() == 1 {
             return self.init_into(builder, target, cursor);
         }
-        let c = self.subobject_type(builder.c, target)?;
+        let c = self.types.subobject_type(builder.c, target)?;
         let fresh = self.builder(c)?;
         let saved = cursor.index;
         let mut reached = saved;
@@ -891,7 +901,7 @@ impl Lowerer {
             .ok_or(ResolveError::Unsupported("empty designator path"))?;
         if steps.len() > 1 {
             let last = last_position(target);
-            let c = self.subobject_type(builder.c, last)?;
+            let c = self.types.subobject_type(builder.c, last)?;
             let fresh = self.builder(c)?;
             let positions = builder.partitions(last, &fresh, false)?;
             let position = *positions

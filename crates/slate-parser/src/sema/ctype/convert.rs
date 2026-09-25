@@ -68,8 +68,11 @@ impl CTypes {
         if self.is_function(to) || self.is_array(to) {
             return Err(ResolveError::Invalid("conversion to a function or array"));
         }
-        if self.same(self.unqualified_view(from), self.unqualified_view(to)) {
-            let record = matches!(self.canonical_kind(to), CTypeKind::Record { .. });
+        let (from_view, to_view) = (self.unqualified_view(from), self.unqualified_view(to));
+        let record = matches!(self.canonical_kind(to), CTypeKind::Record { .. });
+        if self.same(from_view, to_view)
+            || (record && self.compatible_unqualified(from_view, to_view))
+        {
             return Ok(Conversion::plain(if record && context.is_assignment() {
                 CastKind::RecordCopy
             } else {
@@ -239,7 +242,7 @@ impl CTypes {
         }
     }
 
-    fn unqualified_view(&self, q: QualType) -> QualType {
+    pub fn unqualified_view(&self, q: QualType) -> QualType {
         self.canonical(q).local_unqualified()
     }
 

@@ -531,7 +531,7 @@ impl TypeResolver {
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
                 if let Some((element, Extent::Incomplete)) = self.ctypes.element(resolved) {
-                    let length = self.inferred_array_length(&self.ir_type(element), initializer)?;
+                    let length = self.inferred_array_length(element, initializer)?;
                     Ok(self.ctypes.qual(CTypeKind::Array {
                         element,
                         extent: Extent::Fixed(length),
@@ -1459,7 +1459,39 @@ impl TypeResolver {
             ));
         }
         self.definitions[id.0 as usize].kind = kind;
+        if self.features.compatible_tag_redefinitions {
+            self.join_compatible_tag(id);
+        }
         Ok(id)
+    }
+
+    fn join_compatible_tag(&mut self, id: TypeId) {
+        let Some(name) = self.definitions[id.0 as usize].name.clone() else {
+            return;
+        };
+        let candidates: Vec<TypeId> = self
+            .definitions
+            .iter()
+            .filter(|definition| definition.id != id && definition.name.as_ref() == Some(&name))
+            .map(|definition| definition.id)
+            .collect();
+        for candidate in candidates {
+            self.ctypes.join_tag_class(id, candidate);
+            let (earlier, current) = (
+                &self.definitions[candidate.0 as usize].kind,
+                &self.definitions[id.0 as usize].kind,
+            );
+            if same_tag_shape(earlier, current)
+                && self.same_field_types(
+                    candidate,
+                    self.record_fields.get(&id).map(Vec::as_slice),
+                    current,
+                )
+            {
+                return;
+            }
+            self.ctypes.leave_tag_class(id);
+        }
     }
 
     fn same_field_types(
@@ -1776,19 +1808,40 @@ fn is_complete(kind: &TypeDefinitionKind) -> bool {
 }
 
 fn same_tag_content(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {
+    same_tag_shape(a, b)
+        && match (a, b) {
+            (
+                TypeDefinitionKind::Record {
+                    fields: Some(a), ..
+                },
+                TypeDefinitionKind::Record {
+                    fields: Some(b), ..
+                },
+            ) => a.iter().zip(b).all(|(a, b)| a.value.ty == b.value.ty),
+            _ => true,
+        }
+}
+
+fn same_tag_shape(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {
     match (a, b) {
         (
             TypeDefinitionKind::Record {
-                fields: Some(a), ..
+                kind: a_kind,
+                fields: Some(a),
+                ..
             },
             TypeDefinitionKind::Record {
-                fields: Some(b), ..
+                kind: b_kind,
+                fields: Some(b),
+                ..
             },
         ) => {
-            a.len() == b.len()
+            matches!(
+                (a_kind, b_kind),
+                (RecordKind::Struct, RecordKind::Struct) | (RecordKind::Union, RecordKind::Union)
+            ) && a.len() == b.len()
                 && a.iter().zip(b).all(|(a, b)| {
                     a.value.name == b.value.name
-                        && a.value.ty == b.value.ty
                         && a.value.access == b.value.access
                         && a.value.bit_width == b.value.bit_width
                 })

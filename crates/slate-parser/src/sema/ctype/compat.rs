@@ -34,6 +34,17 @@ impl CTypes {
             (CTypeKind::Function { .. }, CTypeKind::Function { .. }) => {
                 self.compatible_functions(a, b)
             }
+            (
+                CTypeKind::Record {
+                    id: a,
+                    union: a_union,
+                },
+                CTypeKind::Record {
+                    id: b,
+                    union: b_union,
+                },
+            ) => a_union == b_union && self.tag_class(*a) == self.tag_class(*b),
+            (CTypeKind::Enum(a), CTypeKind::Enum(b)) => self.tag_class(*a) == self.tag_class(*b),
             _ => false,
         }
     }

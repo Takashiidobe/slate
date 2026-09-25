@@ -105,7 +105,27 @@ are and their sizes are equal or either is unknown, which makes a VLA
 compatible with any array of compatible element (6.7.6.2p6); functions compare
 return types, and an unprototyped declaration is compatible with a
 non-variadic prototype whose parameters are unchanged by the default argument
-promotions. `merge_pointer` builds the conditional operator's result: the
+promotions.
+
+Tags are nominal (one `TypeId` per definition) except under C23 (N3037), where
+two complete struct, union or enum types with the same tag and matching
+content are compatible within one translation unit, e.g. a file-scope and a
+block-scope `struct S { int x; }`. `TypeResolver::join_compatible_tag` runs as
+each named tag is completed: it looks for an earlier definition with the same
+name whose content matches (`same_tag_shape` for member names, access, bit
+widths and enumerator values; `same_field_types` for member C types through
+`CTypes::compatible`) and records both in one class
+(`CTypes::tag_classes`). `compatible_unqualified` then compares tag classes,
+not ids. The new id joins the class before the member check so that a
+self-referential member (`struct N *next`) compares as compatible, the
+coinductive reading. Anonymous tags never join. Attributes are ignored:
+clang 22 treats `aligned(16)` on one side as incompatible, gcc does not, and
+slate follows gcc here, the same way as its same-scope redefinition check.
+`classify_conversion` treats compatible distinct records as a `RecordCopy`,
+so the IR `copy<T>` may read a source of a different but layout-identical
+record type.
+
+`merge_pointer` builds the conditional operator's result: the
 composite of the two pointees carrying the union of both qualifier sets, with
 `void` winning.
 
@@ -182,18 +202,11 @@ and it changes the answer in exactly one measured case: a member of an
 enumerated type against a member of that enum's underlying integer type, where
 clang accepts and gcc rejects (`slate-parser-ntb`).
 
-Three smaller residues worth knowing about:
+Two smaller residues worth knowing about:
 
 - `type_of.rs::with_length` reads an inferred length back out of an
   `ir::Type::Array` to complete an incomplete C array extent. It flows layout
   into a C type, but decides no identity.
-- `initializer.rs` decides brace elision — whether an expression initializes an
-  aggregate member whole or is elided into its fields — by comparing unaliased
-  `ir::Type`. C23 6.7.11 makes that a compatibility question. The two agree for
-  every ordinary case, since `Defined(id)` is nominal; they diverge only for a
-  compatible tag defined twice in one translation unit (`slate-parser-pd7`).
-  The initializer walk is shaped over `Shape`/`ir::Type`, which is why the fix
-  did not fit this phase.
 - `convert.rs` still has functions named `differ_only_in_sign` and
   `compatible_ignoring_qualifiers`. These are *not* the deleted layout
   helpers of the same name — they take `QualType` and answer on C types. The

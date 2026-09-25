@@ -2044,7 +2044,7 @@ their own:
 - Pre-C23 `f()` is unprototyped; C23 `f()` and `f(void)` are zero-parameter prototypes.
 - Default argument promotions for variadic calls → `widen`/`float_widen`
   with `reason=vararg`.
-- Struct and union copy on initialize/assign/pass/return → `copy<T, reason=...>` around the source value.
+- Struct and union copy on initialize/assign/pass/return → `copy<T, reason=...>` around the source value. Under C23 the source can be a different record type that is compatible with `T` (same tag and members, defined in another scope), so the operand's type is not always `T`.
 
 ## Worked example
 

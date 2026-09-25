@@ -122,10 +122,7 @@ impl Checker<'_> {
                 },
                 _ => None,
             },
-            Some(Initializer::List(items)) => {
-                let element = self.types.ir_type(element);
-                self.types.inferred_array_length(&element, items).ok()
-            }
+            Some(Initializer::List(items)) => self.types.inferred_array_length(element, items).ok(),
             None => None,
         };
         match length {

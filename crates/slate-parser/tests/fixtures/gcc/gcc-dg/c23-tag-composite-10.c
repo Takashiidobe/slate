@@ -40,5 +40,5 @@ int main() {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: conditional operands are pointers to incompatible
+// DEFAULT: Error:   × unsupported Clang builtin `__builtin_clear_padding`
 // SLATE-FILECHECK-END DEFAULT

@@ -244,9 +244,23 @@ pub struct CTypes {
     entries: Vec<Entry>,
     ids: HashMap<CTypeKind, CTypeId>,
     enum_underlying: HashMap<TypeId, QualType>,
+    tag_classes: HashMap<TypeId, TypeId>,
 }
 
 impl CTypes {
+    pub fn join_tag_class(&mut self, id: TypeId, existing: TypeId) {
+        let class = self.tag_class(existing);
+        self.tag_classes.insert(id, class);
+    }
+
+    pub fn leave_tag_class(&mut self, id: TypeId) {
+        self.tag_classes.remove(&id);
+    }
+
+    pub fn tag_class(&self, id: TypeId) -> TypeId {
+        self.tag_classes.get(&id).copied().unwrap_or(id)
+    }
+
     pub fn set_enum_underlying(&mut self, id: TypeId, underlying: QualType) {
         self.enum_underlying.insert(id, underlying);
     }
