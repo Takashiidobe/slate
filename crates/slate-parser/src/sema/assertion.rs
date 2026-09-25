@@ -52,9 +52,9 @@ impl Checker<'_> {
             .constant_value(condition)
             .and_then(|value| match value.ty {
                 Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-                    super::fold::integer_constant(&value).ok_or(ResolveError::Unsupported(
-                        "nonconstant or undefined integer expression",
-                    ))
+                    super::fold::integer_constant(&value, self.unit.flavor).ok_or(
+                        ResolveError::Unsupported("nonconstant or undefined integer expression"),
+                    )
                 }
                 _ => Err(ResolveError::Unsupported("non-integer constant expression")),
             })
@@ -164,15 +164,16 @@ impl Checker<'_> {
             }
             if let Some(initializer) = &declarator.initializer {
                 if (global || declaration.specifiers.storage == StorageClass::Static)
-                    && let Err(expr) = (DivisionByZero {
+                    && let Err((expr, reason)) = (InvalidConstantArithmetic {
                         types: &mut self.types,
+                        flavor: self.unit.flavor,
                     })
                     .visit_initializer(initializer)
                 {
                     self.errors.push(error(
                         expr.provenance,
                         expr.expansion,
-                        "initializer element is not a compile-time constant: division by zero",
+                        format!("initializer element is not a compile-time constant: {reason}"),
                     ));
                 }
                 self.initializer(initializer);
@@ -398,12 +399,13 @@ impl Checker<'_> {
     }
 }
 
-struct DivisionByZero<'a> {
+struct InvalidConstantArithmetic<'a> {
     types: &'a mut TypeResolver,
+    flavor: crate::compiler_args::CompilerFlavor,
 }
 
-impl Visitor for DivisionByZero<'_> {
-    type Error = Expr;
+impl Visitor for InvalidConstantArithmetic<'_> {
+    type Error = (Expr, &'static str);
 
     fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
         match &expr.value {
@@ -411,12 +413,30 @@ impl Visitor for DivisionByZero<'_> {
                 op: BinaryOp::Div | BinaryOp::Rem,
                 right,
                 ..
-            } if self
-                .types
-                .constant_integer(right)
-                .is_ok_and(|value| value == 0.into()) =>
+            } if self.flavor != crate::compiler_args::CompilerFlavor::Msvc
+                && self
+                    .types
+                    .constant_integer(right)
+                    .is_ok_and(|value| value == 0.into()) =>
             {
-                Err(expr.clone())
+                Err((expr.clone(), "division by zero"))
+            }
+            ExprKind::Binary {
+                op: BinaryOp::ShiftLeft,
+                left,
+                right,
+                ..
+            } if self.flavor == crate::compiler_args::CompilerFlavor::Gcc
+                && self
+                    .types
+                    .constant_integer(right)
+                    .is_ok_and(|value| value.sign() == Sign::Minus)
+                && self
+                    .types
+                    .constant_integer(left)
+                    .is_ok_and(|value| value.sign() != Sign::NoSign) =>
+            {
+                Err((expr.clone(), "negative shift count"))
             }
             ExprKind::Binary {
                 op: BinaryOp::And | BinaryOp::Or,

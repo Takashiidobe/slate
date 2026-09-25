@@ -92,6 +92,7 @@ pub struct Preprocessor<'a> {
     counter: Cell<i64>,
     build_time: SystemTime,
     standard: LanguageStandard,
+    flavor: CompilerFlavor,
     features: StandardFeatures,
     target: crate::target_info::TargetInfo,
 }
@@ -129,6 +130,7 @@ impl<'a> Preprocessor<'a> {
             counter: Cell::new(0),
             build_time: SystemTime::now(),
             standard,
+            flavor: CompilerFlavor::default(),
             features,
             target: crate::target_info::TargetInfo::default(),
         }
@@ -503,6 +505,7 @@ impl<'a> Preprocessor<'a> {
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
         self.target = target.clone();
+        self.flavor = flavor;
         self.seed_builtin_macros(&target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;
@@ -1019,9 +1022,12 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded);
-        const_expr::Parser::evaluate_with_defined(&expanded, &self.target, &|macro_name| {
-            self.macros.contains_key(macro_name)
-        })
+        const_expr::Parser::evaluate_with_defined(
+            &expanded,
+            &self.target,
+            self.flavor,
+            &|macro_name| self.macros.contains_key(macro_name),
+        )
         .map(|value| value != 0)
         .map_err(|located| {
             let loc = match located.token {

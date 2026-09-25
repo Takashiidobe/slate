@@ -2,6 +2,7 @@ use crate::ast::{
     Designator, Expr, ExprKind, FixedPointKind, FixedPointRank, GenericAssociation, GenericControl,
     Initializer, InitializerItem, IntegerType, Span, SpanRangeIndex, TypeName, TypeSpecifier,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use crate::standard_features::StandardFeatures;
@@ -665,6 +666,7 @@ pub(crate) fn wrap_to_width(value: u64, width: u32, signed: bool) -> i64 {
 pub struct EvalContext<'a> {
     is_defined: Option<&'a dyn Fn(&str) -> bool>,
     target: Option<&'a TargetInfo>,
+    flavor: CompilerFlavor,
 }
 
 impl StringLiteral {
@@ -936,6 +938,7 @@ impl<'a> Parser<'a> {
     pub fn evaluate_with_defined(
         tokens: &'a [Span<Token>],
         target: &TargetInfo,
+        flavor: CompilerFlavor,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
         let mut parser = Self::new(tokens, None);
@@ -952,6 +955,7 @@ impl<'a> Parser<'a> {
         let ctx = EvalContext {
             is_defined: Some(is_defined),
             target: Some(target),
+            flavor,
         };
         Self::evaluate_wide(&expression, ctx)
             .map(|value| i64::from(!value.is_zero()))
@@ -1191,6 +1195,15 @@ impl<'a> Parser<'a> {
                     BinaryOp::BitXor => Ok(left.bitxor(&right)),
                     BinaryOp::BitOr => Ok(left.bitor(&right)),
                     BinaryOp::ShiftLeft | BinaryOp::ShiftRight => {
+                        if ctx.is_defined.is_some() && ctx.flavor == CompilerFlavor::Msvc {
+                            let shift = u32::try_from(&(&right.value & BigInt::from(63u8)))
+                                .map_err(|_| ConstExprError::InvalidIntegerConstant)?;
+                            return Ok(if *op == BinaryOp::ShiftLeft {
+                                left.shift_left(shift)
+                            } else {
+                                left.shift_right(shift)
+                            });
+                        }
                         match u32::try_from(&right.value) {
                             Ok(shift) if shift < left.width => Ok(if *op == BinaryOp::ShiftLeft {
                                 left.shift_left(shift)

@@ -856,7 +856,12 @@ impl Lowerer {
                 }
                 Some(initializer) => {
                     let anchor = declarator.derive(());
-                    let value = self.initializer_value(resolved, initializer, &anchor)?;
+                    let mut value = self.initializer_value(resolved, initializer, &anchor)?;
+                    if self.types.flavor == crate::compiler_args::CompilerFlavor::Msvc
+                        && (global || storage_class == StorageClass::Static)
+                    {
+                        super::fold::fold_msvc_static_divisions(&mut value);
+                    }
                     let ty = match ty {
                         Type::Array { length: None, .. } => value.ty.clone(),
                         ty => ty,
@@ -1022,7 +1027,7 @@ impl Lowerer {
     fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
-        let number = super::fold::integer_constant(&value)
+        let number = super::fold::integer_constant(&value, self.types.flavor)
             .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
         Ok(self.value(
             expr,
