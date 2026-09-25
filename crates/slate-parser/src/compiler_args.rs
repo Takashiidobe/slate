@@ -2,6 +2,7 @@ use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
 use crate::ir::Overflow;
+use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
@@ -93,6 +94,7 @@ impl FromStr for LanguageStandard {
 pub struct CompilerArgs {
     pub options: CompilerOptions,
     pub defines: Vec<String>,
+    pub preprocessor_inputs: PreprocessorInputs,
     pub standard: LanguageStandard,
     pub include: Vec<String>,
     pub iquote: Vec<String>,
@@ -152,6 +154,7 @@ impl miette::Diagnostic for CompilerArgError {}
 #[derive(Debug, Default)]
 struct ParsedCompilerArgs {
     defines: Vec<String>,
+    preprocessor_inputs: PreprocessorInputs,
     standard: Option<LanguageStandard>,
     include: Vec<String>,
     iquote: Vec<String>,
@@ -181,6 +184,9 @@ struct ParsedCompilerArgs {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Opt {
     Define,
+    Undef,
+    ForceInclude,
+    Imacros,
     Standard,
     Include,
     Iquote,
@@ -215,6 +221,9 @@ impl std::fmt::Display for Opt {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let name = match self {
             Self::Define => "define",
+            Self::Undef => "undef",
+            Self::ForceInclude => "include",
+            Self::Imacros => "imacros",
             Self::Standard => "std",
             Self::Include => "I",
             Self::Iquote => "iquote",
@@ -329,6 +338,7 @@ impl CompilerArgParser {
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
+            preprocessor_inputs: raw.preprocessor_inputs,
             standard: raw.standard.unwrap_or_default(),
             include: raw.include,
             iquote: raw.iquote,
@@ -405,9 +415,36 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             }
         } else if let Some(value) = option_value(argument, "D") {
             parsed.present.insert(Opt::Define);
+            let define = next_value(arguments, &mut index, argument, value)?;
+            parsed.defines.push(define.clone());
             parsed
-                .defines
-                .push(next_value(arguments, &mut index, argument, value)?);
+                .preprocessor_inputs
+                .macros
+                .push(MacroOption::Define(define));
+        } else if let Some(value) = option_value(argument, "U") {
+            parsed.present.insert(Opt::Undef);
+            parsed
+                .preprocessor_inputs
+                .macros
+                .push(MacroOption::Undef(next_value(
+                    arguments, &mut index, argument, value,
+                )?));
+        } else if let Some(value) = option_value(argument, "include") {
+            parsed.present.insert(Opt::ForceInclude);
+            parsed
+                .preprocessor_inputs
+                .includes
+                .push(PathBuf::from(next_value(
+                    arguments, &mut index, argument, value,
+                )?));
+        } else if let Some(value) = option_value(argument, "imacros") {
+            parsed.present.insert(Opt::Imacros);
+            parsed
+                .preprocessor_inputs
+                .imacros
+                .push(PathBuf::from(next_value(
+                    arguments, &mut index, argument, value,
+                )?));
         } else if let Some(value) = option_value(argument, "std") {
             parsed.present.insert(Opt::Standard);
             parsed.standard = Some(parse_value(
@@ -576,7 +613,14 @@ fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
             (rest.is_empty()
                 || matches!(
                     name,
-                    "I" | "iquote" | "isystem" | "idirafter" | "isysroot" | "D"
+                    "I" | "iquote"
+                        | "isystem"
+                        | "idirafter"
+                        | "isysroot"
+                        | "D"
+                        | "U"
+                        | "include"
+                        | "imacros"
                 ))
             .then_some(rest)
             .or_else(|| rest.strip_prefix('='))

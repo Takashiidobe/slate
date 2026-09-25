@@ -1,9 +1,13 @@
 use crate::ast::*;
 use std::collections::{HashMap, HashSet};
 
-pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> TranslationUnit {
+pub fn filter_translation_unit(
+    tu: &TranslationUnit,
+    root_file: FileId,
+    forced_roots: &[FileId],
+) -> TranslationUnit {
     let mut reachability = Reachability::new(tu);
-    reachability.mark_roots(root_file);
+    reachability.mark_roots(root_file, forced_roots);
     TranslationUnit {
         standard: tu.standard,
         options: tu.options.clone(),
@@ -70,12 +74,15 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_roots(&mut self, root_file: FileId) {
+    fn mark_roots(&mut self, root_file: FileId, forced_roots: &[FileId]) {
         let mut roots = self
             .nodes
             .iter()
             .enumerate()
-            .filter_map(|(id, decl)| (decl.provenance.file == root_file).then_some(id))
+            .filter_map(|(id, decl)| {
+                (decl.provenance.file == root_file || forced_roots.contains(&decl.provenance.file))
+                    .then_some(id)
+            })
             .collect::<Vec<_>>();
         roots.extend(
             self.nodes

@@ -35,6 +35,14 @@ compile_commands normalization supplies absolute paths when compilation uses
 a different working directory. Include directory values beginning with `=`
 are resolved under the selected sysroot, as in Clang.
 
+Command-line `-D` and `-U` options are applied in occurrence order after target
+predefines. All `-imacros` files are then processed in argument order, followed
+by all `-include` files in argument order. Forced files are searched from the
+working directory before the quote, user, and system include paths. `-imacros`
+discards declarations but retains macro definitions. Direct declarations from
+`-include` files are translation-unit roots, with provenance from their source
+files; macros from either kind of forced file retain their definition spans.
+
 ## Rule buckets
 
 - `common_rules`: applies regardless of compiler flavor or target. Use this

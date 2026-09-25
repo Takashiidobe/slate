@@ -25,7 +25,7 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -101,7 +101,7 @@ fn run() -> miette::Result<()> {
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let search = compiler_args.search_paths();
     let mut parser = Parser::new(search)
-        .with_defines(compiler_args.defines)
+        .with_preprocessor_inputs(compiler_args.preprocessor_inputs)
         .with_target(compiler_args.target)
         .with_flavor(compiler_args.flavor)
         .with_options(compiler_args.options)

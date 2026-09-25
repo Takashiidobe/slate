@@ -11,7 +11,9 @@ use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::Token;
-use crate::pp::{DirectiveDiagnostic, MacroEntry, Preprocessor};
+use crate::pp::{
+    DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, Preprocessor, PreprocessorInputs,
+};
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
@@ -110,6 +112,8 @@ pub struct Parser {
     input: Rc<ParserInput>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
+    preprocessor_inputs: PreprocessorInputs,
+    forced_roots: Vec<FileId>,
     biggest_alignment: i64,
     flavor: CompilerFlavor,
     standard: LanguageStandard,
@@ -258,6 +262,8 @@ impl Parser {
             input: Rc::default(),
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),
+            preprocessor_inputs: PreprocessorInputs::default(),
+            forced_roots: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             flavor: CompilerFlavor::default(),
             standard: LanguageStandard::default(),
@@ -273,6 +279,37 @@ impl Parser {
     pub fn with_defines(mut self, defines: impl IntoIterator<Item = String>) -> Self {
         self.defines = defines.into_iter().collect();
         self
+    }
+
+    pub fn with_preprocessor_inputs(mut self, inputs: PreprocessorInputs) -> Self {
+        self.preprocessor_inputs = inputs;
+        self
+    }
+
+    fn prepare_preprocessor(
+        &mut self,
+        pp: &mut Preprocessor<'_>,
+    ) -> Result<Vec<PPNode>, FrontendError> {
+        self.forced_roots.clear();
+        let options = self
+            .defines
+            .iter()
+            .cloned()
+            .map(MacroOption::Define)
+            .chain(self.preprocessor_inputs.macros.iter().cloned())
+            .collect::<Vec<_>>();
+        pp.apply_macro_options(&options)
+            .map_err(FrontendError::PP)?;
+        for path in &self.preprocessor_inputs.imacros {
+            pp.process_forced_file(path).map_err(FrontendError::PP)?;
+        }
+        let mut nodes = Vec::new();
+        for path in &self.preprocessor_inputs.includes {
+            let (file, included) = pp.process_forced_file(path).map_err(FrontendError::PP)?;
+            self.forced_roots.push(file);
+            nodes.extend(included);
+        }
+        Ok(nodes)
     }
 
     pub fn with_flavor(mut self, flavor: CompilerFlavor) -> Self {
@@ -330,8 +367,8 @@ impl Parser {
             self.flavor,
         )
         .map_err(FrontendError::PP)?;
-        pp.define_all(&self.defines).map_err(FrontendError::PP)?;
-        let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
+        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        nodes.extend(pp.parse_str("<main>", src).map_err(FrontendError::PP)?);
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
         self.line_starts = pp.line_starts.clone();
@@ -371,8 +408,8 @@ impl Parser {
             self.flavor,
         )
         .map_err(FrontendError::PP)?;
-        pp.define_all(&self.defines).map_err(FrontendError::PP)?;
-        let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
+        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        nodes.extend(pp.parse_file(path).map_err(FrontendError::PP)?);
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);

@@ -21,6 +21,19 @@ use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum MacroOption {
+    Define(String),
+    Undef(String),
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct PreprocessorInputs {
+    pub macros: Vec<MacroOption>,
+    pub imacros: Vec<PathBuf>,
+    pub includes: Vec<PathBuf>,
+}
+
 pub type PPNode = Span<PPNodeKind>;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -445,6 +458,42 @@ impl<'a> Preprocessor<'a> {
         self.parse_source(&source, file)
             .map(drop)
             .map_err(|failure| self.render_error(failure))
+    }
+
+    pub fn apply_macro_options(&mut self, options: &[MacroOption]) -> Result<(), PPError> {
+        let source: String = options
+            .iter()
+            .map(|option| match option {
+                MacroOption::Define(define) => match define.split_once('=') {
+                    Some((name, value)) => format!("#define {name} {value}\n"),
+                    None => format!("#define {define} 1\n"),
+                },
+                MacroOption::Undef(name) => format!("#undef {name}\n"),
+            })
+            .collect();
+        let file = self
+            .files
+            .intern(PathBuf::from("<command line>"), HeaderKind::User);
+        self.parse_source(&source, file)
+            .map(drop)
+            .map_err(|failure| self.render_error(failure))
+    }
+
+    pub fn process_forced_file(&mut self, path: &Path) -> Result<(FileId, Vec<PPNode>), PPError> {
+        let file = self
+            .files
+            .intern(PathBuf::from("<command line>"), HeaderKind::User);
+        let include = include::IncludeDirective::Quoted(path.to_string_lossy().into_owned());
+        let (resolved, kind) = self.resolve_include(&include, file).ok_or_else(|| {
+            self.render_error(PPFailure::unlocated(PPErrorKind::HeaderNotFound(
+                include.to_string(),
+            )))
+        })?;
+        let included = self.files.intern(resolved, kind);
+        let nodes = self
+            .resolve_and_parse_include(&include, Loc::new(file, 0, 0))
+            .map_err(|failure| self.render_error(failure))?;
+        Ok((included, nodes))
     }
 
     pub fn configure(

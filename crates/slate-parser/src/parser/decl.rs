@@ -320,6 +320,7 @@ impl Parser {
                 target: options.effective_target(self.target.clone()),
             },
             root_file,
+            &self.forced_roots,
         ))
     }
 
