@@ -135,6 +135,11 @@ impl Checker<'_> {
     }
 
     fn declaration(&mut self, declaration: &Declaration, global: bool) {
+        if declaration.declarators.is_empty()
+            && self.types.declare_forward_tag(&declaration.specifiers)
+        {
+            return;
+        }
         self.tag(&declaration.specifiers.ty);
         for declarator in &declaration.declarators {
             let Some(name) = declarator.declarator.name() else {

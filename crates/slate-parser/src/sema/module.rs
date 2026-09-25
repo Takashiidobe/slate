@@ -660,14 +660,7 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         if item.declarators.is_empty() {
             reject_unsupported(&item.specifiers.attributes, Subject::Record)?;
-            if let ast::TypeSpecifier::Tag(ast::TagSpecifier::Reference {
-                kind,
-                name,
-                fixed_type: None,
-            }) = &item.specifiers.ty
-            {
-                self.types.declare_incomplete_tag(*kind, name);
-            } else {
+            if !self.types.declare_forward_tag(&item.specifiers) {
                 self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
             }
         }

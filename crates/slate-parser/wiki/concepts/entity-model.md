@@ -101,9 +101,12 @@ Tags are not in this table. A tag has no `BindingId`; its identity is a
 - `tag_names: Vec<HashMap<(TagKind, String), TypeId>>` is a scope stack, pushed
   and popped with the lowerer's scopes, so two block-scoped `struct Local`
   definitions get distinct `TypeId`s (slate-parser-rsm).
-- `declare_incomplete_tag` makes a standalone `struct S;` declare an incomplete
+- `declare_forward_tag` makes a standalone `struct S;` declare an incomplete
   tag *in the current scope*, hiding any outer one, per C11 6.7.2.3p8
-  (slate-parser-9wx). A declarator-less declaration declares the tag even when
+  (slate-parser-9wx). Both the lowerer (`module.rs`) and the static-assertion
+  checker (`assertion.rs`) call it; the checker used to skip the form, so
+  a `static_assert` after a block-scope `struct S;` still saw the outer tag
+  (slate-parser-rdj). A declarator-less declaration declares the tag even when
   it carries a fixed underlying type (`enum E : unsigned char;`).
 - A tag reference that resolves to nothing is not an error: per C11 6.7.2.3p8 it
   *declares* an incomplete tag in the current scope, so `typedef struct _IO_FILE
