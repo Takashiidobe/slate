@@ -114,6 +114,7 @@ pub(crate) fn doctor(root: &Path, target: Target) -> Vec<DoctorCheck> {
 
 fn arch(target: Target) -> &'static str {
     match target {
+        Target::I686PcWindowsMsvc => "x86",
         Target::X86_64PcWindowsMsvc => "x86_64",
         Target::Aarch64PcWindowsMsvc => "aarch64",
         _ => unreachable!("Windows MSVC module received a non-Windows target"),

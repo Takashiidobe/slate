@@ -1,10 +1,15 @@
+mod android_bionic;
+mod compiler_headers;
+mod darwin;
 mod download;
+mod freebsd;
 mod install;
 mod linux_gnu;
 mod linux_musl;
 mod target;
 mod windows_msvc;
 
+pub use compiler_headers::{CLANG_VERSION, CompilerHeaders, GCC_VERSION};
 pub use target::Target;
 
 use directories::ProjectDirs;
@@ -43,14 +48,21 @@ impl Paths {
     pub fn resolve(&self, target: Target) -> io::Result<PathBuf> {
         let path = self.sysroot_path(target);
         let validation = match target {
-            Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc => {
-                windows_msvc::validate(&path, target)
-            }
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc => windows_msvc::validate(&path, target),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::validate(&path, target)
             }
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::validate(&path, target)
+            }
+            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::validate(&path),
+            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => {
+                freebsd::validate(&path)
+            }
+            Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
+                android_bionic::validate(&path, target)
             }
         };
         validation.map_err(|error| {
@@ -68,36 +80,82 @@ impl Paths {
     pub fn include_paths(&self, target: Target) -> io::Result<Vec<PathBuf>> {
         let root = self.resolve(target)?;
         Ok(match target {
-            Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc => {
-                windows_msvc::include_paths(&root)
-            }
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc => windows_msvc::include_paths(&root),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::include_paths(&root, target)
             }
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::include_paths(&root)
             }
+            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::include_paths(&root),
+            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => {
+                freebsd::include_paths(&root)
+            }
+            Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
+                android_bionic::include_paths(&root, target)
+            }
         })
+    }
+
+    pub fn include_paths_with_compiler(
+        &self,
+        target: Target,
+        compiler: CompilerHeaders,
+    ) -> io::Result<Vec<PathBuf>> {
+        if let CompilerHeaders::Msvc(compiler_target) = compiler
+            && compiler_target != target
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "MSVC compiler headers must match the target sysroot",
+            ));
+        }
+        if compiler == CompilerHeaders::AppleClang
+            && !matches!(
+                target,
+                Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin
+            )
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Apple Clang compiler headers require a macOS target",
+            ));
+        }
+        let compiler_path = self.resolve_compiler_headers(compiler)?;
+        let mut paths = self.include_paths(target)?;
+        if !paths.contains(&compiler_path) {
+            paths.insert(0, compiler_path);
+        }
+        Ok(paths)
     }
 
     pub fn doctor(&self, target: Target) -> Vec<DoctorCheck> {
         let root = self.sysroot_path(target);
         match target {
-            Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc => {
-                windows_msvc::doctor(&root, target)
-            }
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc => windows_msvc::doctor(&root, target),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::doctor(&root, target)
             }
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::doctor(&root, target)
             }
+            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::doctor(&root),
+            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => freebsd::doctor(&root),
+            Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
+                android_bionic::doctor(&root, target)
+            }
         }
     }
 
     pub fn install(&self, target: Target) -> io::Result<PathBuf> {
         match target {
-            Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc => {
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc => {
                 let xwin = env::var_os("XWIN").unwrap_or_else(|| "xwin".into());
                 self.install_with_xwin(target, &xwin)
             }
@@ -107,19 +165,34 @@ impl Paths {
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::install(self, target)
             }
+            Target::X86_64AppleDarwin | Target::Aarch64AppleDarwin => darwin::install(self, target),
+            Target::X86_64UnknownFreebsd | Target::Aarch64UnknownFreebsd => {
+                freebsd::install(self, target)
+            }
+            Target::X86_64LinuxAndroid | Target::Aarch64LinuxAndroid => {
+                android_bionic::install(self, target)
+            }
         }
     }
 
     pub fn install_with_xwin(&self, target: Target, xwin: &OsStr) -> io::Result<PathBuf> {
         match target {
-            Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc => {
-                windows_msvc::install(self, target, xwin)
-            }
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc => windows_msvc::install(self, target, xwin),
             _ => Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 format!("{} is not a Windows MSVC target", target.triple()),
             )),
         }
+    }
+
+    pub fn install_darwin_with_sdk(
+        &self,
+        target: Target,
+        sdk: &std::path::Path,
+    ) -> io::Result<PathBuf> {
+        darwin::install_with_sdk(self, target, sdk)
     }
 }
 

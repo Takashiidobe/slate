@@ -12,27 +12,37 @@ pub(crate) fn install_staged(
     build: impl FnOnce(&Path) -> io::Result<()>,
 ) -> io::Result<PathBuf> {
     let output = paths.sysroot_path(target);
+    install_staged_at(&output, validate, build)
+}
+
+pub(crate) fn install_staged_at(
+    output: &Path,
+    validate: impl Fn(&Path) -> io::Result<()>,
+    build: impl FnOnce(&Path) -> io::Result<()>,
+) -> io::Result<PathBuf> {
     if output.exists() {
-        validate(&output)?;
-        return Ok(output);
+        validate(output)?;
+        return Ok(output.to_path_buf());
     }
 
-    let parent = output.parent().expect("sysroot path has a parent");
+    let parent = output.parent().expect("installation path has a parent");
     fs::create_dir_all(parent)?;
-    let _lock = InstallLock::acquire(&parent.join(format!("{}.lock", target.triple())))?;
+    let name = output.file_name().expect("installation path has a name");
+    let name = name.to_string_lossy();
+    let _lock = InstallLock::acquire(&parent.join(format!("{name}.lock")))?;
     if output.exists() {
-        validate(&output)?;
-        return Ok(output);
+        validate(output)?;
+        return Ok(output.to_path_buf());
     }
 
-    let staging = staging_path(parent, target.triple())?;
+    let staging = staging_path(parent, &name)?;
     fs::create_dir(&staging)?;
     let root = staging.join("root");
     let result = (|| {
         build(&root)?;
         validate(&root)?;
-        fs::rename(&root, &output)?;
-        Ok(output.clone())
+        fs::rename(&root, output)?;
+        Ok(output.to_path_buf())
     })();
     let _ = fs::remove_dir_all(&staging);
     result
