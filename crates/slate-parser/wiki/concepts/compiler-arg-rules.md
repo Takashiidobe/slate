@@ -14,6 +14,12 @@ options use the same option definitions; do not add a one-off parser for a
 particular `-m` spelling. Downstream code receives the normalized typed value,
 not the original spelling.
 
+Target selection accepts `-target`, `--target`, and their `=` forms. The triple
+must be supported by `TargetInfo`. Standard selection accepts `-std` and `--std`
+with either value form. C90 and ISO 9899 aliases normalize to the corresponding
+language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
+and otherwise C89 language rules. Unknown triples and standard names are errors.
+
 ## Rule buckets
 
 - `common_rules`: applies regardless of compiler flavor or target. Use this

@@ -325,7 +325,7 @@ impl<'a> Preprocessor<'a> {
             if !self.standard.is_gnu() {
                 defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
             }
-            let inline_semantics = if self.standard.stdc_version().is_some() {
+            let inline_semantics = if self.standard.stdc_version() >= Some(199901) {
                 "__GNUC_STDC_INLINE__"
             } else {
                 "__GNUC_GNU_INLINE__"

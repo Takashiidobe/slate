@@ -81,10 +81,10 @@ impl Warning {
     ) -> DefaultSeverity {
         match self {
             Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
-            Self::C99Compat if standard.stdc_version().is_some() => DefaultSeverity::Ignored,
+            Self::C99Compat if standard.stdc_version() >= Some(199901) => DefaultSeverity::Ignored,
             Self::IncompatiblePointerTypes | Self::IntConversion => match flavor {
                 CompilerFlavor::Msvc => DefaultSeverity::Warning,
-                CompilerFlavor::Gcc if standard.stdc_version().is_none() => {
+                CompilerFlavor::Gcc if standard.stdc_version() < Some(199901) => {
                     DefaultSeverity::Warning
                 }
                 _ => DefaultSeverity::Error,

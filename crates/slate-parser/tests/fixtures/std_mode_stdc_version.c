@@ -6,12 +6,22 @@ int no_stdc_version;
 
 // SLATE-FILECHECK-DEFINES C89
 // SLATE-FILECHECK-STD C89 c89
+// SLATE-FILECHECK-DEFINES ISO1990
+// SLATE-FILECHECK-STD ISO1990 iso9899:1990
+// SLATE-FILECHECK-DEFINES ISO199409
+// SLATE-FILECHECK-STD ISO199409 iso9899:199409
 // SLATE-FILECHECK-DEFINES C99
 // SLATE-FILECHECK-STD C99 c99
+// SLATE-FILECHECK-DEFINES ISO1999
+// SLATE-FILECHECK-STD ISO1999 iso9899:1999
 // SLATE-FILECHECK-DEFINES C11
 // SLATE-FILECHECK-STD C11 c11
+// SLATE-FILECHECK-DEFINES ISO2011
+// SLATE-FILECHECK-STD ISO2011 iso9899:2011
 // SLATE-FILECHECK-DEFINES C17
 // SLATE-FILECHECK-STD C17 c17
+// SLATE-FILECHECK-DEFINES ISO2017
+// SLATE-FILECHECK-STD ISO2017 iso9899:2017
 // SLATE-FILECHECK-DEFINES C23
 // SLATE-FILECHECK-STD C23 c23
 
@@ -36,6 +46,63 @@ int no_stdc_version;
 // C89-NEXT:       },
 // C89-NEXT:   )
 // SLATE-FILECHECK-END C89
+// SLATE-FILECHECK-BEGIN ISO1990
+// ISO1990: decl[{{[0-9]+}}]: Declaration(
+// ISO1990-NEXT:       Declaration {
+// ISO1990-NEXT:           specifiers: DeclarationSpecifiers {
+// ISO1990-NEXT:               ty: Integer(
+// ISO1990-NEXT:                   Ranked {
+// ISO1990-NEXT:                       rank: Int,
+// ISO1990-NEXT:                       signed: true,
+// ISO1990-NEXT:                   },
+// ISO1990-NEXT:               ),
+// ISO1990-NEXT:           },
+// ISO1990-NEXT:           declarators: [
+// ISO1990-NEXT:               InitDeclaratorKind {
+// ISO1990-NEXT:                   declarator: Name(
+// ISO1990-NEXT:                       "no_stdc_version",
+// ISO1990-NEXT:                   ),
+// ISO1990-NEXT:               },
+// ISO1990-NEXT:           ],
+// ISO1990-NEXT:       },
+// ISO1990-NEXT:   )
+// SLATE-FILECHECK-END ISO1990
+// SLATE-FILECHECK-BEGIN ISO199409
+// ISO199409: decl[{{[0-9]+}}]: Declaration(
+// ISO199409-NEXT:       Declaration {
+// ISO199409-NEXT:           specifiers: DeclarationSpecifiers {
+// ISO199409-NEXT:               ty: Integer(
+// ISO199409-NEXT:                   Ranked {
+// ISO199409-NEXT:                       rank: Int,
+// ISO199409-NEXT:                       signed: true,
+// ISO199409-NEXT:                   },
+// ISO199409-NEXT:               ),
+// ISO199409-NEXT:           },
+// ISO199409-NEXT:           declarators: [
+// ISO199409-NEXT:               InitDeclaratorKind {
+// ISO199409-NEXT:                   declarator: Name(
+// ISO199409-NEXT:                       "stdc_version",
+// ISO199409-NEXT:                   ),
+// ISO199409-NEXT:                   initializer: Some(
+// ISO199409-NEXT:                       Expr(
+// ISO199409-NEXT:                           IntegerLiteral(
+// ISO199409-NEXT:                               IntegerLiteral {
+// ISO199409-NEXT:                                   value: 199409,
+// ISO199409-NEXT:                                   radix: Decimal,
+// ISO199409-NEXT:                                   suffix: IntegerSuffix {
+// ISO199409-NEXT:                                       unsigned: false,
+// ISO199409-NEXT:                                       size: Long,
+// ISO199409-NEXT:                                   },
+// ISO199409-NEXT:                                   spelling: "199409L",
+// ISO199409-NEXT:                               },
+// ISO199409-NEXT:                           ),
+// ISO199409-NEXT:                       ),
+// ISO199409-NEXT:                   ),
+// ISO199409-NEXT:               },
+// ISO199409-NEXT:           ],
+// ISO199409-NEXT:       },
+// ISO199409-NEXT:   )
+// SLATE-FILECHECK-END ISO199409
 // SLATE-FILECHECK-BEGIN C99
 // C99: decl[{{[0-9]+}}]: Declaration(
 // C99-NEXT:       Declaration {
@@ -72,6 +139,42 @@ int no_stdc_version;
 // C99-NEXT:       },
 // C99-NEXT:   )
 // SLATE-FILECHECK-END C99
+// SLATE-FILECHECK-BEGIN ISO1999
+// ISO1999: decl[{{[0-9]+}}]: Declaration(
+// ISO1999-NEXT:       Declaration {
+// ISO1999-NEXT:           specifiers: DeclarationSpecifiers {
+// ISO1999-NEXT:               ty: Integer(
+// ISO1999-NEXT:                   Ranked {
+// ISO1999-NEXT:                       rank: Int,
+// ISO1999-NEXT:                       signed: true,
+// ISO1999-NEXT:                   },
+// ISO1999-NEXT:               ),
+// ISO1999-NEXT:           },
+// ISO1999-NEXT:           declarators: [
+// ISO1999-NEXT:               InitDeclaratorKind {
+// ISO1999-NEXT:                   declarator: Name(
+// ISO1999-NEXT:                       "stdc_version",
+// ISO1999-NEXT:                   ),
+// ISO1999-NEXT:                   initializer: Some(
+// ISO1999-NEXT:                       Expr(
+// ISO1999-NEXT:                           IntegerLiteral(
+// ISO1999-NEXT:                               IntegerLiteral {
+// ISO1999-NEXT:                                   value: 199901,
+// ISO1999-NEXT:                                   radix: Decimal,
+// ISO1999-NEXT:                                   suffix: IntegerSuffix {
+// ISO1999-NEXT:                                       unsigned: false,
+// ISO1999-NEXT:                                       size: Long,
+// ISO1999-NEXT:                                   },
+// ISO1999-NEXT:                                   spelling: "199901L",
+// ISO1999-NEXT:                               },
+// ISO1999-NEXT:                           ),
+// ISO1999-NEXT:                       ),
+// ISO1999-NEXT:                   ),
+// ISO1999-NEXT:               },
+// ISO1999-NEXT:           ],
+// ISO1999-NEXT:       },
+// ISO1999-NEXT:   )
+// SLATE-FILECHECK-END ISO1999
 // SLATE-FILECHECK-BEGIN C11
 // C11: decl[{{[0-9]+}}]: Declaration(
 // C11-NEXT:       Declaration {
@@ -108,6 +211,42 @@ int no_stdc_version;
 // C11-NEXT:       },
 // C11-NEXT:   )
 // SLATE-FILECHECK-END C11
+// SLATE-FILECHECK-BEGIN ISO2011
+// ISO2011: decl[{{[0-9]+}}]: Declaration(
+// ISO2011-NEXT:       Declaration {
+// ISO2011-NEXT:           specifiers: DeclarationSpecifiers {
+// ISO2011-NEXT:               ty: Integer(
+// ISO2011-NEXT:                   Ranked {
+// ISO2011-NEXT:                       rank: Int,
+// ISO2011-NEXT:                       signed: true,
+// ISO2011-NEXT:                   },
+// ISO2011-NEXT:               ),
+// ISO2011-NEXT:           },
+// ISO2011-NEXT:           declarators: [
+// ISO2011-NEXT:               InitDeclaratorKind {
+// ISO2011-NEXT:                   declarator: Name(
+// ISO2011-NEXT:                       "stdc_version",
+// ISO2011-NEXT:                   ),
+// ISO2011-NEXT:                   initializer: Some(
+// ISO2011-NEXT:                       Expr(
+// ISO2011-NEXT:                           IntegerLiteral(
+// ISO2011-NEXT:                               IntegerLiteral {
+// ISO2011-NEXT:                                   value: 201112,
+// ISO2011-NEXT:                                   radix: Decimal,
+// ISO2011-NEXT:                                   suffix: IntegerSuffix {
+// ISO2011-NEXT:                                       unsigned: false,
+// ISO2011-NEXT:                                       size: Long,
+// ISO2011-NEXT:                                   },
+// ISO2011-NEXT:                                   spelling: "201112L",
+// ISO2011-NEXT:                               },
+// ISO2011-NEXT:                           ),
+// ISO2011-NEXT:                       ),
+// ISO2011-NEXT:                   ),
+// ISO2011-NEXT:               },
+// ISO2011-NEXT:           ],
+// ISO2011-NEXT:       },
+// ISO2011-NEXT:   )
+// SLATE-FILECHECK-END ISO2011
 // SLATE-FILECHECK-BEGIN C17
 // C17: decl[{{[0-9]+}}]: Declaration(
 // C17-NEXT:       Declaration {
@@ -144,6 +283,42 @@ int no_stdc_version;
 // C17-NEXT:       },
 // C17-NEXT:   )
 // SLATE-FILECHECK-END C17
+// SLATE-FILECHECK-BEGIN ISO2017
+// ISO2017: decl[{{[0-9]+}}]: Declaration(
+// ISO2017-NEXT:       Declaration {
+// ISO2017-NEXT:           specifiers: DeclarationSpecifiers {
+// ISO2017-NEXT:               ty: Integer(
+// ISO2017-NEXT:                   Ranked {
+// ISO2017-NEXT:                       rank: Int,
+// ISO2017-NEXT:                       signed: true,
+// ISO2017-NEXT:                   },
+// ISO2017-NEXT:               ),
+// ISO2017-NEXT:           },
+// ISO2017-NEXT:           declarators: [
+// ISO2017-NEXT:               InitDeclaratorKind {
+// ISO2017-NEXT:                   declarator: Name(
+// ISO2017-NEXT:                       "stdc_version",
+// ISO2017-NEXT:                   ),
+// ISO2017-NEXT:                   initializer: Some(
+// ISO2017-NEXT:                       Expr(
+// ISO2017-NEXT:                           IntegerLiteral(
+// ISO2017-NEXT:                               IntegerLiteral {
+// ISO2017-NEXT:                                   value: 201710,
+// ISO2017-NEXT:                                   radix: Decimal,
+// ISO2017-NEXT:                                   suffix: IntegerSuffix {
+// ISO2017-NEXT:                                       unsigned: false,
+// ISO2017-NEXT:                                       size: Long,
+// ISO2017-NEXT:                                   },
+// ISO2017-NEXT:                                   spelling: "201710L",
+// ISO2017-NEXT:                               },
+// ISO2017-NEXT:                           ),
+// ISO2017-NEXT:                       ),
+// ISO2017-NEXT:                   ),
+// ISO2017-NEXT:               },
+// ISO2017-NEXT:           ],
+// ISO2017-NEXT:       },
+// ISO2017-NEXT:   )
+// SLATE-FILECHECK-END ISO2017
 // SLATE-FILECHECK-BEGIN C23
 // C23: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {

@@ -48,7 +48,10 @@ pub struct StandardFeatures {
 impl StandardFeatures {
     pub fn new(standard: LanguageStandard) -> Self {
         use Availability::{Extension, Rejected, Standard};
-        let c89 = matches!(standard, LanguageStandard::C89 | LanguageStandard::Gnu89);
+        let c89 = matches!(
+            standard,
+            LanguageStandard::C89 | LanguageStandard::C94 | LanguageStandard::Gnu89
+        );
         let c11 = standard.stdc_version() >= Some(201112);
         let c23 = matches!(standard, LanguageStandard::C23 | LanguageStandard::Gnu23);
         let c23_keyword = if c23 { Standard } else { Rejected };
@@ -86,7 +89,7 @@ impl StandardFeatures {
             control_statement_scopes: !c89,
             auto_type_inference: c23,
             empty_parens_are_prototype: c23,
-            main_implicit_return_zero: standard.stdc_version().is_some(),
+            main_implicit_return_zero: standard.stdc_version() >= Some(199901),
             inline_semantics: if c89 {
                 InlineSemantics::SupressDef
             } else {

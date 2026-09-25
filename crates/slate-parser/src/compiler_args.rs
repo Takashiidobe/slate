@@ -32,6 +32,7 @@ impl FromStr for CompilerFlavor {
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum LanguageStandard {
     C89,
+    C94,
     Gnu89,
     C99,
     Gnu99,
@@ -55,6 +56,7 @@ impl LanguageStandard {
     pub fn stdc_version(self) -> Option<i64> {
         match self {
             Self::C89 | Self::Gnu89 => None,
+            Self::C94 => Some(199409),
             Self::C99 | Self::Gnu99 => Some(199901),
             Self::C11 | Self::Gnu11 => Some(201112),
             Self::C17 | Self::Gnu17 => Some(201710),
@@ -68,16 +70,17 @@ impl FromStr for LanguageStandard {
 
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         match name {
-            "c89" => Ok(Self::C89),
-            "gnu89" => Ok(Self::Gnu89),
-            "c99" => Ok(Self::C99),
-            "gnu99" => Ok(Self::Gnu99),
-            "c11" => Ok(Self::C11),
-            "gnu11" => Ok(Self::Gnu11),
-            "c17" => Ok(Self::C17),
-            "gnu17" => Ok(Self::Gnu17),
-            "c23" => Ok(Self::C23),
-            "gnu23" => Ok(Self::Gnu23),
+            "c89" | "c90" | "iso9899:1990" => Ok(Self::C89),
+            "iso9899:199409" => Ok(Self::C94),
+            "gnu89" | "gnu90" => Ok(Self::Gnu89),
+            "c99" | "c9x" | "iso9899:1999" | "iso9899:199x" => Ok(Self::C99),
+            "gnu99" | "gnu9x" => Ok(Self::Gnu99),
+            "c11" | "c1x" | "iso9899:2011" => Ok(Self::C11),
+            "gnu11" | "gnu1x" => Ok(Self::Gnu11),
+            "c17" | "c18" | "iso9899:2017" | "iso9899:2018" => Ok(Self::C17),
+            "gnu17" | "gnu18" => Ok(Self::Gnu17),
+            "c23" | "c2x" | "iso9899:2024" => Ok(Self::C23),
+            "gnu23" | "gnu2x" => Ok(Self::Gnu23),
             _ => Err(format!("unknown language standard: {name}")),
         }
     }
@@ -481,8 +484,9 @@ fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
     let long = format!("--{name}");
     [short, long].iter().find_map(|spelling| {
         argument.strip_prefix(spelling).and_then(|rest| {
-            rest.strip_prefix('=')
-                .or_else(|| (name == "isystem" || name == "D").then_some(rest))
+            (rest.is_empty() || name == "isystem" || name == "D")
+                .then_some(rest)
+                .or_else(|| rest.strip_prefix('='))
         })
     })
 }
