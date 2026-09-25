@@ -25,396 +25,61 @@ int after[WIDTH];
 // SLATE-FILECHECK-DEFINES WIDE WIDE
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "push_macro ( \"WIDTH\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "inner",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 8,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "8",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"WIDTH\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "outer",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "push_macro ( \"FRESH\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"FRESH\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"WIDTH\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "unmatched_pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "after",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %0 inner: array<i32, 8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 outer: array<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 unmatched_pop: array<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 after: array<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIDE
-// WIDE: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "push_macro ( \"WIDTH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Declaration(
-// WIDE-NEXT:       Declaration {
-// WIDE-NEXT:           specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:               ty: Integer(
-// WIDE-NEXT:                   Ranked {
-// WIDE-NEXT:                       rank: Int,
-// WIDE-NEXT:                       signed: true,
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           },
-// WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclaratorKind {
-// WIDE-NEXT:                   declarator: Array {
-// WIDE-NEXT:                       inner: Name(
-// WIDE-NEXT:                           "inner",
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntegerLiteral(
-// WIDE-NEXT:                               IntegerLiteral {
-// WIDE-NEXT:                                   value: 8,
-// WIDE-NEXT:                                   radix: Decimal,
-// WIDE-NEXT:                                   suffix: IntegerSuffix {
-// WIDE-NEXT:                                       unsigned: false,
-// WIDE-NEXT:                                       size: None,
-// WIDE-NEXT:                                   },
-// WIDE-NEXT:                                   spelling: "8",
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                           ),
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               },
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Declaration(
-// WIDE-NEXT:       Declaration {
-// WIDE-NEXT:           specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:               ty: Integer(
-// WIDE-NEXT:                   Ranked {
-// WIDE-NEXT:                       rank: Int,
-// WIDE-NEXT:                       signed: true,
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           },
-// WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclaratorKind {
-// WIDE-NEXT:                   declarator: Array {
-// WIDE-NEXT:                       inner: Name(
-// WIDE-NEXT:                           "outer",
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntegerLiteral(
-// WIDE-NEXT:                               IntegerLiteral {
-// WIDE-NEXT:                                   value: 4,
-// WIDE-NEXT:                                   radix: Decimal,
-// WIDE-NEXT:                                   suffix: IntegerSuffix {
-// WIDE-NEXT:                                       unsigned: false,
-// WIDE-NEXT:                                       size: None,
-// WIDE-NEXT:                                   },
-// WIDE-NEXT:                                   spelling: "4",
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                           ),
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               },
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "push_macro ( \"FRESH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "pop_macro ( \"FRESH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Declaration(
-// WIDE-NEXT:       Declaration {
-// WIDE-NEXT:           specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:               ty: Integer(
-// WIDE-NEXT:                   Ranked {
-// WIDE-NEXT:                       rank: Int,
-// WIDE-NEXT:                       signed: true,
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           },
-// WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclaratorKind {
-// WIDE-NEXT:                   declarator: Array {
-// WIDE-NEXT:                       inner: Name(
-// WIDE-NEXT:                           "unmatched_pop",
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntegerLiteral(
-// WIDE-NEXT:                               IntegerLiteral {
-// WIDE-NEXT:                                   value: 4,
-// WIDE-NEXT:                                   radix: Decimal,
-// WIDE-NEXT:                                   suffix: IntegerSuffix {
-// WIDE-NEXT:                                       unsigned: false,
-// WIDE-NEXT:                                       size: None,
-// WIDE-NEXT:                                   },
-// WIDE-NEXT:                                   spelling: "4",
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                           ),
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               },
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "push_macro ( \"WIDTH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Declaration(
-// WIDE-NEXT:       Declaration {
-// WIDE-NEXT:           specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:               ty: Integer(
-// WIDE-NEXT:                   Ranked {
-// WIDE-NEXT:                       rank: Int,
-// WIDE-NEXT:                       signed: true,
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           },
-// WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclaratorKind {
-// WIDE-NEXT:                   declarator: Array {
-// WIDE-NEXT:                       inner: Name(
-// WIDE-NEXT:                           "wide",
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntegerLiteral(
-// WIDE-NEXT:                               IntegerLiteral {
-// WIDE-NEXT:                                   value: 16,
-// WIDE-NEXT:                                   radix: Decimal,
-// WIDE-NEXT:                                   suffix: IntegerSuffix {
-// WIDE-NEXT:                                       unsigned: false,
-// WIDE-NEXT:                                       size: None,
-// WIDE-NEXT:                                   },
-// WIDE-NEXT:                                   spelling: "16",
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                           ),
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               },
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Pragma(
-// WIDE-NEXT:       Pragma {
-// WIDE-NEXT:           kind: Opaque(
-// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
-// WIDE-NEXT:           ),
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[{{[0-9]+}}]: Declaration(
-// WIDE-NEXT:       Declaration {
-// WIDE-NEXT:           specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:               ty: Integer(
-// WIDE-NEXT:                   Ranked {
-// WIDE-NEXT:                       rank: Int,
-// WIDE-NEXT:                       signed: true,
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           },
-// WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclaratorKind {
-// WIDE-NEXT:                   declarator: Array {
-// WIDE-NEXT:                       inner: Name(
-// WIDE-NEXT:                           "after",
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntegerLiteral(
-// WIDE-NEXT:                               IntegerLiteral {
-// WIDE-NEXT:                                   value: 4,
-// WIDE-NEXT:                                   radix: Decimal,
-// WIDE-NEXT:                                   suffix: IntegerSuffix {
-// WIDE-NEXT:                                       unsigned: false,
-// WIDE-NEXT:                                       size: None,
-// WIDE-NEXT:                                   },
-// WIDE-NEXT:                                   spelling: "4",
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                           ),
-// WIDE-NEXT:                       ),
-// WIDE-NEXT:                   },
-// WIDE-NEXT:               },
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
+// WIDE: module {
+// WIDE-NEXT:     target "x86_64-unknown-linux-gnu" {
+// WIDE-NEXT:         endian = little;
+// WIDE-NEXT:         pointer [size=8, align=8];
+// WIDE-NEXT:         stack_alignment = 16;
+// WIDE-NEXT:         long_double = f80;
+// WIDE-NEXT:         storage bool [size=1, align=1];
+// WIDE-NEXT:         storage i8, u8 [size=1, align=1];
+// WIDE-NEXT:         storage i16, u16 [size=2, align=2];
+// WIDE-NEXT:         storage i32, u32 [size=4, align=4];
+// WIDE-NEXT:         storage i64, u64 [size=8, align=8];
+// WIDE-NEXT:         storage i128, u128 [size=16, align=16];
+// WIDE-NEXT:         storage bf16 [size=2, align=2];
+// WIDE-NEXT:         storage f16 [size=2, align=2];
+// WIDE-NEXT:         storage f32 [size=4, align=4];
+// WIDE-NEXT:         storage f64 [size=8, align=8];
+// WIDE-NEXT:         storage f80 [size=16, align=16];
+// WIDE-NEXT:         storage f128 [size=16, align=16];
+// WIDE-NEXT:         storage d32 [size=4, align=4];
+// WIDE-NEXT:         storage d64 [size=8, align=8];
+// WIDE-NEXT:         storage d128 [size=16, align=16];
+// WIDE-NEXT:     }
+// WIDE-NEXT:     global %0 inner: array<i32, 8> [storage=static] [linkage=external];
+// WIDE-NEXT:     global %1 outer: array<i32, 4> [storage=static] [linkage=external];
+// WIDE-NEXT:     global %2 unmatched_pop: array<i32, 4> [storage=static] [linkage=external];
+// WIDE-NEXT:     global %3 wide: array<i32, 16> [storage=static] [linkage=external];
+// WIDE-NEXT:     global %4 after: array<i32, 4> [storage=static] [linkage=external];
+// WIDE-NEXT: }
 // SLATE-FILECHECK-END WIDE

@@ -68,713 +68,112 @@ main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                   is_volatile: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "cnt",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   initializer: Some(
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 0,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "0",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "last",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Binary {
-// DEFAULT-NEXT:                       op: Equal,
-// DEFAULT-NEXT:                       left: Binary {
-// DEFAULT-NEXT:                           op: Rem,
-// DEFAULT-NEXT:                           left: Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "cnt",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 5,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "5",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 0,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "0",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "do_it",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   GnuAsm {
-// DEFAULT-NEXT:                       qualifiers: [
-// DEFAULT-NEXT:                           Volatile,
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       template: "",
-// DEFAULT-NEXT:                       operands: Some(
-// DEFAULT-NEXT:                           AsmOperands {
-// DEFAULT-NEXT:                               pieces: [],
-// DEFAULT-NEXT:                               inputs: [
-// DEFAULT-NEXT:                                   AsmOperand {
-// DEFAULT-NEXT:                                       constraint: AsmConstraint {
-// DEFAULT-NEXT:                                           alternatives: [
-// DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: Letters(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       expr: Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "cnt",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               clobbers: [
-// DEFAULT-NEXT:                                   Memory,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               For {
-// DEFAULT-NEXT:                   init: None,
-// DEFAULT-NEXT:                   condition: None,
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "do_it",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: Block(
-// DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           If {
-// DEFAULT-NEXT:                               condition: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "last",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_branch: Break,
-// DEFAULT-NEXT:                               else_branch: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "do_it",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f2",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 1,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "1",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: Block(
-// DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           If {
-// DEFAULT-NEXT:                               condition: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "last",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_branch: Break,
-// DEFAULT-NEXT:                               else_branch: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "do_it",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "do_it",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f3",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               For {
-// DEFAULT-NEXT:                   init: None,
-// DEFAULT-NEXT:                   condition: None,
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "do_it",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: If {
-// DEFAULT-NEXT:                       condition: Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "last",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       then_branch: Break,
-// DEFAULT-NEXT:                       else_branch: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "do_it",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   NoInline,
-// DEFAULT-NEXT:                   NoClone,
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f4",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 1,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "1",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: If {
-// DEFAULT-NEXT:                       condition: Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "last",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       then_branch: Break,
-// DEFAULT-NEXT:                       else_branch: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "do_it",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "do_it",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Function {
-// DEFAULT-NEXT:                       inner: Grouped(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_volatile: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "fnp1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: Void,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   initializer: Some(
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "f1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Function {
-// DEFAULT-NEXT:                       inner: Grouped(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_volatile: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "fnp2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: Void,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   initializer: Some(
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "f2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Function {
-// DEFAULT-NEXT:                       inner: Grouped(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_volatile: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "fnp3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: Void,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   initializer: Some(
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "f3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Void,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Function {
-// DEFAULT-NEXT:                       inner: Grouped(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_volatile: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "fnp4",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: Void,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   initializer: Some(
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "f4",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
-// DEFAULT-NEXT:       FunctionDefinition {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "main",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: Empty,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   GnuAsm {
-// DEFAULT-NEXT:                       qualifiers: [
-// DEFAULT-NEXT:                           Volatile,
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       template: "",
-// DEFAULT-NEXT:                       operands: Some(
-// DEFAULT-NEXT:                           AsmOperands {
-// DEFAULT-NEXT:                               pieces: [],
-// DEFAULT-NEXT:                               inputs: [
-// DEFAULT-NEXT:                                   AsmOperand {
-// DEFAULT-NEXT:                                       constraint: AsmConstraint {
-// DEFAULT-NEXT:                                           alternatives: [
-// DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: Letters(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       expr: Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "fnp1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               clobbers: [
-// DEFAULT-NEXT:                                   Memory,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   GnuAsm {
-// DEFAULT-NEXT:                       qualifiers: [
-// DEFAULT-NEXT:                           Volatile,
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       template: "",
-// DEFAULT-NEXT:                       operands: Some(
-// DEFAULT-NEXT:                           AsmOperands {
-// DEFAULT-NEXT:                               pieces: [],
-// DEFAULT-NEXT:                               inputs: [
-// DEFAULT-NEXT:                                   AsmOperand {
-// DEFAULT-NEXT:                                       constraint: AsmConstraint {
-// DEFAULT-NEXT:                                           alternatives: [
-// DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: Letters(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       expr: Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "fnp2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               clobbers: [
-// DEFAULT-NEXT:                                   Memory,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   GnuAsm {
-// DEFAULT-NEXT:                       qualifiers: [
-// DEFAULT-NEXT:                           Volatile,
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       template: "",
-// DEFAULT-NEXT:                       operands: Some(
-// DEFAULT-NEXT:                           AsmOperands {
-// DEFAULT-NEXT:                               pieces: [],
-// DEFAULT-NEXT:                               inputs: [
-// DEFAULT-NEXT:                                   AsmOperand {
-// DEFAULT-NEXT:                                       constraint: AsmConstraint {
-// DEFAULT-NEXT:                                           alternatives: [
-// DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: Letters(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       expr: Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "fnp3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               clobbers: [
-// DEFAULT-NEXT:                                   Memory,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   GnuAsm {
-// DEFAULT-NEXT:                       qualifiers: [
-// DEFAULT-NEXT:                           Volatile,
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       template: "",
-// DEFAULT-NEXT:                       operands: Some(
-// DEFAULT-NEXT:                           AsmOperands {
-// DEFAULT-NEXT:                               pieces: [],
-// DEFAULT-NEXT:                               inputs: [
-// DEFAULT-NEXT:                                   AsmOperand {
-// DEFAULT-NEXT:                                       constraint: AsmConstraint {
-// DEFAULT-NEXT:                                           alternatives: [
-// DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: Letters(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       expr: Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "fnp4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               clobbers: [
-// DEFAULT-NEXT:                                   Memory,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "fnp1",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "fnp2",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "fnp3",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "fnp4",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %0 cnt: volatile i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %7 fnp1: volatile ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%3) [linkage=external];
+// DEFAULT-NEXT:     global %8 fnp2: volatile ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%4) [linkage=external];
+// DEFAULT-NEXT:     global %9 fnp3: volatile ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%5) [linkage=external];
+// DEFAULT-NEXT:     global %10 fnp4: volatile ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%6) [linkage=external];
+// DEFAULT-NEXT:     fn %1 @last() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32, volatile>(%0);
+// DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, volatile>(%0, read<i32>(%17));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%17), const<i32>(5)), const<i32>(0)));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %2 @do_it() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile i32>>(%0);
+// DEFAULT-NEXT:             clobbers: memory;
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @f1() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:             condition: omitted
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 {
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:                         break %12;
+// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @f2() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %13 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:                     break %13;
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @f3() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %14
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:             condition: omitted
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:                     break %14;
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @f4() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %15 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:             if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:                 break %15;
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile ptr<fn() -> void>>>(%7);
+// DEFAULT-NEXT:             clobbers: memory;
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile ptr<fn() -> void>>>(%8);
+// DEFAULT-NEXT:             clobbers: memory;
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile ptr<fn() -> void>>>(%9);
+// DEFAULT-NEXT:             clobbers: memory;
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile ptr<fn() -> void>>>(%10);
+// DEFAULT-NEXT:             clobbers: memory;
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%7));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%8));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%9));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%10));
+// DEFAULT-NEXT:         return const<i32>(0);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

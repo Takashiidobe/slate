@@ -133,3 +133,83 @@ enum E { B };
 // GLOBAL_SIGN: 24 │ #elif defined(STRUCT)
 // GLOBAL_SIGN: ╰────
 // SLATE-FILECHECK-END GLOBAL_SIGN
+// SLATE-FILECHECK-BEGIN IR-RETURN_SIGN
+// IR-RETURN_SIGN: module {
+// IR-RETURN_SIGN-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-RETURN_SIGN-NEXT:         endian = little;
+// IR-RETURN_SIGN-NEXT:         pointer [size=8, align=8];
+// IR-RETURN_SIGN-NEXT:         stack_alignment = 16;
+// IR-RETURN_SIGN-NEXT:         long_double = f80;
+// IR-RETURN_SIGN-NEXT:         storage bool [size=1, align=1];
+// IR-RETURN_SIGN-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-RETURN_SIGN-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-RETURN_SIGN-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-RETURN_SIGN-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-RETURN_SIGN-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-RETURN_SIGN-NEXT:         storage bf16 [size=2, align=2];
+// IR-RETURN_SIGN-NEXT:         storage f16 [size=2, align=2];
+// IR-RETURN_SIGN-NEXT:         storage f32 [size=4, align=4];
+// IR-RETURN_SIGN-NEXT:         storage f64 [size=8, align=8];
+// IR-RETURN_SIGN-NEXT:         storage f80 [size=16, align=16];
+// IR-RETURN_SIGN-NEXT:         storage f128 [size=16, align=16];
+// IR-RETURN_SIGN-NEXT:         storage d32 [size=4, align=4];
+// IR-RETURN_SIGN-NEXT:         storage d64 [size=8, align=8];
+// IR-RETURN_SIGN-NEXT:         storage d128 [size=16, align=16];
+// IR-RETURN_SIGN-NEXT:     }
+// IR-RETURN_SIGN-NEXT:     fn %0 @f(%1 <unnamed>: i32) -> i32 [linkage=external];
+// IR-RETURN_SIGN-NEXT: }
+// SLATE-FILECHECK-END IR-RETURN_SIGN
+// SLATE-FILECHECK-BEGIN IR-PARAMETERS
+// IR-PARAMETERS: module {
+// IR-PARAMETERS-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-PARAMETERS-NEXT:         endian = little;
+// IR-PARAMETERS-NEXT:         pointer [size=8, align=8];
+// IR-PARAMETERS-NEXT:         stack_alignment = 16;
+// IR-PARAMETERS-NEXT:         long_double = f80;
+// IR-PARAMETERS-NEXT:         storage bool [size=1, align=1];
+// IR-PARAMETERS-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-PARAMETERS-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-PARAMETERS-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-PARAMETERS-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-PARAMETERS-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-PARAMETERS-NEXT:         storage bf16 [size=2, align=2];
+// IR-PARAMETERS-NEXT:         storage f16 [size=2, align=2];
+// IR-PARAMETERS-NEXT:         storage f32 [size=4, align=4];
+// IR-PARAMETERS-NEXT:         storage f64 [size=8, align=8];
+// IR-PARAMETERS-NEXT:         storage f80 [size=16, align=16];
+// IR-PARAMETERS-NEXT:         storage f128 [size=16, align=16];
+// IR-PARAMETERS-NEXT:         storage d32 [size=4, align=4];
+// IR-PARAMETERS-NEXT:         storage d64 [size=8, align=8];
+// IR-PARAMETERS-NEXT:         storage d128 [size=16, align=16];
+// IR-PARAMETERS-NEXT:     }
+// IR-PARAMETERS-NEXT:     fn %0 @f(%3 <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT:     fn %1 @g(%5 <unnamed>: i32, %6 <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT:     fn %2 @h(%8 <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT: }
+// SLATE-FILECHECK-END IR-PARAMETERS
+// SLATE-FILECHECK-BEGIN IR-GLOBAL_SIGN
+// IR-GLOBAL_SIGN: module {
+// IR-GLOBAL_SIGN-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-GLOBAL_SIGN-NEXT:         endian = little;
+// IR-GLOBAL_SIGN-NEXT:         pointer [size=8, align=8];
+// IR-GLOBAL_SIGN-NEXT:         stack_alignment = 16;
+// IR-GLOBAL_SIGN-NEXT:         long_double = f80;
+// IR-GLOBAL_SIGN-NEXT:         storage bool [size=1, align=1];
+// IR-GLOBAL_SIGN-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-GLOBAL_SIGN-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-GLOBAL_SIGN-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-GLOBAL_SIGN-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-GLOBAL_SIGN-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-GLOBAL_SIGN-NEXT:         storage bf16 [size=2, align=2];
+// IR-GLOBAL_SIGN-NEXT:         storage f16 [size=2, align=2];
+// IR-GLOBAL_SIGN-NEXT:         storage f32 [size=4, align=4];
+// IR-GLOBAL_SIGN-NEXT:         storage f64 [size=8, align=8];
+// IR-GLOBAL_SIGN-NEXT:         storage f80 [size=16, align=16];
+// IR-GLOBAL_SIGN-NEXT:         storage f128 [size=16, align=16];
+// IR-GLOBAL_SIGN-NEXT:         storage d32 [size=4, align=4];
+// IR-GLOBAL_SIGN-NEXT:         storage d64 [size=8, align=8];
+// IR-GLOBAL_SIGN-NEXT:         storage d128 [size=16, align=16];
+// IR-GLOBAL_SIGN-NEXT:     }
+// IR-GLOBAL_SIGN-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
+// IR-GLOBAL_SIGN-NEXT: }
+// SLATE-FILECHECK-END IR-GLOBAL_SIGN

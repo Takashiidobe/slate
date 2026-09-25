@@ -219,6 +219,17 @@ fn error_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
+fn ir_error_configurations(source: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| {
+            line.trim()
+                .strip_prefix("// SLATE-FILECHECK-IR-ERROR ")
+                .map(str::to_string)
+        })
+        .collect()
+}
+
 // the copy sits beside the original so relative includes still resolve
 enum Scratch {
     Beside(NamedTempFile),
@@ -272,12 +283,23 @@ struct FixtureJob {
     standard: Option<String>,
     show_ids: bool,
     error: bool,
+    ir_error: bool,
     warnings: bool,
 }
 
 fn run_job(job: FixtureJob) {
     if job.error {
         run_error_fixture(
+            &job.fixture,
+            &job.prefix,
+            &job.defines,
+            &job.isystem,
+            job.flavor.as_deref(),
+            job.standard.as_deref(),
+            job.show_ids,
+        );
+    } else if job.ir_error {
+        run_ir_error_fixture(
             &job.fixture,
             &job.prefix,
             &job.defines,
@@ -354,7 +376,7 @@ fn run_fixture(
     if show_ids {
         command.arg("--show-ids");
     }
-    command.args(fixture_args(fixture));
+    command.args(fixture_ir_args(fixture));
     let rendered = command
         .output()
         .expect("run slate-parser filecheck renderer");
@@ -411,6 +433,30 @@ fn run_fixture(
         );
     }
 
+    if warnings {
+        let ir_work = tempfile::tempdir().expect("create FileCheck IR work directory");
+        let ir_input = ir_work.path().join("rendered.txt");
+        std::fs::write(&ir_input, &rendered.stdout).expect("write rendered IR");
+        let ir_prefix = format!("IR-{prefix}");
+        let ir_result = Command::new(filecheck())
+            .arg(fixture)
+            .arg(format!("--check-prefix={ir_prefix}"))
+            .arg("--input-file")
+            .arg(&ir_input)
+            .arg("--dump-input=fail")
+            .output()
+            .expect("run IR FileCheck");
+        if !ir_result.status.success() {
+            panic!(
+                "IR FileCheck failed for {} ({ir_prefix}), input kept at {}:\n{}{}",
+                fixture.display(),
+                ir_work.keep().join("rendered.txt").display(),
+                String::from_utf8_lossy(&ir_result.stdout),
+                String::from_utf8_lossy(&ir_result.stderr)
+            );
+        }
+    }
+
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
         assert_evaluated_matches_clang(fixture, defines, isystem, flavor);
     }
@@ -435,6 +481,14 @@ fn fixture_source(fixture: &Path) -> String {
     result
 }
 
+fn fixture_ir_args(fixture: &Path) -> Vec<String> {
+    let mut args = fixture_args(fixture);
+    if !args.iter().any(|arg| arg.starts_with("--dump-ir")) {
+        args.push("--dump-ir".into());
+    }
+    args
+}
+
 fn run_error_fixture(
     fixture: &Path,
     prefix: &str,
@@ -443,6 +497,35 @@ fn run_error_fixture(
     flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
+) {
+    run_expected_failure_fixture(
+        fixture, prefix, defines, isystem, flavor, standard, show_ids, false,
+    );
+}
+
+fn run_ir_error_fixture(
+    fixture: &Path,
+    prefix: &str,
+    defines: &[String],
+    isystem: &[String],
+    flavor: Option<&str>,
+    standard: Option<&str>,
+    show_ids: bool,
+) {
+    run_expected_failure_fixture(
+        fixture, prefix, defines, isystem, flavor, standard, show_ids, true,
+    );
+}
+
+fn run_expected_failure_fixture(
+    fixture: &Path,
+    prefix: &str,
+    defines: &[String],
+    isystem: &[String],
+    flavor: Option<&str>,
+    standard: Option<&str>,
+    show_ids: bool,
+    ir: bool,
 ) {
     let file_name = fixture.file_name().unwrap().to_string_lossy();
     let parsed = Scratch::new(fixture, &fixture_source(fixture));
@@ -463,8 +546,13 @@ fn run_error_fixture(
     if show_ids {
         command.arg("--show-ids");
     }
+    let args = if ir {
+        fixture_ir_args(fixture)
+    } else {
+        fixture_args(fixture)
+    };
     let output = command
-        .args(fixture_args(fixture))
+        .args(args)
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -472,7 +560,7 @@ fn run_error_fixture(
         .expect("run slate-parser failing fixture");
     assert!(
         !output.status.success(),
-        "fixture unexpectedly parsed: {}",
+        "fixture unexpectedly succeeded: {}",
         fixture.display()
     );
 
@@ -1088,10 +1176,19 @@ fn fixtures_are_filechecked() {
         let source = decode_source_bytes(&std::fs::read(&fixture).expect("read fixture"));
         let configs = configurations(&source);
         let errors = error_configurations(&source);
+        let ir_errors = ir_error_configurations(&source);
         let warnings = warning_configurations(&source);
         let flavor = flavor(&source);
         let isystem = isystem_paths(&source);
-        if !errors.is_empty() {
+        let config_names = configs
+            .iter()
+            .map(|(prefix, _)| prefix.as_str())
+            .collect::<std::collections::HashSet<_>>();
+        if !errors.is_empty()
+            && errors
+                .iter()
+                .any(|prefix| !config_names.contains(prefix.as_str()))
+        {
             for prefix in &errors {
                 let defines = configs
                     .iter()
@@ -1106,6 +1203,7 @@ fn fixtures_are_filechecked() {
                     standard: std_for_prefix(&source, prefix),
                     show_ids: show_ids_for_prefix(&source, prefix),
                     error: true,
+                    ir_error: false,
                     warnings: false,
                 });
             }
@@ -1125,7 +1223,8 @@ fn fixtures_are_filechecked() {
                 flavor: flavor.clone(),
                 standard: std_for_prefix(&source, prefix),
                 show_ids: show_ids_for_prefix(&source, prefix),
-                error: false,
+                error: errors.contains(prefix),
+                ir_error: ir_errors.contains(prefix),
                 warnings: warnings.contains(prefix),
             });
         }
@@ -1149,6 +1248,7 @@ fn fixtures_are_filechecked() {
                             standard: job.standard.clone(),
                             show_ids: job.show_ids,
                             error: job.error,
+                            ir_error: job.ir_error,
                             warnings: job.warnings,
                         })
                     })

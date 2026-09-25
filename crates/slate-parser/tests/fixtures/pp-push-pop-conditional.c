@@ -30,348 +30,60 @@ int second_pop[Y];
 // SLATE-FILECHECK-DEFINES A A
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "push_macro ( \"X\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "popped_in_branch",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "unreachable_pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "partial_push",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
-// DEFAULT-NEXT:       Pragma {
-// DEFAULT-NEXT:           kind: Opaque(
-// DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "second_pop",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %0 popped_in_branch: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 partial_push: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 second_pop: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "push_macro ( \"X\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "pop_macro ( \"X\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "popped_in_branch",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 1,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "1",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "push_macro ( \"Y\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "unreachable_pop",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 2,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "2",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "push_macro ( \"Y\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "pop_macro ( \"Y\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "partial_push",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 2,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "2",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Pragma(
-// A-NEXT:       Pragma {
-// A-NEXT:           kind: Opaque(
-// A-NEXT:               "pop_macro ( \"Y\" )",
-// A-NEXT:           ),
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "second_pop",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 1,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "1",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
+// A: module {
+// A-NEXT:     target "x86_64-unknown-linux-gnu" {
+// A-NEXT:         endian = little;
+// A-NEXT:         pointer [size=8, align=8];
+// A-NEXT:         stack_alignment = 16;
+// A-NEXT:         long_double = f80;
+// A-NEXT:         storage bool [size=1, align=1];
+// A-NEXT:         storage i8, u8 [size=1, align=1];
+// A-NEXT:         storage i16, u16 [size=2, align=2];
+// A-NEXT:         storage i32, u32 [size=4, align=4];
+// A-NEXT:         storage i64, u64 [size=8, align=8];
+// A-NEXT:         storage i128, u128 [size=16, align=16];
+// A-NEXT:         storage bf16 [size=2, align=2];
+// A-NEXT:         storage f16 [size=2, align=2];
+// A-NEXT:         storage f32 [size=4, align=4];
+// A-NEXT:         storage f64 [size=8, align=8];
+// A-NEXT:         storage f80 [size=16, align=16];
+// A-NEXT:         storage f128 [size=16, align=16];
+// A-NEXT:         storage d32 [size=4, align=4];
+// A-NEXT:         storage d64 [size=8, align=8];
+// A-NEXT:         storage d128 [size=16, align=16];
+// A-NEXT:     }
+// A-NEXT:     global %0 popped_in_branch: array<i32, 1> [storage=static] [linkage=external];
+// A-NEXT:     global %1 unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %2 partial_push: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %3 second_pop: array<i32, 1> [storage=static] [linkage=external];
+// A-NEXT: }
 // SLATE-FILECHECK-END A

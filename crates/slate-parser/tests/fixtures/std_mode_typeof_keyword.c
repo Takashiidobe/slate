@@ -18,305 +18,142 @@ __typeof(subject) always_typeof_derived;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Integer(
-// C89-NEXT:                   Ranked {
-// C89-NEXT:                       rank: Int,
-// C89-NEXT:                       signed: true,
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "subject",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Integer(
-// C89-NEXT:                   Ranked {
-// C89-NEXT:                       rank: Int,
-// C89-NEXT:                       signed: true,
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "typeof",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: TypeOf(
-// C89-NEXT:                   Expression(
-// C89-NEXT:                       Identifier(
-// C89-NEXT:                           "subject",
-// C89-NEXT:                       ),
-// C89-NEXT:                   ),
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "always_typeof_derived",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
+// C89: module {
+// C89-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C89-NEXT:         endian = little;
+// C89-NEXT:         pointer [size=8, align=8];
+// C89-NEXT:         stack_alignment = 16;
+// C89-NEXT:         long_double = f80;
+// C89-NEXT:         storage bool [size=1, align=1];
+// C89-NEXT:         storage i8, u8 [size=1, align=1];
+// C89-NEXT:         storage i16, u16 [size=2, align=2];
+// C89-NEXT:         storage i32, u32 [size=4, align=4];
+// C89-NEXT:         storage i64, u64 [size=8, align=8];
+// C89-NEXT:         storage i128, u128 [size=16, align=16];
+// C89-NEXT:         storage bf16 [size=2, align=2];
+// C89-NEXT:         storage f16 [size=2, align=2];
+// C89-NEXT:         storage f32 [size=4, align=4];
+// C89-NEXT:         storage f64 [size=8, align=8];
+// C89-NEXT:         storage f80 [size=16, align=16];
+// C89-NEXT:         storage f128 [size=16, align=16];
+// C89-NEXT:         storage d32 [size=4, align=4];
+// C89-NEXT:         storage d64 [size=8, align=8];
+// C89-NEXT:         storage d128 [size=16, align=16];
+// C89-NEXT:     }
+// C89-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %1 typeof: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
-// GNU89: decl[{{[0-9]+}}]: Declaration(
-// GNU89-NEXT:       Declaration {
-// GNU89-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU89-NEXT:               ty: Integer(
-// GNU89-NEXT:                   Ranked {
-// GNU89-NEXT:                       rank: Int,
-// GNU89-NEXT:                       signed: true,
-// GNU89-NEXT:                   },
-// GNU89-NEXT:               ),
-// GNU89-NEXT:           },
-// GNU89-NEXT:           declarators: [
-// GNU89-NEXT:               InitDeclaratorKind {
-// GNU89-NEXT:                   declarator: Name(
-// GNU89-NEXT:                       "subject",
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               },
-// GNU89-NEXT:           ],
-// GNU89-NEXT:       },
-// GNU89-NEXT:   )
-// GNU89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU89-NEXT:       Declaration {
-// GNU89-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU89-NEXT:               ty: TypeOf(
-// GNU89-NEXT:                   Expression(
-// GNU89-NEXT:                       Identifier(
-// GNU89-NEXT:                           "subject",
-// GNU89-NEXT:                       ),
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               ),
-// GNU89-NEXT:           },
-// GNU89-NEXT:           declarators: [
-// GNU89-NEXT:               InitDeclaratorKind {
-// GNU89-NEXT:                   declarator: Name(
-// GNU89-NEXT:                       "typeof_derived",
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               },
-// GNU89-NEXT:           ],
-// GNU89-NEXT:       },
-// GNU89-NEXT:   )
-// GNU89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU89-NEXT:       Declaration {
-// GNU89-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU89-NEXT:               ty: TypeOf(
-// GNU89-NEXT:                   Expression(
-// GNU89-NEXT:                       Identifier(
-// GNU89-NEXT:                           "subject",
-// GNU89-NEXT:                       ),
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               ),
-// GNU89-NEXT:           },
-// GNU89-NEXT:           declarators: [
-// GNU89-NEXT:               InitDeclaratorKind {
-// GNU89-NEXT:                   declarator: Name(
-// GNU89-NEXT:                       "always_typeof_derived",
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               },
-// GNU89-NEXT:           ],
-// GNU89-NEXT:       },
-// GNU89-NEXT:   )
+// GNU89: module {
+// GNU89-NEXT:     target "x86_64-unknown-linux-gnu" {
+// GNU89-NEXT:         endian = little;
+// GNU89-NEXT:         pointer [size=8, align=8];
+// GNU89-NEXT:         stack_alignment = 16;
+// GNU89-NEXT:         long_double = f80;
+// GNU89-NEXT:         storage bool [size=1, align=1];
+// GNU89-NEXT:         storage i8, u8 [size=1, align=1];
+// GNU89-NEXT:         storage i16, u16 [size=2, align=2];
+// GNU89-NEXT:         storage i32, u32 [size=4, align=4];
+// GNU89-NEXT:         storage i64, u64 [size=8, align=8];
+// GNU89-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU89-NEXT:         storage bf16 [size=2, align=2];
+// GNU89-NEXT:         storage f16 [size=2, align=2];
+// GNU89-NEXT:         storage f32 [size=4, align=4];
+// GNU89-NEXT:         storage f64 [size=8, align=8];
+// GNU89-NEXT:         storage f80 [size=16, align=16];
+// GNU89-NEXT:         storage f128 [size=16, align=16];
+// GNU89-NEXT:         storage d32 [size=4, align=4];
+// GNU89-NEXT:         storage d64 [size=8, align=8];
+// GNU89-NEXT:         storage d128 [size=16, align=16];
+// GNU89-NEXT:     }
+// GNU89-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// GNU89-NEXT: }
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: Integer(
-// C17-NEXT:                   Ranked {
-// C17-NEXT:                       rank: Int,
-// C17-NEXT:                       signed: true,
-// C17-NEXT:                   },
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "subject",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
-// C17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: Integer(
-// C17-NEXT:                   Ranked {
-// C17-NEXT:                       rank: Int,
-// C17-NEXT:                       signed: true,
-// C17-NEXT:                   },
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "typeof",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
-// C17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: TypeOf(
-// C17-NEXT:                   Expression(
-// C17-NEXT:                       Identifier(
-// C17-NEXT:                           "subject",
-// C17-NEXT:                       ),
-// C17-NEXT:                   ),
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "always_typeof_derived",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
+// C17: module {
+// C17-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C17-NEXT:         endian = little;
+// C17-NEXT:         pointer [size=8, align=8];
+// C17-NEXT:         stack_alignment = 16;
+// C17-NEXT:         long_double = f80;
+// C17-NEXT:         storage bool [size=1, align=1];
+// C17-NEXT:         storage i8, u8 [size=1, align=1];
+// C17-NEXT:         storage i16, u16 [size=2, align=2];
+// C17-NEXT:         storage i32, u32 [size=4, align=4];
+// C17-NEXT:         storage i64, u64 [size=8, align=8];
+// C17-NEXT:         storage i128, u128 [size=16, align=16];
+// C17-NEXT:         storage bf16 [size=2, align=2];
+// C17-NEXT:         storage f16 [size=2, align=2];
+// C17-NEXT:         storage f32 [size=4, align=4];
+// C17-NEXT:         storage f64 [size=8, align=8];
+// C17-NEXT:         storage f80 [size=16, align=16];
+// C17-NEXT:         storage f128 [size=16, align=16];
+// C17-NEXT:         storage d32 [size=4, align=4];
+// C17-NEXT:         storage d64 [size=8, align=8];
+// C17-NEXT:         storage d128 [size=16, align=16];
+// C17-NEXT:     }
+// C17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %1 typeof: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
-// GNU17: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: Integer(
-// GNU17-NEXT:                   Ranked {
-// GNU17-NEXT:                       rank: Int,
-// GNU17-NEXT:                       signed: true,
-// GNU17-NEXT:                   },
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "subject",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
-// GNU17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: TypeOf(
-// GNU17-NEXT:                   Expression(
-// GNU17-NEXT:                       Identifier(
-// GNU17-NEXT:                           "subject",
-// GNU17-NEXT:                       ),
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "typeof_derived",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
-// GNU17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: TypeOf(
-// GNU17-NEXT:                   Expression(
-// GNU17-NEXT:                       Identifier(
-// GNU17-NEXT:                           "subject",
-// GNU17-NEXT:                       ),
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "always_typeof_derived",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
+// GNU17: module {
+// GNU17-NEXT:     target "x86_64-unknown-linux-gnu" {
+// GNU17-NEXT:         endian = little;
+// GNU17-NEXT:         pointer [size=8, align=8];
+// GNU17-NEXT:         stack_alignment = 16;
+// GNU17-NEXT:         long_double = f80;
+// GNU17-NEXT:         storage bool [size=1, align=1];
+// GNU17-NEXT:         storage i8, u8 [size=1, align=1];
+// GNU17-NEXT:         storage i16, u16 [size=2, align=2];
+// GNU17-NEXT:         storage i32, u32 [size=4, align=4];
+// GNU17-NEXT:         storage i64, u64 [size=8, align=8];
+// GNU17-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU17-NEXT:         storage bf16 [size=2, align=2];
+// GNU17-NEXT:         storage f16 [size=2, align=2];
+// GNU17-NEXT:         storage f32 [size=4, align=4];
+// GNU17-NEXT:         storage f64 [size=8, align=8];
+// GNU17-NEXT:         storage f80 [size=16, align=16];
+// GNU17-NEXT:         storage f128 [size=16, align=16];
+// GNU17-NEXT:         storage d32 [size=4, align=4];
+// GNU17-NEXT:         storage d64 [size=8, align=8];
+// GNU17-NEXT:         storage d128 [size=16, align=16];
+// GNU17-NEXT:     }
+// GNU17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Integer(
-// C23-NEXT:                   Ranked {
-// C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "subject",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: TypeOf(
-// C23-NEXT:                   Expression(
-// C23-NEXT:                       Identifier(
-// C23-NEXT:                           "subject",
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "typeof_derived",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: TypeOf(
-// C23-NEXT:                   Expression(
-// C23-NEXT:                       Identifier(
-// C23-NEXT:                           "subject",
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "always_typeof_derived",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

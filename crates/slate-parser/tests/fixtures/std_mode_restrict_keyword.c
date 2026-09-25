@@ -15,188 +15,110 @@ char *__restrict always_restrict;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Integer(
-// C89-NEXT:                   Ranked {
-// C89-NEXT:                       rank: Int,
-// C89-NEXT:                       signed: true,
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "restrict",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Integer(
-// C89-NEXT:                   Char {
-// C89-NEXT:                       signed: None,
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Pointer {
-// C89-NEXT:                       qualifiers: Qualifiers {
-// C89-NEXT:                           is_restrict: true,
-// C89-NEXT:                       },
-// C89-NEXT:                       inner: Name(
-// C89-NEXT:                           "always_restrict",
-// C89-NEXT:                       ),
-// C89-NEXT:                   },
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
+// C89: module {
+// C89-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C89-NEXT:         endian = little;
+// C89-NEXT:         pointer [size=8, align=8];
+// C89-NEXT:         stack_alignment = 16;
+// C89-NEXT:         long_double = f80;
+// C89-NEXT:         storage bool [size=1, align=1];
+// C89-NEXT:         storage i8, u8 [size=1, align=1];
+// C89-NEXT:         storage i16, u16 [size=2, align=2];
+// C89-NEXT:         storage i32, u32 [size=4, align=4];
+// C89-NEXT:         storage i64, u64 [size=8, align=8];
+// C89-NEXT:         storage i128, u128 [size=16, align=16];
+// C89-NEXT:         storage bf16 [size=2, align=2];
+// C89-NEXT:         storage f16 [size=2, align=2];
+// C89-NEXT:         storage f32 [size=4, align=4];
+// C89-NEXT:         storage f64 [size=8, align=8];
+// C89-NEXT:         storage f80 [size=16, align=16];
+// C89-NEXT:         storage f128 [size=16, align=16];
+// C89-NEXT:         storage d32 [size=4, align=4];
+// C89-NEXT:         storage d64 [size=8, align=8];
+// C89-NEXT:         storage d128 [size=16, align=16];
+// C89-NEXT:     }
+// C89-NEXT:     global %0 restrict: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
-// GNU89: decl[{{[0-9]+}}]: Declaration(
-// GNU89-NEXT:       Declaration {
-// GNU89-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU89-NEXT:               ty: Integer(
-// GNU89-NEXT:                   Ranked {
-// GNU89-NEXT:                       rank: Int,
-// GNU89-NEXT:                       signed: true,
-// GNU89-NEXT:                   },
-// GNU89-NEXT:               ),
-// GNU89-NEXT:           },
-// GNU89-NEXT:           declarators: [
-// GNU89-NEXT:               InitDeclaratorKind {
-// GNU89-NEXT:                   declarator: Name(
-// GNU89-NEXT:                       "restrict",
-// GNU89-NEXT:                   ),
-// GNU89-NEXT:               },
-// GNU89-NEXT:           ],
-// GNU89-NEXT:       },
-// GNU89-NEXT:   )
-// GNU89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU89-NEXT:       Declaration {
-// GNU89-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU89-NEXT:               ty: Integer(
-// GNU89-NEXT:                   Char {
-// GNU89-NEXT:                       signed: None,
-// GNU89-NEXT:                   },
-// GNU89-NEXT:               ),
-// GNU89-NEXT:           },
-// GNU89-NEXT:           declarators: [
-// GNU89-NEXT:               InitDeclaratorKind {
-// GNU89-NEXT:                   declarator: Pointer {
-// GNU89-NEXT:                       qualifiers: Qualifiers {
-// GNU89-NEXT:                           is_restrict: true,
-// GNU89-NEXT:                       },
-// GNU89-NEXT:                       inner: Name(
-// GNU89-NEXT:                           "always_restrict",
-// GNU89-NEXT:                       ),
-// GNU89-NEXT:                   },
-// GNU89-NEXT:               },
-// GNU89-NEXT:           ],
-// GNU89-NEXT:       },
-// GNU89-NEXT:   )
+// GNU89: module {
+// GNU89-NEXT:     target "x86_64-unknown-linux-gnu" {
+// GNU89-NEXT:         endian = little;
+// GNU89-NEXT:         pointer [size=8, align=8];
+// GNU89-NEXT:         stack_alignment = 16;
+// GNU89-NEXT:         long_double = f80;
+// GNU89-NEXT:         storage bool [size=1, align=1];
+// GNU89-NEXT:         storage i8, u8 [size=1, align=1];
+// GNU89-NEXT:         storage i16, u16 [size=2, align=2];
+// GNU89-NEXT:         storage i32, u32 [size=4, align=4];
+// GNU89-NEXT:         storage i64, u64 [size=8, align=8];
+// GNU89-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU89-NEXT:         storage bf16 [size=2, align=2];
+// GNU89-NEXT:         storage f16 [size=2, align=2];
+// GNU89-NEXT:         storage f32 [size=4, align=4];
+// GNU89-NEXT:         storage f64 [size=8, align=8];
+// GNU89-NEXT:         storage f80 [size=16, align=16];
+// GNU89-NEXT:         storage f128 [size=16, align=16];
+// GNU89-NEXT:         storage d32 [size=4, align=4];
+// GNU89-NEXT:         storage d64 [size=8, align=8];
+// GNU89-NEXT:         storage d128 [size=16, align=16];
+// GNU89-NEXT:     }
+// GNU89-NEXT:     global %0 restrict: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// GNU89-NEXT: }
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN C99
-// C99: decl[{{[0-9]+}}]: Declaration(
-// C99-NEXT:       Declaration {
-// C99-NEXT:           specifiers: DeclarationSpecifiers {
-// C99-NEXT:               ty: Integer(
-// C99-NEXT:                   Ranked {
-// C99-NEXT:                       rank: Int,
-// C99-NEXT:                       signed: true,
-// C99-NEXT:                   },
-// C99-NEXT:               ),
-// C99-NEXT:           },
-// C99-NEXT:           declarators: [
-// C99-NEXT:               InitDeclaratorKind {
-// C99-NEXT:                   declarator: Pointer {
-// C99-NEXT:                       qualifiers: Qualifiers {
-// C99-NEXT:                           is_restrict: true,
-// C99-NEXT:                       },
-// C99-NEXT:                       inner: Name(
-// C99-NEXT:                           "restrict_qualified",
-// C99-NEXT:                       ),
-// C99-NEXT:                   },
-// C99-NEXT:               },
-// C99-NEXT:           ],
-// C99-NEXT:       },
-// C99-NEXT:   )
-// C99-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C99-NEXT:       Declaration {
-// C99-NEXT:           specifiers: DeclarationSpecifiers {
-// C99-NEXT:               ty: Integer(
-// C99-NEXT:                   Char {
-// C99-NEXT:                       signed: None,
-// C99-NEXT:                   },
-// C99-NEXT:               ),
-// C99-NEXT:           },
-// C99-NEXT:           declarators: [
-// C99-NEXT:               InitDeclaratorKind {
-// C99-NEXT:                   declarator: Pointer {
-// C99-NEXT:                       qualifiers: Qualifiers {
-// C99-NEXT:                           is_restrict: true,
-// C99-NEXT:                       },
-// C99-NEXT:                       inner: Name(
-// C99-NEXT:                           "always_restrict",
-// C99-NEXT:                       ),
-// C99-NEXT:                   },
-// C99-NEXT:               },
-// C99-NEXT:           ],
-// C99-NEXT:       },
-// C99-NEXT:   )
+// C99: module {
+// C99-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C99-NEXT:         endian = little;
+// C99-NEXT:         pointer [size=8, align=8];
+// C99-NEXT:         stack_alignment = 16;
+// C99-NEXT:         long_double = f80;
+// C99-NEXT:         storage bool [size=1, align=1];
+// C99-NEXT:         storage i8, u8 [size=1, align=1];
+// C99-NEXT:         storage i16, u16 [size=2, align=2];
+// C99-NEXT:         storage i32, u32 [size=4, align=4];
+// C99-NEXT:         storage i64, u64 [size=8, align=8];
+// C99-NEXT:         storage i128, u128 [size=16, align=16];
+// C99-NEXT:         storage bf16 [size=2, align=2];
+// C99-NEXT:         storage f16 [size=2, align=2];
+// C99-NEXT:         storage f32 [size=4, align=4];
+// C99-NEXT:         storage f64 [size=8, align=8];
+// C99-NEXT:         storage f80 [size=16, align=16];
+// C99-NEXT:         storage f128 [size=16, align=16];
+// C99-NEXT:         storage d32 [size=4, align=4];
+// C99-NEXT:         storage d64 [size=8, align=8];
+// C99-NEXT:         storage d128 [size=16, align=16];
+// C99-NEXT:     }
+// C99-NEXT:     global %0 restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
+// C99-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Integer(
-// C23-NEXT:                   Ranked {
-// C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Pointer {
-// C23-NEXT:                       qualifiers: Qualifiers {
-// C23-NEXT:                           is_restrict: true,
-// C23-NEXT:                       },
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "restrict_qualified",
-// C23-NEXT:                       ),
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Integer(
-// C23-NEXT:                   Char {
-// C23-NEXT:                       signed: None,
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Pointer {
-// C23-NEXT:                       qualifiers: Qualifiers {
-// C23-NEXT:                           is_restrict: true,
-// C23-NEXT:                       },
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "always_restrict",
-// C23-NEXT:                       ),
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     global %0 restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
+// C23-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

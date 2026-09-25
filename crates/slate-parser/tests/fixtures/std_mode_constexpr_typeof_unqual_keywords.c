@@ -16,286 +16,89 @@ __typeof_unqual(subject) always_typeof_unqual_derived;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: Integer(
-// C17-NEXT:                   Ranked {
-// C17-NEXT:                       rank: Int,
-// C17-NEXT:                       signed: true,
-// C17-NEXT:                   },
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "subject",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
-// C17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: Integer(
-// C17-NEXT:                   Ranked {
-// C17-NEXT:                       rank: Int,
-// C17-NEXT:                       signed: true,
-// C17-NEXT:                   },
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "constexpr",
-// C17-NEXT:                   ),
-// C17-NEXT:                   initializer: Some(
-// C17-NEXT:                       Expr(
-// C17-NEXT:                           IntegerLiteral(
-// C17-NEXT:                               IntegerLiteral {
-// C17-NEXT:                                   value: 5,
-// C17-NEXT:                                   radix: Decimal,
-// C17-NEXT:                                   suffix: IntegerSuffix {
-// C17-NEXT:                                       unsigned: false,
-// C17-NEXT:                                       size: None,
-// C17-NEXT:                                   },
-// C17-NEXT:                                   spelling: "5",
-// C17-NEXT:                               },
-// C17-NEXT:                           ),
-// C17-NEXT:                       ),
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
-// C17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: Integer(
-// C17-NEXT:                   Ranked {
-// C17-NEXT:                       rank: Int,
-// C17-NEXT:                       signed: true,
-// C17-NEXT:                   },
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "typeof_unqual",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
-// C17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C17-NEXT:       Declaration {
-// C17-NEXT:           specifiers: DeclarationSpecifiers {
-// C17-NEXT:               ty: TypeOfUnqual(
-// C17-NEXT:                   Expression(
-// C17-NEXT:                       Identifier(
-// C17-NEXT:                           "subject",
-// C17-NEXT:                       ),
-// C17-NEXT:                   ),
-// C17-NEXT:               ),
-// C17-NEXT:           },
-// C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclaratorKind {
-// C17-NEXT:                   declarator: Name(
-// C17-NEXT:                       "always_typeof_unqual_derived",
-// C17-NEXT:                   ),
-// C17-NEXT:               },
-// C17-NEXT:           ],
-// C17-NEXT:       },
-// C17-NEXT:   )
+// C17: module {
+// C17-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C17-NEXT:         endian = little;
+// C17-NEXT:         pointer [size=8, align=8];
+// C17-NEXT:         stack_alignment = 16;
+// C17-NEXT:         long_double = f80;
+// C17-NEXT:         storage bool [size=1, align=1];
+// C17-NEXT:         storage i8, u8 [size=1, align=1];
+// C17-NEXT:         storage i16, u16 [size=2, align=2];
+// C17-NEXT:         storage i32, u32 [size=4, align=4];
+// C17-NEXT:         storage i64, u64 [size=8, align=8];
+// C17-NEXT:         storage i128, u128 [size=16, align=16];
+// C17-NEXT:         storage bf16 [size=2, align=2];
+// C17-NEXT:         storage f16 [size=2, align=2];
+// C17-NEXT:         storage f32 [size=4, align=4];
+// C17-NEXT:         storage f64 [size=8, align=8];
+// C17-NEXT:         storage f80 [size=16, align=16];
+// C17-NEXT:         storage f128 [size=16, align=16];
+// C17-NEXT:         storage d32 [size=4, align=4];
+// C17-NEXT:         storage d64 [size=8, align=8];
+// C17-NEXT:         storage d128 [size=16, align=16];
+// C17-NEXT:     }
+// C17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %1 constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
+// C17-NEXT:     global %2 typeof_unqual: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
-// GNU17: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: Integer(
-// GNU17-NEXT:                   Ranked {
-// GNU17-NEXT:                       rank: Int,
-// GNU17-NEXT:                       signed: true,
-// GNU17-NEXT:                   },
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "subject",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
-// GNU17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: Integer(
-// GNU17-NEXT:                   Ranked {
-// GNU17-NEXT:                       rank: Int,
-// GNU17-NEXT:                       signed: true,
-// GNU17-NEXT:                   },
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "constexpr",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:                   initializer: Some(
-// GNU17-NEXT:                       Expr(
-// GNU17-NEXT:                           IntegerLiteral(
-// GNU17-NEXT:                               IntegerLiteral {
-// GNU17-NEXT:                                   value: 5,
-// GNU17-NEXT:                                   radix: Decimal,
-// GNU17-NEXT:                                   suffix: IntegerSuffix {
-// GNU17-NEXT:                                       unsigned: false,
-// GNU17-NEXT:                                       size: None,
-// GNU17-NEXT:                                   },
-// GNU17-NEXT:                                   spelling: "5",
-// GNU17-NEXT:                               },
-// GNU17-NEXT:                           ),
-// GNU17-NEXT:                       ),
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
-// GNU17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: Integer(
-// GNU17-NEXT:                   Ranked {
-// GNU17-NEXT:                       rank: Int,
-// GNU17-NEXT:                       signed: true,
-// GNU17-NEXT:                   },
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "typeof_unqual",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
-// GNU17-NEXT: decl[{{[0-9]+}}]: Declaration(
-// GNU17-NEXT:       Declaration {
-// GNU17-NEXT:           specifiers: DeclarationSpecifiers {
-// GNU17-NEXT:               ty: TypeOfUnqual(
-// GNU17-NEXT:                   Expression(
-// GNU17-NEXT:                       Identifier(
-// GNU17-NEXT:                           "subject",
-// GNU17-NEXT:                       ),
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               ),
-// GNU17-NEXT:           },
-// GNU17-NEXT:           declarators: [
-// GNU17-NEXT:               InitDeclaratorKind {
-// GNU17-NEXT:                   declarator: Name(
-// GNU17-NEXT:                       "always_typeof_unqual_derived",
-// GNU17-NEXT:                   ),
-// GNU17-NEXT:               },
-// GNU17-NEXT:           ],
-// GNU17-NEXT:       },
-// GNU17-NEXT:   )
+// GNU17: module {
+// GNU17-NEXT:     target "x86_64-unknown-linux-gnu" {
+// GNU17-NEXT:         endian = little;
+// GNU17-NEXT:         pointer [size=8, align=8];
+// GNU17-NEXT:         stack_alignment = 16;
+// GNU17-NEXT:         long_double = f80;
+// GNU17-NEXT:         storage bool [size=1, align=1];
+// GNU17-NEXT:         storage i8, u8 [size=1, align=1];
+// GNU17-NEXT:         storage i16, u16 [size=2, align=2];
+// GNU17-NEXT:         storage i32, u32 [size=4, align=4];
+// GNU17-NEXT:         storage i64, u64 [size=8, align=8];
+// GNU17-NEXT:         storage i128, u128 [size=16, align=16];
+// GNU17-NEXT:         storage bf16 [size=2, align=2];
+// GNU17-NEXT:         storage f16 [size=2, align=2];
+// GNU17-NEXT:         storage f32 [size=4, align=4];
+// GNU17-NEXT:         storage f64 [size=8, align=8];
+// GNU17-NEXT:         storage f80 [size=16, align=16];
+// GNU17-NEXT:         storage f128 [size=16, align=16];
+// GNU17-NEXT:         storage d32 [size=4, align=4];
+// GNU17-NEXT:         storage d64 [size=8, align=8];
+// GNU17-NEXT:         storage d128 [size=16, align=16];
+// GNU17-NEXT:     }
+// GNU17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %1 constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
+// GNU17-NEXT:     global %2 typeof_unqual: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Integer(
-// C23-NEXT:                   Ranked {
-// C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "subject",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Integer(
-// C23-NEXT:                   Ranked {
-// C23-NEXT:                       rank: Int,
-// C23-NEXT:                       signed: true,
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:               is_constexpr: true,
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "constexpr_value",
-// C23-NEXT:                   ),
-// C23-NEXT:                   initializer: Some(
-// C23-NEXT:                       Expr(
-// C23-NEXT:                           IntegerLiteral(
-// C23-NEXT:                               IntegerLiteral {
-// C23-NEXT:                                   value: 5,
-// C23-NEXT:                                   radix: Decimal,
-// C23-NEXT:                                   suffix: IntegerSuffix {
-// C23-NEXT:                                       unsigned: false,
-// C23-NEXT:                                       size: None,
-// C23-NEXT:                                   },
-// C23-NEXT:                                   spelling: "5",
-// C23-NEXT:                               },
-// C23-NEXT:                           ),
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: TypeOfUnqual(
-// C23-NEXT:                   Expression(
-// C23-NEXT:                       Identifier(
-// C23-NEXT:                           "subject",
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "typeof_unqual_derived",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: TypeOfUnqual(
-// C23-NEXT:                   Expression(
-// C23-NEXT:                       Identifier(
-// C23-NEXT:                           "subject",
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "always_typeof_unqual_derived",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %1 constexpr_value: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal];
+// C23-NEXT:     global %2 typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

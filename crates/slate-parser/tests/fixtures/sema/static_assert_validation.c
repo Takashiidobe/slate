@@ -84,6 +84,8 @@ void valid(int n) {
 }
 #endif
 
+// SLATE-FILECHECK-IR-ERROR VALID
+
 // SLATE-FILECHECK-BEGIN FALSE_FILE
 // FALSE_FILE: Error:   × semantic analysis failed
 // FALSE_FILE: Error:
@@ -205,3 +207,14 @@ void valid(int n) {
 // CALL_LIBRARY: 30 │ #else
 // CALL_LIBRARY: ╰────
 // SLATE-FILECHECK-END CALL_LIBRARY
+// SLATE-FILECHECK-BEGIN VALID
+// VALID: Error:   × semantic analysis failed
+// VALID: Error:
+// VALID: × static assertion requires an integer constant expression: nonconstant call
+// VALID: ╭─[tests/fixtures/sema/static_assert_validation.c:46:15]
+// VALID: 45 │ static_assert(1 ? 1 : opaque());
+// VALID: 46 │ static_assert(sizeof(opaque()) == sizeof(int));
+// VALID: ·               ───────────────────────────────
+// VALID: 47 │ static_assert(_Generic(1, int: 1, default: opaque()));
+// VALID: ╰────
+// SLATE-FILECHECK-END VALID

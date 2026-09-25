@@ -76,3 +76,40 @@ int uses(hidden_alias value) { return value + not_a_union + not_a_local; }
 // WARN: 14 │
 // WARN: ╰────
 // SLATE-FILECHECK-END WARN
+// SLATE-FILECHECK-BEGIN IR-WARN
+// IR-WARN: module {
+// IR-WARN-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-WARN-NEXT:         endian = little;
+// IR-WARN-NEXT:         pointer [size=8, align=8];
+// IR-WARN-NEXT:         stack_alignment = 16;
+// IR-WARN-NEXT:         long_double = f80;
+// IR-WARN-NEXT:         storage bool [size=1, align=1];
+// IR-WARN-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-WARN-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-WARN-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-WARN-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-WARN-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-WARN-NEXT:         storage bf16 [size=2, align=2];
+// IR-WARN-NEXT:         storage f16 [size=2, align=2];
+// IR-WARN-NEXT:         storage f32 [size=4, align=4];
+// IR-WARN-NEXT:         storage f64 [size=8, align=8];
+// IR-WARN-NEXT:         storage f80 [size=16, align=16];
+// IR-WARN-NEXT:         storage f128 [size=16, align=16];
+// IR-WARN-NEXT:         storage d32 [size=4, align=4];
+// IR-WARN-NEXT:         storage d64 [size=8, align=8];
+// IR-WARN-NEXT:         storage d128 [size=16, align=16];
+// IR-WARN-NEXT:     }
+// IR-WARN-NEXT:     type @type0 hidden_alias = i32;
+// IR-WARN-NEXT:     global %0 not_a_union: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %1 not_a_record: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %2 not_a_function: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %3 not_allocating: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %6 not_a_local: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     fn %4 @not_a_variable() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:     }
+// IR-WARN-NEXT:     fn %5 @cleanup_target(%10 p: ptr<void>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %8 @uses(%9 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return add<i32>(add<i32>(read<i32>(%9), read<i32>(%0)), read<i32>(%6));
+// IR-WARN-NEXT:     }
+// IR-WARN-NEXT: }
+// SLATE-FILECHECK-END IR-WARN

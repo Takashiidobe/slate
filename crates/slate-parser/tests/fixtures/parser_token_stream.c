@@ -55,803 +55,128 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SLATE-FILECHECK-DEFINES MACRO STYLE=2
 
 // SLATE-FILECHECK-BEGIN COMPACT
-// COMPACT: tag[{{[0-9]+}}]: TagDefinition {
-// COMPACT-NEXT:       id: TagId(
-// COMPACT-NEXT:           [[#TAG0:]],
-// COMPACT-NEXT:       ),
-// COMPACT-NEXT:       kind: Struct,
-// COMPACT-NEXT:       name: Some(
-// COMPACT-NEXT:           "Payload",
-// COMPACT-NEXT:       ),
-// COMPACT-NEXT:       body: Record(
-// COMPACT-NEXT:           [
-// COMPACT-NEXT:               Field(
-// COMPACT-NEXT:                   FieldDecl {
-// COMPACT-NEXT:                       specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:                           ty: Integer(
-// COMPACT-NEXT:                               Ranked {
-// COMPACT-NEXT:                                   rank: Int,
-// COMPACT-NEXT:                                   signed: true,
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                           ),
-// COMPACT-NEXT:                       },
-// COMPACT-NEXT:                       declarators: [
-// COMPACT-NEXT:                           FieldDeclaratorKind {
-// COMPACT-NEXT:                               declarator: Name(
-// COMPACT-NEXT:                                   "value",
-// COMPACT-NEXT:                               ),
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       ],
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:               Field(
-// COMPACT-NEXT:                   FieldDecl {
-// COMPACT-NEXT:                       specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:                           ty: Integer(
-// COMPACT-NEXT:                               Ranked {
-// COMPACT-NEXT:                                   rank: Int,
-// COMPACT-NEXT:                                   signed: true,
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                           ),
-// COMPACT-NEXT:                       },
-// COMPACT-NEXT:                       declarators: [
-// COMPACT-NEXT:                           FieldDeclaratorKind {
-// COMPACT-NEXT:                               declarator: Function {
-// COMPACT-NEXT:                                   inner: Grouped(
-// COMPACT-NEXT:                                       Pointer {
-// COMPACT-NEXT:                                           qualifiers: Qualifiers,
-// COMPACT-NEXT:                                           inner: Name(
-// COMPACT-NEXT:                                               "callback",
-// COMPACT-NEXT:                                           ),
-// COMPACT-NEXT:                                       },
-// COMPACT-NEXT:                                   ),
-// COMPACT-NEXT:                                   parameters: Prototype {
-// COMPACT-NEXT:                                       parameters: [
-// COMPACT-NEXT:                                           ParameterDeclarationKind {
-// COMPACT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:                                                   ty: Integer(
-// COMPACT-NEXT:                                                       Ranked {
-// COMPACT-NEXT:                                                           rank: Int,
-// COMPACT-NEXT:                                                           signed: true,
-// COMPACT-NEXT:                                                       },
-// COMPACT-NEXT:                                                   ),
-// COMPACT-NEXT:                                               },
-// COMPACT-NEXT:                                               declarator: Abstract,
-// COMPACT-NEXT:                                           },
-// COMPACT-NEXT:                                       ],
-// COMPACT-NEXT:                                   },
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       ],
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           ],
-// COMPACT-NEXT:       ),
-// COMPACT-NEXT:   }
-// COMPACT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
-// COMPACT-NEXT:       id: TagId(
-// COMPACT-NEXT:           [[#TAG1:]],
-// COMPACT-NEXT:       ),
-// COMPACT-NEXT:       kind: Enum,
-// COMPACT-NEXT:       name: Some(
-// COMPACT-NEXT:           "Mode",
-// COMPACT-NEXT:       ),
-// COMPACT-NEXT:       body: Enum {
-// COMPACT-NEXT:           fixed_type: Some(
-// COMPACT-NEXT:               TypeName {
-// COMPACT-NEXT:                   specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:                       ty: Integer(
-// COMPACT-NEXT:                           Ranked {
-// COMPACT-NEXT:                               rank: Int,
-// COMPACT-NEXT:                               signed: false,
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:                   declarator: Abstract,
-// COMPACT-NEXT:               },
-// COMPACT-NEXT:           ),
-// COMPACT-NEXT:           enumerators: [
-// COMPACT-NEXT:               Enumerator(
-// COMPACT-NEXT:                   Enumerator {
-// COMPACT-NEXT:                       name: "FIRST",
-// COMPACT-NEXT:                       value: Some(
-// COMPACT-NEXT:                           IntegerLiteral(
-// COMPACT-NEXT:                               IntegerLiteral {
-// COMPACT-NEXT:                                   value: 1,
-// COMPACT-NEXT:                                   radix: Decimal,
-// COMPACT-NEXT:                                   suffix: IntegerSuffix {
-// COMPACT-NEXT:                                       unsigned: false,
-// COMPACT-NEXT:                                       size: None,
-// COMPACT-NEXT:                                   },
-// COMPACT-NEXT:                                   spelling: "1",
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                           ),
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:               Enumerator(
-// COMPACT-NEXT:                   Enumerator {
-// COMPACT-NEXT:                       name: "LAST",
-// COMPACT-NEXT:                       value: Some(
-// COMPACT-NEXT:                           Binary {
-// COMPACT-NEXT:                               op: Add,
-// COMPACT-NEXT:                               left: Identifier(
-// COMPACT-NEXT:                                   "FIRST",
-// COMPACT-NEXT:                               ),
-// COMPACT-NEXT:                               right: IntegerLiteral(
-// COMPACT-NEXT:                                   IntegerLiteral {
-// COMPACT-NEXT:                                       value: 2,
-// COMPACT-NEXT:                                       radix: Decimal,
-// COMPACT-NEXT:                                       suffix: IntegerSuffix {
-// COMPACT-NEXT:                                           unsigned: false,
-// COMPACT-NEXT:                                           size: None,
-// COMPACT-NEXT:                                       },
-// COMPACT-NEXT:                                       spelling: "2",
-// COMPACT-NEXT:                                   },
-// COMPACT-NEXT:                               ),
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           ],
-// COMPACT-NEXT:       },
-// COMPACT-NEXT:   }
-// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// COMPACT-NEXT:       Declaration {
-// COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:               ty: Tag(
-// COMPACT-NEXT:                   Definition(
-// COMPACT-NEXT:                       TagId(
-// COMPACT-NEXT:                           [[#TAG0]],
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:               storage: Typedef,
-// COMPACT-NEXT:           },
-// COMPACT-NEXT:           declarators: [
-// COMPACT-NEXT:               InitDeclaratorKind {
-// COMPACT-NEXT:                   declarator: Name(
-// COMPACT-NEXT:                       "Payload",
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:               },
-// COMPACT-NEXT:           ],
-// COMPACT-NEXT:       },
-// COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// COMPACT-NEXT:       Declaration {
-// COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:               ty: Tag(
-// COMPACT-NEXT:                   Definition(
-// COMPACT-NEXT:                       TagId(
-// COMPACT-NEXT:                           [[#TAG1]],
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           },
-// COMPACT-NEXT:       },
-// COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[{{[0-9]+}}]: Function(
-// COMPACT-NEXT:       FunctionDefinition {
-// COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:               ty: Integer(
-// COMPACT-NEXT:                   Ranked {
-// COMPACT-NEXT:                       rank: Int,
-// COMPACT-NEXT:                       signed: true,
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           },
-// COMPACT-NEXT:           declarator: Function {
-// COMPACT-NEXT:               inner: Name(
-// COMPACT-NEXT:                   "read_value",
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:               parameters: Prototype {
-// COMPACT-NEXT:                   parameters: [
-// COMPACT-NEXT:                       ParameterDeclarationKind {
-// COMPACT-NEXT:                           specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:                               ty: Named(
-// COMPACT-NEXT:                                   "Payload",
-// COMPACT-NEXT:                               ),
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                           declarator: Pointer {
-// COMPACT-NEXT:                               qualifiers: Qualifiers,
-// COMPACT-NEXT:                               inner: Name(
-// COMPACT-NEXT:                                   "p",
-// COMPACT-NEXT:                               ),
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       },
-// COMPACT-NEXT:                   ],
-// COMPACT-NEXT:               },
-// COMPACT-NEXT:           },
-// COMPACT-NEXT:           body: [
-// COMPACT-NEXT:               If {
-// COMPACT-NEXT:                   condition: Identifier(
-// COMPACT-NEXT:                       "p",
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:                   then_branch: Block(
-// COMPACT-NEXT:                       [
-// COMPACT-NEXT:                           Return(
-// COMPACT-NEXT:                               Call {
-// COMPACT-NEXT:                                   callee: Member {
-// COMPACT-NEXT:                                       base: Identifier(
-// COMPACT-NEXT:                                           "p",
-// COMPACT-NEXT:                                       ),
-// COMPACT-NEXT:                                       field: "callback",
-// COMPACT-NEXT:                                       arrow: true,
-// COMPACT-NEXT:                                   },
-// COMPACT-NEXT:                                   arguments: [
-// COMPACT-NEXT:                                       Member {
-// COMPACT-NEXT:                                           base: Identifier(
-// COMPACT-NEXT:                                               "p",
-// COMPACT-NEXT:                                           ),
-// COMPACT-NEXT:                                           field: "value",
-// COMPACT-NEXT:                                           arrow: true,
-// COMPACT-NEXT:                                       },
-// COMPACT-NEXT:                                   ],
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                           ),
-// COMPACT-NEXT:                       ],
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:                   else_branch: None,
-// COMPACT-NEXT:               },
-// COMPACT-NEXT:               Return(
-// COMPACT-NEXT:                   Identifier(
-// COMPACT-NEXT:                       "LAST",
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           ],
-// COMPACT-NEXT:       },
-// COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// COMPACT-NEXT:       Declaration {
-// COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
-// COMPACT-NEXT:               ty: Integer(
-// COMPACT-NEXT:                   Ranked {
-// COMPACT-NEXT:                       rank: Int,
-// COMPACT-NEXT:                       signed: true,
-// COMPACT-NEXT:                   },
-// COMPACT-NEXT:               ),
-// COMPACT-NEXT:           },
-// COMPACT-NEXT:           declarators: [
-// COMPACT-NEXT:               InitDeclaratorKind {
-// COMPACT-NEXT:                   declarator: Name(
-// COMPACT-NEXT:                       "after",
-// COMPACT-NEXT:                   ),
-// COMPACT-NEXT:               },
-// COMPACT-NEXT:           ],
-// COMPACT-NEXT:       },
-// COMPACT-NEXT:   )
+// COMPACT: module {
+// COMPACT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// COMPACT-NEXT:         endian = little;
+// COMPACT-NEXT:         pointer [size=8, align=8];
+// COMPACT-NEXT:         stack_alignment = 16;
+// COMPACT-NEXT:         long_double = f80;
+// COMPACT-NEXT:         storage bool [size=1, align=1];
+// COMPACT-NEXT:         storage i8, u8 [size=1, align=1];
+// COMPACT-NEXT:         storage i16, u16 [size=2, align=2];
+// COMPACT-NEXT:         storage i32, u32 [size=4, align=4];
+// COMPACT-NEXT:         storage i64, u64 [size=8, align=8];
+// COMPACT-NEXT:         storage i128, u128 [size=16, align=16];
+// COMPACT-NEXT:         storage bf16 [size=2, align=2];
+// COMPACT-NEXT:         storage f16 [size=2, align=2];
+// COMPACT-NEXT:         storage f32 [size=4, align=4];
+// COMPACT-NEXT:         storage f64 [size=8, align=8];
+// COMPACT-NEXT:         storage f80 [size=16, align=16];
+// COMPACT-NEXT:         storage f128 [size=16, align=16];
+// COMPACT-NEXT:         storage d32 [size=4, align=4];
+// COMPACT-NEXT:         storage d64 [size=8, align=8];
+// COMPACT-NEXT:         storage d128 [size=16, align=16];
+// COMPACT-NEXT:     }
+// COMPACT-NEXT:     type @type0 Payload = struct {
+// COMPACT-NEXT:         field0 value: i32;
+// COMPACT-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
+// COMPACT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
+// COMPACT-NEXT:     type @type1 Payload = @type0;
+// COMPACT-NEXT:     type @type2 Mode = enum : u32 {
+// COMPACT-NEXT:         %0 FIRST = const<@type2>(1);
+// COMPACT-NEXT:         %1 LAST = const<@type2>(3);
+// COMPACT-NEXT:     } [size=4, align=4];
+// COMPACT-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
+// COMPACT-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// COMPACT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// COMPACT-NEXT:             {
+// COMPACT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// COMPACT-NEXT:             }
+// COMPACT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// COMPACT-NEXT:     }
+// COMPACT-NEXT: }
 // SLATE-FILECHECK-END COMPACT
 // SLATE-FILECHECK-BEGIN SPLIT
-// SPLIT: tag[{{[0-9]+}}]: TagDefinition {
-// SPLIT-NEXT:       id: TagId(
-// SPLIT-NEXT:           [[#TAG0:]],
-// SPLIT-NEXT:       ),
-// SPLIT-NEXT:       kind: Struct,
-// SPLIT-NEXT:       name: Some(
-// SPLIT-NEXT:           "Payload",
-// SPLIT-NEXT:       ),
-// SPLIT-NEXT:       body: Record(
-// SPLIT-NEXT:           [
-// SPLIT-NEXT:               Field(
-// SPLIT-NEXT:                   FieldDecl {
-// SPLIT-NEXT:                       specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:                           ty: Integer(
-// SPLIT-NEXT:                               Ranked {
-// SPLIT-NEXT:                                   rank: Int,
-// SPLIT-NEXT:                                   signed: true,
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                           ),
-// SPLIT-NEXT:                       },
-// SPLIT-NEXT:                       declarators: [
-// SPLIT-NEXT:                           FieldDeclaratorKind {
-// SPLIT-NEXT:                               declarator: Name(
-// SPLIT-NEXT:                                   "value",
-// SPLIT-NEXT:                               ),
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       ],
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:               Field(
-// SPLIT-NEXT:                   FieldDecl {
-// SPLIT-NEXT:                       specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:                           ty: Integer(
-// SPLIT-NEXT:                               Ranked {
-// SPLIT-NEXT:                                   rank: Int,
-// SPLIT-NEXT:                                   signed: true,
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                           ),
-// SPLIT-NEXT:                       },
-// SPLIT-NEXT:                       declarators: [
-// SPLIT-NEXT:                           FieldDeclaratorKind {
-// SPLIT-NEXT:                               declarator: Function {
-// SPLIT-NEXT:                                   inner: Grouped(
-// SPLIT-NEXT:                                       Pointer {
-// SPLIT-NEXT:                                           qualifiers: Qualifiers,
-// SPLIT-NEXT:                                           inner: Name(
-// SPLIT-NEXT:                                               "callback",
-// SPLIT-NEXT:                                           ),
-// SPLIT-NEXT:                                       },
-// SPLIT-NEXT:                                   ),
-// SPLIT-NEXT:                                   parameters: Prototype {
-// SPLIT-NEXT:                                       parameters: [
-// SPLIT-NEXT:                                           ParameterDeclarationKind {
-// SPLIT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:                                                   ty: Integer(
-// SPLIT-NEXT:                                                       Ranked {
-// SPLIT-NEXT:                                                           rank: Int,
-// SPLIT-NEXT:                                                           signed: true,
-// SPLIT-NEXT:                                                       },
-// SPLIT-NEXT:                                                   ),
-// SPLIT-NEXT:                                               },
-// SPLIT-NEXT:                                               declarator: Abstract,
-// SPLIT-NEXT:                                           },
-// SPLIT-NEXT:                                       ],
-// SPLIT-NEXT:                                   },
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       ],
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           ],
-// SPLIT-NEXT:       ),
-// SPLIT-NEXT:   }
-// SPLIT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
-// SPLIT-NEXT:       id: TagId(
-// SPLIT-NEXT:           [[#TAG1:]],
-// SPLIT-NEXT:       ),
-// SPLIT-NEXT:       kind: Enum,
-// SPLIT-NEXT:       name: Some(
-// SPLIT-NEXT:           "Mode",
-// SPLIT-NEXT:       ),
-// SPLIT-NEXT:       body: Enum {
-// SPLIT-NEXT:           fixed_type: Some(
-// SPLIT-NEXT:               TypeName {
-// SPLIT-NEXT:                   specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:                       ty: Integer(
-// SPLIT-NEXT:                           Ranked {
-// SPLIT-NEXT:                               rank: Int,
-// SPLIT-NEXT:                               signed: false,
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:                   declarator: Abstract,
-// SPLIT-NEXT:               },
-// SPLIT-NEXT:           ),
-// SPLIT-NEXT:           enumerators: [
-// SPLIT-NEXT:               Enumerator(
-// SPLIT-NEXT:                   Enumerator {
-// SPLIT-NEXT:                       name: "FIRST",
-// SPLIT-NEXT:                       value: Some(
-// SPLIT-NEXT:                           IntegerLiteral(
-// SPLIT-NEXT:                               IntegerLiteral {
-// SPLIT-NEXT:                                   value: 1,
-// SPLIT-NEXT:                                   radix: Decimal,
-// SPLIT-NEXT:                                   suffix: IntegerSuffix {
-// SPLIT-NEXT:                                       unsigned: false,
-// SPLIT-NEXT:                                       size: None,
-// SPLIT-NEXT:                                   },
-// SPLIT-NEXT:                                   spelling: "1",
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                           ),
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:               Enumerator(
-// SPLIT-NEXT:                   Enumerator {
-// SPLIT-NEXT:                       name: "LAST",
-// SPLIT-NEXT:                       value: Some(
-// SPLIT-NEXT:                           Binary {
-// SPLIT-NEXT:                               op: Add,
-// SPLIT-NEXT:                               left: Identifier(
-// SPLIT-NEXT:                                   "FIRST",
-// SPLIT-NEXT:                               ),
-// SPLIT-NEXT:                               right: IntegerLiteral(
-// SPLIT-NEXT:                                   IntegerLiteral {
-// SPLIT-NEXT:                                       value: 2,
-// SPLIT-NEXT:                                       radix: Decimal,
-// SPLIT-NEXT:                                       suffix: IntegerSuffix {
-// SPLIT-NEXT:                                           unsigned: false,
-// SPLIT-NEXT:                                           size: None,
-// SPLIT-NEXT:                                       },
-// SPLIT-NEXT:                                       spelling: "2",
-// SPLIT-NEXT:                                   },
-// SPLIT-NEXT:                               ),
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           ],
-// SPLIT-NEXT:       },
-// SPLIT-NEXT:   }
-// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SPLIT-NEXT:       Declaration {
-// SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:               ty: Tag(
-// SPLIT-NEXT:                   Definition(
-// SPLIT-NEXT:                       TagId(
-// SPLIT-NEXT:                           [[#TAG0]],
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:               storage: Typedef,
-// SPLIT-NEXT:           },
-// SPLIT-NEXT:           declarators: [
-// SPLIT-NEXT:               InitDeclaratorKind {
-// SPLIT-NEXT:                   declarator: Name(
-// SPLIT-NEXT:                       "Payload",
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:               },
-// SPLIT-NEXT:           ],
-// SPLIT-NEXT:       },
-// SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SPLIT-NEXT:       Declaration {
-// SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:               ty: Tag(
-// SPLIT-NEXT:                   Definition(
-// SPLIT-NEXT:                       TagId(
-// SPLIT-NEXT:                           [[#TAG1]],
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           },
-// SPLIT-NEXT:       },
-// SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[{{[0-9]+}}]: Function(
-// SPLIT-NEXT:       FunctionDefinition {
-// SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:               ty: Integer(
-// SPLIT-NEXT:                   Ranked {
-// SPLIT-NEXT:                       rank: Int,
-// SPLIT-NEXT:                       signed: true,
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           },
-// SPLIT-NEXT:           declarator: Function {
-// SPLIT-NEXT:               inner: Name(
-// SPLIT-NEXT:                   "read_value",
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:               parameters: Prototype {
-// SPLIT-NEXT:                   parameters: [
-// SPLIT-NEXT:                       ParameterDeclarationKind {
-// SPLIT-NEXT:                           specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:                               ty: Named(
-// SPLIT-NEXT:                                   "Payload",
-// SPLIT-NEXT:                               ),
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                           declarator: Pointer {
-// SPLIT-NEXT:                               qualifiers: Qualifiers,
-// SPLIT-NEXT:                               inner: Name(
-// SPLIT-NEXT:                                   "p",
-// SPLIT-NEXT:                               ),
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       },
-// SPLIT-NEXT:                   ],
-// SPLIT-NEXT:               },
-// SPLIT-NEXT:           },
-// SPLIT-NEXT:           body: [
-// SPLIT-NEXT:               If {
-// SPLIT-NEXT:                   condition: Identifier(
-// SPLIT-NEXT:                       "p",
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:                   then_branch: Block(
-// SPLIT-NEXT:                       [
-// SPLIT-NEXT:                           Return(
-// SPLIT-NEXT:                               Call {
-// SPLIT-NEXT:                                   callee: Member {
-// SPLIT-NEXT:                                       base: Identifier(
-// SPLIT-NEXT:                                           "p",
-// SPLIT-NEXT:                                       ),
-// SPLIT-NEXT:                                       field: "callback",
-// SPLIT-NEXT:                                       arrow: true,
-// SPLIT-NEXT:                                   },
-// SPLIT-NEXT:                                   arguments: [
-// SPLIT-NEXT:                                       Member {
-// SPLIT-NEXT:                                           base: Identifier(
-// SPLIT-NEXT:                                               "p",
-// SPLIT-NEXT:                                           ),
-// SPLIT-NEXT:                                           field: "value",
-// SPLIT-NEXT:                                           arrow: true,
-// SPLIT-NEXT:                                       },
-// SPLIT-NEXT:                                   ],
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                           ),
-// SPLIT-NEXT:                       ],
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:                   else_branch: None,
-// SPLIT-NEXT:               },
-// SPLIT-NEXT:               Return(
-// SPLIT-NEXT:                   Identifier(
-// SPLIT-NEXT:                       "LAST",
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           ],
-// SPLIT-NEXT:       },
-// SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SPLIT-NEXT:       Declaration {
-// SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
-// SPLIT-NEXT:               ty: Integer(
-// SPLIT-NEXT:                   Ranked {
-// SPLIT-NEXT:                       rank: Int,
-// SPLIT-NEXT:                       signed: true,
-// SPLIT-NEXT:                   },
-// SPLIT-NEXT:               ),
-// SPLIT-NEXT:           },
-// SPLIT-NEXT:           declarators: [
-// SPLIT-NEXT:               InitDeclaratorKind {
-// SPLIT-NEXT:                   declarator: Name(
-// SPLIT-NEXT:                       "after",
-// SPLIT-NEXT:                   ),
-// SPLIT-NEXT:               },
-// SPLIT-NEXT:           ],
-// SPLIT-NEXT:       },
-// SPLIT-NEXT:   )
+// SPLIT: module {
+// SPLIT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// SPLIT-NEXT:         endian = little;
+// SPLIT-NEXT:         pointer [size=8, align=8];
+// SPLIT-NEXT:         stack_alignment = 16;
+// SPLIT-NEXT:         long_double = f80;
+// SPLIT-NEXT:         storage bool [size=1, align=1];
+// SPLIT-NEXT:         storage i8, u8 [size=1, align=1];
+// SPLIT-NEXT:         storage i16, u16 [size=2, align=2];
+// SPLIT-NEXT:         storage i32, u32 [size=4, align=4];
+// SPLIT-NEXT:         storage i64, u64 [size=8, align=8];
+// SPLIT-NEXT:         storage i128, u128 [size=16, align=16];
+// SPLIT-NEXT:         storage bf16 [size=2, align=2];
+// SPLIT-NEXT:         storage f16 [size=2, align=2];
+// SPLIT-NEXT:         storage f32 [size=4, align=4];
+// SPLIT-NEXT:         storage f64 [size=8, align=8];
+// SPLIT-NEXT:         storage f80 [size=16, align=16];
+// SPLIT-NEXT:         storage f128 [size=16, align=16];
+// SPLIT-NEXT:         storage d32 [size=4, align=4];
+// SPLIT-NEXT:         storage d64 [size=8, align=8];
+// SPLIT-NEXT:         storage d128 [size=16, align=16];
+// SPLIT-NEXT:     }
+// SPLIT-NEXT:     type @type0 Payload = struct {
+// SPLIT-NEXT:         field0 value: i32;
+// SPLIT-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
+// SPLIT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
+// SPLIT-NEXT:     type @type1 Payload = @type0;
+// SPLIT-NEXT:     type @type2 Mode = enum : u32 {
+// SPLIT-NEXT:         %0 FIRST = const<@type2>(1);
+// SPLIT-NEXT:         %1 LAST = const<@type2>(3);
+// SPLIT-NEXT:     } [size=4, align=4];
+// SPLIT-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
+// SPLIT-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// SPLIT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// SPLIT-NEXT:             {
+// SPLIT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// SPLIT-NEXT:             }
+// SPLIT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// SPLIT-NEXT:     }
+// SPLIT-NEXT: }
 // SLATE-FILECHECK-END SPLIT
 // SLATE-FILECHECK-BEGIN MACRO
-// MACRO: tag[{{[0-9]+}}]: TagDefinition {
-// MACRO-NEXT:       id: TagId(
-// MACRO-NEXT:           [[#TAG0:]],
-// MACRO-NEXT:       ),
-// MACRO-NEXT:       kind: Struct,
-// MACRO-NEXT:       name: Some(
-// MACRO-NEXT:           "Payload",
-// MACRO-NEXT:       ),
-// MACRO-NEXT:       body: Record(
-// MACRO-NEXT:           [
-// MACRO-NEXT:               Field(
-// MACRO-NEXT:                   FieldDecl {
-// MACRO-NEXT:                       specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:                           ty: Integer(
-// MACRO-NEXT:                               Ranked {
-// MACRO-NEXT:                                   rank: Int,
-// MACRO-NEXT:                                   signed: true,
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                           ),
-// MACRO-NEXT:                       },
-// MACRO-NEXT:                       declarators: [
-// MACRO-NEXT:                           FieldDeclaratorKind {
-// MACRO-NEXT:                               declarator: Name(
-// MACRO-NEXT:                                   "value",
-// MACRO-NEXT:                               ),
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       ],
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:               Field(
-// MACRO-NEXT:                   FieldDecl {
-// MACRO-NEXT:                       specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:                           ty: Integer(
-// MACRO-NEXT:                               Ranked {
-// MACRO-NEXT:                                   rank: Int,
-// MACRO-NEXT:                                   signed: true,
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                           ),
-// MACRO-NEXT:                       },
-// MACRO-NEXT:                       declarators: [
-// MACRO-NEXT:                           FieldDeclaratorKind {
-// MACRO-NEXT:                               declarator: Function {
-// MACRO-NEXT:                                   inner: Grouped(
-// MACRO-NEXT:                                       Pointer {
-// MACRO-NEXT:                                           qualifiers: Qualifiers,
-// MACRO-NEXT:                                           inner: Name(
-// MACRO-NEXT:                                               "callback",
-// MACRO-NEXT:                                           ),
-// MACRO-NEXT:                                       },
-// MACRO-NEXT:                                   ),
-// MACRO-NEXT:                                   parameters: Prototype {
-// MACRO-NEXT:                                       parameters: [
-// MACRO-NEXT:                                           ParameterDeclarationKind {
-// MACRO-NEXT:                                               specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:                                                   ty: Integer(
-// MACRO-NEXT:                                                       Ranked {
-// MACRO-NEXT:                                                           rank: Int,
-// MACRO-NEXT:                                                           signed: true,
-// MACRO-NEXT:                                                       },
-// MACRO-NEXT:                                                   ),
-// MACRO-NEXT:                                               },
-// MACRO-NEXT:                                               declarator: Abstract,
-// MACRO-NEXT:                                           },
-// MACRO-NEXT:                                       ],
-// MACRO-NEXT:                                   },
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       ],
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           ],
-// MACRO-NEXT:       ),
-// MACRO-NEXT:   }
-// MACRO-NEXT: tag[{{[0-9]+}}]: TagDefinition {
-// MACRO-NEXT:       id: TagId(
-// MACRO-NEXT:           [[#TAG1:]],
-// MACRO-NEXT:       ),
-// MACRO-NEXT:       kind: Enum,
-// MACRO-NEXT:       name: Some(
-// MACRO-NEXT:           "Mode",
-// MACRO-NEXT:       ),
-// MACRO-NEXT:       body: Enum {
-// MACRO-NEXT:           fixed_type: Some(
-// MACRO-NEXT:               TypeName {
-// MACRO-NEXT:                   specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:                       ty: Integer(
-// MACRO-NEXT:                           Ranked {
-// MACRO-NEXT:                               rank: Int,
-// MACRO-NEXT:                               signed: false,
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   },
-// MACRO-NEXT:                   declarator: Abstract,
-// MACRO-NEXT:               },
-// MACRO-NEXT:           ),
-// MACRO-NEXT:           enumerators: [
-// MACRO-NEXT:               Enumerator(
-// MACRO-NEXT:                   Enumerator {
-// MACRO-NEXT:                       name: "FIRST",
-// MACRO-NEXT:                       value: Some(
-// MACRO-NEXT:                           IntegerLiteral(
-// MACRO-NEXT:                               IntegerLiteral {
-// MACRO-NEXT:                                   value: 1,
-// MACRO-NEXT:                                   radix: Decimal,
-// MACRO-NEXT:                                   suffix: IntegerSuffix {
-// MACRO-NEXT:                                       unsigned: false,
-// MACRO-NEXT:                                       size: None,
-// MACRO-NEXT:                                   },
-// MACRO-NEXT:                                   spelling: "1",
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                           ),
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:               Enumerator(
-// MACRO-NEXT:                   Enumerator {
-// MACRO-NEXT:                       name: "LAST",
-// MACRO-NEXT:                       value: Some(
-// MACRO-NEXT:                           Binary {
-// MACRO-NEXT:                               op: Add,
-// MACRO-NEXT:                               left: Identifier(
-// MACRO-NEXT:                                   "FIRST",
-// MACRO-NEXT:                               ),
-// MACRO-NEXT:                               right: IntegerLiteral(
-// MACRO-NEXT:                                   IntegerLiteral {
-// MACRO-NEXT:                                       value: 2,
-// MACRO-NEXT:                                       radix: Decimal,
-// MACRO-NEXT:                                       suffix: IntegerSuffix {
-// MACRO-NEXT:                                           unsigned: false,
-// MACRO-NEXT:                                           size: None,
-// MACRO-NEXT:                                       },
-// MACRO-NEXT:                                       spelling: "2",
-// MACRO-NEXT:                                   },
-// MACRO-NEXT:                               ),
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           ],
-// MACRO-NEXT:       },
-// MACRO-NEXT:   }
-// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
-// MACRO-NEXT:       Declaration {
-// MACRO-NEXT:           specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:               ty: Tag(
-// MACRO-NEXT:                   Definition(
-// MACRO-NEXT:                       TagId(
-// MACRO-NEXT:                           [[#TAG0]],
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:               ),
-// MACRO-NEXT:               storage: Typedef,
-// MACRO-NEXT:           },
-// MACRO-NEXT:           declarators: [
-// MACRO-NEXT:               InitDeclaratorKind {
-// MACRO-NEXT:                   declarator: Name(
-// MACRO-NEXT:                       "Payload",
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:               },
-// MACRO-NEXT:           ],
-// MACRO-NEXT:       },
-// MACRO-NEXT:   )
-// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
-// MACRO-NEXT:       Declaration {
-// MACRO-NEXT:           specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:               ty: Tag(
-// MACRO-NEXT:                   Definition(
-// MACRO-NEXT:                       TagId(
-// MACRO-NEXT:                           [[#TAG1]],
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           },
-// MACRO-NEXT:       },
-// MACRO-NEXT:   )
-// MACRO-NEXT: decl[{{[0-9]+}}]: Function(
-// MACRO-NEXT:       FunctionDefinition {
-// MACRO-NEXT:           specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:               ty: Integer(
-// MACRO-NEXT:                   Ranked {
-// MACRO-NEXT:                       rank: Int,
-// MACRO-NEXT:                       signed: true,
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           },
-// MACRO-NEXT:           declarator: Function {
-// MACRO-NEXT:               inner: Name(
-// MACRO-NEXT:                   "read_value",
-// MACRO-NEXT:               ),
-// MACRO-NEXT:               parameters: Prototype {
-// MACRO-NEXT:                   parameters: [
-// MACRO-NEXT:                       ParameterDeclarationKind {
-// MACRO-NEXT:                           specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:                               ty: Named(
-// MACRO-NEXT:                                   "Payload",
-// MACRO-NEXT:                               ),
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                           declarator: Pointer {
-// MACRO-NEXT:                               qualifiers: Qualifiers,
-// MACRO-NEXT:                               inner: Name(
-// MACRO-NEXT:                                   "p",
-// MACRO-NEXT:                               ),
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       },
-// MACRO-NEXT:                   ],
-// MACRO-NEXT:               },
-// MACRO-NEXT:           },
-// MACRO-NEXT:           body: [
-// MACRO-NEXT:               If {
-// MACRO-NEXT:                   condition: Identifier(
-// MACRO-NEXT:                       "p",
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:                   then_branch: Block(
-// MACRO-NEXT:                       [
-// MACRO-NEXT:                           Return(
-// MACRO-NEXT:                               Call {
-// MACRO-NEXT:                                   callee: Member {
-// MACRO-NEXT:                                       base: Identifier(
-// MACRO-NEXT:                                           "p",
-// MACRO-NEXT:                                       ),
-// MACRO-NEXT:                                       field: "callback",
-// MACRO-NEXT:                                       arrow: true,
-// MACRO-NEXT:                                   },
-// MACRO-NEXT:                                   arguments: [
-// MACRO-NEXT:                                       Member {
-// MACRO-NEXT:                                           base: Identifier(
-// MACRO-NEXT:                                               "p",
-// MACRO-NEXT:                                           ),
-// MACRO-NEXT:                                           field: "value",
-// MACRO-NEXT:                                           arrow: true,
-// MACRO-NEXT:                                       },
-// MACRO-NEXT:                                   ],
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                           ),
-// MACRO-NEXT:                       ],
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:                   else_branch: None,
-// MACRO-NEXT:               },
-// MACRO-NEXT:               Return(
-// MACRO-NEXT:                   Identifier(
-// MACRO-NEXT:                       "LAST",
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           ],
-// MACRO-NEXT:       },
-// MACRO-NEXT:   )
-// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
-// MACRO-NEXT:       Declaration {
-// MACRO-NEXT:           specifiers: DeclarationSpecifiers {
-// MACRO-NEXT:               ty: Integer(
-// MACRO-NEXT:                   Ranked {
-// MACRO-NEXT:                       rank: Int,
-// MACRO-NEXT:                       signed: true,
-// MACRO-NEXT:                   },
-// MACRO-NEXT:               ),
-// MACRO-NEXT:           },
-// MACRO-NEXT:           declarators: [
-// MACRO-NEXT:               InitDeclaratorKind {
-// MACRO-NEXT:                   declarator: Name(
-// MACRO-NEXT:                       "after",
-// MACRO-NEXT:                   ),
-// MACRO-NEXT:               },
-// MACRO-NEXT:           ],
-// MACRO-NEXT:       },
-// MACRO-NEXT:   )
+// MACRO: module {
+// MACRO-NEXT:     target "x86_64-unknown-linux-gnu" {
+// MACRO-NEXT:         endian = little;
+// MACRO-NEXT:         pointer [size=8, align=8];
+// MACRO-NEXT:         stack_alignment = 16;
+// MACRO-NEXT:         long_double = f80;
+// MACRO-NEXT:         storage bool [size=1, align=1];
+// MACRO-NEXT:         storage i8, u8 [size=1, align=1];
+// MACRO-NEXT:         storage i16, u16 [size=2, align=2];
+// MACRO-NEXT:         storage i32, u32 [size=4, align=4];
+// MACRO-NEXT:         storage i64, u64 [size=8, align=8];
+// MACRO-NEXT:         storage i128, u128 [size=16, align=16];
+// MACRO-NEXT:         storage bf16 [size=2, align=2];
+// MACRO-NEXT:         storage f16 [size=2, align=2];
+// MACRO-NEXT:         storage f32 [size=4, align=4];
+// MACRO-NEXT:         storage f64 [size=8, align=8];
+// MACRO-NEXT:         storage f80 [size=16, align=16];
+// MACRO-NEXT:         storage f128 [size=16, align=16];
+// MACRO-NEXT:         storage d32 [size=4, align=4];
+// MACRO-NEXT:         storage d64 [size=8, align=8];
+// MACRO-NEXT:         storage d128 [size=16, align=16];
+// MACRO-NEXT:     }
+// MACRO-NEXT:     type @type0 Payload = struct {
+// MACRO-NEXT:         field0 value: i32;
+// MACRO-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
+// MACRO-NEXT:     } [size=16, align=8, offsets=[0, 8]];
+// MACRO-NEXT:     type @type1 Payload = @type0;
+// MACRO-NEXT:     type @type2 Mode = enum : u32 {
+// MACRO-NEXT:         %0 FIRST = const<@type2>(1);
+// MACRO-NEXT:         %1 LAST = const<@type2>(3);
+// MACRO-NEXT:     } [size=4, align=4];
+// MACRO-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
+// MACRO-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// MACRO-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// MACRO-NEXT:             {
+// MACRO-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// MACRO-NEXT:             }
+// MACRO-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// MACRO-NEXT:     }
+// MACRO-NEXT: }
 // SLATE-FILECHECK-END MACRO

@@ -36,3 +36,34 @@ void selected(int n) {
 // DEFAULT_BRANCH: 4 │ #else
 // DEFAULT_BRANCH: ╰────
 // SLATE-FILECHECK-END DEFAULT_BRANCH
+// SLATE-FILECHECK-BEGIN VALID
+// VALID: module {
+// VALID-NEXT:     target "x86_64-unknown-linux-gnu" {
+// VALID-NEXT:         endian = little;
+// VALID-NEXT:         pointer [size=8, align=8];
+// VALID-NEXT:         stack_alignment = 16;
+// VALID-NEXT:         long_double = f80;
+// VALID-NEXT:         storage bool [size=1, align=1];
+// VALID-NEXT:         storage i8, u8 [size=1, align=1];
+// VALID-NEXT:         storage i16, u16 [size=2, align=2];
+// VALID-NEXT:         storage i32, u32 [size=4, align=4];
+// VALID-NEXT:         storage i64, u64 [size=8, align=8];
+// VALID-NEXT:         storage i128, u128 [size=16, align=16];
+// VALID-NEXT:         storage bf16 [size=2, align=2];
+// VALID-NEXT:         storage f16 [size=2, align=2];
+// VALID-NEXT:         storage f32 [size=4, align=4];
+// VALID-NEXT:         storage f64 [size=8, align=8];
+// VALID-NEXT:         storage f80 [size=16, align=16];
+// VALID-NEXT:         storage f128 [size=16, align=16];
+// VALID-NEXT:         storage d32 [size=4, align=4];
+// VALID-NEXT:         storage d64 [size=8, align=8];
+// VALID-NEXT:         storage d128 [size=16, align=16];
+// VALID-NEXT:     }
+// VALID-NEXT:     type @type0 byte = u8;
+// VALID-NEXT:     extern %1 table: array<i32, 4> [storage=static] [linkage=external];
+// VALID-NEXT:     fn %2 @routine() -> void [linkage=external];
+// VALID-NEXT:     fn %3 @selected(%4 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:         let %5 a: u32 [storage=automatic];
+// VALID-NEXT:     }
+// VALID-NEXT: }
+// SLATE-FILECHECK-END VALID

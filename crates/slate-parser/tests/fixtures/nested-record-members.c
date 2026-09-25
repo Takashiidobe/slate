@@ -15,332 +15,70 @@ struct outer {
 // SLATE-FILECHECK-DEFINES EXTRA WITH_EXTRA
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
-// DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           [[#TAG0:]],
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       kind: Union,
-// DEFAULT-NEXT:       name: None,
-// DEFAULT-NEXT:       body: Record(
-// DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclaratorKind {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclaratorKind {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "c",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
-// DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           [[#TAG1:]],
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       kind: Struct,
-// DEFAULT-NEXT:       name: Some(
-// DEFAULT-NEXT:           "outer",
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Record(
-// DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Long,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclaratorKind {
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "bits",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Div,
-// DEFAULT-NEXT:                                           left: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 128,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "128",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: TypeName {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Long,
-// DEFAULT-NEXT:                                                               signed: false,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Definition(
-// DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       [[#TAG0]],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclaratorKind {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "value",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclaratorKind {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "fallback",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Tag(
-// DEFAULT-NEXT:                   Definition(
-// DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           [[#TAG1]],
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 outer = struct {
+// DEFAULT-NEXT:         field0 bits: array<u64, 16>;
+// DEFAULT-NEXT:         field1 value: @type1;
+// DEFAULT-NEXT:         field2 fallback: i32;
+// DEFAULT-NEXT:     } [size=136, align=8, offsets=[0, 128, 132]];
+// DEFAULT-NEXT:     type @type1 = union {
+// DEFAULT-NEXT:         field0 i: i32;
+// DEFAULT-NEXT:         field1 c: i8;
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN EXTRA
-// EXTRA: tag[{{[0-9]+}}]: TagDefinition {
-// EXTRA-NEXT:       id: TagId(
-// EXTRA-NEXT:           [[#TAG0:]],
-// EXTRA-NEXT:       ),
-// EXTRA-NEXT:       kind: Union,
-// EXTRA-NEXT:       name: None,
-// EXTRA-NEXT:       body: Record(
-// EXTRA-NEXT:           [
-// EXTRA-NEXT:               Field(
-// EXTRA-NEXT:                   FieldDecl {
-// EXTRA-NEXT:                       specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                           ty: Integer(
-// EXTRA-NEXT:                               Ranked {
-// EXTRA-NEXT:                                   rank: Int,
-// EXTRA-NEXT:                                   signed: true,
-// EXTRA-NEXT:                               },
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                       },
-// EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclaratorKind {
-// EXTRA-NEXT:                               declarator: Name(
-// EXTRA-NEXT:                                   "i",
-// EXTRA-NEXT:                               ),
-// EXTRA-NEXT:                           },
-// EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                   },
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:               Field(
-// EXTRA-NEXT:                   FieldDecl {
-// EXTRA-NEXT:                       specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                           ty: Integer(
-// EXTRA-NEXT:                               Char {
-// EXTRA-NEXT:                                   signed: None,
-// EXTRA-NEXT:                               },
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                       },
-// EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclaratorKind {
-// EXTRA-NEXT:                               declarator: Name(
-// EXTRA-NEXT:                                   "c",
-// EXTRA-NEXT:                               ),
-// EXTRA-NEXT:                           },
-// EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                   },
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:           ],
-// EXTRA-NEXT:       ),
-// EXTRA-NEXT:   }
-// EXTRA-NEXT: tag[{{[0-9]+}}]: TagDefinition {
-// EXTRA-NEXT:       id: TagId(
-// EXTRA-NEXT:           [[#TAG1:]],
-// EXTRA-NEXT:       ),
-// EXTRA-NEXT:       kind: Struct,
-// EXTRA-NEXT:       name: Some(
-// EXTRA-NEXT:           "outer",
-// EXTRA-NEXT:       ),
-// EXTRA-NEXT:       body: Record(
-// EXTRA-NEXT:           [
-// EXTRA-NEXT:               Field(
-// EXTRA-NEXT:                   FieldDecl {
-// EXTRA-NEXT:                       specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                           ty: Integer(
-// EXTRA-NEXT:                               Ranked {
-// EXTRA-NEXT:                                   rank: Long,
-// EXTRA-NEXT:                                   signed: false,
-// EXTRA-NEXT:                               },
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                       },
-// EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclaratorKind {
-// EXTRA-NEXT:                               declarator: Array {
-// EXTRA-NEXT:                                   inner: Name(
-// EXTRA-NEXT:                                       "bits",
-// EXTRA-NEXT:                                   ),
-// EXTRA-NEXT:                                   size: Expression(
-// EXTRA-NEXT:                                       Binary {
-// EXTRA-NEXT:                                           op: Div,
-// EXTRA-NEXT:                                           left: IntegerLiteral(
-// EXTRA-NEXT:                                               IntegerLiteral {
-// EXTRA-NEXT:                                                   value: 128,
-// EXTRA-NEXT:                                                   radix: Decimal,
-// EXTRA-NEXT:                                                   suffix: IntegerSuffix {
-// EXTRA-NEXT:                                                       unsigned: false,
-// EXTRA-NEXT:                                                       size: None,
-// EXTRA-NEXT:                                                   },
-// EXTRA-NEXT:                                                   spelling: "128",
-// EXTRA-NEXT:                                               },
-// EXTRA-NEXT:                                           ),
-// EXTRA-NEXT:                                           right: SizeOfType {
-// EXTRA-NEXT:                                               ty: TypeName {
-// EXTRA-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                                                       ty: Integer(
-// EXTRA-NEXT:                                                           Ranked {
-// EXTRA-NEXT:                                                               rank: Long,
-// EXTRA-NEXT:                                                               signed: false,
-// EXTRA-NEXT:                                                           },
-// EXTRA-NEXT:                                                       ),
-// EXTRA-NEXT:                                                   },
-// EXTRA-NEXT:                                                   declarator: Abstract,
-// EXTRA-NEXT:                                               },
-// EXTRA-NEXT:                                           },
-// EXTRA-NEXT:                                       },
-// EXTRA-NEXT:                                   ),
-// EXTRA-NEXT:                               },
-// EXTRA-NEXT:                           },
-// EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                   },
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:               Field(
-// EXTRA-NEXT:                   FieldDecl {
-// EXTRA-NEXT:                       specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                           ty: Tag(
-// EXTRA-NEXT:                               Definition(
-// EXTRA-NEXT:                                   TagId(
-// EXTRA-NEXT:                                       [[#TAG0]],
-// EXTRA-NEXT:                                   ),
-// EXTRA-NEXT:                               ),
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                       },
-// EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclaratorKind {
-// EXTRA-NEXT:                               declarator: Name(
-// EXTRA-NEXT:                                   "value",
-// EXTRA-NEXT:                               ),
-// EXTRA-NEXT:                           },
-// EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                   },
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:               Field(
-// EXTRA-NEXT:                   FieldDecl {
-// EXTRA-NEXT:                       specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:                           ty: Integer(
-// EXTRA-NEXT:                               Ranked {
-// EXTRA-NEXT:                                   rank: Int,
-// EXTRA-NEXT:                                   signed: true,
-// EXTRA-NEXT:                               },
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                       },
-// EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclaratorKind {
-// EXTRA-NEXT:                               declarator: Name(
-// EXTRA-NEXT:                                   "extra",
-// EXTRA-NEXT:                               ),
-// EXTRA-NEXT:                           },
-// EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                   },
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:           ],
-// EXTRA-NEXT:       ),
-// EXTRA-NEXT:   }
-// EXTRA-NEXT: decl[{{[0-9]+}}]: Declaration(
-// EXTRA-NEXT:       Declaration {
-// EXTRA-NEXT:           specifiers: DeclarationSpecifiers {
-// EXTRA-NEXT:               ty: Tag(
-// EXTRA-NEXT:                   Definition(
-// EXTRA-NEXT:                       TagId(
-// EXTRA-NEXT:                           [[#TAG1]],
-// EXTRA-NEXT:                       ),
-// EXTRA-NEXT:                   ),
-// EXTRA-NEXT:               ),
-// EXTRA-NEXT:           },
-// EXTRA-NEXT:       },
-// EXTRA-NEXT:   )
+// EXTRA: module {
+// EXTRA-NEXT:     target "x86_64-unknown-linux-gnu" {
+// EXTRA-NEXT:         endian = little;
+// EXTRA-NEXT:         pointer [size=8, align=8];
+// EXTRA-NEXT:         stack_alignment = 16;
+// EXTRA-NEXT:         long_double = f80;
+// EXTRA-NEXT:         storage bool [size=1, align=1];
+// EXTRA-NEXT:         storage i8, u8 [size=1, align=1];
+// EXTRA-NEXT:         storage i16, u16 [size=2, align=2];
+// EXTRA-NEXT:         storage i32, u32 [size=4, align=4];
+// EXTRA-NEXT:         storage i64, u64 [size=8, align=8];
+// EXTRA-NEXT:         storage i128, u128 [size=16, align=16];
+// EXTRA-NEXT:         storage bf16 [size=2, align=2];
+// EXTRA-NEXT:         storage f16 [size=2, align=2];
+// EXTRA-NEXT:         storage f32 [size=4, align=4];
+// EXTRA-NEXT:         storage f64 [size=8, align=8];
+// EXTRA-NEXT:         storage f80 [size=16, align=16];
+// EXTRA-NEXT:         storage f128 [size=16, align=16];
+// EXTRA-NEXT:         storage d32 [size=4, align=4];
+// EXTRA-NEXT:         storage d64 [size=8, align=8];
+// EXTRA-NEXT:         storage d128 [size=16, align=16];
+// EXTRA-NEXT:     }
+// EXTRA-NEXT:     type @type0 outer = struct {
+// EXTRA-NEXT:         field0 bits: array<u64, 16>;
+// EXTRA-NEXT:         field1 value: @type1;
+// EXTRA-NEXT:         field2 extra: i32;
+// EXTRA-NEXT:     } [size=136, align=8, offsets=[0, 128, 132]];
+// EXTRA-NEXT:     type @type1 = union {
+// EXTRA-NEXT:         field0 i: i32;
+// EXTRA-NEXT:         field1 c: i8;
+// EXTRA-NEXT:     } [size=4, align=4, offsets=[0, 0]];
+// EXTRA-NEXT: }
 // SLATE-FILECHECK-END EXTRA

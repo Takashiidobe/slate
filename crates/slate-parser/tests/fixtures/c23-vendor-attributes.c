@@ -12,291 +12,37 @@
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Cdecl,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "caller",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Stdcall,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "callee",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Fastcall,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "fast",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Vectorcall,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "vector",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Thiscall,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "method",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Prototype {
-// C23-NEXT:                           parameters: [
-// C23-NEXT:                               ParameterDeclarationKind {
-// C23-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C23-NEXT:                                       ty: Void,
-// C23-NEXT:                                   },
-// C23-NEXT:                                   declarator: Pointer {
-// C23-NEXT:                                       qualifiers: Qualifiers,
-// C23-NEXT:                                       inner: Abstract,
-// C23-NEXT:                                   },
-// C23-NEXT:                               },
-// C23-NEXT:                           ],
-// C23-NEXT:                       },
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       MsAbi,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "ms",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       SysVAbi,
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "sysv",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       RegParm(
-// C23-NEXT:                           Binary {
-// C23-NEXT:                               op: Add,
-// C23-NEXT:                               left: IntegerLiteral(
-// C23-NEXT:                                   IntegerLiteral {
-// C23-NEXT:                                       value: 1,
-// C23-NEXT:                                       radix: Decimal,
-// C23-NEXT:                                       suffix: IntegerSuffix {
-// C23-NEXT:                                           unsigned: false,
-// C23-NEXT:                                           size: None,
-// C23-NEXT:                                       },
-// C23-NEXT:                                       spelling: "1",
-// C23-NEXT:                                   },
-// C23-NEXT:                               ),
-// C23-NEXT:                               right: IntegerLiteral(
-// C23-NEXT:                                   IntegerLiteral {
-// C23-NEXT:                                       value: 2,
-// C23-NEXT:                                       radix: Decimal,
-// C23-NEXT:                                       suffix: IntegerSuffix {
-// C23-NEXT:                                           unsigned: false,
-// C23-NEXT:                                           size: None,
-// C23-NEXT:                                       },
-// C23-NEXT:                                       spelling: "2",
-// C23-NEXT:                                   },
-// C23-NEXT:                               ),
-// C23-NEXT:                           },
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "registers",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Prototype {
-// C23-NEXT:                           parameters: [
-// C23-NEXT:                               ParameterDeclarationKind {
-// C23-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C23-NEXT:                                       ty: Integer(
-// C23-NEXT:                                           Ranked {
-// C23-NEXT:                                               rank: Int,
-// C23-NEXT:                                               signed: true,
-// C23-NEXT:                                           },
-// C23-NEXT:                                       ),
-// C23-NEXT:                                   },
-// C23-NEXT:                                   declarator: Abstract,
-// C23-NEXT:                               },
-// C23-NEXT:                               ParameterDeclarationKind {
-// C23-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C23-NEXT:                                       ty: Integer(
-// C23-NEXT:                                           Ranked {
-// C23-NEXT:                                               rank: Int,
-// C23-NEXT:                                               signed: true,
-// C23-NEXT:                                           },
-// C23-NEXT:                                       ),
-// C23-NEXT:                                   },
-// C23-NEXT:                                   declarator: Abstract,
-// C23-NEXT:                               },
-// C23-NEXT:                           ],
-// C23-NEXT:                       },
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Pcs(
-// C23-NEXT:                           Aapcs,
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "arm",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Void,
-// C23-NEXT:               attributes: [
-// C23-NEXT:                   CallingConvention(
-// C23-NEXT:                       Pcs(
-// C23-NEXT:                           AapcsVfp,
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ],
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "arm_vfp",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Void,
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     fn %0 @caller() -> void [linkage=external];
+// C23-NEXT:     fn %1 @callee() -> void [linkage=external];
+// C23-NEXT:     fn %2 @fast() -> void [linkage=external];
+// C23-NEXT:     fn %3 @vector() -> void [linkage=external];
+// C23-NEXT:     fn %4 @method(%10 <unnamed>: ptr<void>) -> void [linkage=external];
+// C23-NEXT:     fn %5 @ms() -> void [linkage=external];
+// C23-NEXT:     fn %6 @sysv() -> void [linkage=external];
+// C23-NEXT:     fn %7 @registers(%11 <unnamed>: i32, %12 <unnamed>: i32) -> void [linkage=external];
+// C23-NEXT:     fn %8 @arm() -> void [linkage=external];
+// C23-NEXT:     fn %9 @arm_vfp() -> void [linkage=external];
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

@@ -65,3 +65,81 @@ void f(int p __attribute__((mode(SI))));
 // WARN_IGNORED: 12 │ #elif defined(ERR_UNSUPPORTED)
 // WARN_IGNORED: ╰────
 // SLATE-FILECHECK-END WARN_IGNORED
+// SLATE-FILECHECK-BEGIN IR-WARN_ALIGNED
+// IR-WARN_ALIGNED: module {
+// IR-WARN_ALIGNED-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-WARN_ALIGNED-NEXT:         endian = little;
+// IR-WARN_ALIGNED-NEXT:         pointer [size=8, align=8];
+// IR-WARN_ALIGNED-NEXT:         stack_alignment = 16;
+// IR-WARN_ALIGNED-NEXT:         long_double = f80;
+// IR-WARN_ALIGNED-NEXT:         storage bool [size=1, align=1];
+// IR-WARN_ALIGNED-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-WARN_ALIGNED-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-WARN_ALIGNED-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-WARN_ALIGNED-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-WARN_ALIGNED-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-WARN_ALIGNED-NEXT:         storage bf16 [size=2, align=2];
+// IR-WARN_ALIGNED-NEXT:         storage f16 [size=2, align=2];
+// IR-WARN_ALIGNED-NEXT:         storage f32 [size=4, align=4];
+// IR-WARN_ALIGNED-NEXT:         storage f64 [size=8, align=8];
+// IR-WARN_ALIGNED-NEXT:         storage f80 [size=16, align=16];
+// IR-WARN_ALIGNED-NEXT:         storage f128 [size=16, align=16];
+// IR-WARN_ALIGNED-NEXT:         storage d32 [size=4, align=4];
+// IR-WARN_ALIGNED-NEXT:         storage d64 [size=8, align=8];
+// IR-WARN_ALIGNED-NEXT:         storage d128 [size=16, align=16];
+// IR-WARN_ALIGNED-NEXT:     }
+// IR-WARN_ALIGNED-NEXT:     fn %0 @f(%1 q: i32) -> void [linkage=external];
+// IR-WARN_ALIGNED-NEXT: }
+// SLATE-FILECHECK-END IR-WARN_ALIGNED
+// SLATE-FILECHECK-BEGIN IR-WARN_ALIGNAS
+// IR-WARN_ALIGNAS: module {
+// IR-WARN_ALIGNAS-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-WARN_ALIGNAS-NEXT:         endian = little;
+// IR-WARN_ALIGNAS-NEXT:         pointer [size=8, align=8];
+// IR-WARN_ALIGNAS-NEXT:         stack_alignment = 16;
+// IR-WARN_ALIGNAS-NEXT:         long_double = f80;
+// IR-WARN_ALIGNAS-NEXT:         storage bool [size=1, align=1];
+// IR-WARN_ALIGNAS-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-WARN_ALIGNAS-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-WARN_ALIGNAS-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-WARN_ALIGNAS-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-WARN_ALIGNAS-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-WARN_ALIGNAS-NEXT:         storage bf16 [size=2, align=2];
+// IR-WARN_ALIGNAS-NEXT:         storage f16 [size=2, align=2];
+// IR-WARN_ALIGNAS-NEXT:         storage f32 [size=4, align=4];
+// IR-WARN_ALIGNAS-NEXT:         storage f64 [size=8, align=8];
+// IR-WARN_ALIGNAS-NEXT:         storage f80 [size=16, align=16];
+// IR-WARN_ALIGNAS-NEXT:         storage f128 [size=16, align=16];
+// IR-WARN_ALIGNAS-NEXT:         storage d32 [size=4, align=4];
+// IR-WARN_ALIGNAS-NEXT:         storage d64 [size=8, align=8];
+// IR-WARN_ALIGNAS-NEXT:         storage d128 [size=16, align=16];
+// IR-WARN_ALIGNAS-NEXT:     }
+// IR-WARN_ALIGNAS-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_ALIGNAS-NEXT: }
+// SLATE-FILECHECK-END IR-WARN_ALIGNAS
+// SLATE-FILECHECK-BEGIN IR-WARN_IGNORED
+// IR-WARN_IGNORED: module {
+// IR-WARN_IGNORED-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-WARN_IGNORED-NEXT:         endian = little;
+// IR-WARN_IGNORED-NEXT:         pointer [size=8, align=8];
+// IR-WARN_IGNORED-NEXT:         stack_alignment = 16;
+// IR-WARN_IGNORED-NEXT:         long_double = f80;
+// IR-WARN_IGNORED-NEXT:         storage bool [size=1, align=1];
+// IR-WARN_IGNORED-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-WARN_IGNORED-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-WARN_IGNORED-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-WARN_IGNORED-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-WARN_IGNORED-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-WARN_IGNORED-NEXT:         storage bf16 [size=2, align=2];
+// IR-WARN_IGNORED-NEXT:         storage f16 [size=2, align=2];
+// IR-WARN_IGNORED-NEXT:         storage f32 [size=4, align=4];
+// IR-WARN_IGNORED-NEXT:         storage f64 [size=8, align=8];
+// IR-WARN_IGNORED-NEXT:         storage f80 [size=16, align=16];
+// IR-WARN_IGNORED-NEXT:         storage f128 [size=16, align=16];
+// IR-WARN_IGNORED-NEXT:         storage d32 [size=4, align=4];
+// IR-WARN_IGNORED-NEXT:         storage d64 [size=8, align=8];
+// IR-WARN_IGNORED-NEXT:         storage d128 [size=16, align=16];
+// IR-WARN_IGNORED-NEXT:     }
+// IR-WARN_IGNORED-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_IGNORED-NEXT: }
+// SLATE-FILECHECK-END IR-WARN_IGNORED

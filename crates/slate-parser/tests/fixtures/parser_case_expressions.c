@@ -11,286 +11,43 @@ int cases(int x) {
 }
 
 // SLATE-FILECHECK-BEGIN AST
-// AST: tag[{{[0-9]+}}]: TagDefinition {
-// AST-NEXT:       id: TagId(
-// AST-NEXT:           [[#TAG0:]],
-// AST-NEXT:       ),
-// AST-NEXT:       kind: Struct,
-// AST-NEXT:       name: None,
-// AST-NEXT:       body: Record(
-// AST-NEXT:           [
-// AST-NEXT:               Field(
-// AST-NEXT:                   FieldDecl {
-// AST-NEXT:                       specifiers: DeclarationSpecifiers {
-// AST-NEXT:                           ty: Integer(
-// AST-NEXT:                               Ranked {
-// AST-NEXT:                                   rank: Int,
-// AST-NEXT:                                   signed: true,
-// AST-NEXT:                               },
-// AST-NEXT:                           ),
-// AST-NEXT:                       },
-// AST-NEXT:                       declarators: [
-// AST-NEXT:                           FieldDeclaratorKind {
-// AST-NEXT:                               declarator: Name(
-// AST-NEXT:                                   "field",
-// AST-NEXT:                               ),
-// AST-NEXT:                               bit_width: Some(
-// AST-NEXT:                                   IntegerLiteral(
-// AST-NEXT:                                       IntegerLiteral {
-// AST-NEXT:                                           value: 3,
-// AST-NEXT:                                           radix: Decimal,
-// AST-NEXT:                                           suffix: IntegerSuffix {
-// AST-NEXT:                                               unsigned: false,
-// AST-NEXT:                                               size: None,
-// AST-NEXT:                                           },
-// AST-NEXT:                                           spelling: "3",
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                       ],
-// AST-NEXT:                   },
-// AST-NEXT:               ),
-// AST-NEXT:           ],
-// AST-NEXT:       ),
-// AST-NEXT:   }
-// AST-NEXT: decl[{{[0-9]+}}]: Function(
-// AST-NEXT:       FunctionDefinition {
-// AST-NEXT:           specifiers: DeclarationSpecifiers {
-// AST-NEXT:               ty: Integer(
-// AST-NEXT:                   Ranked {
-// AST-NEXT:                       rank: Int,
-// AST-NEXT:                       signed: true,
-// AST-NEXT:                   },
-// AST-NEXT:               ),
-// AST-NEXT:           },
-// AST-NEXT:           declarator: Function {
-// AST-NEXT:               inner: Name(
-// AST-NEXT:                   "cases",
-// AST-NEXT:               ),
-// AST-NEXT:               parameters: Prototype {
-// AST-NEXT:                   parameters: [
-// AST-NEXT:                       ParameterDeclarationKind {
-// AST-NEXT:                           specifiers: DeclarationSpecifiers {
-// AST-NEXT:                               ty: Integer(
-// AST-NEXT:                                   Ranked {
-// AST-NEXT:                                       rank: Int,
-// AST-NEXT:                                       signed: true,
-// AST-NEXT:                                   },
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                           declarator: Name(
-// AST-NEXT:                               "x",
-// AST-NEXT:                           ),
-// AST-NEXT:                       },
-// AST-NEXT:                   ],
-// AST-NEXT:               },
-// AST-NEXT:           },
-// AST-NEXT:           body: [
-// AST-NEXT:               Switch {
-// AST-NEXT:                   discriminant: Identifier(
-// AST-NEXT:                       "x",
-// AST-NEXT:                   ),
-// AST-NEXT:                   body: Block(
-// AST-NEXT:                       [
-// AST-NEXT:                           SwitchLabel {
-// AST-NEXT:                               label: Case(
-// AST-NEXT:                                   Conditional {
-// AST-NEXT:                                       condition: IntegerLiteral(
-// AST-NEXT:                                           IntegerLiteral {
-// AST-NEXT:                                               value: 1,
-// AST-NEXT:                                               radix: Decimal,
-// AST-NEXT:                                               suffix: IntegerSuffix {
-// AST-NEXT:                                                   unsigned: false,
-// AST-NEXT:                                                   size: None,
-// AST-NEXT:                                               },
-// AST-NEXT:                                               spelling: "1",
-// AST-NEXT:                                           },
-// AST-NEXT:                                       ),
-// AST-NEXT:                                       then_value: Some(
-// AST-NEXT:                                           IntegerLiteral(
-// AST-NEXT:                                               IntegerLiteral {
-// AST-NEXT:                                                   value: 2,
-// AST-NEXT:                                                   radix: Decimal,
-// AST-NEXT:                                                   suffix: IntegerSuffix {
-// AST-NEXT:                                                       unsigned: false,
-// AST-NEXT:                                                       size: None,
-// AST-NEXT:                                                   },
-// AST-NEXT:                                                   spelling: "2",
-// AST-NEXT:                                               },
-// AST-NEXT:                                           ),
-// AST-NEXT:                                       ),
-// AST-NEXT:                                       else_value: IntegerLiteral(
-// AST-NEXT:                                           IntegerLiteral {
-// AST-NEXT:                                               value: 3,
-// AST-NEXT:                                               radix: Decimal,
-// AST-NEXT:                                               suffix: IntegerSuffix {
-// AST-NEXT:                                                   unsigned: false,
-// AST-NEXT:                                                   size: None,
-// AST-NEXT:                                               },
-// AST-NEXT:                                               spelling: "3",
-// AST-NEXT:                                           },
-// AST-NEXT:                                       ),
-// AST-NEXT:                                   },
-// AST-NEXT:                               ),
-// AST-NEXT:                               body: Return(
-// AST-NEXT:                                   IntegerLiteral(
-// AST-NEXT:                                       IntegerLiteral {
-// AST-NEXT:                                           value: 1,
-// AST-NEXT:                                           radix: Decimal,
-// AST-NEXT:                                           suffix: IntegerSuffix {
-// AST-NEXT:                                               unsigned: false,
-// AST-NEXT:                                               size: None,
-// AST-NEXT:                                           },
-// AST-NEXT:                                           spelling: "1",
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                           SwitchLabel {
-// AST-NEXT:                               label: CaseRange {
-// AST-NEXT:                                   start: Paren(
-// AST-NEXT:                                       Conditional {
-// AST-NEXT:                                           condition: IntegerLiteral(
-// AST-NEXT:                                               IntegerLiteral {
-// AST-NEXT:                                                   value: 0,
-// AST-NEXT:                                                   radix: Decimal,
-// AST-NEXT:                                                   suffix: IntegerSuffix {
-// AST-NEXT:                                                       unsigned: false,
-// AST-NEXT:                                                       size: None,
-// AST-NEXT:                                                   },
-// AST-NEXT:                                                   spelling: "0",
-// AST-NEXT:                                               },
-// AST-NEXT:                                           ),
-// AST-NEXT:                                           then_value: Some(
-// AST-NEXT:                                               IntegerLiteral(
-// AST-NEXT:                                                   IntegerLiteral {
-// AST-NEXT:                                                       value: 4,
-// AST-NEXT:                                                       radix: Decimal,
-// AST-NEXT:                                                       suffix: IntegerSuffix {
-// AST-NEXT:                                                           unsigned: false,
-// AST-NEXT:                                                           size: None,
-// AST-NEXT:                                                       },
-// AST-NEXT:                                                       spelling: "4",
-// AST-NEXT:                                                   },
-// AST-NEXT:                                               ),
-// AST-NEXT:                                           ),
-// AST-NEXT:                                           else_value: IntegerLiteral(
-// AST-NEXT:                                               IntegerLiteral {
-// AST-NEXT:                                                   value: 5,
-// AST-NEXT:                                                   radix: Decimal,
-// AST-NEXT:                                                   suffix: IntegerSuffix {
-// AST-NEXT:                                                       unsigned: false,
-// AST-NEXT:                                                       size: None,
-// AST-NEXT:                                                   },
-// AST-NEXT:                                                   spelling: "5",
-// AST-NEXT:                                               },
-// AST-NEXT:                                           ),
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                                   end: Conditional {
-// AST-NEXT:                                       condition: IntegerLiteral(
-// AST-NEXT:                                           IntegerLiteral {
-// AST-NEXT:                                               value: 1,
-// AST-NEXT:                                               radix: Decimal,
-// AST-NEXT:                                               suffix: IntegerSuffix {
-// AST-NEXT:                                                   unsigned: false,
-// AST-NEXT:                                                   size: None,
-// AST-NEXT:                                               },
-// AST-NEXT:                                               spelling: "1",
-// AST-NEXT:                                           },
-// AST-NEXT:                                       ),
-// AST-NEXT:                                       then_value: Some(
-// AST-NEXT:                                           IntegerLiteral(
-// AST-NEXT:                                               IntegerLiteral {
-// AST-NEXT:                                                   value: 7,
-// AST-NEXT:                                                   radix: Decimal,
-// AST-NEXT:                                                   suffix: IntegerSuffix {
-// AST-NEXT:                                                       unsigned: false,
-// AST-NEXT:                                                       size: None,
-// AST-NEXT:                                                   },
-// AST-NEXT:                                                   spelling: "7",
-// AST-NEXT:                                               },
-// AST-NEXT:                                           ),
-// AST-NEXT:                                       ),
-// AST-NEXT:                                       else_value: IntegerLiteral(
-// AST-NEXT:                                           IntegerLiteral {
-// AST-NEXT:                                               value: 8,
-// AST-NEXT:                                               radix: Decimal,
-// AST-NEXT:                                               suffix: IntegerSuffix {
-// AST-NEXT:                                                   unsigned: false,
-// AST-NEXT:                                                   size: None,
-// AST-NEXT:                                               },
-// AST-NEXT:                                               spelling: "8",
-// AST-NEXT:                                           },
-// AST-NEXT:                                       ),
-// AST-NEXT:                                   },
-// AST-NEXT:                               },
-// AST-NEXT:                               body: Return(
-// AST-NEXT:                                   IntegerLiteral(
-// AST-NEXT:                                       IntegerLiteral {
-// AST-NEXT:                                           value: 2,
-// AST-NEXT:                                           radix: Decimal,
-// AST-NEXT:                                           suffix: IntegerSuffix {
-// AST-NEXT:                                               unsigned: false,
-// AST-NEXT:                                               size: None,
-// AST-NEXT:                                           },
-// AST-NEXT:                                           spelling: "2",
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                           SwitchLabel {
-// AST-NEXT:                               label: Case(
-// AST-NEXT:                                   SizeOfType {
-// AST-NEXT:                                       ty: TypeName {
-// AST-NEXT:                                           specifiers: DeclarationSpecifiers {
-// AST-NEXT:                                               ty: Tag(
-// AST-NEXT:                                                   Definition(
-// AST-NEXT:                                                       TagId(
-// AST-NEXT:                                                           [[#TAG0]],
-// AST-NEXT:                                                       ),
-// AST-NEXT:                                                   ),
-// AST-NEXT:                                               ),
-// AST-NEXT:                                           },
-// AST-NEXT:                                           declarator: Abstract,
-// AST-NEXT:                                       },
-// AST-NEXT:                                   },
-// AST-NEXT:                               ),
-// AST-NEXT:                               body: Return(
-// AST-NEXT:                                   IntegerLiteral(
-// AST-NEXT:                                       IntegerLiteral {
-// AST-NEXT:                                           value: 3,
-// AST-NEXT:                                           radix: Decimal,
-// AST-NEXT:                                           suffix: IntegerSuffix {
-// AST-NEXT:                                               unsigned: false,
-// AST-NEXT:                                               size: None,
-// AST-NEXT:                                           },
-// AST-NEXT:                                           spelling: "3",
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                           SwitchLabel {
-// AST-NEXT:                               label: Default,
-// AST-NEXT:                               body: Return(
-// AST-NEXT:                                   IntegerLiteral(
-// AST-NEXT:                                       IntegerLiteral {
-// AST-NEXT:                                           value: 0,
-// AST-NEXT:                                           radix: Decimal,
-// AST-NEXT:                                           suffix: IntegerSuffix {
-// AST-NEXT:                                               unsigned: false,
-// AST-NEXT:                                               size: None,
-// AST-NEXT:                                           },
-// AST-NEXT:                                           spelling: "0",
-// AST-NEXT:                                       },
-// AST-NEXT:                                   ),
-// AST-NEXT:                               ),
-// AST-NEXT:                           },
-// AST-NEXT:                       ],
-// AST-NEXT:                   ),
-// AST-NEXT:               },
-// AST-NEXT:           ],
-// AST-NEXT:       },
-// AST-NEXT:   )
+// AST: module {
+// AST-NEXT:     target "x86_64-unknown-linux-gnu" {
+// AST-NEXT:         endian = little;
+// AST-NEXT:         pointer [size=8, align=8];
+// AST-NEXT:         stack_alignment = 16;
+// AST-NEXT:         long_double = f80;
+// AST-NEXT:         storage bool [size=1, align=1];
+// AST-NEXT:         storage i8, u8 [size=1, align=1];
+// AST-NEXT:         storage i16, u16 [size=2, align=2];
+// AST-NEXT:         storage i32, u32 [size=4, align=4];
+// AST-NEXT:         storage i64, u64 [size=8, align=8];
+// AST-NEXT:         storage i128, u128 [size=16, align=16];
+// AST-NEXT:         storage bf16 [size=2, align=2];
+// AST-NEXT:         storage f16 [size=2, align=2];
+// AST-NEXT:         storage f32 [size=4, align=4];
+// AST-NEXT:         storage f64 [size=8, align=8];
+// AST-NEXT:         storage f80 [size=16, align=16];
+// AST-NEXT:         storage f128 [size=16, align=16];
+// AST-NEXT:         storage d32 [size=4, align=4];
+// AST-NEXT:         storage d64 [size=8, align=8];
+// AST-NEXT:         storage d128 [size=16, align=16];
+// AST-NEXT:     }
+// AST-NEXT:     type @type0 = struct {
+// AST-NEXT:         field0 field: i32 : 3;
+// AST-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
+// AST-NEXT:     fn %0 @cases(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// AST-NEXT:         switch %3 read<i32>(%1)
+// AST-NEXT:             {
+// AST-NEXT:                 case %3 const<i32>(2):
+// AST-NEXT:                     return const<i32>(1);
+// AST-NEXT:                 case %3 const<i32>(5) ... const<i32>(7):
+// AST-NEXT:                     return const<i32>(2);
+// AST-NEXT:                 case %3 const<i32>(4):
+// AST-NEXT:                     return const<i32>(3);
+// AST-NEXT:                 default %3:
+// AST-NEXT:                     return const<i32>(0);
+// AST-NEXT:             }
+// AST-NEXT:     }
+// AST-NEXT: }
 // SLATE-FILECHECK-END AST

@@ -19,222 +19,89 @@ RightOnly right_value;
 // SLATE-FILECHECK-DEFINES LEFT ONLY_LEFT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Char {
-// DEFAULT-NEXT:                       signed: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Typedef,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "Value",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "Value",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "value",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Typedef,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "RightOnly",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "RightOnly",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "right_value",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 Value = i8;
+// DEFAULT-NEXT:     type @type1 RightOnly = i32;
+// DEFAULT-NEXT:     global %1 value: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 right_value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INT
-// INT: decl[{{[0-9]+}}]: Declaration(
-// INT-NEXT:       Declaration {
-// INT-NEXT:           specifiers: DeclarationSpecifiers {
-// INT-NEXT:               ty: Integer(
-// INT-NEXT:                   Ranked {
-// INT-NEXT:                       rank: Int,
-// INT-NEXT:                       signed: true,
-// INT-NEXT:                   },
-// INT-NEXT:               ),
-// INT-NEXT:               storage: Typedef,
-// INT-NEXT:           },
-// INT-NEXT:           declarators: [
-// INT-NEXT:               InitDeclaratorKind {
-// INT-NEXT:                   declarator: Name(
-// INT-NEXT:                       "Value",
-// INT-NEXT:                   ),
-// INT-NEXT:               },
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
-// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// INT-NEXT:       Declaration {
-// INT-NEXT:           specifiers: DeclarationSpecifiers {
-// INT-NEXT:               ty: Named(
-// INT-NEXT:                   "Value",
-// INT-NEXT:               ),
-// INT-NEXT:           },
-// INT-NEXT:           declarators: [
-// INT-NEXT:               InitDeclaratorKind {
-// INT-NEXT:                   declarator: Name(
-// INT-NEXT:                       "value",
-// INT-NEXT:                   ),
-// INT-NEXT:               },
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
-// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// INT-NEXT:       Declaration {
-// INT-NEXT:           specifiers: DeclarationSpecifiers {
-// INT-NEXT:               ty: Integer(
-// INT-NEXT:                   Ranked {
-// INT-NEXT:                       rank: Int,
-// INT-NEXT:                       signed: true,
-// INT-NEXT:                   },
-// INT-NEXT:               ),
-// INT-NEXT:               storage: Typedef,
-// INT-NEXT:           },
-// INT-NEXT:           declarators: [
-// INT-NEXT:               InitDeclaratorKind {
-// INT-NEXT:                   declarator: Name(
-// INT-NEXT:                       "RightOnly",
-// INT-NEXT:                   ),
-// INT-NEXT:               },
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
-// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// INT-NEXT:       Declaration {
-// INT-NEXT:           specifiers: DeclarationSpecifiers {
-// INT-NEXT:               ty: Named(
-// INT-NEXT:                   "RightOnly",
-// INT-NEXT:               ),
-// INT-NEXT:           },
-// INT-NEXT:           declarators: [
-// INT-NEXT:               InitDeclaratorKind {
-// INT-NEXT:                   declarator: Name(
-// INT-NEXT:                       "right_value",
-// INT-NEXT:                   ),
-// INT-NEXT:               },
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
+// INT: module {
+// INT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// INT-NEXT:         endian = little;
+// INT-NEXT:         pointer [size=8, align=8];
+// INT-NEXT:         stack_alignment = 16;
+// INT-NEXT:         long_double = f80;
+// INT-NEXT:         storage bool [size=1, align=1];
+// INT-NEXT:         storage i8, u8 [size=1, align=1];
+// INT-NEXT:         storage i16, u16 [size=2, align=2];
+// INT-NEXT:         storage i32, u32 [size=4, align=4];
+// INT-NEXT:         storage i64, u64 [size=8, align=8];
+// INT-NEXT:         storage i128, u128 [size=16, align=16];
+// INT-NEXT:         storage bf16 [size=2, align=2];
+// INT-NEXT:         storage f16 [size=2, align=2];
+// INT-NEXT:         storage f32 [size=4, align=4];
+// INT-NEXT:         storage f64 [size=8, align=8];
+// INT-NEXT:         storage f80 [size=16, align=16];
+// INT-NEXT:         storage f128 [size=16, align=16];
+// INT-NEXT:         storage d32 [size=4, align=4];
+// INT-NEXT:         storage d64 [size=8, align=8];
+// INT-NEXT:         storage d128 [size=16, align=16];
+// INT-NEXT:     }
+// INT-NEXT:     type @type0 Value = i32;
+// INT-NEXT:     type @type1 RightOnly = i32;
+// INT-NEXT:     global %1 value: i32 [storage=static] [linkage=external];
+// INT-NEXT:     global %3 right_value: i32 [storage=static] [linkage=external];
+// INT-NEXT: }
 // SLATE-FILECHECK-END INT
 // SLATE-FILECHECK-BEGIN LEFT
-// LEFT: decl[{{[0-9]+}}]: Declaration(
-// LEFT-NEXT:       Declaration {
-// LEFT-NEXT:           specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:               ty: Integer(
-// LEFT-NEXT:                   Char {
-// LEFT-NEXT:                       signed: None,
-// LEFT-NEXT:                   },
-// LEFT-NEXT:               ),
-// LEFT-NEXT:               storage: Typedef,
-// LEFT-NEXT:           },
-// LEFT-NEXT:           declarators: [
-// LEFT-NEXT:               InitDeclaratorKind {
-// LEFT-NEXT:                   declarator: Name(
-// LEFT-NEXT:                       "Value",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:               },
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
-// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// LEFT-NEXT:       Declaration {
-// LEFT-NEXT:           specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:               ty: Named(
-// LEFT-NEXT:                   "Value",
-// LEFT-NEXT:               ),
-// LEFT-NEXT:           },
-// LEFT-NEXT:           declarators: [
-// LEFT-NEXT:               InitDeclaratorKind {
-// LEFT-NEXT:                   declarator: Name(
-// LEFT-NEXT:                       "value",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:               },
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
-// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// LEFT-NEXT:       Declaration {
-// LEFT-NEXT:           specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:               ty: Integer(
-// LEFT-NEXT:                   Ranked {
-// LEFT-NEXT:                       rank: Int,
-// LEFT-NEXT:                       signed: true,
-// LEFT-NEXT:                   },
-// LEFT-NEXT:               ),
-// LEFT-NEXT:               storage: Typedef,
-// LEFT-NEXT:           },
-// LEFT-NEXT:           declarators: [
-// LEFT-NEXT:               InitDeclaratorKind {
-// LEFT-NEXT:                   declarator: Name(
-// LEFT-NEXT:                       "LeftOnly",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:               },
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
-// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// LEFT-NEXT:       Declaration {
-// LEFT-NEXT:           specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:               ty: Named(
-// LEFT-NEXT:                   "LeftOnly",
-// LEFT-NEXT:               ),
-// LEFT-NEXT:           },
-// LEFT-NEXT:           declarators: [
-// LEFT-NEXT:               InitDeclaratorKind {
-// LEFT-NEXT:                   declarator: Name(
-// LEFT-NEXT:                       "left_value",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:               },
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
+// LEFT: module {
+// LEFT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// LEFT-NEXT:         endian = little;
+// LEFT-NEXT:         pointer [size=8, align=8];
+// LEFT-NEXT:         stack_alignment = 16;
+// LEFT-NEXT:         long_double = f80;
+// LEFT-NEXT:         storage bool [size=1, align=1];
+// LEFT-NEXT:         storage i8, u8 [size=1, align=1];
+// LEFT-NEXT:         storage i16, u16 [size=2, align=2];
+// LEFT-NEXT:         storage i32, u32 [size=4, align=4];
+// LEFT-NEXT:         storage i64, u64 [size=8, align=8];
+// LEFT-NEXT:         storage i128, u128 [size=16, align=16];
+// LEFT-NEXT:         storage bf16 [size=2, align=2];
+// LEFT-NEXT:         storage f16 [size=2, align=2];
+// LEFT-NEXT:         storage f32 [size=4, align=4];
+// LEFT-NEXT:         storage f64 [size=8, align=8];
+// LEFT-NEXT:         storage f80 [size=16, align=16];
+// LEFT-NEXT:         storage f128 [size=16, align=16];
+// LEFT-NEXT:         storage d32 [size=4, align=4];
+// LEFT-NEXT:         storage d64 [size=8, align=8];
+// LEFT-NEXT:         storage d128 [size=16, align=16];
+// LEFT-NEXT:     }
+// LEFT-NEXT:     type @type0 Value = i8;
+// LEFT-NEXT:     type @type1 LeftOnly = i32;
+// LEFT-NEXT:     global %1 value: i8 [storage=static] [linkage=external];
+// LEFT-NEXT:     global %3 left_value: i32 [storage=static] [linkage=external];
+// LEFT-NEXT: }
 // SLATE-FILECHECK-END LEFT

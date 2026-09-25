@@ -18,282 +18,110 @@ int nested[X];
 // SLATE-FILECHECK-DEFINES AB A B
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "redefined",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 1,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "1",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Array {
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "nested",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 1,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "1",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %0 redefined: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 nested: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "redefined",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 2,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "2",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Array {
-// A-NEXT:                       inner: Name(
-// A-NEXT:                           "nested",
-// A-NEXT:                       ),
-// A-NEXT:                       size: Expression(
-// A-NEXT:                           IntegerLiteral(
-// A-NEXT:                               IntegerLiteral {
-// A-NEXT:                                   value: 2,
-// A-NEXT:                                   radix: Decimal,
-// A-NEXT:                                   suffix: IntegerSuffix {
-// A-NEXT:                                       unsigned: false,
-// A-NEXT:                                       size: None,
-// A-NEXT:                                   },
-// A-NEXT:                                   spelling: "2",
-// A-NEXT:                               },
-// A-NEXT:                           ),
-// A-NEXT:                       ),
-// A-NEXT:                   },
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
+// A: module {
+// A-NEXT:     target "x86_64-unknown-linux-gnu" {
+// A-NEXT:         endian = little;
+// A-NEXT:         pointer [size=8, align=8];
+// A-NEXT:         stack_alignment = 16;
+// A-NEXT:         long_double = f80;
+// A-NEXT:         storage bool [size=1, align=1];
+// A-NEXT:         storage i8, u8 [size=1, align=1];
+// A-NEXT:         storage i16, u16 [size=2, align=2];
+// A-NEXT:         storage i32, u32 [size=4, align=4];
+// A-NEXT:         storage i64, u64 [size=8, align=8];
+// A-NEXT:         storage i128, u128 [size=16, align=16];
+// A-NEXT:         storage bf16 [size=2, align=2];
+// A-NEXT:         storage f16 [size=2, align=2];
+// A-NEXT:         storage f32 [size=4, align=4];
+// A-NEXT:         storage f64 [size=8, align=8];
+// A-NEXT:         storage f80 [size=16, align=16];
+// A-NEXT:         storage f128 [size=16, align=16];
+// A-NEXT:         storage d32 [size=4, align=4];
+// A-NEXT:         storage d64 [size=8, align=8];
+// A-NEXT:         storage d128 [size=16, align=16];
+// A-NEXT:     }
+// A-NEXT:     global %0 redefined: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %1 nested: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT: }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN B
-// B: decl[{{[0-9]+}}]: Declaration(
-// B-NEXT:       Declaration {
-// B-NEXT:           specifiers: DeclarationSpecifiers {
-// B-NEXT:               ty: Integer(
-// B-NEXT:                   Ranked {
-// B-NEXT:                       rank: Int,
-// B-NEXT:                       signed: true,
-// B-NEXT:                   },
-// B-NEXT:               ),
-// B-NEXT:           },
-// B-NEXT:           declarators: [
-// B-NEXT:               InitDeclaratorKind {
-// B-NEXT:                   declarator: Array {
-// B-NEXT:                       inner: Name(
-// B-NEXT:                           "redefined",
-// B-NEXT:                       ),
-// B-NEXT:                       size: Expression(
-// B-NEXT:                           IntegerLiteral(
-// B-NEXT:                               IntegerLiteral {
-// B-NEXT:                                   value: 1,
-// B-NEXT:                                   radix: Decimal,
-// B-NEXT:                                   suffix: IntegerSuffix {
-// B-NEXT:                                       unsigned: false,
-// B-NEXT:                                       size: None,
-// B-NEXT:                                   },
-// B-NEXT:                                   spelling: "1",
-// B-NEXT:                               },
-// B-NEXT:                           ),
-// B-NEXT:                       ),
-// B-NEXT:                   },
-// B-NEXT:               },
-// B-NEXT:           ],
-// B-NEXT:       },
-// B-NEXT:   )
-// B-NEXT: decl[{{[0-9]+}}]: Declaration(
-// B-NEXT:       Declaration {
-// B-NEXT:           specifiers: DeclarationSpecifiers {
-// B-NEXT:               ty: Integer(
-// B-NEXT:                   Ranked {
-// B-NEXT:                       rank: Int,
-// B-NEXT:                       signed: true,
-// B-NEXT:                   },
-// B-NEXT:               ),
-// B-NEXT:           },
-// B-NEXT:           declarators: [
-// B-NEXT:               InitDeclaratorKind {
-// B-NEXT:                   declarator: Array {
-// B-NEXT:                       inner: Name(
-// B-NEXT:                           "nested",
-// B-NEXT:                       ),
-// B-NEXT:                       size: Expression(
-// B-NEXT:                           IntegerLiteral(
-// B-NEXT:                               IntegerLiteral {
-// B-NEXT:                                   value: 1,
-// B-NEXT:                                   radix: Decimal,
-// B-NEXT:                                   suffix: IntegerSuffix {
-// B-NEXT:                                       unsigned: false,
-// B-NEXT:                                       size: None,
-// B-NEXT:                                   },
-// B-NEXT:                                   spelling: "1",
-// B-NEXT:                               },
-// B-NEXT:                           ),
-// B-NEXT:                       ),
-// B-NEXT:                   },
-// B-NEXT:               },
-// B-NEXT:           ],
-// B-NEXT:       },
-// B-NEXT:   )
+// B: module {
+// B-NEXT:     target "x86_64-unknown-linux-gnu" {
+// B-NEXT:         endian = little;
+// B-NEXT:         pointer [size=8, align=8];
+// B-NEXT:         stack_alignment = 16;
+// B-NEXT:         long_double = f80;
+// B-NEXT:         storage bool [size=1, align=1];
+// B-NEXT:         storage i8, u8 [size=1, align=1];
+// B-NEXT:         storage i16, u16 [size=2, align=2];
+// B-NEXT:         storage i32, u32 [size=4, align=4];
+// B-NEXT:         storage i64, u64 [size=8, align=8];
+// B-NEXT:         storage i128, u128 [size=16, align=16];
+// B-NEXT:         storage bf16 [size=2, align=2];
+// B-NEXT:         storage f16 [size=2, align=2];
+// B-NEXT:         storage f32 [size=4, align=4];
+// B-NEXT:         storage f64 [size=8, align=8];
+// B-NEXT:         storage f80 [size=16, align=16];
+// B-NEXT:         storage f128 [size=16, align=16];
+// B-NEXT:         storage d32 [size=4, align=4];
+// B-NEXT:         storage d64 [size=8, align=8];
+// B-NEXT:         storage d128 [size=16, align=16];
+// B-NEXT:     }
+// B-NEXT:     global %0 redefined: array<i32, 1> [storage=static] [linkage=external];
+// B-NEXT:     global %1 nested: array<i32, 1> [storage=static] [linkage=external];
+// B-NEXT: }
 // SLATE-FILECHECK-END B
 // SLATE-FILECHECK-BEGIN AB
-// AB: decl[{{[0-9]+}}]: Declaration(
-// AB-NEXT:       Declaration {
-// AB-NEXT:           specifiers: DeclarationSpecifiers {
-// AB-NEXT:               ty: Integer(
-// AB-NEXT:                   Ranked {
-// AB-NEXT:                       rank: Int,
-// AB-NEXT:                       signed: true,
-// AB-NEXT:                   },
-// AB-NEXT:               ),
-// AB-NEXT:           },
-// AB-NEXT:           declarators: [
-// AB-NEXT:               InitDeclaratorKind {
-// AB-NEXT:                   declarator: Array {
-// AB-NEXT:                       inner: Name(
-// AB-NEXT:                           "redefined",
-// AB-NEXT:                       ),
-// AB-NEXT:                       size: Expression(
-// AB-NEXT:                           IntegerLiteral(
-// AB-NEXT:                               IntegerLiteral {
-// AB-NEXT:                                   value: 2,
-// AB-NEXT:                                   radix: Decimal,
-// AB-NEXT:                                   suffix: IntegerSuffix {
-// AB-NEXT:                                       unsigned: false,
-// AB-NEXT:                                       size: None,
-// AB-NEXT:                                   },
-// AB-NEXT:                                   spelling: "2",
-// AB-NEXT:                               },
-// AB-NEXT:                           ),
-// AB-NEXT:                       ),
-// AB-NEXT:                   },
-// AB-NEXT:               },
-// AB-NEXT:           ],
-// AB-NEXT:       },
-// AB-NEXT:   )
-// AB-NEXT: decl[{{[0-9]+}}]: Declaration(
-// AB-NEXT:       Declaration {
-// AB-NEXT:           specifiers: DeclarationSpecifiers {
-// AB-NEXT:               ty: Integer(
-// AB-NEXT:                   Ranked {
-// AB-NEXT:                       rank: Int,
-// AB-NEXT:                       signed: true,
-// AB-NEXT:                   },
-// AB-NEXT:               ),
-// AB-NEXT:           },
-// AB-NEXT:           declarators: [
-// AB-NEXT:               InitDeclaratorKind {
-// AB-NEXT:                   declarator: Array {
-// AB-NEXT:                       inner: Name(
-// AB-NEXT:                           "nested",
-// AB-NEXT:                       ),
-// AB-NEXT:                       size: Expression(
-// AB-NEXT:                           IntegerLiteral(
-// AB-NEXT:                               IntegerLiteral {
-// AB-NEXT:                                   value: 5,
-// AB-NEXT:                                   radix: Decimal,
-// AB-NEXT:                                   suffix: IntegerSuffix {
-// AB-NEXT:                                       unsigned: false,
-// AB-NEXT:                                       size: None,
-// AB-NEXT:                                   },
-// AB-NEXT:                                   spelling: "5",
-// AB-NEXT:                               },
-// AB-NEXT:                           ),
-// AB-NEXT:                       ),
-// AB-NEXT:                   },
-// AB-NEXT:               },
-// AB-NEXT:           ],
-// AB-NEXT:       },
-// AB-NEXT:   )
+// AB: module {
+// AB-NEXT:     target "x86_64-unknown-linux-gnu" {
+// AB-NEXT:         endian = little;
+// AB-NEXT:         pointer [size=8, align=8];
+// AB-NEXT:         stack_alignment = 16;
+// AB-NEXT:         long_double = f80;
+// AB-NEXT:         storage bool [size=1, align=1];
+// AB-NEXT:         storage i8, u8 [size=1, align=1];
+// AB-NEXT:         storage i16, u16 [size=2, align=2];
+// AB-NEXT:         storage i32, u32 [size=4, align=4];
+// AB-NEXT:         storage i64, u64 [size=8, align=8];
+// AB-NEXT:         storage i128, u128 [size=16, align=16];
+// AB-NEXT:         storage bf16 [size=2, align=2];
+// AB-NEXT:         storage f16 [size=2, align=2];
+// AB-NEXT:         storage f32 [size=4, align=4];
+// AB-NEXT:         storage f64 [size=8, align=8];
+// AB-NEXT:         storage f80 [size=16, align=16];
+// AB-NEXT:         storage f128 [size=16, align=16];
+// AB-NEXT:         storage d32 [size=4, align=4];
+// AB-NEXT:         storage d64 [size=8, align=8];
+// AB-NEXT:         storage d128 [size=16, align=16];
+// AB-NEXT:     }
+// AB-NEXT:     global %0 redefined: array<i32, 2> [storage=static] [linkage=external];
+// AB-NEXT:     global %1 nested: array<i32, 5> [storage=static] [linkage=external];
+// AB-NEXT: }
 // SLATE-FILECHECK-END AB

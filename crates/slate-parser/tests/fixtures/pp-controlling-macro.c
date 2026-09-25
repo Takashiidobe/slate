@@ -12,224 +12,89 @@ trailing_t trailing;
 // SLATE-FILECHECK-DEFINES SKIP PARTIALLY_GUARDED_H
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Typedef,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "guarded_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Typedef,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "trailing_t",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "guarded_t",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "value",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "trailing_t",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "trailing",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 guarded_t = i32;
+// DEFAULT-NEXT:     type @type1 trailing_t = i32;
+// DEFAULT-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:               storage: Typedef,
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Name(
-// A-NEXT:                       "guarded_t",
-// A-NEXT:                   ),
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Integer(
-// A-NEXT:                   Ranked {
-// A-NEXT:                       rank: Int,
-// A-NEXT:                       signed: true,
-// A-NEXT:                   },
-// A-NEXT:               ),
-// A-NEXT:               storage: Typedef,
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Name(
-// A-NEXT:                       "trailing_t",
-// A-NEXT:                   ),
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Named(
-// A-NEXT:                   "guarded_t",
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Name(
-// A-NEXT:                       "value",
-// A-NEXT:                   ),
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
-// A-NEXT: decl[{{[0-9]+}}]: Declaration(
-// A-NEXT:       Declaration {
-// A-NEXT:           specifiers: DeclarationSpecifiers {
-// A-NEXT:               ty: Named(
-// A-NEXT:                   "trailing_t",
-// A-NEXT:               ),
-// A-NEXT:           },
-// A-NEXT:           declarators: [
-// A-NEXT:               InitDeclaratorKind {
-// A-NEXT:                   declarator: Name(
-// A-NEXT:                       "trailing",
-// A-NEXT:                   ),
-// A-NEXT:               },
-// A-NEXT:           ],
-// A-NEXT:       },
-// A-NEXT:   )
+// A: module {
+// A-NEXT:     target "x86_64-unknown-linux-gnu" {
+// A-NEXT:         endian = little;
+// A-NEXT:         pointer [size=8, align=8];
+// A-NEXT:         stack_alignment = 16;
+// A-NEXT:         long_double = f80;
+// A-NEXT:         storage bool [size=1, align=1];
+// A-NEXT:         storage i8, u8 [size=1, align=1];
+// A-NEXT:         storage i16, u16 [size=2, align=2];
+// A-NEXT:         storage i32, u32 [size=4, align=4];
+// A-NEXT:         storage i64, u64 [size=8, align=8];
+// A-NEXT:         storage i128, u128 [size=16, align=16];
+// A-NEXT:         storage bf16 [size=2, align=2];
+// A-NEXT:         storage f16 [size=2, align=2];
+// A-NEXT:         storage f32 [size=4, align=4];
+// A-NEXT:         storage f64 [size=8, align=8];
+// A-NEXT:         storage f80 [size=16, align=16];
+// A-NEXT:         storage f128 [size=16, align=16];
+// A-NEXT:         storage d32 [size=4, align=4];
+// A-NEXT:         storage d64 [size=8, align=8];
+// A-NEXT:         storage d128 [size=16, align=16];
+// A-NEXT:     }
+// A-NEXT:     type @type0 guarded_t = i32;
+// A-NEXT:     type @type1 trailing_t = i32;
+// A-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
+// A-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// A-NEXT: }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN SKIP
-// SKIP: decl[{{[0-9]+}}]: Declaration(
-// SKIP-NEXT:       Declaration {
-// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
-// SKIP-NEXT:               ty: Integer(
-// SKIP-NEXT:                   Ranked {
-// SKIP-NEXT:                       rank: Int,
-// SKIP-NEXT:                       signed: true,
-// SKIP-NEXT:                   },
-// SKIP-NEXT:               ),
-// SKIP-NEXT:               storage: Typedef,
-// SKIP-NEXT:           },
-// SKIP-NEXT:           declarators: [
-// SKIP-NEXT:               InitDeclaratorKind {
-// SKIP-NEXT:                   declarator: Name(
-// SKIP-NEXT:                       "guarded_t",
-// SKIP-NEXT:                   ),
-// SKIP-NEXT:               },
-// SKIP-NEXT:           ],
-// SKIP-NEXT:       },
-// SKIP-NEXT:   )
-// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SKIP-NEXT:       Declaration {
-// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
-// SKIP-NEXT:               ty: Integer(
-// SKIP-NEXT:                   Ranked {
-// SKIP-NEXT:                       rank: Int,
-// SKIP-NEXT:                       signed: true,
-// SKIP-NEXT:                   },
-// SKIP-NEXT:               ),
-// SKIP-NEXT:               storage: Typedef,
-// SKIP-NEXT:           },
-// SKIP-NEXT:           declarators: [
-// SKIP-NEXT:               InitDeclaratorKind {
-// SKIP-NEXT:                   declarator: Name(
-// SKIP-NEXT:                       "trailing_t",
-// SKIP-NEXT:                   ),
-// SKIP-NEXT:               },
-// SKIP-NEXT:           ],
-// SKIP-NEXT:       },
-// SKIP-NEXT:   )
-// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SKIP-NEXT:       Declaration {
-// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
-// SKIP-NEXT:               ty: Named(
-// SKIP-NEXT:                   "guarded_t",
-// SKIP-NEXT:               ),
-// SKIP-NEXT:           },
-// SKIP-NEXT:           declarators: [
-// SKIP-NEXT:               InitDeclaratorKind {
-// SKIP-NEXT:                   declarator: Name(
-// SKIP-NEXT:                       "value",
-// SKIP-NEXT:                   ),
-// SKIP-NEXT:               },
-// SKIP-NEXT:           ],
-// SKIP-NEXT:       },
-// SKIP-NEXT:   )
-// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
-// SKIP-NEXT:       Declaration {
-// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
-// SKIP-NEXT:               ty: Named(
-// SKIP-NEXT:                   "trailing_t",
-// SKIP-NEXT:               ),
-// SKIP-NEXT:           },
-// SKIP-NEXT:           declarators: [
-// SKIP-NEXT:               InitDeclaratorKind {
-// SKIP-NEXT:                   declarator: Name(
-// SKIP-NEXT:                       "trailing",
-// SKIP-NEXT:                   ),
-// SKIP-NEXT:               },
-// SKIP-NEXT:           ],
-// SKIP-NEXT:       },
-// SKIP-NEXT:   )
+// SKIP: module {
+// SKIP-NEXT:     target "x86_64-unknown-linux-gnu" {
+// SKIP-NEXT:         endian = little;
+// SKIP-NEXT:         pointer [size=8, align=8];
+// SKIP-NEXT:         stack_alignment = 16;
+// SKIP-NEXT:         long_double = f80;
+// SKIP-NEXT:         storage bool [size=1, align=1];
+// SKIP-NEXT:         storage i8, u8 [size=1, align=1];
+// SKIP-NEXT:         storage i16, u16 [size=2, align=2];
+// SKIP-NEXT:         storage i32, u32 [size=4, align=4];
+// SKIP-NEXT:         storage i64, u64 [size=8, align=8];
+// SKIP-NEXT:         storage i128, u128 [size=16, align=16];
+// SKIP-NEXT:         storage bf16 [size=2, align=2];
+// SKIP-NEXT:         storage f16 [size=2, align=2];
+// SKIP-NEXT:         storage f32 [size=4, align=4];
+// SKIP-NEXT:         storage f64 [size=8, align=8];
+// SKIP-NEXT:         storage f80 [size=16, align=16];
+// SKIP-NEXT:         storage f128 [size=16, align=16];
+// SKIP-NEXT:         storage d32 [size=4, align=4];
+// SKIP-NEXT:         storage d64 [size=8, align=8];
+// SKIP-NEXT:         storage d128 [size=16, align=16];
+// SKIP-NEXT:     }
+// SKIP-NEXT:     type @type0 guarded_t = i32;
+// SKIP-NEXT:     type @type1 trailing_t = i32;
+// SKIP-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
+// SKIP-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// SKIP-NEXT: }
 // SLATE-FILECHECK-END SKIP

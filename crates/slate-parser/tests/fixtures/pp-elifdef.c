@@ -19,86 +19,106 @@ int fallback;
 // SLATE-FILECHECK-DEFINES THIRD THIRD
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[{{[0-9]+}}]: Declaration(
-// DEFAULT-NEXT:       Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclaratorKind {
-// DEFAULT-NEXT:                   declarator: Name(
-// DEFAULT-NEXT:                       "not_third",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %0 not_third: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FIRST
-// FIRST: decl[{{[0-9]+}}]: Declaration(
-// FIRST-NEXT:       Declaration {
-// FIRST-NEXT:           specifiers: DeclarationSpecifiers {
-// FIRST-NEXT:               ty: Integer(
-// FIRST-NEXT:                   Ranked {
-// FIRST-NEXT:                       rank: Int,
-// FIRST-NEXT:                       signed: true,
-// FIRST-NEXT:                   },
-// FIRST-NEXT:               ),
-// FIRST-NEXT:           },
-// FIRST-NEXT:           declarators: [
-// FIRST-NEXT:               InitDeclaratorKind {
-// FIRST-NEXT:                   declarator: Name(
-// FIRST-NEXT:                       "first",
-// FIRST-NEXT:                   ),
-// FIRST-NEXT:               },
-// FIRST-NEXT:           ],
-// FIRST-NEXT:       },
-// FIRST-NEXT:   )
+// FIRST: module {
+// FIRST-NEXT:     target "x86_64-unknown-linux-gnu" {
+// FIRST-NEXT:         endian = little;
+// FIRST-NEXT:         pointer [size=8, align=8];
+// FIRST-NEXT:         stack_alignment = 16;
+// FIRST-NEXT:         long_double = f80;
+// FIRST-NEXT:         storage bool [size=1, align=1];
+// FIRST-NEXT:         storage i8, u8 [size=1, align=1];
+// FIRST-NEXT:         storage i16, u16 [size=2, align=2];
+// FIRST-NEXT:         storage i32, u32 [size=4, align=4];
+// FIRST-NEXT:         storage i64, u64 [size=8, align=8];
+// FIRST-NEXT:         storage i128, u128 [size=16, align=16];
+// FIRST-NEXT:         storage bf16 [size=2, align=2];
+// FIRST-NEXT:         storage f16 [size=2, align=2];
+// FIRST-NEXT:         storage f32 [size=4, align=4];
+// FIRST-NEXT:         storage f64 [size=8, align=8];
+// FIRST-NEXT:         storage f80 [size=16, align=16];
+// FIRST-NEXT:         storage f128 [size=16, align=16];
+// FIRST-NEXT:         storage d32 [size=4, align=4];
+// FIRST-NEXT:         storage d64 [size=8, align=8];
+// FIRST-NEXT:         storage d128 [size=16, align=16];
+// FIRST-NEXT:     }
+// FIRST-NEXT:     global %0 first: i32 [storage=static] [linkage=external];
+// FIRST-NEXT: }
 // SLATE-FILECHECK-END FIRST
 // SLATE-FILECHECK-BEGIN SECOND
-// SECOND: decl[{{[0-9]+}}]: Declaration(
-// SECOND-NEXT:       Declaration {
-// SECOND-NEXT:           specifiers: DeclarationSpecifiers {
-// SECOND-NEXT:               ty: Integer(
-// SECOND-NEXT:                   Ranked {
-// SECOND-NEXT:                       rank: Int,
-// SECOND-NEXT:                       signed: true,
-// SECOND-NEXT:                   },
-// SECOND-NEXT:               ),
-// SECOND-NEXT:           },
-// SECOND-NEXT:           declarators: [
-// SECOND-NEXT:               InitDeclaratorKind {
-// SECOND-NEXT:                   declarator: Name(
-// SECOND-NEXT:                       "second",
-// SECOND-NEXT:                   ),
-// SECOND-NEXT:               },
-// SECOND-NEXT:           ],
-// SECOND-NEXT:       },
-// SECOND-NEXT:   )
+// SECOND: module {
+// SECOND-NEXT:     target "x86_64-unknown-linux-gnu" {
+// SECOND-NEXT:         endian = little;
+// SECOND-NEXT:         pointer [size=8, align=8];
+// SECOND-NEXT:         stack_alignment = 16;
+// SECOND-NEXT:         long_double = f80;
+// SECOND-NEXT:         storage bool [size=1, align=1];
+// SECOND-NEXT:         storage i8, u8 [size=1, align=1];
+// SECOND-NEXT:         storage i16, u16 [size=2, align=2];
+// SECOND-NEXT:         storage i32, u32 [size=4, align=4];
+// SECOND-NEXT:         storage i64, u64 [size=8, align=8];
+// SECOND-NEXT:         storage i128, u128 [size=16, align=16];
+// SECOND-NEXT:         storage bf16 [size=2, align=2];
+// SECOND-NEXT:         storage f16 [size=2, align=2];
+// SECOND-NEXT:         storage f32 [size=4, align=4];
+// SECOND-NEXT:         storage f64 [size=8, align=8];
+// SECOND-NEXT:         storage f80 [size=16, align=16];
+// SECOND-NEXT:         storage f128 [size=16, align=16];
+// SECOND-NEXT:         storage d32 [size=4, align=4];
+// SECOND-NEXT:         storage d64 [size=8, align=8];
+// SECOND-NEXT:         storage d128 [size=16, align=16];
+// SECOND-NEXT:     }
+// SECOND-NEXT:     global %0 second: i32 [storage=static] [linkage=external];
+// SECOND-NEXT: }
 // SLATE-FILECHECK-END SECOND
 // SLATE-FILECHECK-BEGIN THIRD
-// THIRD: decl[{{[0-9]+}}]: Declaration(
-// THIRD-NEXT:       Declaration {
-// THIRD-NEXT:           specifiers: DeclarationSpecifiers {
-// THIRD-NEXT:               ty: Integer(
-// THIRD-NEXT:                   Ranked {
-// THIRD-NEXT:                       rank: Int,
-// THIRD-NEXT:                       signed: true,
-// THIRD-NEXT:                   },
-// THIRD-NEXT:               ),
-// THIRD-NEXT:           },
-// THIRD-NEXT:           declarators: [
-// THIRD-NEXT:               InitDeclaratorKind {
-// THIRD-NEXT:                   declarator: Name(
-// THIRD-NEXT:                       "fallback",
-// THIRD-NEXT:                   ),
-// THIRD-NEXT:               },
-// THIRD-NEXT:           ],
-// THIRD-NEXT:       },
-// THIRD-NEXT:   )
+// THIRD: module {
+// THIRD-NEXT:     target "x86_64-unknown-linux-gnu" {
+// THIRD-NEXT:         endian = little;
+// THIRD-NEXT:         pointer [size=8, align=8];
+// THIRD-NEXT:         stack_alignment = 16;
+// THIRD-NEXT:         long_double = f80;
+// THIRD-NEXT:         storage bool [size=1, align=1];
+// THIRD-NEXT:         storage i8, u8 [size=1, align=1];
+// THIRD-NEXT:         storage i16, u16 [size=2, align=2];
+// THIRD-NEXT:         storage i32, u32 [size=4, align=4];
+// THIRD-NEXT:         storage i64, u64 [size=8, align=8];
+// THIRD-NEXT:         storage i128, u128 [size=16, align=16];
+// THIRD-NEXT:         storage bf16 [size=2, align=2];
+// THIRD-NEXT:         storage f16 [size=2, align=2];
+// THIRD-NEXT:         storage f32 [size=4, align=4];
+// THIRD-NEXT:         storage f64 [size=8, align=8];
+// THIRD-NEXT:         storage f80 [size=16, align=16];
+// THIRD-NEXT:         storage f128 [size=16, align=16];
+// THIRD-NEXT:         storage d32 [size=4, align=4];
+// THIRD-NEXT:         storage d64 [size=8, align=8];
+// THIRD-NEXT:         storage d128 [size=16, align=16];
+// THIRD-NEXT:     }
+// THIRD-NEXT:     global %0 fallback: i32 [storage=static] [linkage=external];
+// THIRD-NEXT: }
 // SLATE-FILECHECK-END THIRD

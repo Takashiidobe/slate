@@ -18,434 +18,72 @@ _Decimal64 scale(_Decimal64 value, _Decimal32 factor);
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: tag[{{[0-9]+}}]: TagDefinition {
-// C89-NEXT:       id: TagId(
-// C89-NEXT:           [[#TAG0:]],
-// C89-NEXT:       ),
-// C89-NEXT:       kind: Struct,
-// C89-NEXT:       name: Some(
-// C89-NEXT:           "ledger",
-// C89-NEXT:       ),
-// C89-NEXT:       body: Record(
-// C89-NEXT:           [
-// C89-NEXT:               Field(
-// C89-NEXT:                   FieldDecl {
-// C89-NEXT:                       specifiers: DeclarationSpecifiers {
-// C89-NEXT:                           ty: Floating(
-// C89-NEXT:                               Decimal32,
-// C89-NEXT:                           ),
-// C89-NEXT:                       },
-// C89-NEXT:                       declarators: [
-// C89-NEXT:                           FieldDeclaratorKind {
-// C89-NEXT:                               declarator: Name(
-// C89-NEXT:                                   "fee",
-// C89-NEXT:                               ),
-// C89-NEXT:                           },
-// C89-NEXT:                       ],
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:               Field(
-// C89-NEXT:                   FieldDecl {
-// C89-NEXT:                       specifiers: DeclarationSpecifiers {
-// C89-NEXT:                           ty: Floating(
-// C89-NEXT:                               Decimal128,
-// C89-NEXT:                           ),
-// C89-NEXT:                       },
-// C89-NEXT:                       declarators: [
-// C89-NEXT:                           FieldDeclaratorKind {
-// C89-NEXT:                               declarator: Name(
-// C89-NEXT:                                   "balance",
-// C89-NEXT:                               ),
-// C89-NEXT:                           },
-// C89-NEXT:                       ],
-// C89-NEXT:                   },
-// C89-NEXT:               ),
-// C89-NEXT:           ],
-// C89-NEXT:       ),
-// C89-NEXT:   }
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Floating(
-// C89-NEXT:                   Decimal64,
-// C89-NEXT:               ),
-// C89-NEXT:               storage: Typedef,
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "money",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Floating(
-// C89-NEXT:                   Decimal32,
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "small",
-// C89-NEXT:                   ),
-// C89-NEXT:                   initializer: Some(
-// C89-NEXT:                       Expr(
-// C89-NEXT:                           FloatLiteral(
-// C89-NEXT:                               FloatLiteral {
-// C89-NEXT:                                   spelling: "1.5DF",
-// C89-NEXT:                                   radix: Decimal,
-// C89-NEXT:                                   suffix: DecimalF32,
-// C89-NEXT:                               },
-// C89-NEXT:                           ),
-// C89-NEXT:                       ),
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Floating(
-// C89-NEXT:                   Decimal64,
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "medium",
-// C89-NEXT:                   ),
-// C89-NEXT:                   initializer: Some(
-// C89-NEXT:                       Expr(
-// C89-NEXT:                           FloatLiteral(
-// C89-NEXT:                               FloatLiteral {
-// C89-NEXT:                                   spelling: "2.5dd",
-// C89-NEXT:                                   radix: Decimal,
-// C89-NEXT:                                   suffix: DecimalF64,
-// C89-NEXT:                               },
-// C89-NEXT:                           ),
-// C89-NEXT:                       ),
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Floating(
-// C89-NEXT:                   Decimal128,
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "large",
-// C89-NEXT:                   ),
-// C89-NEXT:                   initializer: Some(
-// C89-NEXT:                       Expr(
-// C89-NEXT:                           FloatLiteral(
-// C89-NEXT:                               FloatLiteral {
-// C89-NEXT:                                   spelling: "3.5DL",
-// C89-NEXT:                                   radix: Decimal,
-// C89-NEXT:                                   suffix: DecimalF128,
-// C89-NEXT:                               },
-// C89-NEXT:                           ),
-// C89-NEXT:                       ),
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Named(
-// C89-NEXT:                   "money",
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Name(
-// C89-NEXT:                       "total",
-// C89-NEXT:                   ),
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Tag(
-// C89-NEXT:                   Definition(
-// C89-NEXT:                       TagId(
-// C89-NEXT:                           [[#TAG0]],
-// C89-NEXT:                       ),
-// C89-NEXT:                   ),
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:       },
-// C89-NEXT:   )
-// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C89-NEXT:       Declaration {
-// C89-NEXT:           specifiers: DeclarationSpecifiers {
-// C89-NEXT:               ty: Floating(
-// C89-NEXT:                   Decimal64,
-// C89-NEXT:               ),
-// C89-NEXT:           },
-// C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclaratorKind {
-// C89-NEXT:                   declarator: Function {
-// C89-NEXT:                       inner: Name(
-// C89-NEXT:                           "scale",
-// C89-NEXT:                       ),
-// C89-NEXT:                       parameters: Prototype {
-// C89-NEXT:                           parameters: [
-// C89-NEXT:                               ParameterDeclarationKind {
-// C89-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C89-NEXT:                                       ty: Floating(
-// C89-NEXT:                                           Decimal64,
-// C89-NEXT:                                       ),
-// C89-NEXT:                                   },
-// C89-NEXT:                                   declarator: Name(
-// C89-NEXT:                                       "value",
-// C89-NEXT:                                   ),
-// C89-NEXT:                               },
-// C89-NEXT:                               ParameterDeclarationKind {
-// C89-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C89-NEXT:                                       ty: Floating(
-// C89-NEXT:                                           Decimal32,
-// C89-NEXT:                                       ),
-// C89-NEXT:                                   },
-// C89-NEXT:                                   declarator: Name(
-// C89-NEXT:                                       "factor",
-// C89-NEXT:                                   ),
-// C89-NEXT:                               },
-// C89-NEXT:                           ],
-// C89-NEXT:                       },
-// C89-NEXT:                   },
-// C89-NEXT:               },
-// C89-NEXT:           ],
-// C89-NEXT:       },
-// C89-NEXT:   )
+// C89: module {
+// C89-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C89-NEXT:         endian = little;
+// C89-NEXT:         pointer [size=8, align=8];
+// C89-NEXT:         stack_alignment = 16;
+// C89-NEXT:         long_double = f80;
+// C89-NEXT:         storage bool [size=1, align=1];
+// C89-NEXT:         storage i8, u8 [size=1, align=1];
+// C89-NEXT:         storage i16, u16 [size=2, align=2];
+// C89-NEXT:         storage i32, u32 [size=4, align=4];
+// C89-NEXT:         storage i64, u64 [size=8, align=8];
+// C89-NEXT:         storage i128, u128 [size=16, align=16];
+// C89-NEXT:         storage bf16 [size=2, align=2];
+// C89-NEXT:         storage f16 [size=2, align=2];
+// C89-NEXT:         storage f32 [size=4, align=4];
+// C89-NEXT:         storage f64 [size=8, align=8];
+// C89-NEXT:         storage f80 [size=16, align=16];
+// C89-NEXT:         storage f128 [size=16, align=16];
+// C89-NEXT:         storage d32 [size=4, align=4];
+// C89-NEXT:         storage d64 [size=8, align=8];
+// C89-NEXT:         storage d128 [size=16, align=16];
+// C89-NEXT:     }
+// C89-NEXT:     type @type0 money = d64;
+// C89-NEXT:     type @type1 ledger = struct {
+// C89-NEXT:         field0 fee: d32;
+// C89-NEXT:         field1 balance: d128;
+// C89-NEXT:     } [size=32, align=16, offsets=[0, 16]];
+// C89-NEXT:     global %1 small: d32 [storage=static] = const<d32>(1.5) [linkage=external];
+// C89-NEXT:     global %2 medium: d64 [storage=static] = const<d64>(2.5) [linkage=external];
+// C89-NEXT:     global %3 large: d128 [storage=static] = const<d128>(3.5) [linkage=external];
+// C89-NEXT:     global %4 total: d64 [storage=static] [linkage=external];
+// C89-NEXT:     fn %6 @scale(%7 value: d64, %8 factor: d32) -> d64 [linkage=external];
+// C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN C23
-// C23: tag[{{[0-9]+}}]: TagDefinition {
-// C23-NEXT:       id: TagId(
-// C23-NEXT:           [[#TAG0:]],
-// C23-NEXT:       ),
-// C23-NEXT:       kind: Struct,
-// C23-NEXT:       name: Some(
-// C23-NEXT:           "ledger",
-// C23-NEXT:       ),
-// C23-NEXT:       body: Record(
-// C23-NEXT:           [
-// C23-NEXT:               Field(
-// C23-NEXT:                   FieldDecl {
-// C23-NEXT:                       specifiers: DeclarationSpecifiers {
-// C23-NEXT:                           ty: Floating(
-// C23-NEXT:                               Decimal32,
-// C23-NEXT:                           ),
-// C23-NEXT:                       },
-// C23-NEXT:                       declarators: [
-// C23-NEXT:                           FieldDeclaratorKind {
-// C23-NEXT:                               declarator: Name(
-// C23-NEXT:                                   "fee",
-// C23-NEXT:                               ),
-// C23-NEXT:                           },
-// C23-NEXT:                       ],
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:               Field(
-// C23-NEXT:                   FieldDecl {
-// C23-NEXT:                       specifiers: DeclarationSpecifiers {
-// C23-NEXT:                           ty: Floating(
-// C23-NEXT:                               Decimal128,
-// C23-NEXT:                           ),
-// C23-NEXT:                       },
-// C23-NEXT:                       declarators: [
-// C23-NEXT:                           FieldDeclaratorKind {
-// C23-NEXT:                               declarator: Name(
-// C23-NEXT:                                   "balance",
-// C23-NEXT:                               ),
-// C23-NEXT:                           },
-// C23-NEXT:                       ],
-// C23-NEXT:                   },
-// C23-NEXT:               ),
-// C23-NEXT:           ],
-// C23-NEXT:       ),
-// C23-NEXT:   }
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Floating(
-// C23-NEXT:                   Decimal64,
-// C23-NEXT:               ),
-// C23-NEXT:               storage: Typedef,
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "money",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Floating(
-// C23-NEXT:                   Decimal32,
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "small",
-// C23-NEXT:                   ),
-// C23-NEXT:                   initializer: Some(
-// C23-NEXT:                       Expr(
-// C23-NEXT:                           FloatLiteral(
-// C23-NEXT:                               FloatLiteral {
-// C23-NEXT:                                   spelling: "1.5DF",
-// C23-NEXT:                                   radix: Decimal,
-// C23-NEXT:                                   suffix: DecimalF32,
-// C23-NEXT:                               },
-// C23-NEXT:                           ),
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Floating(
-// C23-NEXT:                   Decimal64,
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "medium",
-// C23-NEXT:                   ),
-// C23-NEXT:                   initializer: Some(
-// C23-NEXT:                       Expr(
-// C23-NEXT:                           FloatLiteral(
-// C23-NEXT:                               FloatLiteral {
-// C23-NEXT:                                   spelling: "2.5dd",
-// C23-NEXT:                                   radix: Decimal,
-// C23-NEXT:                                   suffix: DecimalF64,
-// C23-NEXT:                               },
-// C23-NEXT:                           ),
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Floating(
-// C23-NEXT:                   Decimal128,
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "large",
-// C23-NEXT:                   ),
-// C23-NEXT:                   initializer: Some(
-// C23-NEXT:                       Expr(
-// C23-NEXT:                           FloatLiteral(
-// C23-NEXT:                               FloatLiteral {
-// C23-NEXT:                                   spelling: "3.5DL",
-// C23-NEXT:                                   radix: Decimal,
-// C23-NEXT:                                   suffix: DecimalF128,
-// C23-NEXT:                               },
-// C23-NEXT:                           ),
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Named(
-// C23-NEXT:                   "money",
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Name(
-// C23-NEXT:                       "total",
-// C23-NEXT:                   ),
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Tag(
-// C23-NEXT:                   Definition(
-// C23-NEXT:                       TagId(
-// C23-NEXT:                           [[#TAG0]],
-// C23-NEXT:                       ),
-// C23-NEXT:                   ),
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:       },
-// C23-NEXT:   )
-// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
-// C23-NEXT:       Declaration {
-// C23-NEXT:           specifiers: DeclarationSpecifiers {
-// C23-NEXT:               ty: Floating(
-// C23-NEXT:                   Decimal64,
-// C23-NEXT:               ),
-// C23-NEXT:           },
-// C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclaratorKind {
-// C23-NEXT:                   declarator: Function {
-// C23-NEXT:                       inner: Name(
-// C23-NEXT:                           "scale",
-// C23-NEXT:                       ),
-// C23-NEXT:                       parameters: Prototype {
-// C23-NEXT:                           parameters: [
-// C23-NEXT:                               ParameterDeclarationKind {
-// C23-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C23-NEXT:                                       ty: Floating(
-// C23-NEXT:                                           Decimal64,
-// C23-NEXT:                                       ),
-// C23-NEXT:                                   },
-// C23-NEXT:                                   declarator: Name(
-// C23-NEXT:                                       "value",
-// C23-NEXT:                                   ),
-// C23-NEXT:                               },
-// C23-NEXT:                               ParameterDeclarationKind {
-// C23-NEXT:                                   specifiers: DeclarationSpecifiers {
-// C23-NEXT:                                       ty: Floating(
-// C23-NEXT:                                           Decimal32,
-// C23-NEXT:                                       ),
-// C23-NEXT:                                   },
-// C23-NEXT:                                   declarator: Name(
-// C23-NEXT:                                       "factor",
-// C23-NEXT:                                   ),
-// C23-NEXT:                               },
-// C23-NEXT:                           ],
-// C23-NEXT:                       },
-// C23-NEXT:                   },
-// C23-NEXT:               },
-// C23-NEXT:           ],
-// C23-NEXT:       },
-// C23-NEXT:   )
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     type @type0 money = d64;
+// C23-NEXT:     type @type1 ledger = struct {
+// C23-NEXT:         field0 fee: d32;
+// C23-NEXT:         field1 balance: d128;
+// C23-NEXT:     } [size=32, align=16, offsets=[0, 16]];
+// C23-NEXT:     global %1 small: d32 [storage=static] = const<d32>(1.5) [linkage=external];
+// C23-NEXT:     global %2 medium: d64 [storage=static] = const<d64>(2.5) [linkage=external];
+// C23-NEXT:     global %3 large: d128 [storage=static] = const<d128>(3.5) [linkage=external];
+// C23-NEXT:     global %4 total: d64 [storage=static] [linkage=external];
+// C23-NEXT:     fn %6 @scale(%7 value: d64, %8 factor: d32) -> d64 [linkage=external];
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

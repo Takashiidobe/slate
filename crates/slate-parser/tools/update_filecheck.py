@@ -58,8 +58,6 @@ def configurations(source: str) -> list[tuple[str, list[str]]]:
         if match:
             defines = [item for item in (match.group(2) or "").split() if item]
             found.append((match.group(1), defines))
-    if not found:
-        raise ValueError("fixture has no SLATE-FILECHECK-DEFINES directives")
     return found
 
 
@@ -85,6 +83,15 @@ def configuration_show_ids_args(source: str, prefix: str) -> list[str]:
         if match and match.group(1) == prefix:
             return ["--show-ids"]
     return []
+
+
+def fixture_args(source: str) -> list[str]:
+    return [
+        arg
+        for line in source.splitlines()
+        if line.strip().startswith("// SLATE-FILECHECK-ARGS ")
+        for arg in line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split()
+    ]
 
 
 def error_configurations(source: str) -> list[str]:
@@ -144,6 +151,9 @@ def render(
         command.extend(std_args)
         command.extend(extra_args)
         command.extend(target_args(fixture))
+        filecheck_args = fixture_args(source)
+        if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
+            command.append("--dump-ir")
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
@@ -173,6 +183,9 @@ def render_warnings(
         command.extend(std_args)
         command.extend(extra_args)
         command.extend(target_args(fixture))
+        filecheck_args = fixture_args(source)
+        if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
+            command.append("--dump-ir")
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
@@ -315,6 +328,7 @@ def loosen_ids(block: list[str]) -> list[str]:
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
 PIECES_OPEN_RE = re.compile(r"^(\s*)pieces: \[$")
 QUOTED_LINE_RE = re.compile(r'^\s*"((?:[^"\\]|\\.)*)",?$')
+IR_CODE_UNITS_RE = re.compile(r"code_units<array<i8, ([0-9]+)>>\((\[[0-9, ]*\])\)")
 
 
 def redact_code_units(lines: list[str]) -> list[tuple[str, bool, str | None]]:
@@ -323,9 +337,43 @@ def redact_code_units(lines: list[str]) -> list[tuple[str, bool, str | None]]:
     byte count varies run to run (e.g. pid digit count), so neither an exact
     per-element CHECK-NEXT chain nor a single collapsed line can match it."""
     result: list[tuple[str, bool, str | None]] = []
+    dynamic_file_globals: set[str] = set()
     i = 0
     n = len(lines)
     while i < n:
+        unit_match = IR_CODE_UNITS_RE.search(lines[i])
+        dynamic_file = False
+        if unit_match:
+            values = [int(value) for value in unit_match.group(2).strip("[]").split(",") if value.strip()]
+            dynamic_file = b".filecheck." in bytes(values)
+            global_match = re.search(r"global %([0-9]+) \.str[0-9]+:", lines[i])
+            if dynamic_file and global_match:
+                dynamic_file_globals.add(global_match.group(1))
+        def redact_ir_code_units(match: re.Match[str]) -> str:
+            values = [int(value) for value in match.group(2).strip("[]").split(",") if value.strip()]
+            if b".filecheck." not in bytes(values):
+                return match.group(0)
+            return r"code_units<array<i8, {{[0-9]+}}>>({{\[[0-9, ]+\]}})"
+
+        redacted, count = IR_CODE_UNITS_RE.subn(redact_ir_code_units, lines[i])
+        if count and redacted != lines[i]:
+            redacted = re.sub(r"array<i8, [0-9]+>", "array<i8, {{[0-9]+}}>", redacted)
+            result.append((redacted, False, None))
+            i += 1
+            continue
+        if dynamic_file_globals:
+            for global_id in dynamic_file_globals:
+                line, count = re.subn(
+                    rf"length=Some\([0-9]+\)>\(%{global_id}\)",
+                    f"length=Some({{{{[0-9]+}}}})>(%{global_id})",
+                    lines[i],
+                )
+                if count:
+                    break
+            if count:
+                result.append((line, False, None))
+                i += 1
+                continue
         open_match = CODE_UNITS_OPEN_RE.match(lines[i])
         if not open_match:
             result.append((lines[i], True, None))
@@ -360,7 +408,11 @@ def redact_code_units(lines: list[str]) -> list[tuple[str, bool, str | None]]:
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     isystem = isystem_paths(source)
     blocks = []
-    for prefix in error_configurations(source):
+    errors = error_configurations(source)
+    warnings = warning_configurations(source)
+    config_names = {prefix for prefix, _ in configurations(source)}
+    error_only = bool(errors) and not set(errors).issubset(config_names)
+    for prefix in errors:
         output = render_error(
             repo,
             fixture,
@@ -374,7 +426,9 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
-    for prefix in warning_configurations(source):
+    if error_only:
+        return "\n".join(blocks)
+    for prefix in warnings:
         output = render_warnings(
             repo,
             fixture,
@@ -388,9 +442,27 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
-    if error_configurations(source) or warning_configurations(source):
-        return "\n".join(blocks)
+    ir_errors = [
+        line.strip().removeprefix("// SLATE-FILECHECK-IR-ERROR ")
+        for line in source.splitlines()
+        if line.strip().startswith("// SLATE-FILECHECK-IR-ERROR ")
+    ]
+    for prefix in ir_errors:
+        output = render_error(
+            repo,
+            fixture,
+            source,
+            configuration_defines(source, prefix),
+            isystem,
+            configuration_std_args(source, prefix),
+            ["--dump-ir"],
+        )
+        blocks.extend([f"// SLATE-FILECHECK-BEGIN {prefix}"])
+        blocks.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
+        blocks.append(f"// SLATE-FILECHECK-END {prefix}")
     for prefix, defines in configurations(source):
+        if prefix in errors or prefix in ir_errors:
+            continue
         output = render(
             repo,
             fixture,
@@ -400,14 +472,15 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             configuration_std_args(source, prefix),
             configuration_show_ids_args(source, prefix),
         )
+        check_prefix = f"IR-{prefix}" if prefix in warnings else prefix
         lines = redact_code_units(output.splitlines())
-        block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
+        block = [f"// SLATE-FILECHECK-BEGIN {check_prefix}"]
         for index, (line, escape, force) in enumerate(lines):
-            directive = prefix if force == "plain" or index == 0 else f"{prefix}-NEXT"
+            directive = check_prefix if force == "plain" or index == 0 else f"{check_prefix}-NEXT"
             text = escape_filecheck_literal(line) if escape else line
             block.append(f"// {directive}: {text}")
         block = loosen_ids(loosen_system_provenance(block))
-        block.append(f"// SLATE-FILECHECK-END {prefix}")
+        block.append(f"// SLATE-FILECHECK-END {check_prefix}")
         blocks.extend(block)
     return "\n".join(blocks)
 
@@ -442,10 +515,16 @@ def replace_blocks(source: str, generated: str, prefixes: list[str]) -> str:
 
 def update(repo: Path, fixture: Path) -> tuple[str, str]:
     source = fixture.read_text(errors="surrogateescape")
-    prefixes = (
-        error_configurations(source)
-        or warning_configurations(source)
-        or [prefix for prefix, _ in configurations(source)]
+    prefixes = sorted(
+        {prefix for prefix, _ in configurations(source)}
+        | set(error_configurations(source))
+        | set(warning_configurations(source))
+        | {f"IR-{prefix}" for prefix in warning_configurations(source)}
+        | {
+            line.strip().removeprefix("// SLATE-FILECHECK-IR-ERROR ")
+            for line in source.splitlines()
+            if line.strip().startswith("// SLATE-FILECHECK-IR-ERROR ")
+        }
     )
     updated = replace_blocks(source, generated_blocks(repo, fixture, source), prefixes)
     return source, updated
