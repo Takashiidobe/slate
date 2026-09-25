@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// @slate-lowerer-fn-begin
 static int sum_to(int n) {
   int total = 0;
   for (int i = 1; i <= n; i++) {
@@ -7,6 +8,7 @@ static int sum_to(int n) {
   }
   return total;
 }
+// @slate-lowerer-fn-end
 
 int main(void) {
   printf("%d\n", sum_to(10));
@@ -128,3 +130,39 @@ int main(void) {
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+
+// SLATE-FILECHECK-BEGIN slate-rewrites
+// SLATE-REWRITES-DAG: fn sum_to(mut n: i32) -> i32 {
+// SLATE-REWRITES-DAG: let mut total: i32 = 0 as i32;
+// SLATE-REWRITES-DAG: let mut i: i32 = 1 as i32;
+// SLATE-REWRITES-DAG: while i <= n {
+// SLATE-REWRITES-DAG: total += i;
+// SLATE-REWRITES-DAG: i += 1 as i32;
+// SLATE-REWRITES-DAG: total
+// SLATE-FILECHECK-END slate-rewrites
+
+// SLATE-FILECHECK-BEGIN slate-lowerer
+// SLATE-LOWERER-DAG: fn sum_to(mut n: i32) -> i32 {
+// SLATE-LOWERER-DAG:     let mut total: i32 = 0 as i32;
+// SLATE-LOWERER-DAG:     {
+// SLATE-LOWERER-DAG:         let mut i: i32 = 1 as i32;
+// SLATE-LOWERER-DAG:         loop {
+// SLATE-LOWERER-DAG:             if !(i <= n) {
+// SLATE-LOWERER-DAG:                 break;
+// SLATE-LOWERER-DAG:             }
+// SLATE-LOWERER-DAG:             '{{__slate_continue_[0-9]+}}: {
+// SLATE-LOWERER-DAG:                 {
+// SLATE-LOWERER-DAG:                     let {{__v[0-9]+}}: i32 = total;
+// SLATE-LOWERER-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + i;
+// SLATE-LOWERER-DAG:                     total = {{__v[0-9]+}};
+// SLATE-LOWERER-DAG:                 }
+// SLATE-LOWERER-DAG:             }
+// SLATE-LOWERER-DAG:             let {{__v[0-9]+}}: i32 = i;
+// SLATE-LOWERER-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (1 as i32);
+// SLATE-LOWERER-DAG:             i = {{__v[0-9]+}};
+// SLATE-LOWERER-DAG:         }
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     return total;
+// SLATE-LOWERER-DAG: }
+// SLATE-FILECHECK-END slate-lowerer

@@ -46,9 +46,9 @@ def fixture_clang_args(path):
 
 ANNOTATION_PATTERN = re.compile(
     r"^(?P<indent>\s*)(?:"
-    r"//\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-(?P<line_fn>fn-)?"
+    r"//\s*@(?P<line_kind>(?:lowering|rewrite|slate-lowerer)(?:-not)?)-(?P<line_fn>fn-)?"
     r"(?P<line_boundary>begin|end)\s*"
-    r"|/\*\s*@(?P<block_kind>(?:lowering|rewrite)(?:-not)?)-(?P<block_fn>fn-)?"
+    r"|/\*\s*@(?P<block_kind>(?:lowering|rewrite|slate-lowerer)(?:-not)?)-(?P<block_fn>fn-)?"
     r"(?P<block_boundary>begin|end)\s*\*/\s*"
     r")$"
 )
@@ -100,6 +100,10 @@ UNSTABLE_IDENTIFIER_PATTERNS = (
     ),
     (re.compile(r"\b__state[0-9]+\b"), "{{__state[0-9]+}}"),
     (
+        re.compile(r"\b__slate_continue_[0-9]+\b"),
+        "{{__slate_continue_[0-9]+}}",
+    ),
+    (
         re.compile(r"\b__dispatch[0-9]+_l[0-9]+\b"),
         "{{__dispatch[0-9]+_l[0-9]+}}",
     ),
@@ -143,7 +147,7 @@ def c_function_definition_name(lines):
     return None
 
 
-def instrument_annotations(source, first_id=0):
+def instrument_annotations(source, first_id=0, selected_kinds=None):
     annotations = {}
     fn_targets = {}
     active = []
@@ -156,6 +160,9 @@ def instrument_annotations(source, first_id=0):
             output.append(line)
             continue
         kind = match.group("line_kind") or match.group("block_kind")
+        if selected_kinds is not None and kind.removesuffix("-not") not in selected_kinds:
+            output.append(line)
+            continue
         is_fn = bool(match.group("line_fn") or match.group("block_fn"))
         annotation_boundary = match.group("line_boundary") or match.group(
             "block_boundary"
@@ -279,14 +286,15 @@ def render_annotation_checks(annotations, fn_targets, rewritten, lowered, prefix
         "lowering": lowered_regions,
         "rewrite": rewritten_regions,
     }
-    profile = prefix.partition("-")[0].lower().removesuffix("s")
-    opposite = "rewrite" if profile == "lowering" else "lowering"
+    profile = check_annotation_profile(prefix)
+    source_profile = "lowering" if profile == "slate-lowerer" else profile
+    opposite = "rewrite" if source_profile == "lowering" else "lowering"
     checks = []
     for marker_id, kind in annotations.items():
         if kind.removesuffix("-not") != profile:
             continue
         negative = kind.endswith("-not")
-        selected_profile = opposite if negative else profile
+        selected_profile = opposite if negative else source_profile
         regions = regions_by_profile[selected_profile]
         if marker_id not in regions:
             raise RuntimeError(
@@ -295,7 +303,7 @@ def render_annotation_checks(annotations, fn_targets, rewritten, lowered, prefix
         directive = f"{prefix}-NOT" if negative else f"{prefix}-DAG"
         entries = dedented_patterns(regions[marker_id])
         if negative:
-            baseline = regions_by_profile[profile]
+            baseline = regions_by_profile[source_profile]
             if marker_id not in baseline:
                 raise RuntimeError(
                     f"{profile} Rust is missing annotation marker {marker_id}"
@@ -316,6 +324,40 @@ def render_annotation_checks(annotations, fn_targets, rewritten, lowered, prefix
             f"// {directive}: {indent}{pattern}" for indent, pattern in entries
         )
     return checks
+
+
+def check_annotation_profile(prefix):
+    if prefix == "SLATE-LOWERER":
+        return "slate-lowerer"
+    return prefix.partition("-")[0].lower().removesuffix("s")
+
+
+def command_with_subcommand(command, subcommand):
+    index = next(
+        (
+            index
+            for index, item in enumerate(command)
+            if item in ("translate", "translate-lowered")
+        ),
+        None,
+    )
+    if index is None:
+        raise RuntimeError(f"translation command is missing a subcommand: {command}")
+    return [*command[:index], subcommand, *command[index + 1 :]]
+
+
+def command_base(command):
+    index = next(
+        (
+            index
+            for index, item in enumerate(command)
+            if item in ("translate", "translate-lowered")
+        ),
+        None,
+    )
+    if index is None:
+        raise RuntimeError(f"translation command is missing a subcommand: {command}")
+    return tuple([*command[:index], *command[index + 1 :]])
 
 
 def dedented_patterns(lines):
@@ -609,7 +651,12 @@ def update_path(path, profiles, in_place, target_mode):
     if not path.is_file():
         raise ValueError(f"path is not a file: {path}")
     source = path.read_text()
-    instrumented, annotations, fn_targets = instrument_annotations(source)
+    selected_kinds = (
+        {"slate-lowerer"} if any(profile == "SLATE-LOWERER" for profile, _, _ in profiles) else None
+    )
+    instrumented, annotations, fn_targets = instrument_annotations(
+        source, selected_kinds=selected_kinds
+    )
     if target_mode:
         requested_bases = {profile.partition("-")[0] for profile, _, _ in profiles}
         source = remove_target_mode_blocks(source, requested_bases)
@@ -618,7 +665,7 @@ def update_path(path, profiles, in_place, target_mode):
     profile_order = []
     annotation_outputs = {}
     for profile, command, environment in profiles:
-        annotation_profile = profile.partition("-")[0].lower().removesuffix("s")
+        annotation_profile = check_annotation_profile(profile)
         has_profile_annotations = any(
             kind.removesuffix("-not") == annotation_profile
             for kind in annotations.values()
@@ -635,10 +682,10 @@ def update_path(path, profiles, in_place, target_mode):
         updated = remove_generated_block(updated, profile)
         try:
             if annotations:
-                cache_key = (tuple(command[:-1]), tuple(sorted(environment.items())))
+                cache_key = (command_base(command), tuple(sorted(environment.items())))
                 if cache_key not in annotation_outputs:
-                    lowered_command = [*command[:-1], "translate-lowered"]
-                    rewritten_command = [*command[:-1], "translate"]
+                    lowered_command = command_with_subcommand(command, "translate-lowered")
+                    rewritten_command = command_with_subcommand(command, "translate")
                     annotation_outputs[cache_key] = (
                         normalize_source_paths(
                             translate_instrumented(
@@ -857,6 +904,14 @@ def update_project(project, profiles, in_place, slate, library, target_mode):
 
 
 def make_profiles(slate, targets, profile_name):
+    if profile_name == "slate-lowerer":
+        return [
+            (
+                "SLATE-LOWERER",
+                [*slate, "translate-lowered", "--frontend=slate"],
+                {},
+            )
+        ]
     profiles = []
     if profile_name in ("lowering", "both"):
         for prefix, environment in targets or [("", {})]:
@@ -921,7 +976,9 @@ def main(argv):
         "paths", nargs="+", help="fixture paths, or glob patterns against them"
     )
     parser.add_argument(
-        "--profile", choices=("lowering", "rewrites", "both"), default="both"
+        "--profile",
+        choices=("lowering", "rewrites", "both", "slate-lowerer"),
+        default="both",
     )
     parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--slate", default="cargo run --quiet --")
@@ -935,6 +992,8 @@ def main(argv):
         help="generate target-qualified checks; may be repeated",
     )
     args = parser.parse_args(argv)
+    if args.profile == "slate-lowerer" and args.target:
+        parser.error("--profile slate-lowerer currently uses the host Slate target")
     slate = args.slate.split()
     explicit_targets = []
     for target in args.target or []:
@@ -946,6 +1005,8 @@ def main(argv):
     for path in resolve_paths(args.paths):
         path_mode = infer_mode(path, args.project, args.library_project)
         if path_mode in ("project", "library"):
+            if args.profile == "slate-lowerer":
+                parser.error("--profile slate-lowerer supports single-file fixtures")
             library = path_mode == "library"
             if not path.is_dir():
                 if path.is_file():
@@ -991,13 +1052,23 @@ def main(argv):
                     else default_targets_for_path(c_file)
                 )
                 profiles = make_profiles(slate, targets, args.profile)
-                update_path(c_file, profiles, args.in_place, bool(targets))
+                update_path(
+                    c_file,
+                    profiles,
+                    args.in_place,
+                    bool(targets) and args.profile != "slate-lowerer",
+                )
         else:
             targets = (
                 explicit_targets if explicit_targets else default_targets_for_path(path)
             )
             profiles = make_profiles(slate, targets, args.profile)
-            update_path(path, profiles, args.in_place, bool(targets))
+            update_path(
+                path,
+                profiles,
+                args.in_place,
+                bool(targets) and args.profile != "slate-lowerer",
+            )
     return 0
 
 

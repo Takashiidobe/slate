@@ -9,7 +9,7 @@ pub enum Profile {
 
 pub fn slate_checks(fixture: &str, profile: Profile) -> String {
     let source_prefix = match profile {
-        Profile::Lowering => "SLATE-LOWERING",
+        Profile::Lowering => "SLATE-LOWERER",
         Profile::Rewrites => "SLATE-REWRITES",
     };
     fixture

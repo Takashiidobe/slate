@@ -12,11 +12,25 @@ do not replace runtime comparison.
 Only assertions satisfied by the current engine belong in the baseline; add
 new assertions alongside each newly ported rewrite.
 
-Fixtures exercised by the typed slate-parser frontend carry `SLATE-LOWERING`
+Fixtures exercised by the typed slate-parser frontend carry `SLATE-LOWERER`
 and `SLATE-REWRITES` FileCheck lines in the same C file. The `slate` nextest
 profile selects only those fixtures, checks raw and rewritten Rust separately,
 and differentially runs both against the C oracle. Select one fixture with
 `SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile slate`.
+
+Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
+`@slate-lowerer-fn-end` around each function whose emitted form matters, then
+run:
+
+```bash
+python3 tools/update_filecheck.py --profile slate-lowerer --in-place \
+  tests/fixtures/<name>.c
+```
+
+This emits the `SLATE-LOWERER` block through
+`translate-lowered --frontend=slate`. It leaves ordinary `@lowering` and
+`@rewrite` markers uninstrumented, since those use CIR lowering and its
+FileCheck sentinels.
 
 Cross-target fixtures combine the profile and target in one prefix, such as
 `REWRITES-MACOS`, `REWRITES-MSVC`, or `REWRITES-BIONIC-X86_64`. This keeps a

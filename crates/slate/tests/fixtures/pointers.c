@@ -1,17 +1,22 @@
 #include <stdio.h>
 
+// @slate-lowerer-fn-begin
 static int bump_through_pointer(int value) {
   int  local = value;
   int *ptr   = &local;
   *ptr       = *ptr + 3;
   return local;
 }
+// @slate-lowerer-fn-end
 
+// @slate-lowerer-fn-begin
 static int add_into_pointer(int *slot, int amount) {
   *slot = *slot + amount;
   return *slot;
 }
+// @slate-lowerer-fn-end
 
+// @slate-lowerer-fn-begin
 static int pick_with_pointer_arithmetic(int index) {
   int  values[4];
   int *ptr  = values;
@@ -21,6 +26,7 @@ static int pick_with_pointer_arithmetic(int index) {
   values[3] = 16;
   return *(ptr + index);
 }
+// @slate-lowerer-fn-end
 
 int main(void) {
   int total = 10;
@@ -176,3 +182,47 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { *{{__v[0-9]+}} }
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+
+// SLATE-FILECHECK-BEGIN slate-rewrites
+// SLATE-REWRITES-DAG: fn bump_through_pointer(mut local: i32) -> i32 {
+// SLATE-REWRITES-DAG: *ptr = (unsafe { *ptr }) + (3 as i32);
+// SLATE-REWRITES-DAG: fn add_into_pointer(mut slot: &mut i32, mut amount: i32) -> i32 {
+// SLATE-REWRITES-DAG: *(slot as *mut i32) = (unsafe { *(slot as *mut i32) }) + amount;
+// SLATE-REWRITES-DAG: let mut values: [i32; 4] = [0 as i32; 4];
+// SLATE-REWRITES-DAG: unsafe { *unsafe { ptr.offset(index as isize) } }
+// SLATE-FILECHECK-END slate-rewrites
+
+// SLATE-FILECHECK-BEGIN slate-lowerer
+// SLATE-LOWERER-DAG: fn bump_through_pointer(mut value: i32) -> i32 {
+// SLATE-LOWERER-DAG:     let mut local: i32 = value;
+// SLATE-LOWERER-DAG:     let mut ptr: *mut i32 = std::ptr::addr_of_mut!(local);
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *ptr = (unsafe { *ptr }) + (3 as i32);
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     return local;
+// SLATE-LOWERER-DAG: }
+// SLATE-LOWERER-DAG: fn add_into_pointer(mut slot: *mut i32, mut amount: i32) -> i32 {
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *slot = (unsafe { *slot }) + amount;
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     return unsafe { *slot };
+// SLATE-LOWERER-DAG: }
+// SLATE-LOWERER-DAG: fn pick_with_pointer_arithmetic(mut index: i32) -> i32 {
+// SLATE-LOWERER-DAG:     let mut values: [i32; 4] = [0 as i32; 4];
+// SLATE-LOWERER-DAG:     let mut ptr: *mut i32 = values.as_mut_ptr() as *mut i32;
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *unsafe { (values.as_mut_ptr() as *mut i32).offset((0 as i32) as isize) } = 4 as i32;
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *unsafe { (values.as_mut_ptr() as *mut i32).offset((1 as i32) as isize) } = 8 as i32;
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *unsafe { (values.as_mut_ptr() as *mut i32).offset((2 as i32) as isize) } = 12 as i32;
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     unsafe {
+// SLATE-LOWERER-DAG:         *unsafe { (values.as_mut_ptr() as *mut i32).offset((3 as i32) as isize) } = 16 as i32;
+// SLATE-LOWERER-DAG:     }
+// SLATE-LOWERER-DAG:     return unsafe { *unsafe { ptr.offset(index as isize) } };
+// SLATE-LOWERER-DAG: }
+// SLATE-FILECHECK-END slate-lowerer
