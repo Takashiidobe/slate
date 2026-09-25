@@ -1,12 +1,14 @@
 use crate::compiler_args::CompilerFlavor;
-use std::path::{Path, PathBuf};
+use directories::ProjectDirs;
+use std::path::PathBuf;
 
 pub fn path(target: &str) -> PathBuf {
     let root = std::env::var_os("SLATE_SYSROOTS")
         .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../slate-sysroots/sysroots")
-        });
+        .or_else(|| {
+            ProjectDirs::from("", "", "Slate").map(|dirs| dirs.data_local_dir().join("sysroots"))
+        })
+        .unwrap_or_default();
     root.join(target)
 }
 

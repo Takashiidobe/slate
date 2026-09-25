@@ -1,4 +1,5 @@
 use crate::compiler_args::CompilerFlavor;
+use directories::ProjectDirs;
 use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -6,9 +7,13 @@ use std::path::{Path, PathBuf};
 pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
     let root = std::env::var_os("SLATE_COMPILER_HEADERS")
         .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../slate-sysroots/compiler-headers")
+        .or_else(|| {
+            ProjectDirs::from("", "", "Slate")
+                .map(|dirs| dirs.data_local_dir().join("compiler-headers"))
         });
+    let Some(root) = root else {
+        return Vec::new();
+    };
 
     let profiles: Vec<(String, String)> = match flavor {
         CompilerFlavor::Clang if target.ends_with("-apple-darwin") => {
