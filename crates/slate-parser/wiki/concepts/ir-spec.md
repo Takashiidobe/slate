@@ -1650,9 +1650,11 @@ its signed result is pointer-width on the supported x86_64 target (`ptrdiff_t`
 is i64). Its operation contract requires pointers into the same array (or its
 one-past position), and a difference representable in the result type. Neither
 condition is claimed proven. Pointee const differences are allowed. Complete
-record and fixed-array elements retain their structural types; incomplete,
-void, function, incompatible, and noninteger-offset cases are rejected rather
-than guessed. GNU void/function-pointer arithmetic is not implemented.
+record and fixed-array elements retain their structural types. Incomplete and
+void elements, incompatible pointers, and noninteger offsets are rejected.
+GNU function-pointer arithmetic is accepted as an extension; the function type
+is retained as the element type, and function addresses use one-byte offset
+units. GNU void-pointer arithmetic remains unsupported.
 
 `ir_operator_semantics.c` and its wrap/trap/compact variants cover numeric
 contracts through module lowering. `ir_pointer_arithmetic.c` and its wrap

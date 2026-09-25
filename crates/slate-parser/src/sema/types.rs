@@ -1509,7 +1509,7 @@ impl TypeResolver {
     pub(super) fn require_pointer_element(&self, ty: &Type) -> Result<(), ResolveError> {
         match ty {
             Type::VariableArray { element, .. } => self.require_pointer_element(element),
-            Type::Void => Ok(()),
+            Type::Void | Type::Function { .. } => Ok(()),
             ty => self.storage(ty.clone()).map(|_| ()),
         }
     }
