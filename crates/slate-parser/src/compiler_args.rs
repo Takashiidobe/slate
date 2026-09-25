@@ -1,11 +1,14 @@
 use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
 use crate::diagnostics::{DiagnosticOptions, Warning};
+use crate::files::SearchPaths;
 use crate::ir::Overflow;
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
 use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
+use crate::{compiler_headers, sysroot};
 use std::collections::BTreeSet;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -92,8 +95,35 @@ pub struct CompilerArgs {
     pub defines: Vec<String>,
     pub standard: LanguageStandard,
     pub isystem: Vec<String>,
+    pub idirafter: Vec<String>,
+    pub isysroot: Option<String>,
+    pub sysroot: Option<String>,
+    pub nostdlibinc: bool,
     pub flavor: CompilerFlavor,
     pub target: TargetInfo,
+}
+
+impl CompilerArgs {
+    pub fn search_paths(&self) -> SearchPaths {
+        let mut system: Vec<PathBuf> = self.isystem.iter().map(PathBuf::from).collect();
+        system.extend(compiler_headers::include_paths(
+            &self.target.triple,
+            self.flavor,
+        ));
+        if !self.nostdlibinc {
+            system.extend(match self.isysroot.as_ref().or(self.sysroot.as_ref()) {
+                Some(root) => {
+                    sysroot::include_paths_at(Path::new(root), &self.target.triple, self.flavor)
+                }
+                None => sysroot::include_paths(&self.target.triple, self.flavor),
+            });
+        }
+        system.extend(self.idirafter.iter().map(PathBuf::from));
+        SearchPaths {
+            system,
+            ..SearchPaths::default()
+        }
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -113,6 +143,10 @@ struct ParsedCompilerArgs {
     defines: Vec<String>,
     standard: Option<LanguageStandard>,
     isystem: Vec<String>,
+    idirafter: Vec<String>,
+    isysroot: Option<String>,
+    sysroot: Option<String>,
+    nostdlibinc: bool,
     flavor: CompilerFlavor,
     target: String,
     preferred_stack_boundary: Option<u32>,
@@ -136,6 +170,10 @@ enum Opt {
     Define,
     Standard,
     Isystem,
+    Idirafter,
+    Isysroot,
+    Sysroot,
+    Nostdlibinc,
     Flavor,
     Target,
     PreferredStackBoundary,
@@ -164,6 +202,10 @@ impl std::fmt::Display for Opt {
             Self::Define => "define",
             Self::Standard => "std",
             Self::Isystem => "isystem",
+            Self::Idirafter => "idirafter",
+            Self::Isysroot => "isysroot",
+            Self::Sysroot => "sysroot",
+            Self::Nostdlibinc => "nostdlibinc",
             Self::Flavor => "flavor",
             Self::Target => "target",
             Self::PreferredStackBoundary => "preferred-stack-boundary",
@@ -272,6 +314,10 @@ impl CompilerArgParser {
             defines: raw.defines,
             standard: raw.standard.unwrap_or_default(),
             isystem: raw.isystem,
+            idirafter: raw.idirafter,
+            isysroot: raw.isysroot,
+            sysroot: raw.sysroot,
+            nostdlibinc: raw.nostdlibinc,
             flavor,
             target,
         })
@@ -355,6 +401,20 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             parsed
                 .isystem
                 .push(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "idirafter") {
+            parsed.present.insert(Opt::Idirafter);
+            parsed
+                .idirafter
+                .push(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "isysroot") {
+            parsed.present.insert(Opt::Isysroot);
+            parsed.isysroot = Some(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "sysroot") {
+            parsed.present.insert(Opt::Sysroot);
+            parsed.sysroot = Some(next_value(arguments, &mut index, argument, value)?);
+        } else if matches!(argument.as_str(), "-nostdlibinc" | "--nostdlibinc") {
+            parsed.present.insert(Opt::Nostdlibinc);
+            parsed.nostdlibinc = true;
         } else if let Some(value) = option_value(argument, "flavor") {
             parsed.present.insert(Opt::Flavor);
             parsed.flavor = parse_value(
@@ -484,7 +544,7 @@ fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
     let long = format!("--{name}");
     [short, long].iter().find_map(|spelling| {
         argument.strip_prefix(spelling).and_then(|rest| {
-            (rest.is_empty() || name == "isystem" || name == "D")
+            (rest.is_empty() || matches!(name, "isystem" | "idirafter" | "isysroot" | "D"))
                 .then_some(rest)
                 .or_else(|| rest.strip_prefix('='))
         })

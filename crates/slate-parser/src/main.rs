@@ -1,15 +1,12 @@
 use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
-use slate_parser::compiler_headers;
-use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors};
 use slate_parser::render::Renderer;
-use slate_parser::sysroot;
 use std::env;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 // deeply nested sources outgrow the default main-thread stack long before NESTING_LIMIT
 const STACK_SIZE: usize = 256 << 20;
@@ -28,7 +25,7 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-nostdlibinc] [-isystem <dir>] [-idirafter <dir>] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -102,19 +99,7 @@ fn run() -> miette::Result<()> {
         ));
     }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
-    let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
-    system.extend(compiler_headers::include_paths(
-        &compiler_args.target.triple,
-        compiler_args.flavor,
-    ));
-    system.extend(sysroot::include_paths(
-        &compiler_args.target.triple,
-        compiler_args.flavor,
-    ));
-    let search = SearchPaths {
-        system,
-        ..SearchPaths::default()
-    };
+    let search = compiler_args.search_paths();
     let mut parser = Parser::new(search)
         .with_defines(compiler_args.defines)
         .with_target(compiler_args.target)

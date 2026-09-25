@@ -1,6 +1,6 @@
 use crate::compiler_args::CompilerFlavor;
 use directories::ProjectDirs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn path(target: &str) -> PathBuf {
     let root = std::env::var_os("SLATE_SYSROOTS")
@@ -14,6 +14,10 @@ pub fn path(target: &str) -> PathBuf {
 
 pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
     let sysroot = path(target);
+    include_paths_at(&sysroot, target, flavor)
+}
+
+pub fn include_paths_at(sysroot: &Path, target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
     let candidates = if flavor == CompilerFlavor::Msvc {
         vec![
             sysroot.join("crt/include"),

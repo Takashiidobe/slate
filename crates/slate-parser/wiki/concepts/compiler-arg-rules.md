@@ -20,6 +20,15 @@ with either value form. C90 and ISO 9899 aliases normalize to the corresponding
 language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
 and otherwise C89 language rules. Unknown triples and standard names are errors.
 
+`CompilerArgs::search_paths` constructs the shared include search order:
+explicit `-isystem` directories, compiler builtin headers, standard headers
+from the selected sysroot, then `-idirafter` directories. `-nostdlibinc`
+removes standard headers while retaining explicit and compiler builtin paths.
+`-isysroot` selects the header sysroot over `--sysroot`; either explicit root
+replaces the target-specific default root. An explicit root is used as given,
+without a fallback to another target's or the host's headers. All these paths
+are system headers in the preprocessor.
+
 ## Rule buckets
 
 - `common_rules`: applies regardless of compiler flavor or target. Use this
