@@ -94,6 +94,8 @@ body containing `struct Outer;` sees a distinct incomplete `Outer`, and
 followed by a definition in the *same* scope completes the one tag.
 Fixture: `sema/ir_tag_scopes.c`.
 Variables and parameters have binding IDs; root places use those IDs and concrete types.
+Variables with GNU named-register declarations retain the register spelling on
+their binding so later lowering can preserve the fixed-register constraint.
 Statements support declarations, writes, and numeric operations.
 Pointer nulls, address-of values, byte-array constants, array decay,
 function decay, and calls are represented explicitly. A call names its callee

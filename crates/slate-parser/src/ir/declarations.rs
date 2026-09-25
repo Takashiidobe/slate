@@ -131,6 +131,7 @@ pub struct Variable {
     pub constexpr: bool,
     pub alignment: Option<u64>,
     pub cleanup: Option<String>,
+    pub register: Option<super::AsmRegister>,
     pub initializer: Option<Value>,
 }
 

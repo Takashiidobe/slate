@@ -157,6 +157,9 @@ impl DisplayModule<'_> {
         if let Some(function) = &variable.cleanup {
             write!(f, " [cleanup={function}]")?;
         }
+        if let Some(register) = &variable.register {
+            write!(f, " [register={:?}]", register.spelling)?;
+        }
         if let Some(value) = &variable.initializer {
             write!(
                 f,

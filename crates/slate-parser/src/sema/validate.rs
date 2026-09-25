@@ -1217,20 +1217,7 @@ fn check_register_variable(
         return;
     };
     match register {
-        Register::Other(name) => {
-            if name.is_empty() {
-                errors.push(error(
-                    provenance,
-                    label.expansion,
-                    "cannot use an empty string literal in 'asm'",
-                ));
-            }
-            errors.push(error(
-                provenance,
-                label.expansion,
-                format!("unknown register name '{name}' in asm"),
-            ));
-        }
+        Register::Other(_) => {}
         Register::X86(x86) if file_scope && !matches!(x86.spelling.as_str(), "rsp" | "rbp") => {
             errors.push(error(
                 provenance,

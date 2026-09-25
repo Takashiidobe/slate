@@ -114,7 +114,7 @@ fn modifier(modifier: &ast::AsmConstraintModifier) -> AsmConstraintModifier {
     }
 }
 
-fn register(register: &ast::Register) -> AsmRegister {
+pub(super) fn register(register: &ast::Register) -> AsmRegister {
     match register {
         ast::Register::X86(info) => AsmRegister {
             spelling: info.spelling.clone(),

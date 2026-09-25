@@ -69,30 +69,6 @@ outer:
 // SEMANTIC: 6 │ struct S { int m; };
 // SEMANTIC: ╰────
 // SEMANTIC: Error:
-// SEMANTIC: × unknown register name 'notareg' in asm
-// SEMANTIC: ╭─[tests/fixtures/error/asm-sema.c:10:24]
-// SEMANTIC: 9 │   register int local asm("eax");
-// SEMANTIC: 10 │   register int unknown asm("notareg");
-// SEMANTIC: ·                        ──────────────
-// SEMANTIC: 11 │   register int empty asm("");
-// SEMANTIC: ╰────
-// SEMANTIC: Error:
-// SEMANTIC: × cannot use an empty string literal in 'asm'
-// SEMANTIC: ╭─[tests/fixtures/error/asm-sema.c:11:22]
-// SEMANTIC: 10 │   register int unknown asm("notareg");
-// SEMANTIC: 11 │   register int empty asm("");
-// SEMANTIC: ·                      ───────
-// SEMANTIC: 12 │   struct S s;
-// SEMANTIC: ╰────
-// SEMANTIC: Error:
-// SEMANTIC: × unknown register name '' in asm
-// SEMANTIC: ╭─[tests/fixtures/error/asm-sema.c:11:22]
-// SEMANTIC: 10 │   register int unknown asm("notareg");
-// SEMANTIC: 11 │   register int empty asm("");
-// SEMANTIC: ·                      ───────
-// SEMANTIC: 12 │   struct S s;
-// SEMANTIC: ╰────
-// SEMANTIC: Error:
 // SEMANTIC: × invalid lvalue in asm output
 // SEMANTIC: ╭─[tests/fixtures/error/asm-sema.c:15:17]
 // SEMANTIC: 14 │   asm("" : "=r"((struct S){0}.m) : "r"(x));

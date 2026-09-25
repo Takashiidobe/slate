@@ -221,10 +221,9 @@ fn symbol_attributes<'a>(
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
     let mut symbol = SymbolAttributes::default();
-    if let Some(label) = asm_label {
-        let ast::AsmLabel::Symbol(name) = &label.value else {
-            return Err(ResolveError::Unsupported("register asm label"));
-        };
+    if let Some(label) = asm_label
+        && let ast::AsmLabel::Symbol(name) = &label.value
+    {
         symbol.asm_name = Some(name.clone());
     }
     for attribute in attributes {
@@ -271,6 +270,12 @@ fn function_symbol<'a>(
     attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>> + Clone,
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
+    if matches!(
+        asm_label.map(|label| &label.value),
+        Some(ast::AsmLabel::Register(_))
+    ) {
+        return Err(ResolveError::Unsupported("register asm label on function"));
+    }
     if attributes
         .clone()
         .into_iter()
@@ -904,6 +909,13 @@ impl Lowerer {
                     ast::Attribute::Cleanup(function) => Some(function.clone()),
                     _ => None,
                 }),
+                register: declarator
+                    .asm_label
+                    .as_ref()
+                    .and_then(|label| match &label.value {
+                        ast::AsmLabel::Register(register) => Some(super::asm::register(register)),
+                        _ => None,
+                    }),
                 initializer,
             };
             if storage != StorageDuration::Automatic
@@ -914,7 +926,9 @@ impl Lowerer {
                 ));
             }
             if linked {
-                let declared_linkage = if item.specifiers.is_constexpr {
+                let declared_linkage = if storage_class == StorageClass::Register {
+                    Linkage::External
+                } else if item.specifiers.is_constexpr {
                     Linkage::Internal
                 } else {
                     linkage(storage_class)?
