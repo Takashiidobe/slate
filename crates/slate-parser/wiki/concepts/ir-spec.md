@@ -777,10 +777,26 @@ and ignored, leaving the previous value in effect rather than resetting it, and
 while any pack is in effect bit-fields stop padding to avoid straddling a
 storage unit -- the same rule `__attribute__((packed))` triggers.
 
-`#pragma ms_struct on` is refused rather than laid out, because MS bit-field
-layout is a different algorithm and emitting an Itanium layout for it would be
-silently wrong. `__attribute__((ms_struct))` has the same gap and is still
-accepted; both want the same missing algorithm (`slate-parser-dyd.29`).
+A record is laid out with MS bit-field rules when it carries
+`__attribute__((ms_struct))`, or was defined under `#pragma ms_struct on`
+without `__attribute__((gcc_struct))`. Each bit-field allocates a whole unit
+of its declared type, aligned to the unit's size. Later bit-fields whose types
+have the same size fill that unit until one no longer fits, and then a new unit
+starts. A non-bit-field following bit-fields begins after the whole unit.
+
+A zero-width bit-field is ignored after a non-bit-field. After a bit-field, it
+ends the unit and raises the record's alignment to its type's size.
+
+`packed` does not reduce a bit-field's alignment, but `#pragma pack` caps it.
+In a union, bit-fields have alignment 1 and occupy their full type size.
+
+Scalar fields (not enums, `_Complex`, `_BitInt` or `_Atomic`) are aligned to
+their size, which matters on i686, where `long long` becomes 8-aligned. A
+scalar whose size is not a power of two, such as i686 `long double`, is an
+error, as it is in clang. Storage units are the declared-type units, matching
+clang's discrete bit-field codegen. Oracle: clang's ItaniumRecordLayoutBuilder
+`IsMsStruct` path. Microsoft *target* layout (`*-windows-msvc`) is a separate,
+still-missing algorithm.
 
 `STDC` and `float_control` are still dropped: unlike the others they are
 region-scoped rather than declaration-scoped, and `FP_CONTRACT` and

@@ -1310,17 +1310,24 @@ impl TypeResolver {
                     .attributes
                     .iter()
                     .any(|attribute| matches!(&attribute.value, Attribute::Packed));
-                if self.pragmas.is_ms_struct(tag.id) {
-                    return Err(ResolveError::Unsupported("ms_struct record layout"));
-                }
+                let has = |wanted: &Attribute| {
+                    tag.attributes
+                        .iter()
+                        .any(|attribute| &attribute.value == wanted)
+                };
+                let ms_struct = has(&Attribute::MsStruct)
+                    || (self.pragmas.is_ms_struct(tag.id) && !has(&Attribute::GccStruct));
                 let max_field_alignment = self.pragmas.max_field_alignment(tag.id);
                 let alignment = requested_alignment(self, &tag.attributes)?;
                 let layout = self.layout_record(
                     tag.kind,
                     &fields,
                     &requests,
-                    packed,
-                    max_field_alignment,
+                    RecordRules {
+                        packed,
+                        ms_struct,
+                        max_field_alignment,
+                    },
                     alignment,
                 )?;
                 self.record_fields.insert(id, field_types);
@@ -1660,19 +1667,51 @@ impl TypeResolver {
         }
     }
 
+    fn ms_builtin_size(&self, ty: &Type) -> Result<Option<u64>, ResolveError> {
+        match ty {
+            Type::Array { element, .. } => self.ms_builtin_size(element),
+            Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.ms_builtin_size(inner),
+                _ => Ok(None),
+            },
+            Type::Bool
+            | Type::FixedPoint(_)
+            | Type::Numeric(NumericType::Float(_))
+            | Type::Numeric(NumericType::Integer {
+                bit_precise: false, ..
+            }) => {
+                let size = self.target.storage_of(ty.clone())?.size_bytes;
+                if size.is_power_of_two() {
+                    Ok(Some(size))
+                } else {
+                    Err(ResolveError::Invalid(
+                        "ms_struct layout of a fundamental type whose size is not a power of two",
+                    ))
+                }
+            }
+            _ => Ok(None),
+        }
+    }
+
     fn layout_record(
         &self,
         kind: TagKind,
         fields: &[crate::ast::Span<Field>],
         requests: &[(bool, Option<u64>)],
-        packed: bool,
-        max_field_alignment: Option<u64>,
+        rules: RecordRules,
         requested: Option<u64>,
     ) -> Result<RecordLayout, ResolveError> {
+        let RecordRules {
+            packed,
+            ms_struct,
+            max_field_alignment,
+        } = rules;
         let mut end_bits = 0u64;
         let mut aggregate_align = requested.unwrap_or(1);
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
+        let mut unit_sizes = Vec::new();
+        let mut ms_unit = MsUnit::default();
         for (position, (field, &(field_packed, field_aligned))) in
             fields.iter().zip(requests).enumerate()
         {
@@ -1688,7 +1727,38 @@ impl TypeResolver {
                 },
                 ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
             };
-            let natural = u64::from(storage.alignment_bytes);
+            unit_sizes.push(storage.size_bytes);
+            let unit_bits = storage
+                .size_bytes
+                .checked_mul(8)
+                .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
+            if let Some(width) = field.bit_width {
+                if u64::from(width) > unit_bits {
+                    return Err(ResolveError::Unsupported("bit-field wider than its type"));
+                }
+                if width == 0 && field.name.is_some() {
+                    return Err(ResolveError::Unsupported("named zero-width bit-field"));
+                }
+            }
+            let mut natural = u64::from(storage.alignment_bytes);
+            if ms_struct && !field.access.atomic {
+                natural = natural.max(self.ms_builtin_size(&field.ty)?.unwrap_or(1));
+            }
+            if ms_struct && let Some(width) = field.bit_width {
+                let (position, align) = ms_unit.place(
+                    kind,
+                    &mut end_bits,
+                    u64::from(width),
+                    unit_bits,
+                    field_aligned,
+                    max_field_alignment,
+                )?;
+                aggregate_align = aggregate_align.max(align);
+                offsets.push(position / 8);
+                bit_offsets.push(Some(position));
+                continue;
+            }
+            ms_unit = MsUnit::default();
             let align = (if packed || field_packed { 1 } else { natural })
                 .max(field_aligned.unwrap_or(1))
                 .min(max_field_alignment.unwrap_or(u64::MAX));
@@ -1698,17 +1768,7 @@ impl TypeResolver {
                 aggregate_align = aggregate_align.max(align);
             }
             if let Some(width) = field.bit_width {
-                let unit_bits = storage
-                    .size_bytes
-                    .checked_mul(8)
-                    .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
-                if u64::from(width) > unit_bits {
-                    return Err(ResolveError::Unsupported("bit-field wider than its type"));
-                }
                 if width == 0 {
-                    if field.name.is_some() {
-                        return Err(ResolveError::Unsupported("named zero-width bit-field"));
-                    }
                     let position = if kind == TagKind::Union {
                         0
                     } else {
@@ -1773,7 +1833,7 @@ impl TypeResolver {
         let mut bit_units: Vec<BitFieldUnit> = Vec::new();
         let mut field_units = Vec::new();
         let mut prior_end = None;
-        for (field, bit_offset) in fields.iter().zip(&bit_offsets) {
+        for ((field, bit_offset), unit_size) in fields.iter().zip(&bit_offsets).zip(&unit_sizes) {
             let (Some(width), Some(position)) =
                 (field.bit_width.filter(|width| *width != 0), bit_offset)
             else {
@@ -1781,6 +1841,17 @@ impl TypeResolver {
                 prior_end = None;
                 continue;
             };
+            if ms_struct {
+                if kind == TagKind::Union || prior_end.is_none_or(|tail| *position >= tail) {
+                    bit_units.push(BitFieldUnit {
+                        offset: position / 8,
+                        size: *unit_size,
+                    });
+                    prior_end = Some(position + unit_size * 8);
+                }
+                field_units.push(Some(bit_units.len() - 1));
+                continue;
+            }
             let end = position + u64::from(width);
             let unit = if kind == TagKind::Struct && prior_end == Some(*position) {
                 let index = bit_units.len() - 1;
@@ -1815,6 +1886,71 @@ impl TypeResolver {
             kind,
         });
         id
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct RecordRules {
+    packed: bool,
+    ms_struct: bool,
+    max_field_alignment: Option<u64>,
+}
+
+#[derive(Debug, Default)]
+struct MsUnit {
+    bits: u64,
+    unfilled: u64,
+}
+
+impl MsUnit {
+    fn place(
+        &mut self,
+        kind: TagKind,
+        end_bits: &mut u64,
+        width: u64,
+        unit_bits: u64,
+        aligned: Option<u64>,
+        max_field_alignment: Option<u64>,
+    ) -> Result<(u64, u64), ResolveError> {
+        let mut align = unit_bits / 8;
+        if self.bits != unit_bits || self.unfilled < width {
+            if self.bits == 0 && width == 0 {
+                align = 1;
+            }
+            *self = Self::default();
+        }
+        align = align.max(aligned.unwrap_or(1));
+        if width != 0 {
+            align = align.min(max_field_alignment.unwrap_or(u64::MAX));
+        }
+        if kind == TagKind::Union {
+            *end_bits = (*end_bits).max(if width == 0 { 8 } else { unit_bits });
+            return Ok((0, 1));
+        }
+        let mut position = *end_bits - self.unfilled;
+        if width == 0 || width > self.unfilled {
+            position = align_up(
+                position,
+                align
+                    .checked_mul(8)
+                    .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+            )?;
+            self.unfilled = 0;
+        }
+        if width == 0 {
+            *end_bits = position;
+            *self = Self::default();
+        } else {
+            if self.unfilled == 0 {
+                *end_bits = position
+                    .checked_add(unit_bits)
+                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                self.unfilled = unit_bits;
+            }
+            self.unfilled -= width;
+            self.bits = unit_bits;
+        }
+        Ok((position, align))
     }
 }
 

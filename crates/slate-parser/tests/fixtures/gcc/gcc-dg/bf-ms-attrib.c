@@ -74,10 +74,10 @@ int main() {
 // DEFAULT-NEXT:         field1 a: u8;
 // DEFAULT-NEXT:         field2 b: u16 : 7;
 // DEFAULT-NEXT:         field3 c: i8;
-// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4, 5, 6], bit_offsets=[None, None, Some(40), None], bit_units=[(5, 1)], field_units=[None, None, Some(0), None]];
+// DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 6, 8], bit_offsets=[None, None, Some(48), None], bit_units=[(6, 2)], field_units=[None, None, Some(0), None]];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))))
+// DEFAULT-NEXT:         if ne<u64>(const<u64>(12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
