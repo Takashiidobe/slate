@@ -7,6 +7,7 @@ Currently supported:
 
 ```sh
 cargo run -- install x86_64-pc-windows-msvc
+cargo run -- remove x86_64-pc-windows-msvc
 cargo run -- install i686-pc-windows-msvc
 cargo run -- path x86_64-pc-windows-msvc
 cargo run -- doctor x86_64-pc-windows-msvc

@@ -9,17 +9,26 @@ fn run() -> std::io::Result<ExitCode> {
     let command = args.next();
     let subject = args.next();
     let usage = format!(
-        "usage: {program} <install|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang|gcc|msvc> [MSVC target triple]"
+        "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang|gcc|msvc> [MSVC target triple]"
     );
-    if !matches!(command.as_deref(), Some("install" | "path" | "doctor")) {
+    if !matches!(
+        command.as_deref(),
+        Some("install" | "remove" | "path" | "doctor")
+    ) {
         eprintln!("{usage}");
         return Err(std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
-            "expected install, path, or doctor",
+            "expected install, remove, path, or doctor",
         ));
     }
     let paths = Paths::discover()?;
     if subject.as_deref() == Some("compiler-headers") {
+        if command.as_deref() == Some("remove") {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "remove applies to target sysroots, not compiler headers",
+            ));
+        }
         let compiler = args.next().ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -110,6 +119,10 @@ fn run() -> std::io::Result<ExitCode> {
             println!("{}", installed.display());
         }
         Some("path") => println!("{}", paths.resolve(target)?.display()),
+        Some("remove") => {
+            paths.remove(target)?;
+            println!("removed {}", target.triple());
+        }
         Some("doctor") => {
             let checks = paths.doctor(target);
             for check in &checks {
@@ -125,7 +138,7 @@ fn run() -> std::io::Result<ExitCode> {
         _ => {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
-                "expected install, path, or doctor",
+                "expected install, remove, path, or doctor",
             ));
         }
     }

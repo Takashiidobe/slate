@@ -15,16 +15,16 @@ struct Package {
 
 const X86_64_PACKAGES: [Package; 3] = [
     Package {
-        filename: "libc6-amd64-cross_2.36-8cross1_all.deb",
-        sha256: "e410f3d2da35bccf757976d38e6a309d4d94d25c0dfde565a9662e3f75951b2c",
+        filename: "libc6-amd64-cross_2.43-3cross8_all.deb",
+        sha256: "902d11748eb83e0f3dea4377f1e59af18fafa34c7de56b61b7a0bc9972f724fb",
     },
     Package {
-        filename: "libc6-dev-amd64-cross_2.36-8cross1_all.deb",
-        sha256: "197b497ed91056e6c4093b0972296199260424f24943d7108a8124cc7de750d6",
+        filename: "libc6-dev-amd64-cross_2.43-3cross8_all.deb",
+        sha256: "377d11965ef7b26dc279fdb9b91271916a73a47754a1a7037b01e1bd4be1228f",
     },
     Package {
-        filename: "linux-libc-dev-amd64-cross_6.1.4-1cross1_all.deb",
-        sha256: "b7ec9f95d20bd4669119201ec6a1ac372189fc222d35f21631bb79b723519293",
+        filename: "linux-libc-dev-amd64-cross_6.12.38-1cross1_all.deb",
+        sha256: "da463ddd3ee96b37c33f16da99c47b03b4e514888d3d853e73253ee73bd0d7d8",
     },
 ];
 
@@ -55,6 +55,11 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
                 Target::Aarch64UnknownLinuxGnu => &AARCH64_PACKAGES,
                 _ => unreachable!("glibc module received a non-glibc target"),
             };
+            let (glibc_version, headers_version, source_release) = match target {
+                Target::X86_64UnknownLinuxGnu => ("2.43-3", "6.12.38-1", "Debian Sid"),
+                Target::Aarch64UnknownLinuxGnu => ("2.36-8", "6.1.4-1", "Debian Bookworm"),
+                _ => unreachable!("glibc module received a non-glibc target"),
+            };
             let cache = paths.cache.join("linux/debian");
             for package in packages {
                 let url = format!("{BASE_URL}/{}", package.filename);
@@ -64,8 +69,11 @@ pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
             fs::write(
                 root.join("SYSROOT-MANIFEST.txt"),
                 format!(
-                    "Target: {}\nLibc: glibc 2.36-8 (Debian cross-toolchain-base)\nLinux UAPI headers: 6.1.4-1\nSource: Debian Bookworm cross-toolchain-base packages\nPackages:\n{}",
+                    "Target: {}\nLibc: glibc {} (Debian cross-toolchain-base)\nLinux UAPI headers: {}\nSource: {} cross-toolchain-base packages\nPackages:\n{}",
                     target.triple(),
+                    glibc_version,
+                    headers_version,
+                    source_release,
                     packages
                         .iter()
                         .map(|package| format!("  {}\n", package.filename))

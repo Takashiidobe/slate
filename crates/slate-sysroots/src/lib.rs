@@ -175,6 +175,10 @@ impl Paths {
         }
     }
 
+    pub fn remove(&self, target: Target) -> io::Result<()> {
+        install::remove(self, target)
+    }
+
     pub fn install_with_xwin(&self, target: Target, xwin: &OsStr) -> io::Result<PathBuf> {
         match target {
             Target::I686PcWindowsMsvc

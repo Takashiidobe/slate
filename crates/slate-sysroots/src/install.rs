@@ -48,6 +48,20 @@ pub(crate) fn install_staged_at(
     result
 }
 
+pub(crate) fn remove(paths: &Paths, target: Target) -> io::Result<()> {
+    let output = paths.sysroot_path(target);
+    if !output.exists() {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("{} is not installed", target.triple()),
+        ));
+    }
+    let parent = output.parent().expect("installation path has a parent");
+    let name = output.file_name().expect("installation path has a name");
+    let _lock = InstallLock::acquire(&parent.join(format!("{}.lock", name.to_string_lossy())))?;
+    fs::remove_dir_all(output)
+}
+
 pub(crate) fn staging_path(parent: &Path, name: &str) -> io::Result<PathBuf> {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
