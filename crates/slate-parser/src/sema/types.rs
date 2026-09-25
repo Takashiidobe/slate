@@ -236,6 +236,16 @@ impl TypeResolver {
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let ty = self.assertion_operand_type(operand)?;
+                if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.ctypes.is_function(ty) {
+                    let c = self.ctypes.size_type(&self.target);
+                    return Ok(Operand {
+                        c,
+                        value: Value {
+                            ty: self.ir_type(c),
+                            node: e.derive(ValueKind::Constant(Number::Integer(1u8.into()))),
+                        },
+                    });
+                }
                 let layout = self
                     .qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
                     .map_err(|error| match error {

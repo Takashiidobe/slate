@@ -2462,6 +2462,9 @@ impl Lowerer {
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let (c, evaluated) = self.unevaluated_type(operand)?;
                 let ty = self.types.ir_type(c);
+                if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.types.ctypes.is_function(c) {
+                    return Ok(self.layout_constant(e, 1, "size_of", ty.to_string()));
+                }
                 let access = self.types.access_of(c);
                 if matches!(e.value, ExprKind::SizeOfExpr(_))
                     && matches!(ty, Type::VariableArray { .. })
