@@ -1,6 +1,7 @@
 use crate::backend::{self, rust_ast};
 use crate::ctx;
 use crate::frontend::{self, c_ast, cir_input, directive_translate, preprocess};
+use crate::slate_parser_frontend;
 use clang_ir::model::Module;
 use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
@@ -16,6 +17,8 @@ use thiserror::Error as ThisError;
 /// assert!(matches!(error, Error::Read { .. }));
 /// ```
 pub enum Error {
+    #[error(transparent)]
+    SlateParser(#[from] slate_parser_frontend::Error),
     /// The source file could not be read.
     #[error("read {path}: {source}")]
     Read {
@@ -99,6 +102,20 @@ pub enum Error {
     Directive(#[from] directive_translate::DirectiveError),
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Frontend {
+    #[default]
+    Cir,
+    Slate,
+}
+
+pub fn slate_ir_with_args(
+    path: &Path,
+    compiler_args: &[String],
+) -> Result<slate_parser::ir::Module, Error> {
+    slate_parser_frontend::parse_module_with_args(path, compiler_args).map_err(Error::from)
+}
+
 /// Translates a C source file into Rust.
 ///
 /// # Errors
@@ -114,6 +131,19 @@ pub fn translate(path: &Path) -> Result<String, Error> {
 ///
 /// Returns [`Error`] when preprocessing, lowering, formatting, or translation fails.
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
+    translate_with_frontend_args(path, extra_args, Frontend::Cir)
+}
+
+pub fn translate_with_frontend_args(
+    path: &Path,
+    extra_args: &[String],
+    selected: Frontend,
+) -> Result<String, Error> {
+    if selected == Frontend::Slate {
+        let program = lowered_slate_program_with_args(path, extra_args)?;
+        let source = backend::apply(program).emit();
+        return backend::format_rust(&source).map_err(|message| Error::Format { message });
+    }
     let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
         source,
@@ -127,6 +157,14 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     let (_, program) = lowered_program_with_args(path, extra_args)?;
     let source = backend::apply(program).emit();
     backend::format_rust(&source).map_err(|message| Error::Format { message })
+}
+
+pub fn lowered_slate_program_with_args(
+    path: &Path,
+    extra_args: &[String],
+) -> Result<rust_ast::Program, Error> {
+    let module = slate_ir_with_args(path, extra_args)?;
+    slate_parser_frontend::lowerer::lower(&module).map_err(Error::from)
 }
 
 /// Translates a C source file for the requested target triples.

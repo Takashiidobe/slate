@@ -12,6 +12,12 @@ do not replace runtime comparison.
 Only assertions satisfied by the current engine belong in the baseline; add
 new assertions alongside each newly ported rewrite.
 
+Fixtures exercised by the typed slate-parser frontend carry `SLATE-LOWERING`
+and `SLATE-REWRITES` FileCheck lines in the same C file. The `slate` nextest
+profile selects only those fixtures, checks raw and rewritten Rust separately,
+and differentially runs both against the C oracle. Select one fixture with
+`SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile slate`.
+
 Cross-target fixtures combine the profile and target in one prefix, such as
 `REWRITES-MACOS`, `REWRITES-MSVC`, or `REWRITES-BIONIC-X86_64`. This keeps a
 target assertion from running under the other profile or ABI.

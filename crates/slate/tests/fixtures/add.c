@@ -37,3 +37,11 @@ int main(void) {
 // REWRITES-DAG: println!("{}", add(2, 3));
 // REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-LOWERING-DAG: fn add(mut __s{{[0-9]+}}: i32, mut __s{{[0-9]+}}: i32) -> i32 {
+// SLATE-LOWERING-DAG: let mut __s{{[0-9]+}}: i32 = __s{{[0-9]+}} + __s{{[0-9]+}};
+// SLATE-LOWERING-DAG: return __s{{[0-9]+}};
+// SLATE-LOWERING-DAG: b"%d\n\0".as_ptr()
+// SLATE-REWRITES-DAG: fn add(mut __s{{[0-9]+}}: i32, mut __s{{[0-9]+}}: i32) -> i32 {
+// SLATE-REWRITES-DAG: let mut __s{{[0-9]+}}: i32 = __s{{[0-9]+}} + __s{{[0-9]+}};
+// SLATE-REWRITES-DAG: printf(c"%d\n".as_ptr() as *const i8, add(2 as i32, 3 as i32))

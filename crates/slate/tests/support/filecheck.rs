@@ -7,6 +7,24 @@ pub enum Profile {
     Rewrites,
 }
 
+pub fn slate_checks(fixture: &str, profile: Profile) -> String {
+    let source_prefix = match profile {
+        Profile::Lowering => "SLATE-LOWERING",
+        Profile::Rewrites => "SLATE-REWRITES",
+    };
+    fixture
+        .lines()
+        .filter_map(|line| {
+            let directive = line.trim_start().strip_prefix("//")?.trim_start();
+            directive
+                .strip_prefix(source_prefix)
+                .filter(|suffix| suffix.starts_with('-') || suffix.starts_with(':'))
+                .map(|suffix| format!("// {}{suffix}", profile.prefix()))
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 impl Profile {
     pub fn active() -> Self {
         match std::env::var("NEXTEST_PROFILE").as_deref() {

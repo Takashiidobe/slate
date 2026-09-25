@@ -14,12 +14,11 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
     eprintln!("  emit-cir    print ClangIR (generic form)");
+    eprintln!("  emit-slate-ir [compiler args...] <file.c>  print slate-parser typed IR");
     eprintln!(
-        "  translate   [--targets=<t1>,<t2>,...] [clang args...] <file.c>  C -> Rust (auto-expands target/arch #if regions into cfg items; --targets diffs and splices target/libc-only divergence with no #if required)"
+        "  translate   [--frontend=cir|slate] [--targets=<t1>,<t2>,...] [compiler args...] <file.c>  C -> Rust"
     );
-    eprintln!(
-        "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
-    );
+    eprintln!("  translate-lowered [--frontend=cir|slate] <file.c>  C -> raw Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
         "  translate-project --compile-commands <file>... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib)"
@@ -34,12 +33,18 @@ fn main() -> ExitCode {
             Some(path) => run(emit_cir(Path::new(path))),
             None => usage(),
         },
+        Some("emit-slate-ir") => match args[2..].split_last() {
+            Some((path, compiler_args)) => run(emit_slate_ir(Path::new(path), compiler_args)),
+            None => usage(),
+        },
         Some("translate") => match args[2..].split_last() {
             Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
             None => usage(),
         },
-        Some("translate-lowered") => match args.get(2) {
-            Some(path) => run(lowered_rust(Path::new(path))),
+        Some("translate-lowered") => match args[2..].split_last() {
+            Some((path, compiler_args)) => {
+                run(lowered_rust_with_args(Path::new(path), compiler_args))
+            }
             None => usage(),
         },
         Some("record-cfg") => match args.get(2) {
@@ -143,18 +148,37 @@ fn emit_cir(path: &Path) -> Result<String, String> {
     cli_report(frontend::toolchain::emit_generic(path))
 }
 
+fn emit_slate_ir(path: &Path, compiler_args: &[String]) -> Result<String, String> {
+    let module = cli_result(api::slate_ir_with_args(path, compiler_args))?;
+    Ok(module.display(false).to_string())
+}
+
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
     let mut targets = None;
+    let mut selected = api::Frontend::Cir;
     let mut remaining = Vec::with_capacity(clang_args.len());
     for arg in clang_args {
         match arg.strip_prefix("--targets=") {
             Some(value) => targets = Some(value.split(',').map(str::to_string).collect::<Vec<_>>()),
-            None => remaining.push(arg.clone()),
+            None => match arg.as_str() {
+                "--frontend=cir" => selected = api::Frontend::Cir,
+                "--frontend=slate" => selected = api::Frontend::Slate,
+                _ if arg.starts_with("--frontend=") => {
+                    return Err(format!("unknown frontend: {arg}"));
+                }
+                _ => remaining.push(arg.clone()),
+            },
         }
     }
     match targets {
+        Some(targets) if selected == api::Frontend::Slate => Err(format!(
+            "slate frontend does not yet support target merging: {}",
+            targets.join(", ")
+        )),
         Some(targets) => cli_report(api::translate_targets_with_args(path, &remaining, &targets)),
-        None => cli_report(api::translate_with_args(path, clang_args)),
+        None => cli_report(api::translate_with_frontend_args(
+            path, &remaining, selected,
+        )),
     }
 }
 
@@ -1411,5 +1435,28 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
 
 fn lowered_rust(path: &Path) -> Result<String, String> {
     let (_, program) = lowered_program(path)?;
+    backend::format_rust(&program.emit())
+}
+
+fn lowered_rust_with_args(path: &Path, args: &[String]) -> Result<String, String> {
+    let mut selected = api::Frontend::Cir;
+    let mut compiler_args = Vec::new();
+    for arg in args {
+        match arg.as_str() {
+            "--frontend=cir" => selected = api::Frontend::Cir,
+            "--frontend=slate" => selected = api::Frontend::Slate,
+            _ if arg.starts_with("--frontend=") => return Err(format!("unknown frontend: {arg}")),
+            _ => compiler_args.push(arg.clone()),
+        }
+    }
+    if selected == api::Frontend::Cir && compiler_args.is_empty() {
+        return lowered_rust(path);
+    }
+    let program = match selected {
+        api::Frontend::Cir => cli_report(api::lowered_program_with_args(path, &compiler_args))?.1,
+        api::Frontend::Slate => {
+            cli_report(api::lowered_slate_program_with_args(path, &compiler_args))?
+        }
+    };
     backend::format_rust(&program.emit())
 }
