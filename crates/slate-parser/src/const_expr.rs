@@ -876,6 +876,7 @@ pub struct Parser<'a> {
     position: usize,
     context: Option<&'a crate::parser::Parser>,
     nesting: Cell<u32>,
+    directive: bool,
 }
 
 impl<'a> Parser<'a> {
@@ -942,6 +943,7 @@ impl<'a> Parser<'a> {
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
         let mut parser = Self::new(tokens, None);
+        parser.directive = true;
         let at_position = |parser: &Self, error| LocatedConstExprError {
             token: Some(parser.failure_position(&error)),
             error,
@@ -1302,6 +1304,7 @@ impl<'a> Parser<'a> {
             position: 0,
             context,
             nesting: Cell::new(0),
+            directive: false,
         }
     }
 
@@ -1841,7 +1844,9 @@ impl<'a> Parser<'a> {
                     spelling: spelling.clone(),
                 })
             }
-            Some(Token::Ident(value)) if value == "defined" => return self.parse_defined(start),
+            Some(Token::Ident(value)) if self.directive && value == "defined" => {
+                return self.parse_defined(start);
+            }
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => {
                 return self.parse_offsetof(start);
             }
