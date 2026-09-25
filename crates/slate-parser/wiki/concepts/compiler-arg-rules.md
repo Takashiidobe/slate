@@ -20,14 +20,20 @@ with either value form. C90 and ISO 9899 aliases normalize to the corresponding
 language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
 and otherwise C89 language rules. Unknown triples and standard names are errors.
 
-`CompilerArgs::search_paths` constructs the shared include search order:
-explicit `-isystem` directories, compiler builtin headers, standard headers
-from the selected sysroot, then `-idirafter` directories. `-nostdlibinc`
-removes standard headers while retaining explicit and compiler builtin paths.
+`CompilerArgs::search_paths` constructs the shared include search order.
+Quoted includes search the including file's directory, `-iquote`, `-I`, then
+system directories. Angled includes start at `-I`. System directories search
+explicit `-isystem`, compiler builtin headers, standard headers from the
+selected sysroot, then `-idirafter`. `-I` and `-iquote` headers are user
+headers; the later directories are system headers. `-nostdlibinc` removes
+standard headers while retaining explicit and compiler builtin paths.
 `-isysroot` selects the header sysroot over `--sysroot`; either explicit root
 replaces the target-specific default root. An explicit root is used as given,
-without a fallback to another target's or the host's headers. All these paths
-are system headers in the preprocessor.
+without a fallback to another target's or the host's headers. Relative
+directories are resolved against the caller's working directory; Slate's
+compile_commands normalization supplies absolute paths when compilation uses
+a different working directory. Include directory values beginning with `=`
+are resolved under the selected sysroot, as in Clang.
 
 ## Rule buckets
 

@@ -25,7 +25,7 @@ fn run() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-nostdlibinc] [-isystem <dir>] [-idirafter <dir>] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args

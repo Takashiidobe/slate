@@ -1,0 +1,1 @@
+#define QUOTE_SELECTED 78

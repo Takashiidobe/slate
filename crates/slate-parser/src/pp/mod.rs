@@ -1033,7 +1033,10 @@ impl<'a> Preprocessor<'a> {
                 });
             if let Some((is_next, header, end)) = parsed {
                 let directive = match (is_next, header) {
-                    (true, header) => include::IncludeDirective::Next(header.into_name()),
+                    (true, HeaderName::Angled(name)) => include::IncludeDirective::Next(name, true),
+                    (true, HeaderName::Quoted(name)) => {
+                        include::IncludeDirective::Next(name, false)
+                    }
                     (false, HeaderName::Angled(name)) => include::IncludeDirective::Angled(name),
                     (false, HeaderName::Quoted(name)) => include::IncludeDirective::Quoted(name),
                 };
@@ -1142,14 +1145,6 @@ fn include_guard(src: &str, items: &[Item]) -> Option<String> {
 enum HeaderName {
     Angled(String),
     Quoted(String),
-}
-
-impl HeaderName {
-    fn into_name(self) -> String {
-        match self {
-            HeaderName::Angled(name) | HeaderName::Quoted(name) => name,
-        }
-    }
 }
 
 fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName, usize)> {

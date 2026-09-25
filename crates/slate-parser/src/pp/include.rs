@@ -10,16 +10,18 @@ use std::path::{Path, PathBuf};
 pub(super) enum IncludeDirective {
     Angled(String),
     Quoted(String),
-    Next(String),
+    Next(String, bool),
 }
 
 impl fmt::Display for IncludeDirective {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            IncludeDirective::Angled(name) | IncludeDirective::Next(name) => {
+            IncludeDirective::Angled(name) | IncludeDirective::Next(name, true) => {
                 write!(formatter, "<{name}>")
             }
-            IncludeDirective::Quoted(name) => write!(formatter, "\"{name}\""),
+            IncludeDirective::Quoted(name) | IncludeDirective::Next(name, false) => {
+                write!(formatter, "\"{name}\"")
+            }
         }
     }
 }
@@ -63,7 +65,7 @@ pub(super) fn include_target(
         ));
     };
     Ok(match (directive.name, angled) {
-        (DirectiveName::IncludeNext, _) => IncludeDirective::Next(name),
+        (DirectiveName::IncludeNext, _) => IncludeDirective::Next(name, angled),
         (_, true) => IncludeDirective::Angled(name),
         (_, false) => IncludeDirective::Quoted(name),
     })
@@ -137,20 +139,38 @@ impl Preprocessor<'_> {
                 .find(|candidate| candidate.is_file())
         };
         match include {
-            IncludeDirective::Angled(name) => {
-                find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
-            }
-            IncludeDirective::Next(name) => {
-                let current_dir = self.files.path(from).parent();
-                let start = current_dir
-                    .and_then(|dir| {
+            IncludeDirective::Angled(name) => find_in(&self.search.user, name)
+                .map(|path| (path, HeaderKind::User))
+                .or_else(|| {
+                    find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+                }),
+            IncludeDirective::Next(name, angled) => {
+                let directories = self
+                    .search
+                    .quote
+                    .iter()
+                    .filter(|_| !angled)
+                    .map(|path| (path, HeaderKind::User))
+                    .chain(self.search.user.iter().map(|path| (path, HeaderKind::User)))
+                    .chain(
                         self.search
                             .system
                             .iter()
-                            .position(|candidate| candidate == dir)
+                            .map(|path| (path, HeaderKind::System)),
+                    )
+                    .collect::<Vec<_>>();
+                let current_dir = self.files.path(from).parent();
+                let start = current_dir
+                    .and_then(|dir| {
+                        directories
+                            .iter()
+                            .position(|(candidate, _)| *candidate == dir)
                     })
                     .map_or(0, |index| index + 1);
-                find_in(&self.search.system[start..], name).map(|path| (path, HeaderKind::System))
+                directories[start..].iter().find_map(|(dir, kind)| {
+                    let path = dir.join(name);
+                    path.is_file().then_some((path, *kind))
+                })
             }
             IncludeDirective::Quoted(name) => self
                 .files
@@ -158,8 +178,9 @@ impl Preprocessor<'_> {
                 .parent()
                 .map(|dir| dir.join(name))
                 .filter(|candidate| candidate.is_file())
-                .or_else(|| find_in(&self.search.user, name))
-                .map(|path| (path, HeaderKind::User))
+                .map(|path| (path, self.files.kind(from)))
+                .or_else(|| find_in(&self.search.quote, name).map(|path| (path, HeaderKind::User)))
+                .or_else(|| find_in(&self.search.user, name).map(|path| (path, HeaderKind::User)))
                 .or_else(|| {
                     find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
                 })

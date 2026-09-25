@@ -42,6 +42,7 @@ pub fn raw_byte_for_char(c: char) -> Option<u8> {
 
 #[derive(Debug, Default, Clone)]
 pub struct SearchPaths {
+    pub quote: Vec<PathBuf>,
     pub user: Vec<PathBuf>,
     pub system: Vec<PathBuf>,
 }

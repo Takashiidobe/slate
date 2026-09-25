@@ -8,7 +8,7 @@ use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use crate::{compiler_headers, sysroot};
 use std::collections::BTreeSet;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::str::FromStr;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -94,6 +94,8 @@ pub struct CompilerArgs {
     pub options: CompilerOptions,
     pub defines: Vec<String>,
     pub standard: LanguageStandard,
+    pub include: Vec<String>,
+    pub iquote: Vec<String>,
     pub isystem: Vec<String>,
     pub idirafter: Vec<String>,
     pub isysroot: Option<String>,
@@ -105,23 +107,32 @@ pub struct CompilerArgs {
 
 impl CompilerArgs {
     pub fn search_paths(&self) -> SearchPaths {
-        let mut system: Vec<PathBuf> = self.isystem.iter().map(PathBuf::from).collect();
+        let root = self
+            .isysroot
+            .as_ref()
+            .or(self.sysroot.as_ref())
+            .map_or_else(|| sysroot::path(&self.target.triple), PathBuf::from);
+        let include_dir = |path: &str| match path.strip_prefix('=') {
+            Some(relative) => root.join(relative.trim_start_matches('/')),
+            None => PathBuf::from(path),
+        };
+        let mut system: Vec<PathBuf> = self.isystem.iter().map(|path| include_dir(path)).collect();
         system.extend(compiler_headers::include_paths(
             &self.target.triple,
             self.flavor,
         ));
         if !self.nostdlibinc {
-            system.extend(match self.isysroot.as_ref().or(self.sysroot.as_ref()) {
-                Some(root) => {
-                    sysroot::include_paths_at(Path::new(root), &self.target.triple, self.flavor)
-                }
-                None => sysroot::include_paths(&self.target.triple, self.flavor),
-            });
+            system.extend(sysroot::include_paths_at(
+                &root,
+                &self.target.triple,
+                self.flavor,
+            ));
         }
-        system.extend(self.idirafter.iter().map(PathBuf::from));
+        system.extend(self.idirafter.iter().map(|path| include_dir(path)));
         SearchPaths {
+            quote: self.iquote.iter().map(|path| include_dir(path)).collect(),
+            user: self.include.iter().map(|path| include_dir(path)).collect(),
             system,
-            ..SearchPaths::default()
         }
     }
 }
@@ -142,6 +153,8 @@ impl miette::Diagnostic for CompilerArgError {}
 struct ParsedCompilerArgs {
     defines: Vec<String>,
     standard: Option<LanguageStandard>,
+    include: Vec<String>,
+    iquote: Vec<String>,
     isystem: Vec<String>,
     idirafter: Vec<String>,
     isysroot: Option<String>,
@@ -169,6 +182,8 @@ struct ParsedCompilerArgs {
 enum Opt {
     Define,
     Standard,
+    Include,
+    Iquote,
     Isystem,
     Idirafter,
     Isysroot,
@@ -201,6 +216,8 @@ impl std::fmt::Display for Opt {
         let name = match self {
             Self::Define => "define",
             Self::Standard => "std",
+            Self::Include => "I",
+            Self::Iquote => "iquote",
             Self::Isystem => "isystem",
             Self::Idirafter => "idirafter",
             Self::Isysroot => "isysroot",
@@ -313,6 +330,8 @@ impl CompilerArgParser {
             options,
             defines: raw.defines,
             standard: raw.standard.unwrap_or_default(),
+            include: raw.include,
+            iquote: raw.iquote,
             isystem: raw.isystem,
             idirafter: raw.idirafter,
             isysroot: raw.isysroot,
@@ -396,6 +415,16 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "language standard",
             )?);
+        } else if let Some(value) = option_value(argument, "I") {
+            parsed.present.insert(Opt::Include);
+            parsed
+                .include
+                .push(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "iquote") {
+            parsed.present.insert(Opt::Iquote);
+            parsed
+                .iquote
+                .push(next_value(arguments, &mut index, argument, value)?);
         } else if let Some(value) = option_value(argument, "isystem") {
             parsed.present.insert(Opt::Isystem);
             parsed
@@ -544,9 +573,13 @@ fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
     let long = format!("--{name}");
     [short, long].iter().find_map(|spelling| {
         argument.strip_prefix(spelling).and_then(|rest| {
-            (rest.is_empty() || matches!(name, "isystem" | "idirafter" | "isysroot" | "D"))
-                .then_some(rest)
-                .or_else(|| rest.strip_prefix('='))
+            (rest.is_empty()
+                || matches!(
+                    name,
+                    "I" | "iquote" | "isystem" | "idirafter" | "isysroot" | "D"
+                ))
+            .then_some(rest)
+            .or_else(|| rest.strip_prefix('='))
         })
     })
 }
