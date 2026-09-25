@@ -1460,9 +1460,14 @@ impl TypeResolver {
             }
         };
         if redefines.is_some() {
+            let same_member = if self.flavor == CompilerFlavor::Clang {
+                CTypes::same_or_enum_underlying
+            } else {
+                CTypes::same
+            };
             if self.features.compatible_tag_redefinitions
-                && same_tag_content(&self.definitions[id.0 as usize].kind, &kind)
-                && self.same_field_types(id, redefined_fields.as_deref(), &kind)
+                && same_tag_shape(&self.definitions[id.0 as usize].kind, &kind)
+                && self.same_field_types(id, redefined_fields.as_deref(), &kind, same_member)
             {
                 return Ok(id);
             }
@@ -1498,6 +1503,7 @@ impl TypeResolver {
                     candidate,
                     self.record_fields.get(&id).map(Vec::as_slice),
                     current,
+                    CTypes::compatible,
                 )
             {
                 return;
@@ -1511,6 +1517,7 @@ impl TypeResolver {
         id: TypeId,
         redefined: Option<&[QualType]>,
         kind: &TypeDefinitionKind,
+        same_member: fn(&CTypes, QualType, QualType) -> bool,
     ) -> bool {
         if !matches!(kind, TypeDefinitionKind::Record { .. }) {
             return true;
@@ -1522,7 +1529,7 @@ impl TypeResolver {
             && redefined
                 .iter()
                 .zip(current)
-                .all(|(a, b)| self.ctypes.compatible(*a, *b))
+                .all(|(a, b)| same_member(&self.ctypes, *a, *b))
     }
 
     pub(super) fn types_compatible(
@@ -1817,21 +1824,6 @@ fn is_complete(kind: &TypeDefinitionKind) -> bool {
         TypeDefinitionKind::Enum { enumerators, .. } => enumerators.is_some(),
         TypeDefinitionKind::Alias(_) => true,
     }
-}
-
-fn same_tag_content(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {
-    same_tag_shape(a, b)
-        && match (a, b) {
-            (
-                TypeDefinitionKind::Record {
-                    fields: Some(a), ..
-                },
-                TypeDefinitionKind::Record {
-                    fields: Some(b), ..
-                },
-            ) => a.iter().zip(b).all(|(a, b)| a.value.ty == b.value.ty),
-            _ => true,
-        }
 }
 
 fn same_tag_shape(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {

@@ -49,6 +49,50 @@ impl CTypes {
         }
     }
 
+    pub fn same_or_enum_underlying(&self, a: QualType, b: QualType) -> bool {
+        let a = self.canonical(a);
+        let b = self.canonical(b);
+        if a == b {
+            return true;
+        }
+        if a.quals != b.quals {
+            return false;
+        }
+        let (a, b) = (a.local_unqualified(), b.local_unqualified());
+        if self.enum_matches(a, b) || self.enum_matches(b, a) {
+            return true;
+        }
+        match (self.kind(a.ty), self.kind(b.ty)) {
+            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => self.same_or_enum_underlying(*a, *b),
+            (
+                CTypeKind::Array {
+                    element: a,
+                    extent: ae,
+                },
+                CTypeKind::Array {
+                    element: b,
+                    extent: be,
+                },
+            ) => ae == be && self.same_or_enum_underlying(*a, *b),
+            (CTypeKind::Function { .. }, CTypeKind::Function { .. }) => {
+                let (Some((ar, ap, av, aproto)), Some((br, bp, bv, bproto))) =
+                    (self.function_parts(a), self.function_parts(b))
+                else {
+                    return false;
+                };
+                av == bv
+                    && aproto == bproto
+                    && ap.len() == bp.len()
+                    && self.same_or_enum_underlying(ar, br)
+                    && ap
+                        .iter()
+                        .zip(bp)
+                        .all(|(a, b)| self.same_or_enum_underlying(*a, *b))
+            }
+            _ => false,
+        }
+    }
+
     fn compatible_functions(&self, a: QualType, b: QualType) -> bool {
         let Some((ar, ap, av, aproto)) = self.function_parts(a) else {
             return false;

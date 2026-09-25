@@ -194,13 +194,25 @@ because they ask a layout or representation question, not an identity one:
 | `expression.rs` | `!= Type::VaList` | `VaList` is an IR marker type with no C-level counterpart |
 | `types.rs::same_layout` | do two lowered types share a shape, ignoring integer signedness? | deliberately a layout question — it decides warning-vs-error for redeclarations, per MSVC's own C4142/C2371 rule |
 
-One genuine exception remains. `same_tag_content` compares `ir::Type` field
-types as a structural pre-filter for C23 compatible tag redefinitions. The
-C-level question is answered by `same_field_types` through
-`CTypes::compatible`, so the pre-filter only ever makes the check *stricter*,
-and it changes the answer in exactly one measured case: a member of an
-enumerated type against a member of that enum's underlying integer type, where
-clang accepts and gcc rejects (`slate-parser-ntb`).
+C23 same-scope tag redefinitions used to have an `ir::Type` pre-filter
+(`same_tag_content`) in front of `same_field_types`. It is gone
+(`slate-parser-ntb`). A redefinition's members are now compared on C types,
+and the rule is deliberately stricter than compatibility, because neither
+compiler accepts a redefinition whose members are merely compatible
+(`int (*)[]` vs `int (*)[3]`, `void (*)()` vs `void (*)(int)`). The gcc and
+MSVC flavors require `CTypes::same`. The clang flavor uses
+`CTypes::same_or_enum_underlying`, which also equates an enum with its
+underlying integer type at any depth (directly, behind a pointer, as an array
+element, as a function parameter) but still requires equal qualifiers.
+Cross-scope compatibility (`join_compatible_tag`) keeps plain
+`CTypes::compatible`, matching gcc; clang is stricter there (it rejects
+`int (*)[]` vs `int (*)[3]` across scopes), which leaves slate permissive for
+the clang flavor.
+
+The enum arm of `same_tag_shape` still compares the underlying types as
+`ir::Type`, so `enum E : long` redefined as `enum E : long long` is accepted on
+LP64 targets, where both lower to `i64`. Both compilers reject it. That is
+permissive, not too strict.
 
 Two smaller residues worth knowing about:
 
