@@ -792,6 +792,108 @@ int main(void) {
 // DEFAULT-NEXT:                                           declarator: Name(
 // DEFAULT-NEXT:                                               "_flags2",
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Spanned {
+// DEFAULT-NEXT:                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 24,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "24",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   provenance: Provenance {
+// DEFAULT-NEXT:                                                       file: FileId(
+// DEFAULT-NEXT:                                                           [[#FILE0]],
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       kind: System,
+// DEFAULT-NEXT:                                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                       system_header: Some(
+// DEFAULT-NEXT:                                                           FileId(
+// DEFAULT-NEXT:                                                               [[#FILE1]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Array {
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "_short_backupbuf",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               size: Expression(
+// DEFAULT-NEXT:                                                   Spanned {
+// DEFAULT-NEXT:                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 1,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "1",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                           file: FileId(
+// DEFAULT-NEXT:                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           kind: System,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                           system_header: Some(
+// DEFAULT-NEXT:                                                               FileId(
+// DEFAULT-NEXT:                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
@@ -1326,16 +1428,25 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Field(
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "size_t",
+// DEFAULT-NEXT:                                   ty: Tag(
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "_IO_FILE",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarators: [
 // DEFAULT-NEXT:                                   Spanned {
 // DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "__pad5",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "_prevchain",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
@@ -1418,6 +1529,97 @@ int main(void) {
 // DEFAULT-NEXT:                           FieldDecl {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "_unused3",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "__uint64_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   Spanned {
+// DEFAULT-NEXT:                                       value: FieldDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "_total_written",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       provenance: Provenance {
+// DEFAULT-NEXT:                                           file: FileId(
+// DEFAULT-NEXT:                                               [[#FILE0]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           kind: System,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                           system_header: Some(
+// DEFAULT-NEXT:                                               FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE0]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: Field(
+// DEFAULT-NEXT:                           FieldDecl {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
 // DEFAULT-NEXT:                                       Char {
 // DEFAULT-NEXT:                                           signed: None,
 // DEFAULT-NEXT:                                       },
@@ -1436,63 +1638,19 @@ int main(void) {
 // DEFAULT-NEXT:                                                           op: Sub,
 // DEFAULT-NEXT:                                                           left: Spanned {
 // DEFAULT-NEXT:                                                               value: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                   op: Mul,
 // DEFAULT-NEXT:                                                                   left: Spanned {
-// DEFAULT-NEXT:                                                                       value: Binary {
-// DEFAULT-NEXT:                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                           left: Spanned {
-// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                       value: 15,
-// DEFAULT-NEXT:                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       spelling: "15",
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   kind: System,
-// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                                       FileId(
-// DEFAULT-NEXT:                                                                                           [[#FILE1]],
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 12,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
 // DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "12",
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Spanned {
-// DEFAULT-NEXT:                                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: true,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   kind: System,
-// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                                       FileId(
-// DEFAULT-NEXT:                                                                                           [[#FILE1]],
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                                           file: FileId(
 // DEFAULT-NEXT:                                                                               [[#FILE0]],
@@ -1507,57 +1665,17 @@ int main(void) {
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Spanned {
-// DEFAULT-NEXT:                                                                       value: Binary {
-// DEFAULT-NEXT:                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                           left: Spanned {
-// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                       value: 4,
-// DEFAULT-NEXT:                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                       value: SizeOfType {
+// DEFAULT-NEXT:                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                           signed: true,
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       spelling: "4",
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   kind: System,
-// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                                       FileId(
-// DEFAULT-NEXT:                                                                                           [[#FILE1]],
-// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Spanned {
-// DEFAULT-NEXT:                                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                           ty: Void,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                                           inner: Abstract,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                                       [[#FILE0]],
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   kind: System,
-// DEFAULT-NEXT:                                                                                   line: {{[0-9]+}},
-// DEFAULT-NEXT:                                                                                   system_header: Some(
-// DEFAULT-NEXT:                                                                                       FileId(
-// DEFAULT-NEXT:                                                                                           [[#FILE1]],
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
@@ -1588,14 +1706,57 @@ int main(void) {
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           right: Spanned {
-// DEFAULT-NEXT:                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "size_t",
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Spanned {
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 5,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "5",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Spanned {
+// DEFAULT-NEXT:                                                                       value: SizeOfType {
+// DEFAULT-NEXT:                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                   ty: Void,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               [[#FILE0]],
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                                                                           system_header: Some(
+// DEFAULT-NEXT:                                                                               FileId(
+// DEFAULT-NEXT:                                                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               provenance: Provenance {
@@ -1689,7 +1850,7 @@ int main(void) {
 // DEFAULT-NEXT:                   Spanned {
 // DEFAULT-NEXT:                       value: InitDeclaratorKind {
 // DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "size_t",
+// DEFAULT-NEXT:                               "__uint64_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
@@ -1742,7 +1903,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3:]],
+// DEFAULT-NEXT:                               [[#FILE2]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -1758,7 +1919,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:               [[#FILE2]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -1790,7 +1951,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE3]],
+// DEFAULT-NEXT:                               [[#FILE2]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -1806,7 +1967,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE3]],
+// DEFAULT-NEXT:               [[#FILE2]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -1838,7 +1999,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE4:]],
+// DEFAULT-NEXT:                               [[#FILE3:]],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: {{[0-9]+}},
@@ -1854,7 +2015,7 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE4]],
+// DEFAULT-NEXT:               [[#FILE3]],
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
 // DEFAULT-NEXT:           line: {{[0-9]+}},
@@ -2137,6 +2298,27 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NonNull(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -2419,6 +2601,27 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NonNull(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -2536,6 +2739,27 @@ int main(void) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               Spanned {
+// DEFAULT-NEXT:                                   value: NonNull(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           [[#FILE1]],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: {{[0-9]+}},
+// DEFAULT-NEXT:                                       system_header: Some(
+// DEFAULT-NEXT:                                           FileId(
+// DEFAULT-NEXT:                                               [[#FILE1]],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(

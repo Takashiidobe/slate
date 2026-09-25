@@ -342,7 +342,7 @@ int main(void) {
 // DEFAULT-NEXT:                           asm_label: Some(
 // DEFAULT-NEXT:                               Spanned {
 // DEFAULT-NEXT:                                   value: Symbol(
-// DEFAULT-NEXT:                                       "__isoc99_sscanf",
+// DEFAULT-NEXT:                                       "__isoc23_sscanf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   provenance: Provenance {
 // DEFAULT-NEXT:                                       file: FileId(
