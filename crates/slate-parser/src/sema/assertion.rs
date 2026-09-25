@@ -1,6 +1,7 @@
 use crate::ast::*;
 use crate::const_expr::{BinaryOp, UnaryOp};
 use crate::ir::{Number, NumericType, Type, Value, ValueKind};
+use crate::visit::{self, Visitor};
 use num_bigint::{BigInt, Sign};
 
 use super::numeric::ResolveError;
@@ -17,7 +18,7 @@ pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
     for declaration in &unit.decls {
         match &declaration.value {
             DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
-            DeclKind::Declaration(declaration) => checker.declaration(declaration),
+            DeclKind::Declaration(declaration) => checker.declaration(declaration, true),
             DeclKind::Function(function) => checker.function(function),
             _ => {}
         }
@@ -51,7 +52,7 @@ impl Checker<'_> {
             .constant_value(condition)
             .and_then(|value| match value.ty {
                 Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-                    super::fold::integer(&value).ok_or(ResolveError::Unsupported(
+                    super::fold::integer_constant(&value).ok_or(ResolveError::Unsupported(
                         "nonconstant or undefined integer expression",
                     ))
                 }
@@ -136,7 +137,7 @@ impl Checker<'_> {
         }
     }
 
-    fn declaration(&mut self, declaration: &Declaration) {
+    fn declaration(&mut self, declaration: &Declaration, global: bool) {
         self.tag(&declaration.specifiers.ty);
         for declarator in &declaration.declarators {
             let Some(name) = declarator.declarator.name() else {
@@ -162,6 +163,18 @@ impl Checker<'_> {
                 }
             }
             if let Some(initializer) = &declarator.initializer {
+                if (global || declaration.specifiers.storage == StorageClass::Static)
+                    && let Err(expr) = (DivisionByZero {
+                        types: &mut self.types,
+                    })
+                    .visit_initializer(initializer)
+                {
+                    self.errors.push(error(
+                        expr.provenance,
+                        expr.expansion,
+                        "initializer element is not a compile-time constant: division by zero",
+                    ));
+                }
                 self.initializer(initializer);
             }
         }
@@ -246,7 +259,7 @@ impl Checker<'_> {
     fn statement(&mut self, stmt: &Stmt) {
         match &stmt.value {
             StmtKind::StaticAssert(assertion) => self.assertion(assertion),
-            StmtKind::Decl(declaration) => self.declaration(declaration),
+            StmtKind::Decl(declaration) => self.declaration(declaration, false),
             StmtKind::Block(body) => {
                 self.types.push_scope();
                 for stmt in body {
@@ -381,6 +394,92 @@ impl Checker<'_> {
                 }
             }
             _ => {}
+        }
+    }
+}
+
+struct DivisionByZero<'a> {
+    types: &'a mut TypeResolver,
+}
+
+impl Visitor for DivisionByZero<'_> {
+    type Error = Expr;
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        match &expr.value {
+            ExprKind::Binary {
+                op: BinaryOp::Div | BinaryOp::Rem,
+                right,
+                ..
+            } if self
+                .types
+                .constant_integer(right)
+                .is_ok_and(|value| value == 0.into()) =>
+            {
+                Err(expr.clone())
+            }
+            ExprKind::Binary {
+                op: BinaryOp::And | BinaryOp::Or,
+                left,
+                right,
+            } => {
+                self.visit_expr(left)?;
+                let truth = self
+                    .types
+                    .constant_integer(left)
+                    .ok()
+                    .map(|value| value.sign() != Sign::NoSign);
+                if truth
+                    != Some(matches!(
+                        expr.value,
+                        ExprKind::Binary {
+                            op: BinaryOp::Or,
+                            ..
+                        }
+                    ))
+                {
+                    self.visit_expr(right)?;
+                }
+                Ok(())
+            }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                self.visit_expr(condition)?;
+                match self
+                    .types
+                    .constant_integer(condition)
+                    .ok()
+                    .map(|value| value.sign() != Sign::NoSign)
+                {
+                    Some(true) => {
+                        if let Some(value) = then_value {
+                            self.visit_expr(value)?;
+                        }
+                    }
+                    Some(false) => self.visit_expr(else_value)?,
+                    None => {
+                        if let Some(value) = then_value {
+                            self.visit_expr(value)?;
+                        }
+                        self.visit_expr(else_value)?;
+                    }
+                }
+                Ok(())
+            }
+            ExprKind::SizeOfExpr(_) | ExprKind::AlignOfExpr(_) => Ok(()),
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                if let Ok(selected) = self.types.generic_selection(controlling, associations) {
+                    self.visit_expr(selected)?;
+                }
+                Ok(())
+            }
+            _ => visit::walk_expr(self, expr),
         }
     }
 }

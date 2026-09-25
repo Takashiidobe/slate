@@ -1022,7 +1022,7 @@ impl Lowerer {
     fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
-        let number = super::fold::integer(&value)
+        let number = super::fold::integer_constant(&value)
             .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
         Ok(self.value(
             expr,

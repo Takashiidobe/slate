@@ -157,7 +157,7 @@ impl TypeResolver {
         e: &crate::ast::Expr,
     ) -> Result<BigInt, ResolveError> {
         let value = self.constant_value(e)?;
-        super::fold::integer(&value).ok_or(ResolveError::Unsupported(
+        super::fold::integer_constant(&value).ok_or(ResolveError::Unsupported(
             "nonconstant or undefined integer expression",
         ))
     }

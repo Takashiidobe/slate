@@ -14,10 +14,14 @@ const MAX_DEPTH: usize = 256;
 /// Evaluate the executed, side-effect-free integer portion of typed IR.
 /// This is not a check of C's syntactic integer-constant-expression rules.
 pub(super) fn integer(value: &Value) -> Option<BigInt> {
-    evaluate(value, MAX_DEPTH)
+    evaluate(value, MAX_DEPTH, false)
 }
 
-fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
+pub(super) fn integer_constant(value: &Value) -> Option<BigInt> {
+    evaluate(value, MAX_DEPTH, true)
+}
+
+fn evaluate(value: &Value, depth: usize, constant: bool) -> Option<BigInt> {
     let depth = depth.checked_sub(1)?;
     let (width, signed) = integer_type(&value.ty)?;
     let result = match &value.node.value {
@@ -49,21 +53,21 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
             if !matches!(value.ty, Type::Numeric(NumericType::Integer { .. })) {
                 return None;
             }
-            evaluate(operand, depth)?
+            evaluate(operand, depth, constant)?
         }
         ValueKind::Unary {
             op,
             operand,
             semantics,
         } => {
-            let operand = evaluate(operand, depth)?;
+            let operand = evaluate(operand, depth, constant)?;
             match (op, semantics) {
                 (UnaryArithOp::Not, ArithSema::Exact) if value.ty == Type::Bool => {
                     BigInt::from(u8::from(operand.sign() == Sign::NoSign))
                 }
                 (UnaryArithOp::Not, ArithSema::Exact) => !operand,
                 (UnaryArithOp::Neg, ArithSema::Integer { overflow }) => {
-                    arithmetic_result(-operand, width, signed, *overflow)?
+                    arithmetic_result(-operand, width, signed, *overflow, constant)?
                 }
                 _ => return None,
             }
@@ -77,15 +81,15 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
             if !matches!(value.ty, Type::Numeric(NumericType::Integer { .. })) {
                 return None;
             }
-            let left = evaluate(left, depth)?;
-            let right = evaluate(right, depth)?;
-            arithmetic(*op, *semantics, left, right, width, signed)?
+            let left = evaluate(left, depth, constant)?;
+            let right = evaluate(right, depth, constant)?;
+            arithmetic(*op, *semantics, left, right, width, signed, constant)?
         }
         ValueKind::Compare {
             op, left, right, ..
         } => {
-            let left = evaluate(left, depth)?;
-            let right = evaluate(right, depth)?;
+            let left = evaluate(left, depth, constant)?;
+            let right = evaluate(right, depth, constant)?;
             BigInt::from(u8::from(match op {
                 CompareOp::Eq => left == right,
                 CompareOp::Ne => left != right,
@@ -96,10 +100,10 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
             }))
         }
         ValueKind::Logical { op, left, right } => {
-            let left = evaluate(left, depth)?.sign() != Sign::NoSign;
+            let left = evaluate(left, depth, constant)?.sign() != Sign::NoSign;
             let result = match op {
-                LogicalOp::And => left && evaluate(right, depth)?.sign() != Sign::NoSign,
-                LogicalOp::Or => left || evaluate(right, depth)?.sign() != Sign::NoSign,
+                LogicalOp::And => left && evaluate(right, depth, constant)?.sign() != Sign::NoSign,
+                LogicalOp::Or => left || evaluate(right, depth, constant)?.sign() != Sign::NoSign,
             };
             BigInt::from(u8::from(result))
         }
@@ -108,7 +112,7 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
             then_value,
             else_value,
         } => {
-            let condition = evaluate(condition, depth)?;
+            let condition = evaluate(condition, depth, constant)?;
             evaluate(
                 if condition.sign() != Sign::NoSign {
                     then_value
@@ -116,11 +120,12 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
                     else_value
                 },
                 depth,
+                constant,
             )?
         }
         ValueKind::Sequence { left, right } => {
-            evaluate(left, depth)?;
-            evaluate(right, depth)?
+            evaluate(left, depth, constant)?;
+            evaluate(right, depth, constant)?
         }
         _ => return None,
     };
@@ -199,6 +204,7 @@ fn arithmetic(
     right: BigInt,
     width: u32,
     signed: bool,
+    constant: bool,
 ) -> Option<BigInt> {
     match (op, semantics) {
         (ArithOp::Add | ArithOp::Sub | ArithOp::Mul, ArithSema::Integer { overflow }) => {
@@ -208,11 +214,12 @@ fn arithmetic(
                 ArithOp::Mul => left * right,
                 _ => return None,
             };
-            arithmetic_result(result, width, signed, overflow)
+            arithmetic_result(result, width, signed, overflow, constant)
         }
         (ArithOp::Div | ArithOp::Rem, ArithSema::Division { .. }) => {
             if right.sign() == Sign::NoSign
-                || (signed
+                || (!constant
+                    && signed
                     && right == BigInt::from(-1)
                     && left == -(BigInt::from(1u8) << (width - 1)))
             {
@@ -228,16 +235,33 @@ fn arithmetic(
         (ArithOp::Or, ArithSema::Exact) => Some(left | right),
         (ArithOp::Xor, ArithSema::Exact) => Some(left ^ right),
         (ArithOp::Shl, ArithSema::ShiftLeft { overflow, .. }) => {
-            let amount = shift_amount(&right, width)?;
-            if signed && left.sign() == Sign::Minus {
+            let amount = if constant {
+                clang_shift_amount(&right, width)
+            } else {
+                shift_amount(&right, width)?
+            };
+            if !constant && signed && left.sign() == Sign::Minus {
                 return None;
             }
-            arithmetic_result(left << amount, width, signed, overflow)
+            let result = if constant && right.sign() == Sign::Minus {
+                left >> amount
+            } else {
+                left << amount
+            };
+            arithmetic_result(result, width, signed, overflow, constant)
         }
         (ArithOp::Shr, ArithSema::ShiftRight { fill, .. }) => {
-            let amount = shift_amount(&right, width)?;
+            let amount = if constant {
+                clang_shift_amount(&right, width)
+            } else {
+                shift_amount(&right, width)?
+            };
             let left = normalize(left, width, fill == ShiftFill::SignExtend);
-            Some(left >> amount)
+            Some(if constant && right.sign() == Sign::Minus {
+                left << amount
+            } else {
+                left >> amount
+            })
         }
         _ => None,
     }
@@ -248,13 +272,23 @@ fn shift_amount(value: &BigInt, width: u32) -> Option<u32> {
     (amount < width && amount < MAX_WIDTH).then_some(amount)
 }
 
+fn clang_shift_amount(value: &BigInt, width: u32) -> u32 {
+    let magnitude = if value.sign() == Sign::Minus {
+        -value
+    } else {
+        value.clone()
+    };
+    u32::try_from(magnitude).unwrap_or(width - 1).min(width - 1)
+}
+
 fn arithmetic_result(
     value: BigInt,
     width: u32,
     signed: bool,
     overflow: Overflow,
+    constant: bool,
 ) -> Option<BigInt> {
-    if !signed || overflow == Overflow::Wrap {
+    if constant || !signed || overflow == Overflow::Wrap {
         return Some(normalize(value, width, signed));
     }
     let limit = BigInt::from(1u8) << (width - 1);

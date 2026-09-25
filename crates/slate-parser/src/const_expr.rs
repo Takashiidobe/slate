@@ -1191,16 +1191,17 @@ impl<'a> Parser<'a> {
                     BinaryOp::BitXor => Ok(left.bitxor(&right)),
                     BinaryOp::BitOr => Ok(left.bitor(&right)),
                     BinaryOp::ShiftLeft | BinaryOp::ShiftRight => {
-                        let shift = u32::try_from(&right.value)
-                            .map_err(|_| ConstExprError::InvalidIntegerConstant)?;
-                        if shift >= left.width {
-                            return Err(ConstExprError::InvalidIntegerConstant);
+                        match u32::try_from(&right.value) {
+                            Ok(shift) if shift < left.width => Ok(if *op == BinaryOp::ShiftLeft {
+                                left.shift_left(shift)
+                            } else {
+                                left.shift_right(shift)
+                            }),
+                            _ if ctx.is_defined.is_some() => {
+                                Ok(WideInt::wrap(BigInt::from(0), left.width, left.signed))
+                            }
+                            _ => Err(ConstExprError::InvalidIntegerConstant),
                         }
-                        Ok(if *op == BinaryOp::ShiftLeft {
-                            left.shift_left(shift)
-                        } else {
-                            left.shift_right(shift)
-                        })
                     }
                     BinaryOp::And => Ok(WideInt::from_i64(
                         (!left.is_zero() && !right.is_zero()) as i64,
