@@ -1,6 +1,6 @@
 mod registered;
 
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::target_info::{TargetFamily, TargetInfo, TargetOs};
 
 #[derive(Clone, Copy)]
@@ -38,6 +38,16 @@ struct Support {
     clang: Gate,
     gcc: Gate,
     msvc: Gate,
+}
+
+impl Support {
+    fn gate(&self, flavor: CompilerFlavor) -> Gate {
+        match flavor {
+            CompilerFlavor::Clang => self.clang,
+            CompilerFlavor::Gcc => self.gcc,
+            CompilerFlavor::Msvc => self.msvc,
+        }
+    }
 }
 
 const fn support(name: &'static str, clang: Gate, gcc: Gate) -> Support {
@@ -155,6 +165,20 @@ const GNU_ATTRIBUTES: &[Support] = &[
     both("fallthrough"),
 ];
 
+// `__has_c_attribute` values of the standard attributes; cl answers only in C23 mode
+#[rustfmt::skip]
+const STANDARD_ATTRIBUTES: &[(&str, i64, i64, i64)] = &[
+    // name            clang   gcc     msvc
+    ("deprecated",     201904, 202311, 0),
+    ("fallthrough",    201910, 202311, 202311),
+    ("maybe_unused",   202106, 202311, 202311),
+    ("nodiscard",      202003, 202311, 202311),
+    ("noreturn",       202202, 202311, 0),
+    ("_Noreturn",      202202, 202311, 0),
+    ("unsequenced",    0,      202311, 0),
+    ("reproducible",   0,      202311, 0),
+];
+
 pub fn is_modeled(name: &str) -> bool {
     lookup(name).is_some()
 }
@@ -162,13 +186,13 @@ pub fn is_modeled(name: &str) -> bool {
 // unmodeled names fall back to the generated lists, which ignore the target
 pub fn gnu_registered(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
     let name = unwrapped(name);
-    match (lookup(name), flavor) {
-        (Some(support), CompilerFlavor::Clang) => support.clang.admits(target),
-        (Some(support), CompilerFlavor::Gcc) => support.gcc.admits(target),
-        (Some(support), CompilerFlavor::Msvc) => support.msvc.admits(target),
-        (None, CompilerFlavor::Clang) => registered::CLANG.binary_search(&name).is_ok(),
-        (None, CompilerFlavor::Gcc) => registered::GCC.binary_search(&name).is_ok(),
-        (None, CompilerFlavor::Msvc) => false,
+    match lookup(name) {
+        Some(support) => support.gate(flavor).admits(target),
+        None => match flavor {
+            CompilerFlavor::Clang => listed(registered::CLANG, name),
+            CompilerFlavor::Gcc => listed(registered::GCC, name),
+            CompilerFlavor::Msvc => false,
+        },
     }
 }
 
@@ -176,29 +200,56 @@ pub fn gnu_registered(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -
 pub fn has_attribute(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
     gnu_registered(name, flavor, target)
         || (flavor == CompilerFlavor::Gcc
-            && matches!(
-                unwrapped(name),
-                "nodiscard" | "maybe_unused" | "_Noreturn" | "unsequenced" | "reproducible"
-            ))
+            && standard_attribute_value(unwrapped(name), flavor, LanguageStandard::C23) != 0)
+}
+
+pub fn has_c_attribute(
+    spelling: &str,
+    flavor: CompilerFlavor,
+    standard: LanguageStandard,
+    target: &TargetInfo,
+) -> i64 {
+    match spelling.split_once("::") {
+        Some(_) => {
+            (flavor != CompilerFlavor::Msvc && spelling_registered(spelling, flavor, target)) as i64
+        }
+        None => standard_attribute_value(unwrapped(spelling), flavor, standard),
+    }
 }
 
 pub fn spelling_registered(spelling: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
-    match spelling.split_once("::") {
-        Some((scope, name)) => {
-            let scope = unwrapped(scope);
-            scope_registered(scope, flavor)
-                && (scope == "msvc" || gnu_registered(name, flavor, target))
-        }
-        None => gnu_registered(spelling, flavor, target),
+    let Some((scope, name)) = spelling.split_once("::") else {
+        return gnu_registered(spelling, flavor, target);
+    };
+    let name = unwrapped(name);
+    let scoped = match (flavor, unwrapped(scope)) {
+        (CompilerFlavor::Clang, "gnu") => registered::CLANG_GNU_SCOPE,
+        (CompilerFlavor::Clang, "clang") => registered::CLANG_CLANG_SCOPE,
+        (CompilerFlavor::Clang, "msvc") => registered::CLANG_MSVC_SCOPE,
+        (CompilerFlavor::Gcc, "gnu") => registered::GCC_GNU_SCOPE,
+        (CompilerFlavor::Msvc, "msvc") => return true,
+        _ => return false,
+    };
+    listed(scoped, name) && lookup(name).is_none_or(|support| support.gate(flavor).admits(target))
+}
+
+fn standard_attribute_value(name: &str, flavor: CompilerFlavor, standard: LanguageStandard) -> i64 {
+    let Some(&(_, clang, gcc, msvc)) = STANDARD_ATTRIBUTES
+        .iter()
+        .find(|(standard_name, ..)| *standard_name == name)
+    else {
+        return 0;
+    };
+    match flavor {
+        CompilerFlavor::Clang => clang,
+        CompilerFlavor::Gcc => gcc,
+        CompilerFlavor::Msvc if standard.stdc_version() >= Some(202311) => msvc,
+        CompilerFlavor::Msvc => 0,
     }
 }
 
-pub fn scope_registered(scope: &str, flavor: CompilerFlavor) -> bool {
-    match flavor {
-        CompilerFlavor::Clang => matches!(scope, "gnu" | "clang" | "msvc"),
-        CompilerFlavor::Gcc => scope == "gnu",
-        CompilerFlavor::Msvc => scope == "msvc",
-    }
+fn listed(names: &[&str], name: &str) -> bool {
+    names.binary_search(&name).is_ok()
 }
 
 fn unwrapped(name: &str) -> &str {

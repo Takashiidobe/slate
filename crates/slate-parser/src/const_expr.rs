@@ -1002,11 +1002,7 @@ impl<'a> Parser<'a> {
                     (Some(is_defined), Some("defined"), Some(macro_name)) => {
                         Ok(is_defined(macro_name) as i64)
                     }
-                    (
-                        Some(_),
-                        Some("__has_c_attribute" | "__has_cpp_attribute" | "__building_module"),
-                        Some(_),
-                    ) => Ok(0),
+                    (Some(_), Some("__has_cpp_attribute" | "__building_module"), Some(_)) => Ok(0),
                     _ => Err(ConstExprError::UnsupportedCall(callee.to_string())),
                 }
             }

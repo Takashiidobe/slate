@@ -1011,7 +1011,11 @@ impl<'a> Preprocessor<'a> {
 
     fn names_defined_macro(&self, directive: &Directive) -> Result<bool, PPFailure> {
         let (name, _) = self.macro_name(directive, directive_spelling(directive.name))?;
-        Ok(self.macros.contains_key(&name))
+        Ok(self.is_defined(&name))
+    }
+
+    fn is_defined(&self, name: &str) -> bool {
+        self.macros.contains_key(name) || is_defined_operator(name, self.flavor)
     }
 
     fn evaluate_condition(
@@ -1022,12 +1026,12 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_condition(&directive.arguments);
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
-        let expanded = expand_has_checks(&expanded, self.flavor, &self.target);
+        let expanded = expand_has_checks(&expanded, self.flavor, self.standard, &self.target);
         const_expr::Parser::evaluate_with_defined(
             &expanded,
             &self.target,
             self.flavor,
-            &|macro_name| self.macros.contains_key(macro_name),
+            &|macro_name| self.is_defined(macro_name),
         )
         .map(|value| value != 0)
         .map_err(|located| {
@@ -1232,42 +1236,93 @@ fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName
 fn expand_has_checks(
     tokens: &[Span<Token>],
     flavor: CompilerFlavor,
+    standard: LanguageStandard,
     target: &crate::target_info::TargetInfo,
 ) -> Vec<Span<Token>> {
-    let has_attribute = |name: &str| attribute_support::has_attribute(name, flavor, target);
+    let has_attribute = |name: &str| attribute_support::has_attribute(name, flavor, target) as i64;
+    let has_c_attribute =
+        |name: &str| attribute_support::has_c_attribute(name, flavor, standard, target);
+    let has_builtin = |name: &str| has_checks::has_builtin(name) as i64;
+    let has_feature = |name: &str| has_checks::has_feature(name) as i64;
+    let has_extension = |name: &str| has_checks::has_extension(name) as i64;
     let mut expanded = Vec::with_capacity(tokens.len());
     let mut index = 0;
     while index < tokens.len() {
-        let check: Option<&dyn Fn(&str) -> bool> = match tokens.value_at(index) {
+        let check: Option<&dyn Fn(&str) -> i64> = match tokens.value_at(index) {
             Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
-            Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_checks::has_builtin),
-            Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_checks::has_feature),
-            Some(Token::Ident(name)) if name == "__has_extension" => {
-                Some(&has_checks::has_extension)
-            }
+            Some(Token::Ident(name)) if name == "__has_c_attribute" => Some(&has_c_attribute),
+            Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_builtin),
+            Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_feature),
+            Some(Token::Ident(name)) if name == "__has_extension" => Some(&has_extension),
             _ => None,
         };
+        let scoped = matches!(
+            tokens.value_at(index),
+            Some(Token::Ident(name)) if name == "__has_c_attribute"
+        );
         if let Some(check) = check
-            && tokens.value_at(index + 1) == Some(&Token::LParen)
-            && let Some(name) = match tokens.value_at(index + 2) {
-                Some(Token::Ident(name)) => Some(name.as_str()),
-                Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword)),
-                _ => None,
-            }
-            && tokens.value_at(index + 3) == Some(&Token::RParen)
+            && let Some((name, end)) = has_check_argument(tokens, index + 1, scoped)
         {
             expanded.push(
                 tokens[index]
                     .clone()
-                    .with_value(Token::IntLit((check(name) as i64).to_string())),
+                    .with_value(Token::IntLit(check(&name).to_string())),
             );
-            index += 4;
+            index = end;
         } else {
             expanded.push(tokens[index].clone());
             index += 1;
         }
     }
     expanded
+}
+
+// the `__has_*` operators slate evaluates that each compiler also reports to `#ifdef`
+fn is_defined_operator(name: &str, flavor: CompilerFlavor) -> bool {
+    match flavor {
+        CompilerFlavor::Msvc => matches!(name, "__has_include" | "__has_c_attribute"),
+        CompilerFlavor::Clang | CompilerFlavor::Gcc => {
+            matches!(
+                name,
+                "__has_include"
+                    | "__has_include_next"
+                    | "__has_embed"
+                    | "__has_attribute"
+                    | "__has_c_attribute"
+                    | "__has_builtin"
+                    | "__has_feature"
+                    | "__has_extension"
+            ) || match flavor {
+                CompilerFlavor::Clang => name == "__building_module",
+                _ => name == "__has_cpp_attribute",
+            }
+        }
+    }
+}
+
+fn has_check_argument(
+    tokens: &[Span<Token>],
+    start: usize,
+    scoped: bool,
+) -> Option<(String, usize)> {
+    let word = |index: usize| match tokens.value_at(index) {
+        Some(Token::Ident(name)) => Some(name.clone()),
+        Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword).to_string()),
+        _ => None,
+    };
+    if tokens.value_at(start) != Some(&Token::LParen) {
+        return None;
+    }
+    let mut name = word(start + 1)?;
+    let mut end = start + 2;
+    if scoped
+        && tokens.value_at(end) == Some(&Token::Colon)
+        && tokens.value_at(end + 1) == Some(&Token::Colon)
+    {
+        name = format!("{name}::{}", word(end + 2)?);
+        end += 3;
+    }
+    (tokens.value_at(end) == Some(&Token::RParen)).then_some((name, end + 1))
 }
 
 fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {
