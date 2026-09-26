@@ -201,18 +201,17 @@ pub(super) fn parse_attribute_groups(
                 let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                let attribute = match c23_attribute_name(&name)
-                    .filter(|canonical| c23_registered(&name, canonical, context))
-                {
-                    Some(canonical) => parse_attribute_spelling(
-                        &name,
-                        canonical,
-                        arguments,
-                        biggest_alignment,
-                        context,
-                    )?,
-                    None => unknown_attribute(&name, arguments),
-                };
+                let attribute =
+                    match c23_attribute_name(&name).filter(|_| c23_registered(&name, context)) {
+                        Some(canonical) => parse_attribute_spelling(
+                            &name,
+                            canonical,
+                            arguments,
+                            biggest_alignment,
+                            context,
+                        )?,
+                        None => unknown_attribute(&name, arguments),
+                    };
                 attributes.push(locate_attribute(tokens, start, end, attribute));
                 if cursor.consume(&Token::Comma) {
                     continue;
@@ -674,24 +673,15 @@ fn c23_attribute_name(name: &str) -> Option<&str> {
 }
 
 fn gnu_registered(name: &str, context: Option<&Parser>) -> bool {
-    context.is_none_or(|parser| {
-        attribute_support::gnu_registered(
-            unwrapped_attribute_name(name),
-            parser.flavor,
-            &parser.target,
-        )
-    })
+    context
+        .is_none_or(|parser| attribute_support::gnu_registered(name, parser.flavor, &parser.target))
 }
 
-fn c23_registered(name: &str, canonical: &str, context: Option<&Parser>) -> bool {
-    let Some((scope, _)) = name.split_once("::") else {
-        return true;
-    };
-    let scope = unwrapped_attribute_name(scope);
-    context.is_none_or(|parser| {
-        attribute_support::scope_registered(scope, parser.flavor)
-            && (scope == "msvc" || gnu_registered(canonical, context))
-    })
+fn c23_registered(name: &str, context: Option<&Parser>) -> bool {
+    !name.contains("::")
+        || context.is_none_or(|parser| {
+            attribute_support::spelling_registered(name, parser.flavor, &parser.target)
+        })
 }
 
 fn parse_attribute_spelling(

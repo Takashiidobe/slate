@@ -12,6 +12,27 @@ __attribute__((not_an_attribute)) int bogus;
 [[clang::overloadable]] void clang_scoped(int);
 [[msvc::noinline]] void msvc_scoped(void);
 
+char unterminated[4] __attribute__((nonstring));
+
+#if __has_attribute(dllimport)
+int has_dllimport;
+#endif
+#if __has_attribute(naked)
+int has_naked;
+#endif
+#if __has_attribute(noipa)
+int has_noipa;
+#endif
+#if __has_attribute(nonstring)
+int has_nonstring;
+#endif
+#if __has_attribute(const)
+int has_const;
+#endif
+#if __has_attribute(nodiscard)
+int has_nodiscard;
+#endif
+
 int use(void) { return imported + exported + bogus + scoped_bogus; }
 
 // SLATE-FILECHECK-BEGIN WARN
@@ -83,13 +104,17 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 // IR-WARN-NEXT:     global %1 exported: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-WARN-NEXT:     global %5 bogus: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     global %6 scoped_bogus: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %9 unterminated: array<i8, 4> [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %10 has_naked: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %11 has_nonstring: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %12 has_const: i32 [storage=static] [linkage=external];
 // IR-WARN-NEXT:     fn %2 @opaque() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %3 @overloaded(%10 <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %3 @overloaded(%14 <unnamed>: i32) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %4 @bare() -> void [linkage=external];
-// IR-WARN-NEXT:     fn %7 @clang_scoped(%11 <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %7 @clang_scoped(%15 <unnamed>: i32) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %8 @msvc_scoped() -> void [linkage=external] [inline=never];
-// IR-WARN-NEXT:     fn %9 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:     fn %13 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-WARN-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%0), read<i32>(%1)), read<i32>(%5)), read<i32>(%6));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }

@@ -6,6 +6,7 @@ mod include;
 mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
+use crate::attribute_support;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
@@ -1021,7 +1022,7 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_condition(&directive.arguments);
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
-        let expanded = expand_has_checks(&expanded);
+        let expanded = expand_has_checks(&expanded, self.flavor, &self.target);
         const_expr::Parser::evaluate_with_defined(
             &expanded,
             &self.target,
@@ -1228,28 +1229,31 @@ fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName
         .then_some((HeaderName::Angled(text), index + 2))
 }
 
-fn expand_has_checks(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
+fn expand_has_checks(
+    tokens: &[Span<Token>],
+    flavor: CompilerFlavor,
+    target: &crate::target_info::TargetInfo,
+) -> Vec<Span<Token>> {
+    let has_attribute = |name: &str| attribute_support::has_attribute(name, flavor, target);
     let mut expanded = Vec::with_capacity(tokens.len());
     let mut index = 0;
     while index < tokens.len() {
-        let check = match tokens.value_at(index) {
-            Some(Token::Ident(name)) if name == "__has_attribute" => {
-                Some(has_checks::has_attribute as fn(&str) -> bool)
-            }
-            Some(Token::Ident(name)) if name == "__has_builtin" => {
-                Some(has_checks::has_builtin as fn(&str) -> bool)
-            }
-            Some(Token::Ident(name)) if name == "__has_feature" => {
-                Some(has_checks::has_feature as fn(&str) -> bool)
-            }
+        let check: Option<&dyn Fn(&str) -> bool> = match tokens.value_at(index) {
+            Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
+            Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_checks::has_builtin),
+            Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_checks::has_feature),
             Some(Token::Ident(name)) if name == "__has_extension" => {
-                Some(has_checks::has_extension as fn(&str) -> bool)
+                Some(&has_checks::has_extension)
             }
             _ => None,
         };
         if let Some(check) = check
             && tokens.value_at(index + 1) == Some(&Token::LParen)
-            && let Some(Token::Ident(name)) = tokens.value_at(index + 2)
+            && let Some(name) = match tokens.value_at(index + 2) {
+                Some(Token::Ident(name)) => Some(name.as_str()),
+                Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword)),
+                _ => None,
+            }
             && tokens.value_at(index + 3) == Some(&Token::RParen)
         {
             expanded.push(

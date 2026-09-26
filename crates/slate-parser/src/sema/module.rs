@@ -9,6 +9,7 @@ use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
+use crate::attribute_support;
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
@@ -437,7 +438,13 @@ impl Lowerer {
                     self.warn(Warning::IgnoredAttributes, &message, attribute);
                 }
                 Use::Unknown => {
-                    if let ast::Attribute::Unknown { name, .. } = &attribute.value {
+                    if let ast::Attribute::Unknown { name, .. } = &attribute.value
+                        && !attribute_support::spelling_registered(
+                            name,
+                            self.types.flavor,
+                            &self.context.target,
+                        )
+                    {
                         let message = format!("unknown attribute '{name}' ignored");
                         self.warn(Warning::UnknownAttributes, &message, attribute);
                     }

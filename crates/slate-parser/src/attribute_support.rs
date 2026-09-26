@@ -1,3 +1,5 @@
+mod registered;
+
 use crate::compiler_args::CompilerFlavor;
 use crate::target_info::{TargetFamily, TargetInfo, TargetOs};
 
@@ -10,6 +12,7 @@ enum Gate {
     X86,
     X86OrArm32,
     NotAArch64,
+    NotArm32,
     Arm32,
 }
 
@@ -24,6 +27,7 @@ impl Gate {
             Self::X86 => x86,
             Self::X86OrArm32 => x86 || target.family == TargetFamily::Arm32,
             Self::NotAArch64 => target.family != TargetFamily::AArch64,
+            Self::NotArm32 => target.family != TargetFamily::Arm32,
             Self::Arm32 => target.family == TargetFamily::Arm32,
         }
     }
@@ -76,7 +80,7 @@ const GNU_ATTRIBUTES: &[Support] = &[
     both("unused"),
     clang_only("preserve_most"),
     clang_only("preserve_all"),
-    both("preserve_none"),
+    support("preserve_none", Gate::NotArm32, Gate::Always),
     both("aligned"),
     both("vector_size"),
     both("mode"),
@@ -155,15 +159,38 @@ pub fn is_modeled(name: &str) -> bool {
     lookup(name).is_some()
 }
 
+// unmodeled names fall back to the generated lists, which ignore the target
 pub fn gnu_registered(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
-    lookup(name).is_some_and(|support| {
-        match flavor {
-            CompilerFlavor::Clang => support.clang,
-            CompilerFlavor::Gcc => support.gcc,
-            CompilerFlavor::Msvc => support.msvc,
+    let name = unwrapped(name);
+    match (lookup(name), flavor) {
+        (Some(support), CompilerFlavor::Clang) => support.clang.admits(target),
+        (Some(support), CompilerFlavor::Gcc) => support.gcc.admits(target),
+        (Some(support), CompilerFlavor::Msvc) => support.msvc.admits(target),
+        (None, CompilerFlavor::Clang) => registered::CLANG.binary_search(&name).is_ok(),
+        (None, CompilerFlavor::Gcc) => registered::GCC.binary_search(&name).is_ok(),
+        (None, CompilerFlavor::Msvc) => false,
+    }
+}
+
+// gcc's `__has_attribute` also answers for standard attributes with no GNU spelling
+pub fn has_attribute(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
+    gnu_registered(name, flavor, target)
+        || (flavor == CompilerFlavor::Gcc
+            && matches!(
+                unwrapped(name),
+                "nodiscard" | "maybe_unused" | "_Noreturn" | "unsequenced" | "reproducible"
+            ))
+}
+
+pub fn spelling_registered(spelling: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
+    match spelling.split_once("::") {
+        Some((scope, name)) => {
+            let scope = unwrapped(scope);
+            scope_registered(scope, flavor)
+                && (scope == "msvc" || gnu_registered(name, flavor, target))
         }
-        .admits(target)
-    })
+        None => gnu_registered(spelling, flavor, target),
+    }
 }
 
 pub fn scope_registered(scope: &str, flavor: CompilerFlavor) -> bool {
@@ -172,6 +199,12 @@ pub fn scope_registered(scope: &str, flavor: CompilerFlavor) -> bool {
         CompilerFlavor::Gcc => scope == "gnu",
         CompilerFlavor::Msvc => scope == "msvc",
     }
+}
+
+fn unwrapped(name: &str) -> &str {
+    name.strip_prefix("__")
+        .and_then(|name| name.strip_suffix("__"))
+        .unwrap_or(name)
 }
 
 fn lookup(name: &str) -> Option<&'static Support> {
