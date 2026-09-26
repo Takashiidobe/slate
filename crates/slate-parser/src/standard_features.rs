@@ -42,6 +42,7 @@ pub struct StandardFeatures {
     pub auto_type_inference: bool,
     pub empty_parens_are_prototype: bool,
     pub main_implicit_return_zero: bool,
+    pub valueless_return_in_nonvoid: bool,
     pub inline_semantics: InlineSemantics,
 }
 
@@ -90,6 +91,7 @@ impl StandardFeatures {
             auto_type_inference: c23,
             empty_parens_are_prototype: c23,
             main_implicit_return_zero: standard.stdc_version() >= Some(199901),
+            valueless_return_in_nonvoid: c89,
             inline_semantics: if c89 {
                 InlineSemantics::SupressDef
             } else {

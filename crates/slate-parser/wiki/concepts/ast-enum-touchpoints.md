@@ -42,7 +42,8 @@ an empty statement without introducing a compound scope.
 - `src/sema/names.rs` — visitor overrides implement scope, binding, and label
   rules that depend on `TranslationUnit.standard`.
 - `src/render.rs` — comment stripping recurses into single bodies and blocks.
-- `src/sema/module.rs` — module lowering handles `Null` and explicit blocks.
+- `src/sema/module.rs` — `Lowerer::statements` is exhaustive over `StmtKind`
+  (no catch-all since slate-parser-dyd.26), so the compiler flags a new variant.
 - `src/sema/pragmas.rs` — the ordered pragma walk is exhaustive over `StmtKind`:
   a variant holding statements must recurse or a pragma inside it is missed.
 

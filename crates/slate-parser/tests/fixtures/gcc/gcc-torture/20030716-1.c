@@ -11,5 +11,5 @@ void foo(int i, int A[i+1])
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: module statement
+// DEFAULT: Error:   × invalid in this context: function definition is not allowed here
 // SLATE-FILECHECK-END DEFAULT

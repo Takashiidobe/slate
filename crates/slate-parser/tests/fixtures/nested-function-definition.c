@@ -18,8 +18,8 @@ void nested_outer(int n) {
 // SLATE-FILECHECK-IR-ERROR DOUBLED
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: module statement
+// DEFAULT: Error:   × invalid in this context: function definition is not allowed here
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN DOUBLED
-// DOUBLED: Error:   × unsupported in numeric IR lowering: module statement
+// DOUBLED: Error:   × invalid in this context: function definition is not allowed here
 // SLATE-FILECHECK-END DOUBLED

@@ -292,7 +292,12 @@ continue targets the nearest loop (including through a switch). Case labels
 retain their nearest switch ID even when nested inside loops (Duff's device),
 and remain nested statements rather than flattened arms. Statement order and
 absence of a break preserve fallthrough. `[[fallthrough]];` is a null statement
-with source metadata. Case endpoints are folded to the promoted switch type;
+with source metadata. An attribute statement without `fallthrough` becomes a
+null statement. An attributed statement (`[[x]] stmt`) lowers to its statement,
+and its attributes are dropped, since clang and gcc only warn about them;
+`fallthrough` on a non-empty statement is an error except under the gcc flavor,
+which ignores it. A nested function definition is an error under clang and
+MSVC. Under gcc it is still unsupported (`slate-parser-dyd.56`). Case endpoints are folded to the promoted switch type;
 ordinary conditions and arithmetic are not folded. Conditions explicitly become
 boolean values. Missing for conditions remain omitted, meaning unconditional.
 Enum operands use an explicit `enum_to_int` conversion to the resolved
@@ -2031,7 +2036,11 @@ their own:
 ## Things C leaves implicit that the IR materializes
 
 - C99 and later `main` falling off the end → `fallthrough=ret_zero` on its definition.
-- A void function falling off the end → `fallthrough=ret_void`; a non-void function reached at the end has `fallthrough=ub_if_used`.
+- A void function falling off the end → `fallthrough=ret_void`; a non-void function reached at the end has `fallthrough=ub_if_used`. A valueless `return` in a non-void function
+  prints as `return` with the same meaning. It is accepted only where the
+  compiler accepts it: under gcc in C89/gnu89, and under MSVC, which gives
+  only warning C4033 (per Microsoft's docs; not measured). Clang rejects it in
+  every mode.
 - Constant `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T`
   metadata; runtime array sizes use captured extents.
 - `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with

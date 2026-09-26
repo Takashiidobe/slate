@@ -7,6 +7,7 @@ use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
 use crate::ir::*;
@@ -855,7 +856,7 @@ impl Lowerer {
                 Some(initializer) => {
                     let anchor = declarator.derive(());
                     let mut value = self.initializer_value(resolved, initializer, &anchor)?;
-                    if self.types.flavor == crate::compiler_args::CompilerFlavor::Msvc
+                    if self.types.flavor == CompilerFlavor::Msvc
                         && (global || storage_class == StorageClass::Static)
                     {
                         super::fold::fold_msvc_static_divisions(&mut value);
@@ -1215,7 +1216,7 @@ impl Lowerer {
                 StmtKind::Attribute(attributes)
                     if attributes
                         .iter()
-                        .all(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
+                        .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
                 {
                     if self.switches.is_empty() {
                         return Err(ResolveError::Unsupported("fallthrough outside switch"));
@@ -1223,6 +1224,7 @@ impl Lowerer {
                     annotations.push(("c_attribute".into(), "fallthrough".into()));
                     Statement::Null
                 }
+                StmtKind::Attribute(_) => Statement::Null,
                 StmtKind::LocalLabelDecl(_) => continue,
                 StmtKind::ComputedGoto(expr) => {
                     let value = self.expr(expr)?;
@@ -1252,7 +1254,37 @@ impl Lowerer {
                 StmtKind::Block(body) => {
                     Statement::Block(self.scoped(|lower| lower.statements(body, return_type))?)
                 }
-                _ => return Err(ResolveError::Unsupported("module statement")),
+                StmtKind::ReturnVoid => match self.types.flavor {
+                    CompilerFlavor::Msvc => Statement::Return(None),
+                    CompilerFlavor::Gcc if self.types.features.valueless_return_in_nonvoid => {
+                        Statement::Return(None)
+                    }
+                    _ => {
+                        return Err(ResolveError::Invalid(
+                            "non-void function should return a value",
+                        ));
+                    }
+                },
+                StmtKind::Attributed { attributes, body } => {
+                    if self.types.flavor != CompilerFlavor::Gcc
+                        && attributes
+                            .iter()
+                            .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
+                    {
+                        return Err(ResolveError::Invalid(
+                            "fallthrough attribute on a non-empty statement",
+                        ));
+                    }
+                    result.extend(self.statements(std::slice::from_ref(body), return_type)?);
+                    continue;
+                }
+                StmtKind::NestedFunction(_) => {
+                    return Err(if self.types.flavor == CompilerFlavor::Gcc {
+                        ResolveError::Unsupported("GNU nested function")
+                    } else {
+                        ResolveError::Invalid("function definition is not allowed here")
+                    });
+                }
             };
             let lowered = statement.derive(kind);
             self.module.annotate(&lowered, annotations);

@@ -23,5 +23,5 @@ double bar (void)
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: module statement
+// DEFAULT: Error:   × invalid in this context: non-void function should return a value
 // SLATE-FILECHECK-END DEFAULT
