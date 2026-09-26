@@ -5,9 +5,10 @@ use crate::ir::{
 };
 use num_bigint::{BigInt, BigUint, Sign};
 use rustc_apfloat::{
-    Float, Status,
+    Float, FloatConvert, Status,
     ieee::{BFloat, Double, Half, Quad, Single, X87DoubleExtended},
 };
+use std::cmp::Ordering;
 
 const MAX_WIDTH: u32 = 65_536;
 const MAX_DEPTH: usize = 256;
@@ -95,7 +96,7 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             kind: ConversionKind::FloatToInt,
             operand,
             ..
-        } => float_to_integer(operand, width, signed)?,
+        } => float_to_integer(floating(operand, depth, flavor)?, width, signed, flavor)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
                 ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
@@ -137,6 +138,20 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             let left = evaluate(left, depth, flavor)?;
             let right = evaluate(right, depth, flavor)?;
             arithmetic(*op, *semantics, left, right, width, signed, flavor)?
+        }
+        ValueKind::Compare {
+            op, left, right, ..
+        } if matches!(left.ty, Type::Numeric(NumericType::Float(_))) => {
+            let order =
+                floating(left, depth, flavor)?.partial_cmp(&floating(right, depth, flavor)?);
+            BigInt::from(u8::from(match op {
+                CompareOp::Eq => order == Some(Ordering::Equal),
+                CompareOp::Ne => order != Some(Ordering::Equal),
+                CompareOp::Lt => order == Some(Ordering::Less),
+                CompareOp::Le => matches!(order, Some(Ordering::Less | Ordering::Equal)),
+                CompareOp::Gt => order == Some(Ordering::Greater),
+                CompareOp::Ge => matches!(order, Some(Ordering::Greater | Ordering::Equal)),
+            }))
         }
         ValueKind::Compare {
             op, left, right, ..
@@ -185,57 +200,165 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
     Some(normalize(result, width, signed))
 }
 
-/// Only immediate floating constants (optionally negated) participate here;
-/// this deliberately does not evaluate floating arithmetic or conversions.
-fn float_to_integer(value: &Value, width: u32, signed: bool) -> Option<BigInt> {
+// quad holds every binary format exactly, so values travel as quad and round per operation
+macro_rules! in_format {
+    ($format:expr, $F:ident => $body:expr) => {
+        match $format {
+            FloatType::BF16 => {
+                type $F = BFloat;
+                $body
+            }
+            FloatType::F16 => {
+                type $F = Half;
+                $body
+            }
+            FloatType::F32 => {
+                type $F = Single;
+                $body
+            }
+            FloatType::F64 => {
+                type $F = Double;
+                $body
+            }
+            FloatType::F80 => {
+                type $F = X87DoubleExtended;
+                $body
+            }
+            FloatType::F128 => {
+                type $F = Quad;
+                $body
+            }
+            FloatType::D32 | FloatType::D64 | FloatType::D128 => None,
+        }
+    };
+}
+
+fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Option<Quad> {
+    let depth = depth.checked_sub(1)?;
     let Type::Numeric(NumericType::Float(format)) = value.ty else {
         return None;
     };
-    let (constant, negate) = match &value.node.value {
+    match &value.node.value {
+        ValueKind::Constant(Number::FloatBits(bits)) => {
+            in_format!(format, F => Some(widen(F::from_bits(*bits))))
+        }
         ValueKind::Unary {
             op: UnaryArithOp::Neg,
             operand,
-            semantics: ArithSema::Exact,
-        } if operand.ty == value.ty => (operand.as_ref(), true),
-        _ => (value, false),
-    };
-    let ValueKind::Constant(Number::FloatBits(bits)) = constant.node.value else {
-        return None;
-    };
-    // The IR format already incorporates the target's long-double selection.
-    match format {
-        FloatType::BF16 => convert_float::<BFloat>(bits, negate, width, signed),
-        FloatType::F16 => convert_float::<Half>(bits, negate, width, signed),
-        FloatType::F32 => convert_float::<Single>(bits, negate, width, signed),
-        FloatType::F64 => convert_float::<Double>(bits, negate, width, signed),
-        FloatType::F80 => convert_float::<X87DoubleExtended>(bits, negate, width, signed),
-        FloatType::F128 => convert_float::<Quad>(bits, negate, width, signed),
-        FloatType::D32 | FloatType::D64 | FloatType::D128 => None,
+            ..
+        } => Some(-floating(operand, depth, flavor)?),
+        ValueKind::Arith {
+            op, left, right, ..
+        } => {
+            let left = floating(left, depth, flavor)?;
+            let right = floating(right, depth, flavor)?;
+            in_format!(format, F => {
+                let (left, right) = (narrow::<F>(left), narrow::<F>(right));
+                let result = match op {
+                    ArithOp::Add => left + right,
+                    ArithOp::Sub => left - right,
+                    ArithOp::Mul => left * right,
+                    ArithOp::Div => left / right,
+                    _ => return None,
+                };
+                Some(widen(result.value))
+            })
+        }
+        ValueKind::Convert {
+            kind: ConversionKind::IntToFloat,
+            operand,
+            ..
+        } => {
+            let integer = evaluate(operand, depth, flavor)?;
+            in_format!(format, F => {
+                let converted = match i128::try_from(&integer) {
+                    Ok(integer) => F::from_i128(integer),
+                    Err(_) => F::from_u128(u128::try_from(&integer).ok()?),
+                };
+                Some(widen(converted.value))
+            })
+        }
+        ValueKind::Convert {
+            kind:
+                ConversionKind::FloatWiden | ConversionKind::FloatNarrow | ConversionKind::FloatConvert,
+            operand,
+            ..
+        } => {
+            let operand = floating(operand, depth, flavor)?;
+            in_format!(format, F => Some(widen(narrow::<F>(operand))))
+        }
+        ValueKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            let condition = evaluate(condition, depth, flavor)?;
+            floating(
+                if condition.sign() != Sign::NoSign {
+                    then_value
+                } else {
+                    else_value
+                },
+                depth,
+                flavor,
+            )
+        }
+        _ => None,
     }
 }
 
-fn convert_float<F: Float>(bits: u128, negate: bool, width: u32, signed: bool) -> Option<BigInt> {
+fn widen<F: FloatConvert<Quad>>(value: F) -> Quad {
+    value.convert(&mut false).value
+}
+
+fn narrow<F: Float>(value: Quad) -> F
+where
+    Quad: FloatConvert<F>,
+{
+    value.convert(&mut false).value
+}
+
+fn float_to_integer(
+    value: Quad,
+    width: u32,
+    signed: bool,
+    flavor: Option<CompilerFlavor>,
+) -> Option<BigInt> {
     // APFloat's integer conversion API is limited to 128 bits.
     if !(1..=128).contains(&width) {
         return None;
     }
-    let value = F::from_bits(bits);
-    let value = if negate { -value } else { value };
-    // to_u128 truncates toward zero. INEXACT is expected for fractions;
-    // INVALID_OP rejects infinities, NaNs, and unrepresentable magnitudes.
-    let result = value.abs().to_u128(width as usize);
+    let limit = BigInt::from(1u8) << (width - u32::from(signed));
+    let minimum = if signed { -&limit } else { BigInt::from(0u8) };
+    match truncated(value, 128) {
+        Some(result) if result >= minimum && result < limit => Some(result),
+        _ => match flavor {
+            // an out-of-range conversion is UB; clang folds it saturated and NaN to 0
+            Some(CompilerFlavor::Clang) if value.is_nan() => Some(BigInt::from(0u8)),
+            Some(CompilerFlavor::Clang) if value.is_negative() => Some(minimum),
+            Some(CompilerFlavor::Clang) => Some(limit - 1),
+            // cl wraps the integer part below 2^64 and folds anything larger, inf or NaN to 0
+            Some(CompilerFlavor::Msvc) => Some(
+                truncated(value, 64)
+                    .map_or(BigInt::from(0u8), |result| normalize(result, width, signed)),
+            ),
+            _ => None,
+        },
+    }
+}
+
+// to_u128 truncates toward zero; INVALID_OP rejects infinities, NaNs and magnitudes of 2^bits or more
+fn truncated(value: Quad, bits: usize) -> Option<BigInt> {
+    let result = value.abs().to_u128(bits);
     if result.status.contains(Status::INVALID_OP) {
         return None;
     }
     let magnitude = BigInt::from(result.value);
-    let result = if value.is_negative() {
+    Some(if value.is_negative() {
         -magnitude
     } else {
         magnitude
-    };
-    let limit = BigInt::from(1u8) << (width - u32::from(signed));
-    let minimum = if signed { -&limit } else { BigInt::from(0u8) };
-    (result >= minimum && result < limit).then_some(result)
+    })
 }
 
 fn integer_type(ty: &Type) -> Option<(u32, bool)> {

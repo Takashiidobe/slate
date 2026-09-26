@@ -1,12 +1,15 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-FLAVOR msvc
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
 
-int out_of_range_case(int x) {
-    switch (x) {
-    case (int)1e100: return 1;
-    default: return 0;
-    }
-}
+enum {
+  OVERFLOWED = (int)1e10,
+  NEGATIVE_OVERFLOW = (int)-1e10,
+  INFINITE = (int)(1.0 / 0.0),
+  NOT_A_NUMBER = (int)(0.0 / 0.0),
+  WRAPPED = (int)(signed char)-200.7,
+};
+int out_of_range[] = {OVERFLOWED, NEGATIVE_OVERFLOW, INFINITE, NOT_A_NUMBER, WRAPPED};
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
@@ -31,14 +34,13 @@ int out_of_range_case(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @out_of_range_case(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %2 read<i32>(%1)
-// IR-NEXT:             {
-// IR-NEXT:                 case %2 const<i32>(2147483647):
-// IR-NEXT:                     return const<i32>(1);
-// IR-NEXT:                 default %2:
-// IR-NEXT:                     return const<i32>(0);
-// IR-NEXT:             }
-// IR-NEXT:     }
+// IR-NEXT:     type @type0 = enum : i32 {
+// IR-NEXT:         %0 OVERFLOWED = const<i32>(1410065408);
+// IR-NEXT:         %1 NEGATIVE_OVERFLOW = const<i32>(-1410065408);
+// IR-NEXT:         %2 INFINITE = const<i32>(0);
+// IR-NEXT:         %3 NOT_A_NUMBER = const<i32>(0);
+// IR-NEXT:         %4 WRAPPED = const<i32>(56);
+// IR-NEXT:     } [size=4, align=4];
+// IR-NEXT:     global %6 out_of_range: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1410065408), index1 = const<i32>(-1410065408), index2 = const<i32>(0), index3 = const<i32>(0), index4 = const<i32>(56)) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

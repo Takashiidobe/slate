@@ -1,0 +1,10 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-FLAVOR gcc
+
+// SLATE-FILECHECK-IR-ERROR DEFAULT
+
+enum { OVERFLOWED = (int)1e10 };
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: Error:   × unsupported in numeric IR lowering: nonconstant or undefined integer
+// SLATE-FILECHECK-END DEFAULT

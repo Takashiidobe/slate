@@ -1564,6 +1564,16 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   preprocessor and knows none of those; it is not used for layout.
   Attribute operands are name-resolved like any other expression, so
   `__attribute__((aligned(sizeof(x))))` finds `x`.
+- The folder (`sema/fold.rs`) goes past C's integer-constant-expression
+  rule, which admits a floating constant only as a cast's immediate operand,
+  and folds binary floating arithmetic, conversions, comparisons and
+  conditionals like clang, gcc and cl do (`enum { E = (int)(2.5 * 2) }`). Each
+  operation rounds to nearest-even in its own format, so `0.1f + 0.2f == 0.3f`
+  is 1 and `0.1 + 0.2 == 0.3` is 0. Decimal floating values never fold. A
+  float-to-integer conversion that is out of range (undefined) folds per
+  flavor: clang saturates and maps NaN to 0, msvc wraps an integer part below
+  2^64 and folds anything else to 0, gcc does not fold it
+  (`tests/fixtures/sema/ir_float_constant_folding.c`).
 - A `constexpr` object whose initializer folds is declared as an ordinary
   constant, so it is usable as an integer constant expression
   (`constexpr int w = 7; int a[w];`).
