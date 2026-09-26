@@ -509,31 +509,6 @@ fn parse_attribute_value(
     }
 }
 
-pub(crate) fn apply_type_attributes(
-    mut ty: TypeSpecifier,
-    attributes: &[Span<Attribute>],
-) -> TypeSpecifier {
-    for attribute in attributes {
-        let size = match &attribute.value {
-            Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
-            Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
-            Attribute::Mode(mode) => {
-                ty = TypeSpecifier::Mode(ModeType {
-                    base: Box::new(ty),
-                    mode: mode.clone(),
-                });
-                continue;
-            }
-            _ => continue,
-        };
-        ty = TypeSpecifier::Vector(VectorType {
-            element: Box::new(ty),
-            size,
-        });
-    }
-    ty
-}
-
 pub(super) fn invalid_attribute(name: &str, arguments: &[Span<Token>]) -> Attribute {
     Attribute::Invalid {
         name: name.into(),

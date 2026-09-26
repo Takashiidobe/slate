@@ -1,5 +1,4 @@
 use super::asm::is_asm_keyword;
-use super::attributes::apply_type_attributes;
 use super::declarator::{DeclaratorError, DeclaratorParser, IdentifierList};
 use super::{Annotation, Parser, ParserInput, span_tokens};
 use crate::ast::*;
@@ -161,14 +160,8 @@ impl Parser {
         if !parser.matches(Token::Semi) {
             return Err(self.error_at_tokens(parser.tokens, parser.pos, "expected `;`"));
         }
-        let attributes = specifiers
-            .attributes
-            .iter()
-            .chain(declarators.iter().flat_map(|parsed| &parsed.attributes))
-            .cloned()
-            .collect::<Vec<_>>();
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
-        specifiers.ty = apply_type_attributes(ty, &attributes);
+        specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
         Ok(())
     }
 

@@ -242,9 +242,16 @@ or functions; those come only from declarators.
 
 `Vector` and `Mode` are not written as specifiers. The parser wraps the
 declaration's type specifier in one per `vector_size`, `ext_vector_type` or
-`mode` attribute, in attribute order, so `int mode(SI) vector_size(8)` is a
-vector of the mode type, and `vector_size(16) mode(DI)` keeps the 16 bytes
-and changes the lanes to 64-bit. Sema resolves a mode the way clang does:
+`mode` attribute in specifier position, in attribute order. Those apply to
+every declarator. An attribute written before or after a declarator, or
+inside its parentheses (`int (__attribute__((mode(QI))) x)`), applies only
+to that declarator, as in clang. It stays in the declarator's attributes, and
+sema wraps a copy of the specifier for that declarator alone
+(`TypeResolver::resolve_declarator`). Parameters and type names fold every
+attribute, since they have a single declarator. In either case
+`int mode(SI) vector_size(8)` is a vector of the mode type, and
+`vector_size(16) mode(DI)` keeps the 16 bytes and changes the lanes to
+64-bit. Sema resolves a mode the way clang does:
 
 - Integer modes (`QI`/`byte`, `HI`, `SI`, `DI`, `TI`, `word`/`pointer`)
   pick the first of `signed char`, `short`, `int`, `long`, `long long`,
@@ -259,10 +266,6 @@ and changes the lanes to 64-bit. Sema resolves a mode the way clang does:
 - It's an error to mix an integer mode with a floating base or the other
   way round, and to use a mode on a pointer, array or function declarator.
   Complex, vector (`V4SI`), `HF` and other modes are unsupported.
-
-Known gap: an attribute after one declarator in `int x, y
-__attribute__((mode(QI)));` is folded into the shared specifier, so it
-changes `x` too. Clang changes only `y` (`slate-parser-dyd.61`).
 
 Decimal floating types (C23 Annex H, and a GNU extension before C23) are
 accepted in every standard mode and on every target:

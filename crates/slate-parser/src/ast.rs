@@ -1135,6 +1135,42 @@ struct Derivation {
     suffix: bool,
 }
 
+impl Attribute {
+    pub fn is_type_attribute(&self) -> bool {
+        matches!(
+            self,
+            Self::VectorSize(_) | Self::ExtVectorType(_) | Self::Mode(_)
+        )
+    }
+}
+
+impl TypeSpecifier {
+    pub fn with_type_attributes<'a>(
+        mut self,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+    ) -> Self {
+        for attribute in attributes {
+            let size = match &attribute.value {
+                Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
+                Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
+                Attribute::Mode(mode) => {
+                    self = Self::Mode(ModeType {
+                        base: Box::new(self),
+                        mode: mode.clone(),
+                    });
+                    continue;
+                }
+                _ => continue,
+            };
+            self = Self::Vector(VectorType {
+                element: Box::new(self),
+                size,
+            });
+        }
+        self
+    }
+}
+
 impl Declarator {
     pub fn name(&self) -> Option<&str> {
         match self {
@@ -1209,6 +1245,21 @@ impl Declarator {
             };
         }
         Some(layer)
+    }
+
+    pub fn grouped_attributes(&self) -> Vec<&Span<Attribute>> {
+        let mut attributes = Vec::new();
+        let mut layer = Some(self);
+        while let Some(declarator) = layer {
+            if let Self::Attributed {
+                attributes: own, ..
+            } = declarator
+            {
+                attributes.extend(own);
+            }
+            layer = declarator.inner();
+        }
+        attributes
     }
 
     fn inner(&self) -> Option<&Declarator> {

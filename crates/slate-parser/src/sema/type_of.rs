@@ -3,8 +3,8 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{
-    DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, Initializer, NodeId,
-    StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand, TypeSpecifier,
+    Attribute, DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, Initializer,
+    NodeId, Span, StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::BindingId;
@@ -20,6 +20,17 @@ impl Lowerer {
     ) -> Result<QualType, ResolveError> {
         self.prepare_typeof(specifiers, declarator)?;
         self.types.resolve(specifiers, declarator)
+    }
+
+    pub(super) fn resolve_declarator_type(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+        attributes: &[Span<Attribute>],
+    ) -> Result<QualType, ResolveError> {
+        self.prepare_typeof(specifiers, declarator)?;
+        self.types
+            .resolve_declarator(specifiers, declarator, attributes)
     }
 
     pub(super) fn resolve_parameter_type(

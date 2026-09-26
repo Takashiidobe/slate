@@ -1,4 +1,4 @@
-use super::attributes::{apply_type_attributes, parse_attribute_groups};
+use super::attributes::parse_attribute_groups;
 use super::decl::{bare_identifier_names, matching_paren, set_qualifier, specifiers_with_type};
 use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, span_tokens};
 use crate::ast::*;
@@ -948,7 +948,7 @@ impl<'a> DeclaratorParser<'a> {
     pub(crate) fn parse_type_name(&mut self) -> Result<TypeName, DeclaratorError> {
         let mut specifiers = self.parse_specifiers(false)?;
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
-        specifiers.ty = apply_type_attributes(ty, &specifiers.attributes);
+        specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
         let declarator = self.parse_declarator(true)?;
         Ok(TypeName {
             specifiers,
@@ -1080,7 +1080,7 @@ impl<'a> DeclaratorParser<'a> {
                 .cloned()
                 .collect::<Vec<_>>();
             let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
-            specifiers.ty = apply_type_attributes(ty, &vector_attributes);
+            specifiers.ty = ty.with_type_attributes(&vector_attributes);
             parameters.push(span_tokens(
                 ParameterDeclarationKind {
                     specifiers,

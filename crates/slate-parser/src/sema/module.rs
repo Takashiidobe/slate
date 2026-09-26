@@ -727,7 +727,11 @@ impl Lowerer {
             } else {
                 None
             };
-            let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
+            let resolved = self.resolve_declarator_type(
+                &item.specifiers,
+                &declarator.declarator,
+                &declarator.attributes,
+            )?;
             if let Some(value) = value {
                 self.check_inferred(resolved, value)?;
             }

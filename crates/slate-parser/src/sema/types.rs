@@ -924,6 +924,31 @@ impl TypeResolver {
         Ok(())
     }
 
+    // declarator-position type attributes change only their own declarator's base type
+    pub fn resolve_declarator(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+        attributes: &[Span<Attribute>],
+    ) -> Result<QualType, ResolveError> {
+        let own = declarator
+            .grouped_attributes()
+            .into_iter()
+            .chain(attributes)
+            .collect::<Vec<_>>();
+        if !own
+            .iter()
+            .any(|attribute| attribute.value.is_type_attribute())
+        {
+            return self.resolve(specifiers, declarator);
+        }
+        let specifiers = DeclarationSpecifiers {
+            ty: specifiers.ty.clone().with_type_attributes(own),
+            ..specifiers.clone()
+        };
+        self.resolve(&specifiers, declarator)
+    }
+
     pub fn resolve(
         &mut self,
         specifiers: &DeclarationSpecifiers,
@@ -1429,8 +1454,11 @@ impl TypeResolver {
                         )?);
                     }
                     for declarator in &declaration.declarators {
-                        let resolved =
-                            self.resolve(&declaration.specifiers, &declarator.declarator)?;
+                        let resolved = self.resolve_declarator(
+                            &declaration.specifiers,
+                            &declarator.declarator,
+                            &declarator.attributes,
+                        )?;
                         let ty = self.object_type(resolved, "void record field")?;
                         let bit_width = declarator
                             .bit_width
@@ -2368,7 +2396,11 @@ pub fn resolve_type_module(
                         .name()
                         .ok_or(ResolveError::Unsupported("anonymous typedef"))?
                         .to_owned();
-                    let resolved = resolver.resolve(&item.specifiers, &declarator.declarator)?;
+                    let resolved = resolver.resolve_declarator(
+                        &item.specifiers,
+                        &declarator.declarator,
+                        &declarator.attributes,
+                    )?;
                     let c_entries = resolver.render(resolved).entries();
                     resolver.define_alias(
                         name,

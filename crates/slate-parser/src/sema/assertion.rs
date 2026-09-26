@@ -152,9 +152,11 @@ impl Checker<'_> {
             {
                 self.types.inferred = Some(base);
             }
-            let resolved = self
-                .types
-                .resolve(&declaration.specifiers, &declarator.declarator);
+            let resolved = self.types.resolve_declarator(
+                &declaration.specifiers,
+                &declarator.declarator,
+                &declarator.attributes,
+            );
             self.types.inferred = None;
             self.types.declare(name, Ordinary::Declared);
             if let Ok(resolved) = resolved {
