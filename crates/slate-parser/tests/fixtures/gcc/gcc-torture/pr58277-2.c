@@ -122,7 +122,7 @@ int main() {
 // DEFAULT-NEXT:     global %10 t: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %11 d: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %12 r: ptr<ptr<i32>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 s: ptr<ptr<volatile ptr<i32>>> [storage=static] = pointer_cast<ptr<ptr<volatile ptr<i32>>>, reason=assign>(addr_of<ptr<ptr<ptr<i32>>>>(%12)) [linkage=internal];
+// DEFAULT-NEXT:     global %13 s: volatile ptr<ptr<ptr<i32>>> [storage=static] = addr_of<ptr<ptr<ptr<i32>>>>(%12) [linkage=internal];
 // DEFAULT-NEXT:     global %14 f: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %15 g: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %16 o: i32 [storage=static] [linkage=external];
@@ -229,7 +229,7 @@ int main() {
 // DEFAULT-NEXT:                             write<ptr<ptr<i32>>>(deref(read<ptr<ptr<ptr<i32>>>>(%31)), addr_of<ptr<ptr<i32>>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(6)>(%28), const<i32>(0)))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<ptr<volatile ptr<i32>>>(deref(read<ptr<ptr<volatile ptr<i32>>>>(%13)), null<ptr<volatile ptr<i32>>>);
+// DEFAULT-NEXT:         write<ptr<ptr<i32>>>(deref(read<ptr<ptr<ptr<i32>>>, volatile>(%13)), null<ptr<ptr<i32>>>);
 // DEFAULT-NEXT:         for %40
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i8>(%20, truncate<i8, reason=assign, fits=always>(const<i32>(0)));

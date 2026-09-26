@@ -747,7 +747,7 @@ impl<'a> DeclaratorParser<'a> {
             _ => return Err(DeclaratorError::ExpectedDeclarator),
         };
 
-        for (qualifiers, attributes) in pointers {
+        for (qualifiers, attributes) in pointers.into_iter().rev() {
             declarator = Declarator::Pointer {
                 qualifiers,
                 attributes,

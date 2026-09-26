@@ -188,9 +188,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %33 @open_memstream(%89 __bufloc: ptr<ptr<i8>>, %90 __sizeloc: ptr<u64>) -> ptr<@type0> [linkage=external];
 // DEFAULT-NEXT:     fn %34 @fprintf(%91 __stream: ptr<@type0> [restrict], %92 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %35 @printf(%93 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %36 @asprintf(%94 __ptr: ptr<ptr<i8>>, %95 __fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %37 @getdelim(%96 __lineptr: ptr<ptr<i8>>, %97 __n: ptr<u64> [restrict], %98 __delimiter: i32, %99 __stream: ptr<@type0> [restrict]) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %38 @getline(%100 __lineptr: ptr<ptr<i8>>, %101 __n: ptr<u64> [restrict], %102 __stream: ptr<@type0> [restrict]) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %36 @asprintf(%94 __ptr: ptr<ptr<i8>> [restrict], %95 __fmt: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %37 @getdelim(%96 __lineptr: ptr<ptr<i8>> [restrict], %97 __n: ptr<u64> [restrict], %98 __delimiter: i32, %99 __stream: ptr<@type0> [restrict]) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %38 @getline(%100 __lineptr: ptr<ptr<i8>> [restrict], %101 __n: ptr<u64> [restrict], %102 __stream: ptr<@type0> [restrict]) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %39 @__fbufsize(%103 __fp: ptr<@type0>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %40 @__freading(%104 __fp: ptr<@type0>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %41 @__fwriting(%105 __fp: ptr<@type0>) -> i32 [linkage=external];
@@ -221,7 +221,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %61 stream: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %62 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %135: i32 [synthetic] = read<i32>(%62);
-// DEFAULT-NEXT:         let %136: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%135), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<ptr<i8>>, ptr<const i8>, ...) -> i32>(%36, pointer_cast<ptr<ptr<i8>>, reason=arg>(addr_of<ptr<ptr<i8>>>(%58)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%117)), array_decay<ptr<i8>, length=Some(4)>(%118), const<i32>(23)), const<i32>(6))));
+// DEFAULT-NEXT:         let %136: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%135), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<ptr<i8>>, ptr<const i8>, ...) -> i32>(%36, addr_of<ptr<ptr<i8>>>(%58), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%117)), array_decay<ptr<i8>, length=Some(4)>(%118), const<i32>(23)), const<i32>(6))));
 // DEFAULT-NEXT:         write<i32>(%62, read<i32>(%136));
 // DEFAULT-NEXT:         let %137: i32 [synthetic] = read<i32>(%62);
 // DEFAULT-NEXT:         let %138: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%137), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%46, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%58)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%119))), const<i32>(0))));
@@ -266,13 +266,13 @@ int main(void) {
 // DEFAULT-NEXT:         let %156: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%155), from_bool<i32, reason=promotion>(ne<ptr<@type0>>(read<ptr<@type0>>(%67), null<ptr<@type0>>)));
 // DEFAULT-NEXT:         write<i32>(%68, read<i32>(%156));
 // DEFAULT-NEXT:         let %157: i32 [synthetic] = read<i32>(%68);
-// DEFAULT-NEXT:         let %158: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%157), from_bool<i32, reason=promotion>(eq<i64>(call<i64, signature=fn(ptr<ptr<i8>>, ptr<u64>, i32, ptr<@type0>) -> i64>(%37, pointer_cast<ptr<ptr<i8>>, reason=arg>(addr_of<ptr<ptr<i8>>>(%65)), addr_of<ptr<u64>>(%66), const<i32>(124), read<ptr<@type0>>(%67)), widen<i64, reason=usual_arith>(const<i32>(6)))));
+// DEFAULT-NEXT:         let %158: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%157), from_bool<i32, reason=promotion>(eq<i64>(call<i64, signature=fn(ptr<ptr<i8>>, ptr<u64>, i32, ptr<@type0>) -> i64>(%37, addr_of<ptr<ptr<i8>>>(%65), addr_of<ptr<u64>>(%66), const<i32>(124), read<ptr<@type0>>(%67)), widen<i64, reason=usual_arith>(const<i32>(6)))));
 // DEFAULT-NEXT:         write<i32>(%68, read<i32>(%158));
 // DEFAULT-NEXT:         let %159: i32 [synthetic] = read<i32>(%68);
 // DEFAULT-NEXT:         let %160: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%159), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%46, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%65)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%124))), const<i32>(0))));
 // DEFAULT-NEXT:         write<i32>(%68, read<i32>(%160));
 // DEFAULT-NEXT:         let %161: i32 [synthetic] = read<i32>(%68);
-// DEFAULT-NEXT:         let %162: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%161), from_bool<i32, reason=promotion>(eq<i64>(call<i64, signature=fn(ptr<ptr<i8>>, ptr<u64>, ptr<@type0>) -> i64>(%38, pointer_cast<ptr<ptr<i8>>, reason=arg>(addr_of<ptr<ptr<i8>>>(%65)), addr_of<ptr<u64>>(%66), read<ptr<@type0>>(%67)), widen<i64, reason=usual_arith>(const<i32>(5)))));
+// DEFAULT-NEXT:         let %162: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%161), from_bool<i32, reason=promotion>(eq<i64>(call<i64, signature=fn(ptr<ptr<i8>>, ptr<u64>, ptr<@type0>) -> i64>(%38, addr_of<ptr<ptr<i8>>>(%65), addr_of<ptr<u64>>(%66), read<ptr<@type0>>(%67)), widen<i64, reason=usual_arith>(const<i32>(5)))));
 // DEFAULT-NEXT:         write<i32>(%68, read<i32>(%162));
 // DEFAULT-NEXT:         let %163: i32 [synthetic] = read<i32>(%68);
 // DEFAULT-NEXT:         let %164: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%163), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%46, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%65)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%125))), const<i32>(0))));
