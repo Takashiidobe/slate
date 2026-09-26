@@ -823,16 +823,25 @@ impl<'a> DeclaratorParser<'a> {
             self.pos += 1;
         }
         specifiers.attributes = self.parse_attributes()?;
+        self.parse_specifier_keywords(&mut specifiers)?;
         let gnu_auto_type = self.matches(Token::Ident("__auto_type".into()));
         self.parse_specifier_keywords(&mut specifiers)?;
         let c23_auto_inference = self
             .context
             .is_some_and(|parser| parser.features().auto_type_inference)
             && specifiers.storage == StorageClass::Auto
-            && matches!(self.peek(), Some(Token::Ident(_)));
+            && match self.peek() {
+                Some(Token::Ident(name)) => {
+                    !self.context.is_some_and(|parser| parser.is_typedef(name))
+                }
+                Some(Token::Star | Token::LParen) => true,
+                _ => false,
+            };
         if c23_auto_inference {
             specifiers.storage = StorageClass::None;
         }
+        let inferred =
+            gnu_auto_type || c23_auto_inference || specifiers.ty == TypeSpecifier::Inferred;
         let implicit_int = implicit_int_function
             && self
                 .context
@@ -843,6 +852,7 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::LParen | Token::Semi | Token::Comma | Token::Equal)
             );
         if !implicit_int
+            && !inferred
             && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
@@ -856,8 +866,8 @@ impl<'a> DeclaratorParser<'a> {
                 "a type specifier is required for all declarations".into(),
             ));
         }
-        specifiers.ty = if gnu_auto_type || c23_auto_inference {
-            TypeSpecifier::TargetBuiltin("__auto_type".into())
+        specifiers.ty = if inferred {
+            TypeSpecifier::Inferred
         } else if implicit_int {
             TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int,
@@ -918,10 +928,19 @@ impl<'a> DeclaratorParser<'a> {
                 Keyword::Register => StorageClass::Register,
                 _ => return Ok(()),
             };
-            if specifiers.storage != StorageClass::None {
-                return Err(DeclaratorError::MultipleStorageClasses);
+            let inference = self
+                .context
+                .is_some_and(|parser| parser.features().auto_type_inference);
+            match (specifiers.storage, storage) {
+                (StorageClass::None, _) => specifiers.storage = storage,
+                (StorageClass::Auto, other) | (other, StorageClass::Auto)
+                    if inference && other != StorageClass::Auto =>
+                {
+                    specifiers.storage = other;
+                    specifiers.ty = TypeSpecifier::Inferred;
+                }
+                _ => return Err(DeclaratorError::MultipleStorageClasses),
             }
-            specifiers.storage = storage;
             self.pos += 1;
         }
     }

@@ -141,6 +141,7 @@ TypeSpecifier = "Void" | "Bool"
               | "TypeOf(" TypeOfOperand ")"
               | "TypeOfUnqual(" TypeOfOperand ")"
               | "TargetBuiltin(" string ")"
+              | "Inferred"
               | "Named(" string ")"
               | "Tag(" TagSpecifier ")" ;
 
@@ -170,7 +171,8 @@ TagKind      = "Struct" | "Union" | "Enum" ;
 - `Char { signed: None }` is plain `char`, distinct from `signed char` and
   `unsigned char`.
 - `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type
-  name such as `__builtin_va_list` or `__auto_type`.
+  name such as `__builtin_va_list`. `Inferred` is `__auto_type`, or C23
+  `auto` with no type specifier (alone or beside another storage class).
 - `Definition(TagId(N))` is where a tag body was written; the body is
   `tag[N]`. `Reference` names a tag without a body.
 

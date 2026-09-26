@@ -45,6 +45,7 @@ pub struct TypeResolver {
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
+    pub(super) inferred: Option<QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     pub(super) pragmas: super::pragmas::Pragmas,
@@ -79,6 +80,7 @@ impl TypeResolver {
             references: HashMap::new(),
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
+            inferred: None,
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
@@ -817,6 +819,11 @@ impl TypeResolver {
     fn base(&mut self, specifier: &TypeSpecifier) -> Result<QualType, ResolveError> {
         let kind = match specifier {
             TypeSpecifier::Void => CTypeKind::Void,
+            TypeSpecifier::Inferred => {
+                return self.inferred.take().ok_or(ResolveError::Invalid(
+                    "'auto' type inference is not allowed here",
+                ));
+            }
             TypeSpecifier::Atomic(inner) => {
                 let inner = self.resolve(&inner.specifiers, &inner.declarator)?;
                 CTypeKind::AtomicSpecifier(inner)

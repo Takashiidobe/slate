@@ -145,9 +145,17 @@ impl Checker<'_> {
             let Some(name) = declarator.declarator.name() else {
                 continue;
             };
+            if matches!(declaration.specifiers.ty, TypeSpecifier::Inferred)
+                && let Some(Initializer::Expr(expr)) = &declarator.initializer
+                && let Ok(value) = self.types.assertion_operand_type(expr)
+                && let Ok((base, _)) = self.types.inferred_base(&declarator.declarator, value)
+            {
+                self.types.inferred = Some(base);
+            }
             let resolved = self
                 .types
                 .resolve(&declaration.specifiers, &declarator.declarator);
+            self.types.inferred = None;
             self.types.declare(name, Ordinary::Declared);
             if let Ok(resolved) = resolved {
                 if declaration.specifiers.storage == StorageClass::Typedef {

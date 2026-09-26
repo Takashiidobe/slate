@@ -666,6 +666,13 @@ impl Lowerer {
             }
         }
         let storage_class = item.specifiers.storage;
+        let inferred = matches!(item.specifiers.ty, ast::TypeSpecifier::Inferred);
+        if inferred && self.types.flavor == CompilerFlavor::Gcc && item.declarators.len() > 1 {
+            return Err(ResolveError::Invalid(
+                "'auto' may only be used with a single declarator",
+            ));
+        }
+        let mut deduced = None;
         let mut statements = Vec::new();
         for declarator in &item.declarators {
             let attributes = item
@@ -689,7 +696,33 @@ impl Lowerer {
                 self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
             }
             let start = self.types.definitions.len();
+            let value = if inferred {
+                let binding = self.declaration_id(declarator.id, name)?;
+                let (base, value) = self.infer_type(
+                    &item.specifiers,
+                    &declarator.declarator,
+                    declarator.initializer.as_ref(),
+                    binding,
+                )?;
+                let canonical = self.types.ctypes.canonical(base);
+                let placeholder = canonical
+                    .local_unqualified()
+                    .with(canonical.quals.without(item.specifiers.qualifiers.into()));
+                if deduced.is_some_and(|first| first != placeholder) {
+                    return Err(ResolveError::Invalid(
+                        "'auto' deduced as different types in one declaration",
+                    ));
+                }
+                deduced = Some(placeholder);
+                self.types.inferred = Some(base);
+                Some(value)
+            } else {
+                None
+            };
             let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
+            if let Some(value) = value {
+                self.check_inferred(resolved, value)?;
+            }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
                 self.types.define_alias(name.into(), resolved)?;

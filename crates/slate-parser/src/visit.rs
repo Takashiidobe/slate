@@ -361,6 +361,7 @@ pub fn walk_type_specifier<V: Visitor + ?Sized>(
         | TypeSpecifier::Floating(_)
         | TypeSpecifier::FixedPoint(_)
         | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Inferred
         | TypeSpecifier::Named(_)
         | TypeSpecifier::Tag(_) => Ok(()),
     }

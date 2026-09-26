@@ -403,7 +403,7 @@ impl<'a> Reachability<'a> {
             TypeSpecifier::FixedPoint(_) => {}
             TypeSpecifier::TypeOf(TypeOfOperand::Expression(expr))
             | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(expr)) => self.mark_expr(expr),
-            TypeSpecifier::TargetBuiltin(_) => {}
+            TypeSpecifier::TargetBuiltin(_) | TypeSpecifier::Inferred => {}
         }
     }
 

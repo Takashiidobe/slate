@@ -232,6 +232,7 @@ or functions; those come only from declarators.
 | `TypedefName(String)`                                              | an identifier the parser knows is a typedef name                       |
 | `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                |
 | `TargetBuiltin(String)`                                            | `__builtin_va_list` etc.                                               |
+| `Inferred`                                                         | `__auto_type`, or C23 `auto` standing in for the type                  |
 | `Vector { element, size }`                                         | GNU vector types                                                       |
 
 Decimal floating types (C23 Annex H, and a GNU extension before C23) are

@@ -221,6 +221,37 @@ Function types can declare functions without a new parameter list, and existing
 variable array types retain their captured extents. See
 `tests/fixtures/sema/ir_typeof.c` and `ir_typeof_qualifiers.c`.
 
+**Decided:** `__auto_type` and C23 `auto` (`TypeSpecifier::Inferred`) are
+resolved entirely in sema, through the typeof path, so the IR only ever sees the
+deduced concrete type and never a mark that it was inferred.
+`Lowerer::declaration` types the initializer speculatively (`speculative_type`)
+and hands the deduced base to `TypeResolver` for that one declarator. Everything
+after type resolution runs unchanged. The deduced type is the
+initializer's lvalue-converted type: arrays and functions decay; `const`,
+`volatile` and `restrict` are dropped; qualifiers in the specifiers are added
+back. Clang keeps `_Atomic` and gcc drops it, so that is decided per flavor.
+
+The declarator may be a pattern, as in clang's C++-style deduction:
+`auto *p = cip` deduces `const int`; `const auto *p = ip` adds `const`;
+`auto (*fp)(int) = g` and `auto (*pa)[3] = &arr` must match the initializer
+exactly; a top-level array is an error.
+
+Several declarators must deduce the same type after the specifier qualifiers
+are removed. Under `--flavor=gcc`, only one declarator is allowed, and it must be
+a plain identifier.
+
+Always errors: no initializer; a braced initializer; `typedef`; `void`; and the
+declared name appearing in its own initializer (checked against the name
+bindings before typing). A bit-field initializer is an error, except C23
+`auto` under gcc: gcc deduces its internal bit-field type (`unsigned char:3`),
+which slate cannot represent, so that case is `Unsupported`. `static auto` and
+other storage classes combine with the C23 inference `auto`.
+
+Known gap: slate types `nullptr` as `void *` rather than `nullptr_t`, so
+`auto n = nullptr` deduces `void *`, and `auto *p = nullptr` is accepted where
+clang rejects it. See `tests/fixtures/sema/c23_auto_inference.c` and
+`gcc_auto_inference.c`.
+
 Declarator type derivation visits prefix pointers and arrays before wrapping
 suffix function and array forms, so `int *f(void)` is `fn() -> ptr<i32>` and
 `int *a[3]` is `array<ptr<i32>, 3>`; grouped declarators such as

@@ -13,13 +13,39 @@ void f(void) {
 // SLATE-FILECHECK-STD C17 c17
 // SLATE-FILECHECK-DEFINES C23
 // SLATE-FILECHECK-STD C23 c23
-
 // SLATE-FILECHECK-IR-ERROR C17
-// SLATE-FILECHECK-IR-ERROR C23
 
 // SLATE-FILECHECK-BEGIN C17
 // C17: Error:   × unresolved ordinary name `nullptr`
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
-// C23: Error:   × unsupported in numeric IR lowering: target builtin type
+// C23: module {
+// C23-NEXT:     target "x86_64-unknown-linux-gnu" {
+// C23-NEXT:         endian = little;
+// C23-NEXT:         pointer [size=8, align=8];
+// C23-NEXT:         stack_alignment = 16;
+// C23-NEXT:         long_double = f80;
+// C23-NEXT:         storage bool [size=1, align=1];
+// C23-NEXT:         storage i8, u8 [size=1, align=1];
+// C23-NEXT:         storage i16, u16 [size=2, align=2];
+// C23-NEXT:         storage i32, u32 [size=4, align=4];
+// C23-NEXT:         storage i64, u64 [size=8, align=8];
+// C23-NEXT:         storage i128, u128 [size=16, align=16];
+// C23-NEXT:         storage bf16 [size=2, align=2];
+// C23-NEXT:         storage f16 [size=2, align=2];
+// C23-NEXT:         storage f32 [size=4, align=4];
+// C23-NEXT:         storage f64 [size=8, align=8];
+// C23-NEXT:         storage f80 [size=16, align=16];
+// C23-NEXT:         storage f128 [size=16, align=16];
+// C23-NEXT:         storage d32 [size=4, align=4];
+// C23-NEXT:         storage d64 [size=8, align=8];
+// C23-NEXT:         storage d128 [size=16, align=16];
+// C23-NEXT:     }
+// C23-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// C23-NEXT:         let %1 z: f64 [storage=automatic] = const<f64>(1.0);
+// C23-NEXT:         let %2 p: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// C23-NEXT:         let %3 t: bool [storage=automatic] = const<bool>(true);
+// C23-NEXT:         let %4 u: bool [storage=automatic] = const<bool>(false);
+// C23-NEXT:     }
+// C23-NEXT: }
 // SLATE-FILECHECK-END C23

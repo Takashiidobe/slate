@@ -907,6 +907,7 @@ pub enum TypeSpecifier {
     TypeOfUnqual(TypeOfOperand),
     Imaginary(Box<Self>),
     TargetBuiltin(String),
+    Inferred,
     Named(String),
     Tag(TagSpecifier),
 }

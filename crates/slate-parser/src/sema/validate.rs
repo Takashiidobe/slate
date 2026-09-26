@@ -523,6 +523,7 @@ fn collect_tag_names(ty: &TypeSpecifier, tags: &mut HashSet<String>) {
         | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
         | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Inferred
         | TypeSpecifier::Named(_)
         | TypeSpecifier::Tag(TagSpecifier::Definition(_)) => {}
     }
@@ -570,6 +571,7 @@ fn check_type(
         | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
         | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Inferred
         | TypeSpecifier::Named(_)
         | TypeSpecifier::Tag(_) => {}
     }

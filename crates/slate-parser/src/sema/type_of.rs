@@ -1,11 +1,16 @@
-use super::ctype::{CTypeKind, Extent, QualType};
+use super::ctype::{CTypeKind, Extent, QualType, Qualifiers};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::types::TypeResolver;
 use crate::ast::{
-    DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, TagBody, TagSpecifier,
-    TypeName, TypeOfOperand, TypeSpecifier,
+    DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, Initializer, NodeId,
+    StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand, TypeSpecifier,
 };
+use crate::compiler_args::CompilerFlavor;
+use crate::ir::BindingId;
 use crate::ir::{PlaceKind, Type};
+use crate::visit::{self, Visitor};
+use std::collections::HashMap;
 
 impl Lowerer {
     pub(super) fn resolve_type(
@@ -88,6 +93,7 @@ impl Lowerer {
             | TypeSpecifier::Floating(_)
             | TypeSpecifier::FixedPoint(_)
             | TypeSpecifier::TargetBuiltin(_)
+            | TypeSpecifier::Inferred
             | TypeSpecifier::Named(_)
             | TypeSpecifier::Tag(TagSpecifier::Reference { .. }) => Ok(()),
         }
@@ -106,6 +112,79 @@ impl Lowerer {
                 }
                 self.prepare_declarator(inner)
             }
+        }
+    }
+
+    pub(super) fn infer_type(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+        initializer: Option<&Initializer>,
+        binding: BindingId,
+    ) -> Result<(QualType, QualType), ResolveError> {
+        if specifiers.storage == StorageClass::Typedef {
+            return Err(ResolveError::Invalid("'auto' not allowed in typedef"));
+        }
+        let expr = match initializer {
+            Some(Initializer::Expr(expr)) => expr,
+            Some(Initializer::List(_)) => {
+                return Err(ResolveError::Invalid(
+                    "cannot use 'auto' with an initializer list",
+                ));
+            }
+            None => {
+                return Err(ResolveError::Invalid(
+                    "declaration with deduced type requires an initializer",
+                ));
+            }
+        };
+        if self.types.flavor == CompilerFlavor::Gcc && !plain_identifier(declarator) {
+            return Err(ResolveError::Invalid(
+                "'auto' requires a plain identifier as declarator",
+            ));
+        }
+        let mut own = OwnReference {
+            references: &self.types.references,
+            binding,
+        };
+        if own.visit_expr(expr).is_err() {
+            return Err(ResolveError::Invalid(
+                "variable declared with deduced type cannot appear in its own initializer",
+            ));
+        }
+        let (value, bit_field) = self.speculative_type(expr)?;
+        if bit_field {
+            return Err(if self.types.flavor == CompilerFlavor::Gcc {
+                ResolveError::Unsupported("deduced type of a bit-field initializer")
+            } else {
+                ResolveError::Invalid("cannot use a bit-field as a deduced-type initializer")
+            });
+        }
+        self.types.inferred_base(declarator, value)
+    }
+
+    pub(super) fn check_inferred(
+        &self,
+        declared: QualType,
+        value: QualType,
+    ) -> Result<(), ResolveError> {
+        let ctypes = &self.types.ctypes;
+        let declared = ctypes.canonical(declared).local_unqualified();
+        let value = ctypes.canonical(value).local_unqualified();
+        let added_pointee_quals = match (ctypes.pointee(declared), ctypes.pointee(value)) {
+            (Some(to), Some(from)) => {
+                let (to, from) = (ctypes.canonical(to), ctypes.canonical(from));
+                to.local_unqualified() == from.local_unqualified()
+                    && from.quals.without(to.quals).is_empty()
+            }
+            _ => false,
+        };
+        if declared == value || added_pointee_quals {
+            Ok(())
+        } else {
+            Err(ResolveError::Invalid(
+                "initializer does not match the deduced declarator",
+            ))
         }
     }
 
@@ -163,5 +242,82 @@ impl Lowerer {
             }),
             _ => resolved,
         }
+    }
+}
+
+impl TypeResolver {
+    pub(super) fn inferred_base(
+        &mut self,
+        declarator: &Declarator,
+        value: QualType,
+    ) -> Result<(QualType, QualType), ResolveError> {
+        let atomic = self.flavor != CompilerFlavor::Gcc
+            && self.ctypes.element(value).is_none()
+            && self.ctypes.quals(value).is_atomic;
+        let converted = self.ctypes.lvalue_conversion(value);
+        let value = if atomic {
+            converted.with(Qualifiers::ATOMIC)
+        } else {
+            converted
+        };
+        Ok((self.pattern_base(declarator, value)?, value))
+    }
+
+    fn pattern_base(
+        &self,
+        declarator: &Declarator,
+        target: QualType,
+    ) -> Result<QualType, ResolveError> {
+        let mismatch = ResolveError::Invalid("initializer does not match the deduced declarator");
+        match declarator {
+            Declarator::Name(_) | Declarator::Abstract => Ok(target),
+            Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+                self.pattern_base(inner, target)
+            }
+            Declarator::Pointer { inner, .. } => {
+                let outer = self.pattern_base(inner, target)?;
+                self.ctypes.pointee(outer).ok_or(mismatch)
+            }
+            Declarator::Array { inner, .. } => {
+                let outer = self.pattern_base(inner, target)?;
+                self.ctypes
+                    .element(outer)
+                    .map(|(element, _)| element)
+                    .ok_or(mismatch)
+            }
+            Declarator::Function { inner, .. } => {
+                let outer = self.pattern_base(inner, target)?;
+                self.ctypes
+                    .function_parts(outer)
+                    .map(|(ret, ..)| ret)
+                    .ok_or(mismatch)
+            }
+        }
+    }
+}
+
+fn plain_identifier(declarator: &Declarator) -> bool {
+    match declarator {
+        Declarator::Name(_) => true,
+        Declarator::Attributed { inner, .. } => plain_identifier(inner),
+        _ => false,
+    }
+}
+
+struct OwnReference<'a> {
+    references: &'a HashMap<NodeId, BindingId>,
+    binding: BindingId,
+}
+
+impl Visitor for OwnReference<'_> {
+    type Error = ();
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), ()> {
+        if matches!(expr.value, ExprKind::Identifier(_))
+            && self.references.get(&expr.id) == Some(&self.binding)
+        {
+            return Err(());
+        }
+        visit::walk_expr(self, expr)
     }
 }
