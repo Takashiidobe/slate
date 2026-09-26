@@ -3,6 +3,7 @@ use crate::ast::{
     InitializerItem, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId, TagSpecifier,
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::standard_features::StandardFeatures;
 use crate::visit::Visitor;
@@ -50,6 +51,7 @@ struct Resolver {
     display_counts: HashMap<String, u32>,
     unit_tags: HashMap<AstTagId, Span<crate::ast::TagDefinition>>,
     linked: HashMap<String, Entry>,
+    flavor: CompilerFlavor,
     next_id: u32,
 }
 
@@ -74,6 +76,7 @@ impl Resolver {
                 .map(|tag| (tag.value.id, tag.clone()))
                 .collect(),
             linked: HashMap::new(),
+            flavor: unit.flavor,
             next_id: 0,
         }
     }
@@ -338,10 +341,22 @@ impl Resolver {
             ExprKind::Call { callee, arguments } => {
                 let implicit_builtin = match &callee.value {
                     ExprKind::Identifier(name) if self.lookup_ordinary(name).is_none() => {
-                        super::builtins::clang_builtin(name)
+                        super::builtins::clang_builtin(name, self.flavor)
                     }
                     _ => None,
                 };
+                // GCC's `__builtin_exit` calls whatever `exit` is declared
+                // in scope, so bind the prefixed spelling to it.
+                if let (Some(builtin), ExprKind::Identifier(name)) =
+                    (implicit_builtin, &callee.value)
+                    && builtin.name != name
+                    && let Some(entry) = self
+                        .lookup_ordinary(builtin.name)
+                        .filter(|entry| entry.kind == BindingKind::Function)
+                        .cloned()
+                {
+                    self.push_reference(builtin.name, entry, callee);
+                }
                 if implicit_builtin.is_none()
                     && !super::expression::specially_lowered(callee, arguments)
                 {

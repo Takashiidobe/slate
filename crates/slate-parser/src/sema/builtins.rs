@@ -1,5 +1,6 @@
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
 use super::types::TypeResolver;
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::{ArithOp, CompareOp, FloatClassTest, MemoryEffects};
 use crate::target_info::TargetInfo;
 
@@ -246,7 +247,19 @@ fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
     })
 }
 
-pub(super) fn clang_builtin(name: &str) -> Option<&'static ClangBuiltin> {
+/// Looks up the builtin a call to `name` names under `flavor`. GCC also
+/// accepts a `__builtin_` prefix on any library builtin (`__builtin_exit`
+/// calls `exit`), where Clang only has the prefixed aliases its registry
+/// spells out.
+pub(super) fn clang_builtin(name: &str, flavor: CompilerFlavor) -> Option<&'static ClangBuiltin> {
+    registered_builtin(name).or_else(|| match flavor {
+        CompilerFlavor::Gcc => registered_builtin(name.strip_prefix("__builtin_")?)
+            .filter(|builtin| builtin.kind == ClangBuiltinKind::Library),
+        CompilerFlavor::Clang | CompilerFlavor::Msvc => None,
+    })
+}
+
+fn registered_builtin(name: &str) -> Option<&'static ClangBuiltin> {
     CLANG_BUILTINS
         .binary_search_by_key(&name, |builtin| builtin.name)
         .ok()

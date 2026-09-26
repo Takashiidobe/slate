@@ -123,7 +123,7 @@ impl Lowerer {
             .functions
             .iter()
             .filter_map(|function| {
-                let builtin = super::builtins::clang_builtin(&function.name)?;
+                let builtin = super::builtins::clang_builtin(&function.name, self.types.flavor)?;
                 Some((function.id, function.value.id, builtin))
             })
             .collect();

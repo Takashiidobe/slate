@@ -113,7 +113,7 @@ impl Lowerer {
         let ExprKind::Identifier(name) = &callee.value else {
             return None;
         };
-        let builtin = super::builtins::clang_builtin(name)?;
+        let builtin = super::builtins::clang_builtin(name, self.types.flavor)?;
         let Some(&binding) = self.types.references.get(&callee.id) else {
             return Some((builtin, None));
         };
@@ -126,7 +126,9 @@ impl Lowerer {
         {
             return Some((builtin, Some(binding)));
         }
-        None
+        // A prefixed spelling (`__builtin_exit`) names the builtin even
+        // when the `exit` in scope was declared with another type.
+        (builtin.name != name).then_some((builtin, None))
     }
 
     pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
