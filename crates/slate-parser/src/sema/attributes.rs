@@ -34,10 +34,43 @@ pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
         (Subject::Typedef, _) if matches!(attribute, Attribute::AlignAs(_)) => {
             Use::Invalid("'_Alignas' applied to a typedef")
         }
-        (Subject::Parameter, _) if alignment => Use::Layout,
-        (Subject::Parameter, Use::Symbol) => Use::Unsupported("symbol attribute on a parameter"),
-        (Subject::Parameter, Use::Layout) => Use::Unsupported("layout attribute on a parameter"),
+        (Subject::Parameter, _) if alignment || attribute.is_type_attribute() => Use::Layout,
+        (Subject::Parameter, Use::Symbol | Use::Layout) => parameter_use(attribute),
         (_, general) => general,
+    }
+}
+
+fn parameter_use(attribute: &Attribute) -> Use {
+    let spelling = match attribute {
+        Attribute::Section(_) => {
+            return Use::Invalid(
+                "'section' attribute only applies to functions and global variables",
+            );
+        }
+        Attribute::Alias(_) => {
+            return Use::Invalid(
+                "'alias' attribute only applies to functions and global variables",
+            );
+        }
+        Attribute::TlsModel(_) => {
+            return Use::Invalid("'tls_model' attribute only applies to thread-local variables");
+        }
+        Attribute::ThreadLocal => {
+            return Use::Invalid("'__declspec(thread)' variables must have global storage");
+        }
+        Attribute::Visibility(_) => "visibility",
+        Attribute::Weak => "weak",
+        Attribute::WeakRef(_) => "weakref",
+        Attribute::DllImport => "dllimport",
+        Attribute::DllExport => "dllexport",
+        Attribute::SelectAny => "selectany",
+        Attribute::Common => "common",
+        Attribute::NoCommon => "nocommon",
+        _ => return Use::Unsupported("attribute on a parameter"),
+    };
+    Use::Inapplicable {
+        spelling,
+        applies_to: None,
     }
 }
 
