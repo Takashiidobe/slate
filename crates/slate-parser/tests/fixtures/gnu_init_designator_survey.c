@@ -57,5 +57,5 @@ int main(void) {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: incomplete field type
+// DEFAULT: Error:   × invalid in this context: conversion between a struct or union and an
 // SLATE-FILECHECK-END DEFAULT

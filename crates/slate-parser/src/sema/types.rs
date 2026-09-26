@@ -1950,7 +1950,7 @@ impl TypeResolver {
                 Type::Array {
                     element,
                     length: None,
-                } if kind == TagKind::Struct && position + 1 == fields.len() => StorageLayout {
+                } if kind == TagKind::Union || position + 1 == fields.len() => StorageLayout {
                     size_bytes: 0,
                     alignment_bytes: self
                         .qualified_storage((**element).clone(), field.access.atomic)?

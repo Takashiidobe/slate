@@ -1579,13 +1579,15 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   lowers to `aggregate<complex<T>>(index0 = re, index1 = im)`, each converted
   to the component type. `{x}` and a bare scalar stay `real_to_complex`.
   Brace elision into a complex component pair is not modeled.
-- A trailing flexible array member has size 0 and the element's alignment in
+- A trailing flexible array member, or (GNU) an incomplete array member at any
+  position in a union, has size 0 and the element's alignment in
   the record layout. Omitted, it is skipped by `zero_fill` and absent from the
   members. Initialized (`{1, {2, 3}}`, elided `{1, 2, 3}`, or `.d = {..}`),
-  it appears as a normal `Field(last)` member whose value has a sized
+  it appears as a normal `Field` member whose value has a sized
   `array<T, N>` type. The variable and aggregate keep the declared record
-  type; the object's extent is the record size plus that member's size, so
-  consumers read it from the initializer rather than the type.
+  type; the object's extent is the record size plus that member's size for a
+  struct, or the larger of the two for a union, so consumers read it from the
+  initializer rather than the type.
 
 These facts support Rust storage and initialization choices; ownership,
 escape, and definite-initialization analysis can derive additional facts
