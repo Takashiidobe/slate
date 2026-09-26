@@ -102,31 +102,11 @@ impl Parser {
         let parameters = names
             .iter()
             .map(|name| match declared.remove(name) {
-                Some((written, declarator, span)) => {
-                    let promoted = if declarator.is_derived() {
-                        None
-                    } else {
-                        default_argument_promotion(&written.ty)
-                    };
-                    let parameter = match promoted {
-                        Some(ty) => ParameterDeclarationKind {
-                            specifiers: DeclarationSpecifiers {
-                                ty,
-                                ..written.clone()
-                            },
-                            declarator,
-                            declared_specifiers: Some(written),
-                            attributes: Vec::new(),
-                        },
-                        None => ParameterDeclarationKind {
-                            specifiers: written,
-                            declarator,
-                            declared_specifiers: None,
-                            attributes: Vec::new(),
-                        },
-                    };
-                    span.with_value(parameter)
-                }
+                Some((specifiers, declarator, span)) => span.with_value(ParameterDeclarationKind {
+                    specifiers,
+                    declarator,
+                    attributes: Vec::new(),
+                }),
                 None => {
                     let span = tokens
                         .iter()
@@ -142,7 +122,6 @@ impl Parser {
                             },
                         )),
                         declarator: Declarator::Name(name.clone()),
-                        declared_specifiers: None,
                         attributes: Vec::new(),
                     })
                 }
@@ -626,25 +605,5 @@ fn shadow_parameter_names(parser: &Parser, parameters: Option<&ParameterList>) {
                 parser.names.bind(name, false);
             }
         }
-    }
-}
-
-fn default_argument_promotion(ty: &TypeSpecifier) -> Option<TypeSpecifier> {
-    match ty {
-        TypeSpecifier::Bool
-        | TypeSpecifier::Integer(
-            IntegerType::Char { .. }
-            | IntegerType::Ranked {
-                rank: IntegerRank::Short,
-                ..
-            },
-        ) => Some(TypeSpecifier::Integer(IntegerType::Ranked {
-            rank: IntegerRank::Int,
-            signed: true,
-        })),
-        TypeSpecifier::Floating(FloatingType::Float) => {
-            Some(TypeSpecifier::Floating(FloatingType::Double))
-        }
-        _ => None,
     }
 }

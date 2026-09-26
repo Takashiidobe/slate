@@ -41,12 +41,13 @@ void baz (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         addr_of<ptr<i32>>(%1);
+// DEFAULT-NEXT:     fn %0 @foo(%4 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %1 c: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%4));
+// DEFAULT-NEXT:         addr_of<ptr<i8>>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, call<i32, signature=fn() -> i32>(%2));
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%0, call<i32, signature=fn() -> i32>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

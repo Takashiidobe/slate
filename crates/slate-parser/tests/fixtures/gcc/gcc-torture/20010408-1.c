@@ -130,7 +130,7 @@ char *mode, *s;
 // DEFAULT-NEXT:                 switch %30 widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%14))))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         case %30 const<i32>(42):
-// DEFAULT-NEXT:                             return call<i32, signature=fn(ptr<@type1>, ptr<@type1>, ptr<i8>, ptr<i8>) -> i32>(%10, read<ptr<@type1>>(%11), read<ptr<@type1>>(%12), read<ptr<i8>>(%13), array_decay<ptr<i8>, length=Some(3)>(%31));
+// DEFAULT-NEXT:                             return call<i32, signature=fn(unprototyped) -> i32>(%10, read<ptr<@type1>>(%11), read<ptr<@type1>>(%12), read<ptr<i8>>(%13), array_decay<ptr<i8>, length=Some(3)>(%31));
 // DEFAULT-NEXT:                         case %30 const<i32>(35):
 // DEFAULT-NEXT:                             if ne<ptr<@type1>>(read<ptr<@type1>>(%11), null<ptr<@type1>>)
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<@type1>, ptr<@type1>, ptr<i8>, ptr<@type0>) -> i32>(%9, read<ptr<@type1>>(%11), read<ptr<@type1>>(%12), read<ptr<i8>>(%13), int_to_ptr<ptr<@type0>, reason=explicit>(const<i32>(1)));

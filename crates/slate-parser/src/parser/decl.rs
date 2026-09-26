@@ -410,10 +410,7 @@ impl Parser {
                 let (parameters, end) =
                     self.parse_kr_parameter_declarations(tokens, parser.pos, &names)?;
                 if let Some(list) = first.value.declarator.function_parameters_mut() {
-                    *list = ParameterList::Prototype {
-                        parameters,
-                        variadic: false,
-                    };
+                    *list = ParameterList::IdentifierList { parameters };
                 }
                 parser.pos = end;
             }

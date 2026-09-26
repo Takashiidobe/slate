@@ -1,7 +1,7 @@
 use crate::ast::{
     ArraySize, Decl, DeclKind, Declaration, Declarator, EnumItemKind, Expr, ExprKind, Initializer,
-    InitializerItem, ParameterList, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
-    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    InitializerItem, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId, TagSpecifier,
+    TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::standard_features::StandardFeatures;
@@ -430,7 +430,8 @@ impl Resolver {
             }
             Declarator::Function { inner, parameters } => {
                 self.visit_declarator(inner)?;
-                if let ParameterList::Prototype { parameters, .. } = parameters {
+                let parameters = parameters.parameters();
+                if !parameters.is_empty() {
                     self.push_scope();
                     let result = parameters.iter().try_for_each(|parameter| {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;

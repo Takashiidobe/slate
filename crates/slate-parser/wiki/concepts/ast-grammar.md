@@ -194,11 +194,11 @@ ArraySize  = "Unspecified" | "Expression(" expr ")" | "Star" ;
 
 ParameterList            = Prototype { parameters: vec<span<ParameterDeclarationKind>>,
                                        variadic?: true }
+                         | IdentifierList { parameters: vec<span<ParameterDeclarationKind>> }
                          | "Void" | "Empty" ;
 ParameterDeclarationKind = ParameterDeclarationKind {
                              specifiers: DeclarationSpecifiers,
                              declarator: Declarator,
-                             declared_specifiers?: Some(DeclarationSpecifiers),
                              attributes?: vec<span<Attribute>> } ;
 ```
 
@@ -208,8 +208,8 @@ ParameterDeclarationKind = ParameterDeclarationKind {
   `Function { inner: Grouped(Pointer { inner: Name("fp") }) }`. `Grouped` is
   a parenthesized declarator.
 - `Void` is `(void)`; `Empty` is `()`, an unprototyped list.
-- `declared_specifiers` is present only on a parameter of a rewritten K&R
-  definition whose `specifiers` were promoted; it keeps the type as written.
+- `IdentifierList` is a K&R definition; its parameters keep the declared
+  types, and promotion happens in sema.
 
 ## Tags
 

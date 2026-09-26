@@ -73,22 +73,16 @@ impl Lowerer {
         let mut lowered = Vec::new();
         for (index, argument) in arguments.iter().enumerate() {
             let value = self.expr(argument)?;
-            let value = if index < params.len() && *prototyped {
-                value
+            let (value, to, reason) = if let Some(to) = params.get(index) {
+                let to = self.types.ctypes.adjust_parameter(*to);
+                (value, to, ConversionReason::Arg)
             } else {
-                self.enum_operand(value)
-            };
-            let to = if let Some(to) = params.get(index).filter(|_| *prototyped) {
-                self.types.ctypes.adjust_parameter(*to)
-            } else {
-                self.types
+                let value = self.enum_operand(value);
+                let to = self
+                    .types
                     .ctypes
-                    .default_promotion(value.c, &self.context.target)
-            };
-            let reason = if index < params.len() && *prototyped {
-                ConversionReason::Arg
-            } else {
-                ConversionReason::Vararg
+                    .default_promotion(value.c, &self.context.target);
+                (value, to, ConversionReason::Vararg)
             };
             lowered.push(self.convert_expr(argument, value, to, reason)?.value);
         }
@@ -877,6 +871,29 @@ impl Lowerer {
 
     pub(super) fn enum_operand(&self, operand: Operand) -> Operand {
         self.types.enum_operand(operand)
+    }
+
+    fn warn_arguments_without_prototype(
+        &mut self,
+        e: &Expr,
+        callee: &Expr,
+        direct: bool,
+        signature: QualType,
+    ) {
+        let Some((_, params, _, false)) = self.types.ctypes.function_parts(signature) else {
+            return;
+        };
+        if !params.is_empty() {
+            return;
+        }
+        let target = match &callee.value {
+            ExprKind::Identifier(name) if direct => format!("'{name}'"),
+            _ => "a function".to_owned(),
+        };
+        let message = format!(
+            "passing arguments to {target} without a prototype is deprecated in all versions of C and is not supported in C23"
+        );
+        self.warn(Warning::DeprecatedNonPrototype, &message, e);
     }
 
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
@@ -2434,8 +2451,12 @@ impl Lowerer {
                 self.va_builtin(e, builtin, arguments)
             }
             ExprKind::Call { callee, arguments } => {
-                let (callee, signature) = self.callee(callee)?;
-                self.call(e, callee, signature, arguments)
+                let (lowered, signature) = self.callee(callee)?;
+                if !arguments.is_empty() {
+                    let direct = matches!(lowered, Callee::Direct(_));
+                    self.warn_arguments_without_prototype(e, callee, direct, signature);
+                }
+                self.call(e, lowered, signature, arguments)
             }
             ExprKind::IntegerLiteral(_) | ExprKind::FloatLiteral(_) | ExprKind::BoolLiteral(_) => {
                 self.types.literal(&self.context, e)

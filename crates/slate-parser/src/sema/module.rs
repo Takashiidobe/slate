@@ -3,6 +3,7 @@ use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
+use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement, default_contraction};
 use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
@@ -123,6 +124,13 @@ pub fn resolve_module(
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
+                if matches!(params, ParameterList::IdentifierList { .. }) {
+                    lower.warn(
+                        Warning::DeprecatedNonPrototype,
+                        "a function definition without a prototype is deprecated in all versions of C and is not supported in C23",
+                        declaration,
+                    );
+                }
                 let mut prologue = Vec::new();
                 lower.in_function = true;
                 lower.function_name = Some(name.to_string());
@@ -559,6 +567,23 @@ impl Lowerer {
             self.module.functions.push(function);
             return Ok(());
         };
+        let existing = &self.module.functions[index];
+        let parameterized = matches!(&function.value.parameters, Parameters::Prototype { fixed, .. } if !fixed.is_empty());
+        if parameterized
+            && existing.value.body.is_none()
+            && matches!(existing.value.parameters, Parameters::Unprototyped)
+        {
+            let subsequent = if function.value.body.is_some() {
+                "definition"
+            } else {
+                "declaration"
+            };
+            let message = format!(
+                "a function declaration without a prototype is deprecated in all versions of C and is treated as a zero-parameter prototype in C23, conflicting with a subsequent {subsequent}"
+            );
+            let anchor = existing.derive(());
+            self.warn(Warning::DeprecatedNonPrototype, &message, &anchor);
+        }
         let existing = &mut self.module.functions[index];
         let function = function.value;
         let replaces = function.body.is_some()
@@ -636,6 +661,66 @@ impl Lowerer {
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
+            }
+            let promoted = matches!(params, ParameterList::IdentifierList { .. })
+                .then(|| self.types.promoted_parameter(resolved))
+                .filter(|promoted| {
+                    self.types.ctypes.canonical(*promoted).local_unqualified()
+                        != self.types.ctypes.canonical(adjusted).local_unqualified()
+                });
+            if let (Some(promoted), Some(prologue)) = (promoted, prologue.as_deref_mut()) {
+                let slot = self.fresh();
+                self.types.entities.declare(slot, promoted, false);
+                let ty = self.types.ir_type(promoted);
+                let passed = Operand {
+                    value: Value {
+                        ty: ty.clone(),
+                        node: parameter.derive(ValueKind::Read {
+                            place: Place {
+                                ty: ty.clone(),
+                                kind: PlaceKind::Binding(slot),
+                                access: Access::default(),
+                            },
+                            ordering: None,
+                        }),
+                    },
+                    c: promoted,
+                };
+                let unqualified = self.types.ctypes.unqualified(adjusted);
+                let initializer = self.convert(passed, unqualified, ConversionReason::Arg)?;
+                let local = parameter.derive(Statement::Let(Variable {
+                    id,
+                    name: name.unwrap_or_default().into(),
+                    ty: shape.ty,
+                    storage: StorageDuration::Automatic,
+                    restrict: shape.qualifiers.is_restrict,
+                    is_const: shape.qualifiers.is_const,
+                    access: Access {
+                        volatile: shape.qualifiers.is_volatile,
+                        atomic: shape.qualifiers.is_atomic,
+                    },
+                    constexpr: false,
+                    alignment: None,
+                    cleanup: None,
+                    register: None,
+                    initializer: Some(initializer.value),
+                }));
+                self.module
+                    .annotate(&local, self.types.render(resolved).entries());
+                prologue.push(local);
+                let slot = parameter.derive(Parameter {
+                    id: slot,
+                    name: name.map(str::to_owned),
+                    ty,
+                    restrict: false,
+                    is_const: false,
+                    access: Access::default(),
+                    array: None,
+                });
+                self.module
+                    .annotate(&slot, self.types.render(promoted).entries());
+                fixed.push(slot);
+                continue;
             }
             let lowered = parameter.derive(Parameter {
                 id,

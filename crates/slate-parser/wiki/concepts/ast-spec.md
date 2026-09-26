@@ -301,30 +301,28 @@ ArraySize = Unspecified | Expr(Expr) | Star      // [], [n], [*]
 
 ParameterList =
     | Prototype { parameters: Vec<ParameterDeclaration>, variadic: bool }
+    | IdentifierList { parameters: Vec<ParameterDeclaration> }   // K&R definition
     | Void                                        // (void)
     | Empty                                       // () — meaning depends on standard, decided by sema
 
 ParameterDeclaration {
     specifiers,
     declarator: Declarator,
-    declared_specifiers,   // Some(written specifiers) when a K&R rewrite promoted
-                            // `specifiers` (default argument promotion); None otherwise
     attributes,
     provenance,
 }
 ```
 
-K&R definitions (`f(a, b) int a; char b; { ... }`) are rewritten into
-`ParameterList::Prototype` at parse time; there is no separate K&R
-representation. Callers of an unprototyped function apply default argument
-promotions (small integers to `int`, `float` to `double`), so a rewritten
-parameter's `specifiers` is the promoted, ABI-visible type; `declared_specifiers`
-recovers the type as written, for the function-body local. An
-implicit-int parameter (no declaration at all) is already `int`, so
-`declared_specifiers` stays `None`. C23 removed identifier lists, so
+A K&R definition (`f(a, b) int a; char b; { ... }`) is an `IdentifierList`
+in identifier order, each parameter carrying the type as declared in the
+declaration list (an undeclared identifier is implicit `int`). The parser does
+no promotion: sema gives the function an unprototyped type whose parameters are
+the default-promoted types (clang's `int ()` with known definition parameters),
+passes each promoted type in the ABI slot, and binds the body's name to a local
+of the declared type converted from the slot. C23 removed identifier lists, so
 `StandardFeatures::identifier_list_definitions` is `Rejected` there and the
-parser reports an error instead of rewriting; fixtures using K&R pin
-`SLATE-FILECHECK-STD DEFAULT c17` because the default standard is C23.
+parser reports an error; fixtures using K&R pin `SLATE-FILECHECK-STD DEFAULT
+c17` because the default standard is C23.
 
 ### `TypeName`
 

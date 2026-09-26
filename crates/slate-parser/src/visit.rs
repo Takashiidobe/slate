@@ -390,15 +390,10 @@ pub fn walk_declarator<V: Visitor + ?Sized>(
         }
         Declarator::Function { inner, parameters } => {
             visitor.visit_declarator(inner)?;
-            if let ParameterList::Prototype { parameters, .. } = parameters {
-                for parameter in parameters {
-                    walk_specifiers(visitor, &parameter.specifiers)?;
-                    visitor.visit_declarator(&parameter.declarator)?;
-                    walk_attributes(visitor, &parameter.attributes)?;
-                    if let Some(specifiers) = &parameter.declared_specifiers {
-                        walk_specifiers(visitor, specifiers)?;
-                    }
-                }
+            for parameter in parameters.parameters() {
+                walk_specifiers(visitor, &parameter.specifiers)?;
+                visitor.visit_declarator(&parameter.declarator)?;
+                walk_attributes(visitor, &parameter.attributes)?;
             }
             Ok(())
         }

@@ -111,8 +111,19 @@ impl CTypes {
             }
             (false, false) => true,
             _ => {
-                let (params, variadic) = if aproto { (ap, av) } else { (bp, bv) };
-                !variadic && params.iter().all(|param| self.promotes_to_itself(*param))
+                let (params, variadic, identifiers) =
+                    if aproto { (ap, av, bp) } else { (bp, bv, ap) };
+                if variadic {
+                    false
+                } else if identifiers.is_empty() {
+                    params.iter().all(|param| self.promotes_to_itself(*param))
+                } else {
+                    params.len() == identifiers.len()
+                        && params
+                            .iter()
+                            .zip(identifiers)
+                            .all(|(param, promoted)| self.compatible_unqualified(*param, *promoted))
+                }
             }
         }
     }
@@ -194,7 +205,7 @@ impl CTypes {
             }
             (true, false) => (ap, av, true),
             (false, true) => (bp, bv, true),
-            (false, false) => (Vec::new(), false, false),
+            (false, false) => (if ap.is_empty() { bp } else { ap }, false, false),
         };
         Some(self.qual(CTypeKind::Function {
             ret,

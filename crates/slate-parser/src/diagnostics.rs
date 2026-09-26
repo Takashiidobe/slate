@@ -18,10 +18,11 @@ pub enum Warning {
     ConflictingTypes,
     ParameterAlignment,
     IgnoredAttributes,
+    DeprecatedNonPrototype,
 }
 
 impl Warning {
-    pub const ALL: [Self; 14] = [
+    pub const ALL: [Self; 15] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -36,6 +37,7 @@ impl Warning {
         Self::ConflictingTypes,
         Self::ParameterAlignment,
         Self::IgnoredAttributes,
+        Self::DeprecatedNonPrototype,
     ];
 
     pub fn name(self) -> &'static str {
@@ -56,6 +58,7 @@ impl Warning {
             Self::ConflictingTypes => "conflicting-types",
             Self::ParameterAlignment => "parameter-alignment",
             Self::IgnoredAttributes => "ignored-attributes",
+            Self::DeprecatedNonPrototype => "deprecated-non-prototype",
         }
     }
 
@@ -81,6 +84,9 @@ impl Warning {
     ) -> DefaultSeverity {
         match self {
             Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
+            Self::DeprecatedNonPrototype if flavor != CompilerFlavor::Clang => {
+                DefaultSeverity::Ignored
+            }
             Self::C99Compat if standard.stdc_version() >= Some(199901) => DefaultSeverity::Ignored,
             Self::IncompatiblePointerTypes | Self::IntConversion => match flavor {
                 CompilerFlavor::Msvc => DefaultSeverity::Warning,

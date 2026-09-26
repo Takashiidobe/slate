@@ -1299,12 +1299,20 @@ impl TypeResolver {
                         if this.ctypes.is_void(resolved) {
                             return Err(ResolveError::Unsupported("void parameter"));
                         }
-                        params.push(resolved);
+                        params.push(match parameters {
+                            ParameterList::IdentifierList { .. } => {
+                                this.promoted_parameter(resolved)
+                            }
+                            _ => resolved,
+                        });
                     }
                     Ok(params)
                 })?;
-                let prototyped = self.features.empty_parens_are_prototype
-                    || !matches!(parameters, ParameterList::Empty);
+                let prototyped = match parameters {
+                    ParameterList::IdentifierList { .. } => false,
+                    ParameterList::Empty => self.features.empty_parens_are_prototype,
+                    ParameterList::Prototype { .. } | ParameterList::Void => true,
+                };
                 let (core, ret) = self.apply_pointers(inner, q);
                 let q = self.ctypes.qual(CTypeKind::Function {
                     ret,
@@ -1326,6 +1334,12 @@ impl TypeResolver {
         let resolved = self.resolve(specifiers, declarator);
         self.prototype_scope = enclosing;
         resolved
+    }
+
+    pub(super) fn promoted_parameter(&mut self, declared: QualType) -> QualType {
+        let adjusted = self.ctypes.adjust_parameter(declared);
+        let promoted = self.ctypes.default_promotion(adjusted, &self.target);
+        self.ctypes.unqualified(promoted)
     }
 
     pub(super) fn parameter_shape(
@@ -2597,6 +2611,10 @@ fn resolve_parameters(
     for parameter in signature.parameters() {
         let start = resolver.definitions.len();
         let resolved = resolver.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
+        let resolved = match signature {
+            ParameterList::IdentifierList { .. } => resolver.promoted_parameter(resolved),
+            _ => resolved,
+        };
         let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
         let shape = resolver.parameter_shape(resolved, declared_array)?;
         for definition in &resolver.definitions[start..] {

@@ -1311,6 +1311,9 @@ pub enum ParameterList {
         #[debug(skip_if = is_false)]
         variadic: bool,
     },
+    IdentifierList {
+        parameters: Vec<ParameterDeclaration>,
+    },
     Void,
     Empty,
 }
@@ -1318,7 +1321,7 @@ pub enum ParameterList {
 impl ParameterList {
     pub fn parameters(&self) -> &[ParameterDeclaration] {
         match self {
-            Self::Prototype { parameters, .. } => parameters,
+            Self::Prototype { parameters, .. } | Self::IdentifierList { parameters } => parameters,
             Self::Void | Self::Empty => &[],
         }
     }
@@ -1334,8 +1337,6 @@ pub type ParameterDeclaration = Span<ParameterDeclarationKind>;
 pub struct ParameterDeclarationKind {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
-    #[debug(skip_if = Option::is_none)]
-    pub declared_specifiers: Option<DeclarationSpecifiers>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Span<Attribute>>,
 }

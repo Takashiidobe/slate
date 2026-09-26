@@ -1085,7 +1085,6 @@ impl<'a> DeclaratorParser<'a> {
                 ParameterDeclarationKind {
                     specifiers,
                     declarator,
-                    declared_specifiers: None,
                     attributes,
                 },
                 &self.tokens[parameter_start..self.pos],
