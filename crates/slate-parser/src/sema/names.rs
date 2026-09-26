@@ -477,6 +477,7 @@ impl Resolver {
             TypeSpecifier::Integer(crate::ast::IntegerType::BitInt { width, .. }) => {
                 self.visit_expr(width)
             }
+            TypeSpecifier::Mode(mode) => self.type_specifier(&mode.base, span),
             TypeSpecifier::Vector(vector) => {
                 self.type_specifier(&vector.element, span)?;
                 match &vector.size {

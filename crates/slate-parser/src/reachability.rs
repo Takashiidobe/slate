@@ -392,6 +392,7 @@ impl<'a> Reachability<'a> {
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self.mark_tag(*id),
             TypeSpecifier::Atomic(ty) => self.mark_type_name(ty),
             TypeSpecifier::Vector(vector) => self.mark_type(&vector.element),
+            TypeSpecifier::Mode(mode) => self.mark_type(&mode.base),
             TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
             | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => self.mark_type_name(ty),
             TypeSpecifier::Imaginary(ty) => self.mark_type(ty),

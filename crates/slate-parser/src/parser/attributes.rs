@@ -509,7 +509,7 @@ fn parse_attribute_value(
     }
 }
 
-pub(crate) fn apply_vector_attributes(
+pub(crate) fn apply_type_attributes(
     mut ty: TypeSpecifier,
     attributes: &[Span<Attribute>],
 ) -> TypeSpecifier {
@@ -517,6 +517,13 @@ pub(crate) fn apply_vector_attributes(
         let size = match &attribute.value {
             Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
             Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
+            Attribute::Mode(mode) => {
+                ty = TypeSpecifier::Mode(ModeType {
+                    base: Box::new(ty),
+                    mode: mode.clone(),
+                });
+                continue;
+            }
             _ => continue,
         };
         ty = TypeSpecifier::Vector(VectorType {

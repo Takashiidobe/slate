@@ -261,6 +261,7 @@ fn extension_warning(
             Warning::LongLong,
             "'long long' is an extension when C99 mode is not enabled",
         )),
+        TypeSpecifier::Mode(mode) => extension_warning(&mode.base, features),
         TypeSpecifier::Integer(IntegerType::BitInt { .. })
             if features.bit_int_type != Availability::Standard =>
         {
@@ -511,6 +512,7 @@ fn collect_tag_names(ty: &TypeSpecifier, tags: &mut HashSet<String>) {
         TypeSpecifier::Complex(ty) | TypeSpecifier::Imaginary(ty) => collect_tag_names(ty, tags),
         TypeSpecifier::Atomic(ty) => collect_tag_names(&ty.specifiers.ty, tags),
         TypeSpecifier::Vector(vector) => collect_tag_names(&vector.element, tags),
+        TypeSpecifier::Mode(mode) => collect_tag_names(&mode.base, tags),
         TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
             collect_tag_names(&ty.specifiers.ty, tags)
@@ -557,6 +559,7 @@ fn check_type(
         TypeSpecifier::Vector(vector) => {
             check_type(&vector.element, context, provenance, loc, errors)
         }
+        TypeSpecifier::Mode(mode) => check_type(&mode.base, context, provenance, loc, errors),
         TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
             check_type_name(ty, context, provenance, loc, errors)

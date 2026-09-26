@@ -23,7 +23,7 @@ void f(int p __attribute__((nocommon)));
 #elif defined(WARN_IGNORED)
 void f(int p __attribute__((packed)));
 #elif defined(ERR_UNSUPPORTED)
-void f(int p __attribute__((mode(SI))));
+void f(int p __attribute__((code_seg("s"))));
 #endif
 
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL
@@ -33,7 +33,7 @@ void f(int p __attribute__((mode(SI))));
 // ERR_LAYOUT: Error:   × unsupported in numeric IR lowering: layout attribute on a parameter
 // SLATE-FILECHECK-END ERR_LAYOUT
 // SLATE-FILECHECK-BEGIN ERR_UNSUPPORTED
-// ERR_UNSUPPORTED: Error:   × unsupported in numeric IR lowering: machine mode attribute
+// ERR_UNSUPPORTED: Error:   × unsupported in numeric IR lowering: code segment attribute
 // SLATE-FILECHECK-END ERR_UNSUPPORTED
 // SLATE-FILECHECK-BEGIN WARN_ALIGNED
 // WARN_ALIGNED: -Wparameter-alignment

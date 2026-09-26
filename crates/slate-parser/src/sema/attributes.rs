@@ -64,7 +64,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Common
         | Attribute::NoCommon => Use::Layout,
 
-        Attribute::Mode(_) => Use::Unsupported("machine mode attribute"),
+        Attribute::Mode(_) => Use::Ignored,
         Attribute::AddressSpace(_) => Use::Ignored,
         Attribute::Cleanup(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Ignored,

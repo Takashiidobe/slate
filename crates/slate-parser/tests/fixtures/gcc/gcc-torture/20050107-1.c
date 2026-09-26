@@ -52,18 +52,18 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type1 B = @type0;
 // DEFAULT-NEXT:     type @type2 S = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
-// DEFAULT-NEXT:         field1 b: @type0;
-// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
+// DEFAULT-NEXT:         field0 a: u8;
+// DEFAULT-NEXT:         field1 b: u8;
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %6 @foo(%7 x: ptr<@type2>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(field0(deref(read<ptr<@type2>>(%7))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(field1(deref(read<ptr<@type2>>(%7))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type2>>(%7)))))), const<i32>(1)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type2>>(%7)))))), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 s: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(field0(%9), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<@type0>(field1(%9), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         write<u8>(field0(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(field1(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type2>) -> void>(%6, addr_of<ptr<@type2>>(%9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

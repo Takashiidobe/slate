@@ -238,6 +238,31 @@ or functions; those come only from declarators.
 | `TargetBuiltin(String)`                                            | `__builtin_va_list` etc.                                               |
 | `Inferred`                                                         | `__auto_type`, or C23 `auto` standing in for the type                  |
 | `Vector { element, size }`                                         | GNU vector types                                                       |
+| `Mode { base, mode }`                                              | GNU `__attribute__((mode(M)))`, mode name as spelled                   |
+
+`Vector` and `Mode` are not written as specifiers. The parser wraps the
+declaration's type specifier in one per `vector_size`, `ext_vector_type` or
+`mode` attribute, in attribute order, so `int mode(SI) vector_size(8)` is a
+vector of the mode type, and `vector_size(16) mode(DI)` keeps the 16 bytes
+and changes the lanes to 64-bit. Sema resolves a mode the way clang does:
+
+- Integer modes (`QI`/`byte`, `HI`, `SI`, `DI`, `TI`, `word`/`pointer`)
+  pick the first of `signed char`, `short`, `int`, `long`, `long long`,
+  `__int128` with that width. So `DI` is `long` on LP64 and `long long` on
+  LLP64 and 32-bit targets.
+- Signedness comes from the base type: plain `char` follows the target,
+  `_Bool` is unsigned, and an enum uses its underlying type (the result is
+  that integer, not the enum).
+- `SF` and `DF` are `float` and `double`. `XF` is `long double` only where
+  it is x87. `TF` is `long double` where that is binary128, else
+  `__float128` on non-MSVC x86. Anywhere else these are errors.
+- It's an error to mix an integer mode with a floating base or the other
+  way round, and to use a mode on a pointer, array or function declarator.
+  Complex, vector (`V4SI`), `HF` and other modes are unsupported.
+
+Known gap: an attribute after one declarator in `int x, y
+__attribute__((mode(QI)));` is folded into the shared specifier, so it
+changes `x` too. Clang changes only `y` (`slate-parser-dyd.61`).
 
 Decimal floating types (C23 Annex H, and a GNU extension before C23) are
 accepted in every standard mode and on every target:

@@ -137,6 +137,7 @@ TypeSpecifier = "Void" | "Bool"
               | "Imaginary(" TypeSpecifier ")"
               | "Atomic(" TypeName ")"
               | "Vector(" VectorType ")"
+              | "Mode(" ModeType ")"
               | "FixedPoint(" FixedPointType ")"
               | "TypeOf(" TypeOfOperand ")"
               | "TypeOfUnqual(" TypeOfOperand ")"
@@ -155,6 +156,7 @@ FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16" | "Float64x"
 
 VectorType     = VectorType { element: TypeSpecifier, size: VectorSize } ;
 VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" ;
+ModeType       = ModeType { base: TypeSpecifier, mode: string } ;
 FixedPointType = FixedPointType {
                    kind: ( "Fract" | "Accum" ),
                    rank: ( "Default" | "Short" | "Long" | "LongLong" ),

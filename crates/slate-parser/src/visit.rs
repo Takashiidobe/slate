@@ -345,6 +345,7 @@ pub fn walk_type_specifier<V: Visitor + ?Sized>(
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(value)) => {
             visitor.visit_expr(value)
         }
+        TypeSpecifier::Mode(mode) => visitor.visit_type_specifier(&mode.base),
         TypeSpecifier::Vector(vector) => {
             visitor.visit_type_specifier(&vector.element)?;
             match &vector.size {

@@ -1,5 +1,5 @@
 use super::asm::is_asm_keyword;
-use super::attributes::apply_vector_attributes;
+use super::attributes::apply_type_attributes;
 use super::declarator::{DeclaratorError, DeclaratorParser, IdentifierList};
 use super::{Annotation, Parser, ParserInput, span_tokens};
 use crate::ast::*;
@@ -168,7 +168,7 @@ impl Parser {
             .cloned()
             .collect::<Vec<_>>();
         let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
-        specifiers.ty = apply_vector_attributes(ty, &attributes);
+        specifiers.ty = apply_type_attributes(ty, &attributes);
         Ok(())
     }
 

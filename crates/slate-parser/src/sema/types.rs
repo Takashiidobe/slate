@@ -12,7 +12,9 @@ use crate::ir::{
     NumericType, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value,
     ValueKind,
 };
-use crate::target_info::{StorageLayout, TargetInfo};
+use crate::target_info::{
+    LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
+};
 use num_bigint::{BigInt, BigUint};
 
 use super::ctype::{
@@ -152,6 +154,119 @@ impl TypeResolver {
             Ok(count) if count != 0 => Ok(count),
             _ => Err(ResolveError::Invalid(invalid)),
         }
+    }
+
+    fn machine_mode(&mut self, base: QualType, mode: &str) -> Result<QualType, ResolveError> {
+        let name = mode
+            .strip_prefix("__")
+            .and_then(|name| name.strip_suffix("__"))
+            .unwrap_or(mode);
+        let mismatch =
+            ResolveError::Invalid("type of machine mode does not match type of base type");
+        let kind = match self.ctypes.canonical_kind(base).clone() {
+            CTypeKind::Vector { element, bytes, .. } => {
+                let element = self.machine_mode(element, mode)?;
+                let element_bytes = self.storage(self.ir_type(element))?.size_bytes;
+                if bytes % element_bytes != 0 {
+                    return Err(ResolveError::Invalid(
+                        "vector size is not a multiple of the machine mode size",
+                    ));
+                }
+                let lanes = u32::try_from(bytes / element_bytes)
+                    .map_err(|_| ResolveError::Invalid("vector lane count is too large"))?;
+                CTypeKind::Vector {
+                    element,
+                    lanes,
+                    bytes,
+                }
+            }
+            CTypeKind::Float(_) => {
+                let long_double = self.target.long_double;
+                // TF is __float128 where long double is narrower; msvc has no __float128
+                CTypeKind::Float(match name {
+                    "SF" => FloatKind::Float,
+                    "DF" => FloatKind::Double,
+                    "XF" if long_double == LongDoubleFormat::X87 => FloatKind::LongDouble,
+                    "TF" if long_double == LongDoubleFormat::Binary128 => FloatKind::LongDouble,
+                    "TF" if matches!(
+                        self.target.family,
+                        TargetFamily::X86_64 | TargetFamily::X86
+                    ) && self.target.environment != TargetEnvironment::Msvc =>
+                    {
+                        FloatKind::Float128
+                    }
+                    "XF" | "TF" => {
+                        return Err(ResolveError::Invalid("unsupported machine mode"));
+                    }
+                    "QI" | "HI" | "SI" | "DI" | "TI" | "byte" | "word" | "pointer" => {
+                        return Err(mismatch);
+                    }
+                    _ => return Err(ResolveError::Unsupported("machine mode")),
+                })
+            }
+            kind => {
+                let signed = match kind {
+                    CTypeKind::Bool | CTypeKind::UChar => false,
+                    CTypeKind::SChar => true,
+                    CTypeKind::Char => self.target.char_signed,
+                    CTypeKind::Int { signed, .. } => signed,
+                    CTypeKind::Complex(_) => {
+                        return Err(ResolveError::Unsupported("complex machine mode"));
+                    }
+                    CTypeKind::Enum(_) => {
+                        let underlying = self
+                            .ctypes
+                            .enum_underlying(base)
+                            .ok_or(ResolveError::Invalid("incomplete enum type"))?;
+                        return self.machine_mode(underlying.with(base.quals), mode);
+                    }
+                    _ => {
+                        return Err(ResolveError::Invalid(
+                            "mode attribute only supported for integer and floating-point types",
+                        ));
+                    }
+                };
+                let width = match name {
+                    "QI" | "byte" => 8,
+                    "HI" => 16,
+                    "SI" => 32,
+                    "DI" => 64,
+                    "TI" => 128,
+                    "word" | "pointer" => self.target.pointer_width,
+                    "SF" | "DF" | "XF" | "TF" => return Err(mismatch),
+                    _ => return Err(ResolveError::Unsupported("machine mode")),
+                };
+                self.integer_of_width(width, signed)?
+            }
+        };
+        Ok(self.ctypes.qual(kind).with(base.quals))
+    }
+
+    // clang's getIntTypeByWidth order: the first standard type of that width wins
+    fn integer_of_width(&self, width: u32, signed: bool) -> Result<CTypeKind, ResolveError> {
+        let target = &self.target;
+        let rank = if width == 8 {
+            return Ok(if signed {
+                CTypeKind::SChar
+            } else {
+                CTypeKind::UChar
+            });
+        } else if width == target.short_width {
+            IntRank::Short
+        } else if width == target.int_width {
+            IntRank::Int
+        } else if width == target.long_width {
+            IntRank::Long
+        } else if width == target.long_long_width {
+            IntRank::LongLong
+        } else if width == 128 {
+            IntRank::Int128
+        } else {
+            return Err(ResolveError::Invalid(
+                "no integer type of the machine mode's width",
+            ));
+        };
+        Ok(CTypeKind::Int { rank, signed })
     }
 
     pub(super) fn constant_integer(
@@ -814,6 +929,12 @@ impl TypeResolver {
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
     ) -> Result<QualType, ResolveError> {
+        // the parser folds `mode` into the specifier, but clang applies it to the declared type
+        if declarator.is_derived() && has_machine_mode(&specifiers.ty) {
+            return Err(ResolveError::Invalid(
+                "mode attribute only supported for integer and floating-point types",
+            ));
+        }
         let base = self
             .base(&specifiers.ty)?
             .with(specifiers.qualifiers.into());
@@ -979,6 +1100,10 @@ impl TypeResolver {
                 FloatingType::Decimal128 => FloatKind::Decimal128,
                 _ => return Err(ResolveError::Unsupported("floating type")),
             }),
+            TypeSpecifier::Mode(mode) => {
+                let base = self.base(&mode.base)?;
+                return self.machine_mode(base, &mode.mode);
+            }
             TypeSpecifier::Vector(vector) => {
                 let element = self.base(&vector.element)?;
                 let valid = match self.ctypes.canonical_kind(element) {
@@ -2451,4 +2576,12 @@ fn builtin_result_type(name: &str) -> Option<Type> {
         "__builtin_add_overflow" | "__builtin_sub_overflow" | "__builtin_mul_overflow"
     )
     .then_some(Type::Bool)
+}
+
+fn has_machine_mode(specifier: &TypeSpecifier) -> bool {
+    match specifier {
+        TypeSpecifier::Mode(_) => true,
+        TypeSpecifier::Vector(vector) => has_machine_mode(&vector.element),
+        _ => false,
+    }
 }

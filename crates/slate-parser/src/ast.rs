@@ -918,6 +918,7 @@ pub enum TypeSpecifier {
     Complex(Box<Self>),
     Atomic(Box<TypeName>),
     Vector(VectorType),
+    Mode(ModeType),
     FixedPoint(FixedPointType),
     TypeOf(TypeOfOperand),
     TypeOfUnqual(TypeOfOperand),
@@ -970,6 +971,12 @@ pub enum FloatingType {
 pub struct VectorType {
     pub element: Box<TypeSpecifier>,
     pub size: VectorSize,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ModeType {
+    pub base: Box<TypeSpecifier>,
+    pub mode: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]

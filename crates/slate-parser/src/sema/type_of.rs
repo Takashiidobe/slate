@@ -63,6 +63,7 @@ impl Lowerer {
                 self.prepare_specifier(inner)
             }
             TypeSpecifier::Vector(vector) => self.prepare_specifier(&vector.element),
+            TypeSpecifier::Mode(mode) => self.prepare_specifier(&mode.base),
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
                 let Some(tag) = self.types.tag_definition(*id) else {
                     return Ok(());

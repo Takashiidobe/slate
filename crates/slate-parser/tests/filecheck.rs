@@ -908,6 +908,7 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
                 format!("{} ext_vector_type({size})", type_spelling(&vector.element))
             }
         },
+        TypeSpecifier::Mode(mode) => format!("{} mode({})", type_spelling(&mode.base), mode.mode),
         TypeSpecifier::FixedPoint(fixed) => format!(
             "{}{}_{}",
             if fixed.saturated { "_Sat " } else { "" },
