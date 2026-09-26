@@ -63,11 +63,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 i: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 cp: volatile ptr<u8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 d: array<u8, 32> [storage=static] = aggregate<array<u8, 32>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %4 d: array<u8, 32> [storage=static] [align=16] = aggregate<array<u8, 32>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%11 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 c: array<u8, 32> [storage=automatic] = aggregate<array<u8, 32>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %6 c: array<u8, 32> [storage=automatic] [align=16] = aggregate<array<u8, 32>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         let %7 p: ptr<u8> [storage=automatic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(32)>(%4), read<i32, volatile>(%2));
 // DEFAULT-NEXT:         let %8 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %12

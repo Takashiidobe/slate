@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     global %1 s: array<@type0, 2> [storage=static] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(6), field1 = const<i32>(8), field2 = neg<i32, overflow=ub>(const<i32>(8)), field3 = neg<i32, overflow=ub>(const<i32>(5))), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(2), field2 = neg<i32, overflow=ub>(const<i32>(1)), field3 = const<i32>(2))) [linkage=external];
+// DEFAULT-NEXT:     global %1 s: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(6), field1 = const<i32>(8), field2 = neg<i32, overflow=ub>(const<i32>(8)), field3 = neg<i32, overflow=ub>(const<i32>(5))), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(2), field2 = neg<i32, overflow=ub>(const<i32>(1)), field3 = const<i32>(2))) [linkage=external];
 // DEFAULT-NEXT:     global %4 cnt: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %2 @foo(%3 r: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(coerce<i64, i64>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %8: i32 [synthetic] = read<i32>(%4);

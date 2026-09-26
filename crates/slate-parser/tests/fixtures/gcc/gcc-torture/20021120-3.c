@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:         return div<u32, by_zero=ub>(read<u32>(%6), add<u32, overflow=wrap>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 c: array<i8, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %8 c: array<i8, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<i8>, u32, u32) -> u32>(%2, array_decay<ptr<i8>, length=Some(16)>(%8), not<u32>(const<u32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4))), div<u32, by_zero=ub>(not<u32>(const<u32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

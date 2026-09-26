@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 temp: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([49, 57, 50, 46, 49, 54, 56, 46, 49, 57, 48, 46, 49, 54, 48, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %0 temp: array<i8, 16> [storage=static] [align=16] = code_units<array<i8, 16>>([49, 57, 50, 46, 49, 54, 56, 46, 49, 57, 48, 46, 49, 54, 48, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %1 result: u32 [storage=static] = or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(192), const<i32>(8)), const<u32>(168)), const<i32>(8)), const<u32>(190)), const<i32>(8)), const<u32>(160)) [linkage=external];
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 120, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 120, 10, 0]) [linkage=internal];

@@ -157,7 +157,7 @@ void link_error7() {}
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%22), call<i32, signature=fn(i32) -> i32>(%13, read<i32>(%22)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %24 i: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %24 i: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %25 r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%25, call<i32, signature=fn(i32) -> i32>(%9, const<i32>(0)));

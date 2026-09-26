@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 buf: array<i8, 16> [storage=automatic] = code_units<array<i8, 16>>([49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 0, 0, 0, 0, 0, 0]);
+// DEFAULT-NEXT:         let %2 buf: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 0, 0, 0, 0, 0, 0]);
 // DEFAULT-NEXT:         let %3 p: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(16)>(%2);
 // DEFAULT-NEXT:         let %4: ptr<i8> [synthetic] = read<ptr<i8>>(%3);
 // DEFAULT-NEXT:         let %5: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(1));

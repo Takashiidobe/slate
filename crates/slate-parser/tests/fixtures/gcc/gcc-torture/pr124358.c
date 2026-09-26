@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 a: array<array<i32, 4>, 1> [storage=automatic] = aggregate<array<array<i32, 4>, 1>, zero_fill=false>(index0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(12), index2 = const<i32>(13), index3 = const<i32>(14)));
+// DEFAULT-NEXT:         let %4 a: array<array<i32, 4>, 1> [storage=automatic] [align=16] = aggregate<array<array<i32, 4>, 1>, zero_fill=false>(index0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(12), index2 = const<i32>(13), index3 = const<i32>(14)));
 // DEFAULT-NEXT:         let %5 p: ptr<array<i32, 4>> [storage=automatic] = array_decay<ptr<array<i32, 4>>, length=Some(1)>(%4);
 // DEFAULT-NEXT:         for %8
 // DEFAULT-NEXT:             init:

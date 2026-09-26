@@ -90,18 +90,18 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @qux() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 b: array<i8, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %6 b: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%6)), const<i32>(120), const<u64>(100));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%2, array_decay<ptr<i8>, length=Some(100)>(%6));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 b: array<i8, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %9 b: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%9)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%8)), const<u64>(9));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%9), const<u64>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%0, array_decay<ptr<i8>, length=Some(100)>(%9));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 b: array<i8, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %12 b: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%12)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<u8>, length=Some(9)>(%11)), const<u64>(9));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(100)>(%12), const<u64>(9))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%0, array_decay<ptr<i8>, length=Some(100)>(%12));

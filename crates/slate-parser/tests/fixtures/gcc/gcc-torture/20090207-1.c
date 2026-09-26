@@ -40,7 +40,7 @@ int         main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 a: array<i32, 32> [storage=automatic];
+// DEFAULT-NEXT:         let %2 a: array<i32, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(32)>(%2), const<i32>(1))), const<i32>(3));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(32)>(%2), const<i32>(0))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(32)>(%2), read<i32>(%1))), const<i32>(2));

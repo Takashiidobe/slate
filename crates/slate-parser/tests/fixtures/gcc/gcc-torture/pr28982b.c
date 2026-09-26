@@ -78,10 +78,10 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 big = struct {
 // DEFAULT-NEXT:         field0 i: array<i32, 65536>;
 // DEFAULT-NEXT:     } [size=262144, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %0 ptrs: array<ptr<f32>, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 results: array<f32, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 incs: array<i32, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %69 input: array<f32, 80> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 ptrs: array<ptr<f32>, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 results: array<f32, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %2 incs: array<i32, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %69 input: array<f32, 80> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %4 @bar(%5 b: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %76: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(20)>(%2), const<i32>(0));
 // DEFAULT-NEXT:         let %77: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%76)));

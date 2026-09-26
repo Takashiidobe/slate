@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         field2 align_fp: f80;
 // DEFAULT-NEXT:     } [size=80, align=16, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     global %2 u: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 A: array<i8, 80> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 A: array<i8, 80> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 off: i32 [storage=automatic];

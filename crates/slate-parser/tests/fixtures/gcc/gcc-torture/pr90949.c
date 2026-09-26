@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:     type @type0 Node = struct {
 // DEFAULT-NEXT:         field0 child: ptr<@type0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %5 space: array<@type0, 2> [storage=static] = aggregate<array<@type0, 2>, zero_fill=true>() [linkage=external];
+// DEFAULT-NEXT:     global %5 space: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=true>() [linkage=external];
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([78, 111, 32, 99, 108, 101, 97, 110, 117, 112, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @my_puts(%1 str: ptr<const i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

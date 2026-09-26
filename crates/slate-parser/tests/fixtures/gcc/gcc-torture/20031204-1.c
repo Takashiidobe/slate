@@ -74,7 +74,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 u32 = u64;
-// DEFAULT-NEXT:     global %12 addr: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([49, 48, 46, 49, 49, 46, 49, 50, 46, 49, 51, 58, 47, 104, 101, 108, 108, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %12 addr: array<i8, 19> [storage=static] [align=16] = code_units<array<i8, 19>>([49, 48, 46, 49, 49, 46, 49, 50, 46, 49, 51, 58, 47, 104, 101, 108, 108, 111, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @strcpy(%14 __dest: ptr<i8> [restrict], %15 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @in_aton(%4 x: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {

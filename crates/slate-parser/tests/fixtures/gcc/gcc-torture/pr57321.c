@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:     fn %3 @foo(%4 p: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%4))), read<i32>(%0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %5 i: array<array<ptr<i32>, 5>, 7> [storage=automatic] = aggregate<array<array<ptr<i32>, 5>, 7>, zero_fill=true>(index0 = aggregate<array<ptr<i32>, 5>, zero_fill=true>(index0 = null<ptr<i32>>));
+// DEFAULT-NEXT:                 let %5 i: array<array<ptr<i32>, 5>, 7> [storage=automatic] [align=16] = aggregate<array<array<ptr<i32>, 5>, 7>, zero_fill=true>(index0 = aggregate<array<ptr<i32>, 5>, zero_fill=true>(index0 = null<ptr<i32>>));
 // DEFAULT-NEXT:                 let %6 j: array<array<ptr<ptr<i32>>, 1>, 1> [storage=automatic];
 // DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(deref(ptr_offset<ptr<ptr<ptr<i32>>>, subtract=false, element=ptr<ptr<i32>>, overflow=ub>(array_decay<ptr<ptr<ptr<i32>>>, length=Some(1)>(deref(ptr_offset<ptr<array<ptr<ptr<i32>>, 1>>, subtract=false, element=array<ptr<ptr<i32>>, 1>, overflow=ub>(array_decay<ptr<array<ptr<ptr<i32>>, 1>>, length=Some(1)>(%6), const<i32>(0)))), const<i32>(0))), addr_of<ptr<ptr<i32>>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(5)>(deref(ptr_offset<ptr<array<ptr<i32>, 5>>, subtract=false, element=array<ptr<i32>, 5>, overflow=ub>(array_decay<ptr<array<ptr<i32>, 5>>, length=Some(7)>(%5), const<i32>(0)))), const<i32>(0)))));
 // DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%1)), from_bool<i32, reason=assign>(ne<ptr<ptr<i32>>>(addr_of<ptr<ptr<i32>>>(%4), read<ptr<ptr<i32>>>(%2))));

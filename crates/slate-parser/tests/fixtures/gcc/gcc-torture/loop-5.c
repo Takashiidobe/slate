@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %8 t: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %9 a: array<i32, 4> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %9 a: array<i32, 4> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @ap(%10 i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
@@ -80,7 +80,7 @@ int main(void) {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @testit() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 ir: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2), index3 = const<i32>(3));
+// DEFAULT-NEXT:         let %4 ir: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2), index3 = const<i32>(3));
 // DEFAULT-NEXT:         let %5 ix: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 n: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %7 m: i32 [storage=automatic];

@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 buf: array<ptr<void>, 20> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 buf: array<ptr<void>, 20> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 115, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 115, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @strcmp(%10 <unnamed>: ptr<const i8>, %11 <unnamed>: ptr<const i8>) -> i32 [linkage=external];

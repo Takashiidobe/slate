@@ -57,7 +57,7 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 c: array<u8, 196609> [storage=static] = aggregate<array<u8, 196609>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=external];
+// DEFAULT-NEXT:     global %0 c: array<u8, 196609> [storage=static] [align=16] = aggregate<array<u8, 196609>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=external];
 // DEFAULT-NEXT:     global %1 j: i32 [storage=static] = const<i32>(2) [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 x: ptr<u64>, %4 y: ptr<u8>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
@@ -93,7 +93,7 @@ main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>, ptr<u8>) -> void>(%2, read<ptr<u64>>(%8), array_decay<ptr<u8>, length=Some(196609)>(%0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 a: array<u64, 2> [storage=automatic] = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index1 = neg<u64, overflow=wrap>(const<u64>(1)));
+// DEFAULT-NEXT:         let %10 a: array<u64, 2> [storage=automatic] [align=16] = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index1 = neg<u64, overflow=wrap>(const<u64>(1)));
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             in 0 "r" array_decay<ptr<u8>, length=Some(196609)>(%0);
 // DEFAULT-NEXT:             clobbers: memory;

@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 expected: array<f64, 32> [storage=static] = aggregate<array<f64, 32>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(10.0), index2 = const<f64>(44.0), index3 = const<f64>(110.0), index4 = const<f64>(232.0), index5 = const<f64>(490.0), index6 = const<f64>(1020.0), index7 = const<f64>(2078.0), index8 = const<f64>(4152.0), index9 = const<f64>(8314.0), index10 = const<f64>(16652.0), index11 = const<f64>(33326.0), index12 = const<f64>(66664.0), index13 = const<f64>(133354.0), index14 = const<f64>(266748.0), index15 = const<f64>(533534.0), index16 = const<f64>(1067064.0), index17 = const<f64>(2134138.0), index18 = const<f64>(4268300.0), index19 = const<f64>(8536622.0), index20 = const<f64>(17073256.0), index21 = const<f64>(34146538.0), index22 = const<f64>(68293116.0), index23 = const<f64>(136586270.0), index24 = const<f64>(273172536.0), index25 = const<f64>(546345082.0), index26 = const<f64>(1092690188.0), index27 = const<f64>(2185380398.0), index28 = const<f64>(4370760808.0), index29 = const<f64>(8741521642.0), index30 = const<f64>(17483043324.0), index31 = const<f64>(6.0)) [linkage=external];
+// DEFAULT-NEXT:     global %8 expected: array<f64, 32> [storage=static] [align=16] = aggregate<array<f64, 32>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(10.0), index2 = const<f64>(44.0), index3 = const<f64>(110.0), index4 = const<f64>(232.0), index5 = const<f64>(490.0), index6 = const<f64>(1020.0), index7 = const<f64>(2078.0), index8 = const<f64>(4152.0), index9 = const<f64>(8314.0), index10 = const<f64>(16652.0), index11 = const<f64>(33326.0), index12 = const<f64>(66664.0), index13 = const<f64>(133354.0), index14 = const<f64>(266748.0), index15 = const<f64>(533534.0), index16 = const<f64>(1067064.0), index17 = const<f64>(2134138.0), index18 = const<f64>(4268300.0), index19 = const<f64>(8536622.0), index20 = const<f64>(17073256.0), index21 = const<f64>(34146538.0), index22 = const<f64>(68293116.0), index23 = const<f64>(136586270.0), index24 = const<f64>(273172536.0), index25 = const<f64>(546345082.0), index26 = const<f64>(1092690188.0), index27 = const<f64>(2185380398.0), index28 = const<f64>(4370760808.0), index29 = const<f64>(8741521642.0), index30 = const<f64>(17483043324.0), index31 = const<f64>(6.0)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: ptr<f64>, %2 b: ptr<f64>, %3 c: ptr<f64>, %4 d: f64, %5 e: f64, %6 n: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %14
@@ -79,9 +79,9 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 a: array<f64, 32> [storage=automatic];
-// DEFAULT-NEXT:         let %12 b: array<f64, 32> [storage=automatic];
-// DEFAULT-NEXT:         let %13 c: array<f64, 32> [storage=automatic];
+// DEFAULT-NEXT:         let %11 a: array<f64, 32> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %12 b: array<f64, 32> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %13 c: array<f64, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if le<i32>(const<i32>(53), const<i32>(35))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         for %15

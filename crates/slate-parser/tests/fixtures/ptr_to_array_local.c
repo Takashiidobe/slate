@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 src: array<i32, 5> [storage=automatic] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
+// DEFAULT-NEXT:         let %3 src: array<i32, 5> [storage=automatic] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
 // DEFAULT-NEXT:         let %4 p: ptr<array<i32, 5>> [storage=automatic] = addr_of<ptr<array<i32, 5>>>(%3);
 // DEFAULT-NEXT:         let %5 sum: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %8

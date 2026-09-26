@@ -363,7 +363,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %48 point: @type5 [storage=automatic];
 // DEFAULT-NEXT:         let %49 bits: @type6 [storage=automatic];
 // DEFAULT-NEXT:         let %50 number: @type7 [storage=automatic];
-// DEFAULT-NEXT:         let %51 array: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %51 array: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %52 copied_value: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %53 source_value: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %54 pointer: ptr<i32> [storage=automatic];

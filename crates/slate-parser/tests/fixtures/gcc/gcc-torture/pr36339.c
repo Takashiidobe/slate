@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @try_a(%4 x: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 heap: array<u64, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %5 heap: array<u64, 2> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %6 hp: ptr<u64> [storage=automatic] = array_decay<ptr<u64>, length=Some(2)>(%5);
 // DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%6), const<i32>(0))), read<u64>(%4));
 // DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%6), const<i32>(1))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));

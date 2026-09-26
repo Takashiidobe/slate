@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %5 g3: vector<i32, 16> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 g27: ptr<void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %7 @dirty_stack() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 buf: volatile array<i8, 1024> [storage=automatic];
+// DEFAULT-NEXT:         let %8 buf: volatile array<i8, 1024> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %16
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %9 i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));

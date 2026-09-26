@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %4 global_array: array<i32, 4> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %4 global_array: array<i32, 4> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %22 .str22: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @malloc(%20 __size: u64) -> ptr<void> [linkage=external];
@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<u64>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 local: array<i32, 6> [storage=automatic];
+// DEFAULT-NEXT:         let %10 local: array<i32, 6> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %11 p: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(6)>(%10);
 // DEFAULT-NEXT:         let %12 v: volatile i32 [storage=automatic] = const<i32>(3);
 // DEFAULT-NEXT:         read<i32, volatile>(%12);

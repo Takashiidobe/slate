@@ -55,11 +55,11 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: array<i32, 113> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 d: array<i32, 113> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 b: array<i16, 113> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 c: array<i16, 113> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 e: array<i16, 113> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 a: array<i32, 113> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 d: array<i32, 113> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %2 b: array<i16, 113> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %3 c: array<i16, 113> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %4 e: array<i16, 113> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %7 j: i64 [storage=automatic];

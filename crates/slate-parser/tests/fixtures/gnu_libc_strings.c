@@ -160,7 +160,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %25 @printf(%105 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %26 @free(%106 __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %27 @gnu_string_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %28 destination: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>();
+// DEFAULT-NEXT:         let %28 destination: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>();
 // DEFAULT-NEXT:         let %29 repeated: array<i8, 5> [storage=automatic] [const] = code_units<array<i8, 5>>([97, 98, 99, 97, 0]);
 // DEFAULT-NEXT:         let %30 obscured: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([103, 110, 117, 0]);
 // DEFAULT-NEXT:         let %31 tokens: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([97, 58, 58, 98, 99, 0]);
@@ -183,7 +183,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %36 @gnu_argz_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %37 argz: ptr<i8> [storage=automatic] = null<ptr<i8>>;
 // DEFAULT-NEXT:         let %38 length: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %39 arguments: array<ptr<i8>, 6> [storage=automatic];
+// DEFAULT-NEXT:         let %39 arguments: array<ptr<i8>, 6> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %40 replacements: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         let %41 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %134: i32 [synthetic] = read<i32>(%41);

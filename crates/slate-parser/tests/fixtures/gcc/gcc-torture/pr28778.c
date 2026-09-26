@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @find(%4 alistp: ptr<const i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 blist: ptr<const i32> [storage=automatic];
-// DEFAULT-NEXT:         let %6 list: array<i32, 32> [storage=automatic];
+// DEFAULT-NEXT:         let %6 list: array<i32, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<ptr<const i32>>(read<ptr<const i32>>(%4), null<ptr<const i32>>)
 // DEFAULT-NEXT:             write<ptr<const i32>>(%5, read<ptr<const i32>>(%4));
 // DEFAULT-NEXT:         else

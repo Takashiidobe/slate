@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:     global %6 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 m: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %8 @foo(%9 p: @type0) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 f: array<ptr<const u16>, 36> [storage=automatic];
+// DEFAULT-NEXT:         let %10 f: array<ptr<const u16>, 36> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %19
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(2))
@@ -123,7 +123,7 @@ int main() {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @bar(%13 p: @type1) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14 f: array<ptr<const u16>, 36> [storage=automatic];
+// DEFAULT-NEXT:         let %14 f: array<ptr<const u16>, 36> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %20
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(2))

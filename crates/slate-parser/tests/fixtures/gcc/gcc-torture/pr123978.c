@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %5 b: array<u32, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %5 b: array<u32, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<u32>, length=Some(256)>(%5)), const<i32>(85), const<u64>(1024));
 // DEFAULT-NEXT:         write<u32>(field0(%4), reinterpret<u32, reason=assign, fits=always>(const<i32>(15)));
 // DEFAULT-NEXT:         write<u32>(field1(%4), reinterpret<u32, reason=assign, fits=always>(const<i32>(15)));

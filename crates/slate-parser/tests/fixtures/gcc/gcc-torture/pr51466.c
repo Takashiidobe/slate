@@ -62,14 +62,14 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo(%2 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 v: volatile array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %3 v: volatile array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %4 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%3), read<i32>(%2))), const<i32>(6));
 // DEFAULT-NEXT:         write<ptr<i32>>(%4, pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<volatile i32>>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%3), read<i32>(%2))))));
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @bar(%6 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 v: volatile array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %7 v: volatile array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%7), read<i32>(%6))), const<i32>(6));
 // DEFAULT-NEXT:         write<ptr<i32>>(%8, pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<volatile i32>>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%7), read<i32>(%6))))));
@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%7), read<i32>(%6))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @baz(%10 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 v: volatile array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %11 v: volatile array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %12 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%11), read<i32>(%10))), const<i32>(6));
 // DEFAULT-NEXT:         write<ptr<i32>>(%12, pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<volatile i32>>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(4)>(%11), const<i32>(0))))));

@@ -42,7 +42,7 @@ int  main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 a: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %2 a: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %3 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %4 q: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%4, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%2), const<i32>(1)))));

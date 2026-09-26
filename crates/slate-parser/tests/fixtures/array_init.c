@@ -49,8 +49,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 115, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 a: array<i32, 5> [storage=automatic] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
-// DEFAULT-NEXT:         let %3 partial: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(7), index1 = const<i32>(8));
+// DEFAULT-NEXT:         let %2 a: array<i32, 5> [storage=automatic] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
+// DEFAULT-NEXT:         let %3 partial: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(7), index1 = const<i32>(8));
 // DEFAULT-NEXT:         let %4 s: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]);
 // DEFAULT-NEXT:         let %5 padded: array<i8, 8> [storage=automatic] = code_units<array<i8, 8>>([104, 105, 0, 0, 0, 0, 0, 0]);
 // DEFAULT-NEXT:         let %6 sum: i32 [storage=automatic] = const<i32>(0);

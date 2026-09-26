@@ -61,9 +61,9 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @memset(%8 s: ptr<void>, %9 c: i32, %10 n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memcmp(%11 s1: ptr<const void>, %12 s2: ptr<const void>, %13 n: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 A: array<i8, 30> [storage=automatic];
-// DEFAULT-NEXT:         let %5 B: array<i8, 30> [storage=automatic];
-// DEFAULT-NEXT:         let %6 C: array<i8, 30> [storage=automatic];
+// DEFAULT-NEXT:         let %4 A: array<i8, 30> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %5 B: array<i8, 30> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %6 C: array<i8, 30> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%4)), const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(30))));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%5)), const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(30))));

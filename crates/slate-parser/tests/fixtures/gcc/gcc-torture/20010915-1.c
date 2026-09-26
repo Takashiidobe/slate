@@ -175,7 +175,7 @@ int r(const char *f) {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main(%12 argc: i32, %13 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 args: array<ptr<i8>, 5> [storage=automatic] = aggregate<array<ptr<i8>, 5>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%33), index1 = array_decay<ptr<i8>, length=Some(2)>(%34), index2 = array_decay<ptr<i8>, length=Some(2)>(%35), index3 = array_decay<ptr<i8>, length=Some(2)>(%36), index4 = array_decay<ptr<i8>, length=Some(2)>(%37));
+// DEFAULT-NEXT:         let %14 args: array<ptr<i8>, 5> [storage=automatic] [align=16] = aggregate<array<ptr<i8>, 5>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%33), index1 = array_decay<ptr<i8>, length=Some(2)>(%34), index2 = array_decay<ptr<i8>, length=Some(2)>(%35), index3 = array_decay<ptr<i8>, length=Some(2)>(%36), index4 = array_decay<ptr<i8>, length=Some(2)>(%37));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%3, const<i32>(5), array_decay<ptr<ptr<i8>>, length=Some(5)>(%14)), const<i32>(0)), ne<i32>(read<i32>(%9), const<i32>(2))), ne<i32>(read<i32>(%10), const<i32>(5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

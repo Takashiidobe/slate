@@ -35,10 +35,10 @@ int next_second[NEXT_SECOND];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 quoted_selected: array<i32, 77> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 angled_selected: array<i32, 66> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 user_selected: array<i32, 67> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 next_first: array<i32, 68> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 next_second: array<i32, 12> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 quoted_selected: array<i32, 77> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 angled_selected: array<i32, 66> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %2 user_selected: array<i32, 67> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %3 next_first: array<i32, 68> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %4 next_second: array<i32, 12> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

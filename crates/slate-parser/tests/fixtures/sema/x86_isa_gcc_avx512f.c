@@ -175,6 +175,6 @@ int biggest[__BIGGEST_ALIGNMENT__];
 // CHECK-NEXT:     global %24 has__k8: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %25 has__k8__: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %26 has__tune_k8__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %27 biggest: array<i32, 64> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %27 biggest: array<i32, 64> [storage=static] [align=16] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

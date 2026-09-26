@@ -148,7 +148,7 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %0 global: imaginary<f64> [storage=static] [linkage=external];
-// IR-NEXT:     global %1 sizes: array<u64, 6> [storage=static] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];
+// IR-NEXT:     global %1 sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];
 // IR-NEXT:     fn %2 @literal() -> complex<f64> [linkage=external] [abi=sysv64() -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0));
 // IR-NEXT:     }

@@ -27,7 +27,7 @@ int f(int idx) { return (__builtin_strlen(list[idx])); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 list: array<array<i8, 64>, 250> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 list: array<array<i8, 64>, 250> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @f(%2 idx: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(__builtin_strlen, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(deref(ptr_offset<ptr<array<i8, 64>>, subtract=false, element=array<i8, 64>, overflow=ub>(array_decay<ptr<array<i8, 64>>, length=Some(250)>(%0), read<i32>(%2))))))));
 // DEFAULT-NEXT:     }

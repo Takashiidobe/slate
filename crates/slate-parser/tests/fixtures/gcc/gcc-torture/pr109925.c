@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %5 h: array<i8, 20> [storage=automatic];
+// DEFAULT-NEXT:                         let %5 h: array<i8, 20> [storage=automatic] [align=16];
 // DEFAULT-NEXT:                         let %6 b: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(20)>(%5);
 // DEFAULT-NEXT:                         let %7 d: i32 [storage=automatic] = const<i32>(48);
 // DEFAULT-NEXT:                         let %8 e: i32 [storage=automatic] = const<i32>(0);

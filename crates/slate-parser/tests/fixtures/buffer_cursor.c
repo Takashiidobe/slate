@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @getchar() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 values: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %4 values: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %5 i: i32 [storage=automatic] = const<i32>(0);

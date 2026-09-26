@@ -81,12 +81,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 array0: array<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 array1: array<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 array2: array<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 array3: array<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 array4: array<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 array5: array<f32, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 array0: array<f32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 array1: array<f32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %2 array2: array<f32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %3 array3: array<f32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %4 array4: array<f32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %5 array5: array<f32, 16> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %6 counter0: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %7 counter1: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %8 counter2: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=external];

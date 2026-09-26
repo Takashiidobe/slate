@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 mat: array<array<i32, 2>, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %7 mat: array<array<i32, 2>, 2> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(deref(ptr_offset<ptr<array<i32, 2>>, subtract=false, element=array<i32, 2>, overflow=ub>(array_decay<ptr<array<i32, 2>>, length=Some(2)>(%7), const<i32>(0)))), const<i32>(0))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(deref(ptr_offset<ptr<array<i32, 2>>, subtract=false, element=array<i32, 2>, overflow=ub>(array_decay<ptr<array<i32, 2>>, length=Some(2)>(%7), const<i32>(0)))), const<i32>(1))), const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(deref(ptr_offset<ptr<array<i32, 2>>, subtract=false, element=array<i32, 2>, overflow=ub>(array_decay<ptr<array<i32, 2>>, length=Some(2)>(%7), const<i32>(1)))), const<i32>(0))), const<i32>(4));

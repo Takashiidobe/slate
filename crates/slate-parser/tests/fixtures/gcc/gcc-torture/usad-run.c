@@ -109,8 +109,8 @@ int main(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u8>, i32, ptr<u8>, i32) -> i32>(%2, read<ptr<u8>>(%11), const<i32>(16), read<ptr<u8>>(%12), read<i32>(%13));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 m: array<u8, 256> [storage=automatic];
-// DEFAULT-NEXT:         let %17 n: array<u8, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %16 m: array<u8, 256> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %17 n: array<u8, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %18 sum: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %19 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %23

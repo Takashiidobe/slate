@@ -248,7 +248,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 arr: array<i32, 100> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 arr: array<i32, 100> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %3 ptr: ptr<i32> [storage=static] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%2), const<i32>(20)))) [linkage=external];
 // DEFAULT-NEXT:     global %4 arrindex: i32 [storage=static] = const<i32>(4) [linkage=external];
 // DEFAULT-NEXT:     global %60 getptrcnt: i32 [storage=static] = const<i32>(0) [linkage=external];

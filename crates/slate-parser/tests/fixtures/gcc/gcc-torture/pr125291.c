@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 buf: array<i8, 1111> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 buf: array<i8, 1111> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %1 archive_le16dec_filename: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(1111)>(%0) [linkage=external];
 // DEFAULT-NEXT:     global %2 archive_le16dec_end: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 archive_le16dec_fn_end: u32 [storage=static] [linkage=external];

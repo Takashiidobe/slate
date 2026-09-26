@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 labels: array<ptr<void>, 2> [storage=static] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3)) [linkage=internal];
+// DEFAULT-NEXT:     global %5 labels: array<ptr<void>, 2> [storage=static] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3)) [linkage=internal];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([100, 111, 110, 101, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @walk(%4 position: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {

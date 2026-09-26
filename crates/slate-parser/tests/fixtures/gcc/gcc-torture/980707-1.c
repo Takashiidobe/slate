@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 arglist: array<ptr<i8>, 256> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %6 arglist: array<ptr<i8>, 256> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([32, 97, 32, 98, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %21 .str21: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %22 .str22: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([98, 0]) [linkage=internal];
@@ -104,7 +104,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 args: ptr<ptr<i8>> [storage=automatic];
-// DEFAULT-NEXT:         let %10 input: array<i8, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %10 input: array<i8, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %11 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%2, array_decay<ptr<i8>, length=Some(256)>(%10), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%20)));
 // DEFAULT-NEXT:         write<ptr<ptr<i8>>>(%9, call<ptr<ptr<i8>>, signature=fn(ptr<i8>) -> ptr<ptr<i8>>>(%4, array_decay<ptr<i8>, length=Some(256)>(%10)));

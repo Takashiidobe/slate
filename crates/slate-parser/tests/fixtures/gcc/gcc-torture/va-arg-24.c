@@ -154,7 +154,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @varargs0(%11 q0: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %12 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %13 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %13 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %14 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%12);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%13), const<i32>(0))), read<i32>(%11));
@@ -176,7 +176,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @varargs1(%16 q0: i32, %17 q1: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %18 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %19 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %19 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %20 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%18);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%19), const<i32>(0))), read<i32>(%16));
@@ -199,7 +199,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @varargs2(%22 q0: i32, %23 q1: i32, %24 q2: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %25 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %26 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %26 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %27 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%25);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%26), const<i32>(0))), read<i32>(%22));
@@ -223,7 +223,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %28 @varargs3(%29 q0: i32, %30 q1: i32, %31 q2: i32, %32 q3: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %33 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %34 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %34 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %35 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%33);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%34), const<i32>(0))), read<i32>(%29));
@@ -248,7 +248,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %36 @varargs4(%37 q0: i32, %38 q1: i32, %39 q2: i32, %40 q3: i32, %41 q4: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %42 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %43 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %43 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %44 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%42);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%43), const<i32>(0))), read<i32>(%37));
@@ -274,7 +274,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %45 @varargs5(%46 q0: i32, %47 q1: i32, %48 q2: i32, %49 q3: i32, %50 q4: i32, %51 q5: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %52 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %53 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %53 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %54 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%52);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%53), const<i32>(0))), read<i32>(%46));
@@ -301,7 +301,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %55 @varargs6(%56 q0: i32, %57 q1: i32, %58 q2: i32, %59 q3: i32, %60 q4: i32, %61 q5: i32, %62 q6: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %63 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %64 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %64 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %65 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%63);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%64), const<i32>(0))), read<i32>(%56));
@@ -329,7 +329,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %66 @varargs7(%67 q0: i32, %68 q1: i32, %69 q2: i32, %70 q3: i32, %71 q4: i32, %72 q5: i32, %73 q6: i32, %74 q7: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %75 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %76 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %76 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %77 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%75);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%76), const<i32>(0))), read<i32>(%67));
@@ -358,7 +358,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %78 @varargs8(%79 q0: i32, %80 q1: i32, %81 q2: i32, %82 q3: i32, %83 q4: i32, %84 q5: i32, %85 q6: i32, %86 q7: i32, %87 q8: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %88 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %89 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %89 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %90 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%88);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%89), const<i32>(0))), read<i32>(%79));
@@ -388,7 +388,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %91 @varargs9(%92 q0: i32, %93 q1: i32, %94 q2: i32, %95 q3: i32, %96 q4: i32, %97 q5: i32, %98 q6: i32, %99 q7: i32, %100 q8: i32, %101 q9: i32, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %102 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %103 n: array<i32, 11> [storage=automatic];
+// DEFAULT-NEXT:         let %103 n: array<i32, 11> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %104 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%102);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%103), const<i32>(0))), read<i32>(%92));

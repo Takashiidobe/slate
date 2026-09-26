@@ -232,7 +232,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 l: i64;
 // DEFAULT-NEXT:         field1 c: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %47 buf: array<i8, 256> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %47 buf: array<i8, 256> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %65 .str65: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([1, 55, 130, 167, 85, 73, 157, 191, 248, 68, 182, 85, 23, 142, 249, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %66 .str66: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([1, 55, 130, 167, 85, 73, 208, 243, 183, 42, 109, 35, 113, 73, 106, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @mymemcmp1(%2 a: u64, %3 b: u64) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {

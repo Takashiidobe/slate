@@ -43,9 +43,9 @@ int main() {
 // DEFAULT-NEXT:         %0 FIRST = const<i32>(7);
 // DEFAULT-NEXT:         %1 SECOND = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %3 values: array<i32, 7> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 values: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 flags: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 selected: array<i32, 5> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %5 selected: array<i32, 5> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

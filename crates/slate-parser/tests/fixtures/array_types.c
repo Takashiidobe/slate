@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%2), const<i32>(2)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @pick_double_array(%4 index: i32) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 values: array<f64, 3> [storage=automatic];
+// DEFAULT-NEXT:         let %5 values: array<f64, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(3)>(%5), const<i32>(0))), const<f64>(1.25));
 // DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(3)>(%5), const<i32>(1))), const<f64>(2.5));
 // DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(3)>(%5), const<i32>(2))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(3)>(%5), const<i32>(0)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(3)>(%5), const<i32>(1))))));

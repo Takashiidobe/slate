@@ -89,7 +89,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     type @type1 va_list = va_list;
 // DEFAULT-NEXT:     global %5 null: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([40, 110, 117, 108, 108, 41, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 step0_jumps: array<ptr<const void>, 3> [storage=static] = aggregate<array<ptr<const void>, 3>, zero_fill=false>(index0 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%7)), index1 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%8)), index2 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%9))) [linkage=internal];
+// DEFAULT-NEXT:     global %18 step0_jumps: array<ptr<const void>, 3> [storage=static] [align=16] = aggregate<array<ptr<const void>, 3>, zero_fill=false>(index0 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%7)), index1 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%8)), index2 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%9))) [linkage=internal];
 // DEFAULT-NEXT:     global %30 .str30: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %31 .str31: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 115, 100, 102, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %32 .str32: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 115, 100, 102, 0]) [linkage=internal];

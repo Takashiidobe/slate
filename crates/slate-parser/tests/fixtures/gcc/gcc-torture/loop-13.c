@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 x: array<i64, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %11 x: array<i64, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %12 alpha: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(2));
 // DEFAULT-NEXT:         for %14
 // DEFAULT-NEXT:             init:

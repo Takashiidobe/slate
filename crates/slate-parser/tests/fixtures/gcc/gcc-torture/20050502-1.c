@@ -130,7 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%8), read<i32>(%12))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 buf: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %14 buf: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %15 p: ptr<const i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(10)>(%19)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));

@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %11 nums: array<i64, 3> [storage=static] = aggregate<array<i64, 3>, zero_fill=false>(index0 = neg<i64, overflow=ub>(const<i64>(1)), index1 = const<i64>(2147483647), index2 = sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(2147483647)), const<i64>(1))) [linkage=external];
+// DEFAULT-NEXT:     global %11 nums: array<i64, 3> [storage=static] [align=16] = aggregate<array<i64, 3>, zero_fill=false>(index0 = neg<i64, overflow=ub>(const<i64>(1)), index1 = const<i64>(2147483647), index2 = sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(2147483647)), const<i64>(1))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%14 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @f(%3 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {

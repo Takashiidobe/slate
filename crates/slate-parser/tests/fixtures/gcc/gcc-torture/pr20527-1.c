@@ -105,7 +105,7 @@ int         main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %9 b: array<i64, 4> [storage=static] = aggregate<array<i64, 4>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(1)), index1 = widen<i64, reason=assign>(const<i32>(5)), index2 = widen<i64, reason=assign>(const<i32>(11)), index3 = widen<i64, reason=assign>(const<i32>(23))) [linkage=external];
+// DEFAULT-NEXT:     global %9 b: array<i64, 4> [storage=static] [align=16] = aggregate<array<i64, 4>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(1)), index1 = widen<i64, reason=assign>(const<i32>(5)), index2 = widen<i64, reason=assign>(const<i32>(11)), index3 = widen<i64, reason=assign>(const<i32>(23))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @f(%1 limit: ptr<i64>, %2 base: ptr<i64>, %3 minLen: i64, %4 maxLen: i64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %6 vec: i64 [storage=automatic];
@@ -131,7 +131,7 @@ int         main(void) {
 // DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @exit(%17 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 l: array<i64, 3> [storage=automatic];
+// DEFAULT-NEXT:         let %11 l: array<i64, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>, i64, i64) -> void>(%0, array_decay<ptr<i64>, length=Some(3)>(%11), array_decay<ptr<i64>, length=Some(4)>(%9), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(2)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(0)))), widen<i64, reason=usual_arith>(const<i32>(3))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(1)))), widen<i64, reason=usual_arith>(const<i32>(9)))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(2)))), widen<i64, reason=usual_arith>(const<i32>(21))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);

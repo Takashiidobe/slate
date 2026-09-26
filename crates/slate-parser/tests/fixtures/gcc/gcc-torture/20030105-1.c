@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 a: array<i32, 8> [storage=automatic] [const] = aggregate<array<i32, 8>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2), index3 = const<i32>(3), index4 = const<i32>(4), index5 = const<i32>(5), index6 = const<i32>(6), index7 = const<i32>(7));
+// DEFAULT-NEXT:         let %3 a: array<i32, 8> [storage=automatic] [const] [align=16] = aggregate<array<i32, 8>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2), index3 = const<i32>(3), index4 = const<i32>(4), index5 = const<i32>(5), index6 = const<i32>(6), index7 = const<i32>(7));
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %5 sum: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%5, const<i32>(0));

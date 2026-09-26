@@ -39,11 +39,11 @@ int  main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: array<i32, 6> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 a: array<i32, 6> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 c: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 d: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(0), index2 = const<i32>(0), index3 = const<i32>(0));
+// DEFAULT-NEXT:         let %4 d: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(0), index2 = const<i32>(0), index3 = const<i32>(0));
 // DEFAULT-NEXT:         for %5
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i8>(%2, truncate<i8, reason=assign, fits=always>(const<i32>(0)));

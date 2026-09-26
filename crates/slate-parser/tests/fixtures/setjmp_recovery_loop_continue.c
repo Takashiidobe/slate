@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 __saved_mask: @type1;
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %8 env: array<@type3, 1> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %8 env: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %9 failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %10 teardown_failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([114, 97, 110, 32, 37, 100, 10, 0]) [linkage=internal];

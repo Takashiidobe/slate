@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         field2 c: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=12, align=2, offsets=[0, 2, 4]];
 // DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 arr: array<i8, 100> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 arr: array<i8, 100> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 ptr: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(100)>(%3) [linkage=external];
 // DEFAULT-NEXT:     global %5 idx: i32 [storage=static] = const<i32>(3) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%14 <unnamed>: i32) -> void [linkage=external];

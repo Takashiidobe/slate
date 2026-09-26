@@ -291,7 +291,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %80 initializer_seed: i32 [storage=automatic] = const<i32>(19);
 // DEFAULT-NEXT:         let %81 nonconstant_initializer: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = read<i32>(%80), field1 = add<i32, overflow=ub>(read<i32>(%80), const<i32>(1)));
 // DEFAULT-NEXT:         let %82 designated_initializer: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(22), field1 = const<i32>(23));
-// DEFAULT-NEXT:         let %83 designated_array: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(27), index2 = const<i32>(29));
+// DEFAULT-NEXT:         let %83 designated_array: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(27), index2 = const<i32>(29));
 // DEFAULT-NEXT:         let %84 const_value: i32 [storage=automatic] [const] = const<i32>(31);
 // DEFAULT-NEXT:         let %85 idempotent_const_value: i32 [storage=automatic] [const] = read<i32>(%84);
 // DEFAULT-NEXT:         let %86 volatile_value: volatile i32 [storage=automatic] = const<i32>(37);

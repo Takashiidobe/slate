@@ -127,7 +127,7 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:     fn %0 @foo(%1 n: u32, %2 x: i32, %3 y: i32, %4 z: ptr<u8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 a: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 c: array<array<f32, 4>, 2048> [storage=automatic];
+// DEFAULT-NEXT:         let %7 c: array<array<f32, 4>, 2048> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         switch %16 read<i32>(%2)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %16 const<i32>(6406):

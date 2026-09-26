@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %5 buf: array<i8, 50> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %5 buf: array<i8, 50> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([97, 98, 99, 100, 101, 102, 103, 104, 0]) [linkage=internal];

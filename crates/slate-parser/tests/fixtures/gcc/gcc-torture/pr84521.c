@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(__builtin_longjmp, pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%2)), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 buf: array<ptr<void>, 5> [storage=automatic];
+// DEFAULT-NEXT:         let %7 buf: array<ptr<void>, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(__builtin_setjmp, array_decay<ptr<ptr<void>>, length=Some(5)>(%7)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(5)>(%7)));

@@ -35,7 +35,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: array<array<i32, 9>, 6> [storage=static] = aggregate<array<array<i32, 9>, 6>, zero_fill=true>() [linkage=external];
+// DEFAULT-NEXT:     global %1 a: array<array<i32, 9>, 6> [storage=static] [align=16] = aggregate<array<array<i32, 9>, 6>, zero_fill=true>() [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %3 c: ptr<i32> [storage=static] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(9)>(deref(ptr_offset<ptr<array<i32, 9>>, subtract=false, element=array<i32, 9>, overflow=ub>(array_decay<ptr<array<i32, 9>>, length=Some(6)>(%1), const<i32>(3)))), const<i32>(5)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];

@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 compare: ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %4 errors: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 array: array<@type2, 2> [storage=static] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = function_decay<ptr<fn(i32) -> i32>>(%13)), index1 = aggregate<@type2, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = function_decay<ptr<fn(i32) -> i32>>(%13))) [linkage=external];
+// DEFAULT-NEXT:     global %15 array: array<@type2, 2> [storage=static] [align=16] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = function_decay<ptr<fn(i32) -> i32>>(%13)), index1 = aggregate<@type2, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = function_decay<ptr<fn(i32) -> i32>>(%13))) [linkage=external];
 // DEFAULT-NEXT:     fn %2 @qsort(%17 __base: ptr<void>, %18 __nmemb: u64, %19 __size: u64, %20 __compar: ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @debug() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);

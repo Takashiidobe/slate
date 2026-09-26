@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type1 MyInt = i32;
 // DEFAULT-NEXT:     global %2 global_point: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 global_array: array<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 global_array: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %4 @compute(%5 point_ptr: ptr<@type0>, %6 a: i32, %7 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %9: i32 [synthetic] = read<i32>(%6);
 // DEFAULT-NEXT:         let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), read<i32>(%7));

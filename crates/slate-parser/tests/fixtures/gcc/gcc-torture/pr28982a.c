@@ -86,10 +86,10 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 ptrs: array<ptr<f32>, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 results: array<f32, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 incs: array<i32, 20> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %65 input: array<f32, 80> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 ptrs: array<ptr<f32>, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 results: array<f32, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %2 incs: array<i32, 20> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %65 input: array<f32, 80> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%4 n: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 inc0: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(20)>(%2), const<i32>(0))));
 // DEFAULT-NEXT:         let %6 inc1: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(20)>(%2), const<i32>(1))));

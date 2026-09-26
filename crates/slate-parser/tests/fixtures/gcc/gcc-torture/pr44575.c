@@ -77,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:         field0 a: array<f32, 3>;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %2 fails: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     global %4 a: array<@type1, 5> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 a: array<@type1, 5> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @check(%6 z: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 arg: @type1 [storage=automatic];

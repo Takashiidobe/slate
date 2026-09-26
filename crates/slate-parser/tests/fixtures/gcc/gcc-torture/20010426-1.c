@@ -47,7 +47,7 @@ foo(int x)
 // DEFAULT-NEXT:         field0 m: ptr<i8>;
 // DEFAULT-NEXT:         field1 n: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %1 a: array<@type0, 20> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 a: array<@type0, 20> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] = const<i32>(20) [linkage=external];
 // DEFAULT-NEXT:     global %3 c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];

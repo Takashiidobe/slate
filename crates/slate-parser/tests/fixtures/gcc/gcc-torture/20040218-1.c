@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%10)), widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%9), const<i32>(1)))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 y: array<i64, 2> [storage=automatic] = aggregate<array<i64, 2>, zero_fill=false>(index0 = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))), index1 = widen<i64, reason=assign>(const<i32>(16000)));
+// DEFAULT-NEXT:         let %12 y: array<i64, 2> [storage=automatic] [align=16] = aggregate<array<i64, 2>, zero_fill=false>(index0 = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))), index1 = widen<i64, reason=assign>(const<i32>(16000)));
 // DEFAULT-NEXT:         let %13 yw: array<i16, 2> [storage=automatic] = aggregate<array<i16, 2>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(16000)));
 // DEFAULT-NEXT:         let %18: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<i64>) -> i64>(%2, array_decay<ptr<i64>, length=Some(2)>(%12)), widen<i64, reason=usual_arith>(const<i32>(16255)))

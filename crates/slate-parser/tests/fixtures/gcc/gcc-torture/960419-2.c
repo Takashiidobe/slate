@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 a: array<i32, 8> [storage=automatic] = aggregate<array<i32, 8>, zero_fill=true>(index0 = const<i32>(1));
+// DEFAULT-NEXT:         let %3 a: array<i32, 8> [storage=automatic] [align=16] = aggregate<array<i32, 8>, zero_fill=true>(index0 = const<i32>(1));
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %6
 // DEFAULT-NEXT:             init:

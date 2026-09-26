@@ -247,20 +247,20 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%6);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @f3(%17 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %18 aps: array<va_list, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %18 aps: array<va_list, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%18), const<i32>(4))));
 // DEFAULT-NEXT:         write<i64>(%4, va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%18), const<i32>(4)))));
 // DEFAULT-NEXT:         va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%18), const<i32>(4))));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%18), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @f4(%20 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %21 aps: array<va_list, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %21 aps: array<va_list, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%21), const<i32>(4))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%10, read<i32>(%20));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%21), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @f5(%23 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %24 aps: array<va_list, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %24 aps: array<va_list, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%24), const<i32>(4))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%7, read<i32>(%23), read<va_list>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%24), const<i32>(4)))));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%24), const<i32>(4))));

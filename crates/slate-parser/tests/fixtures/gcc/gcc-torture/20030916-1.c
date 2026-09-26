@@ -89,7 +89,7 @@ int main() { exit(0); }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 x: array<u32, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %7 x: array<u32, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %11
 // DEFAULT-NEXT:             init:

@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 s: array<@type2, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %12 s: array<@type2, 2> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<@type0>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%12), const<i32>(0)))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<@type0>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%12), const<i32>(0)))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<@type0>(field2(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%12), const<i32>(0)))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));

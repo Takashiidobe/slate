@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 point: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
-// DEFAULT-NEXT:         let %6 storage: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %6 storage: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %7 buf: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = null<ptr<i32>>);
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%7), array_decay<ptr<i32>, length=Some(4)>(%6));
 // DEFAULT-NEXT:         write<ptr<i32>>(field2(%7), array_decay<ptr<i32>, length=Some(4)>(%6));

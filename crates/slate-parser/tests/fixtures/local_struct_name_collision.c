@@ -114,7 +114,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %27 .str27: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @sum_docs() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 cases: array<@type0, 3> [storage=automatic] [const] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%18)), field1 = const<i32>(1)), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%19)), field1 = const<i32>(2)), index2 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%20)), field1 = const<i32>(3)));
+// DEFAULT-NEXT:         let %3 cases: array<@type0, 3> [storage=automatic] [const] [align=16] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%18)), field1 = const<i32>(1)), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%19)), field1 = const<i32>(2)), index2 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%20)), field1 = const<i32>(3)));
 // DEFAULT-NEXT:         let %4 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %21
 // DEFAULT-NEXT:             init:
@@ -135,7 +135,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @sum_flags() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 cases: array<@type1, 2> [storage=automatic] [const] = aggregate<array<@type1, 2>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(10)), index1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(20)));
+// DEFAULT-NEXT:         let %8 cases: array<@type1, 2> [storage=automatic] [const] [align=16] = aggregate<array<@type1, 2>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(10)), index1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(20)));
 // DEFAULT-NEXT:         let %9 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %22
 // DEFAULT-NEXT:             init:
@@ -165,7 +165,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @sum_movements() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 cases: array<@type2, 3> [storage=automatic] = aggregate<array<@type2, 3>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%23))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%24))), index2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%25))));
+// DEFAULT-NEXT:         let %13 cases: array<@type2, 3> [storage=automatic] [align=16] = aggregate<array<@type2, 3>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%23))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%24))), index2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%25))));
 // DEFAULT-NEXT:         let %14 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %26
 // DEFAULT-NEXT:             init:

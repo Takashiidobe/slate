@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 __saved_mask: @type1;
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %7 buf: array<@type3, 1> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %7 buf: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %8 stop: bool [storage=static] = const<bool>(false) [linkage=internal];
 // DEFAULT-NEXT:     fn %5 @_setjmp(%13 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @longjmp(%14 __env: ptr<@type3> [array=1], %15 __val: i32) -> void [linkage=external] [noreturn];

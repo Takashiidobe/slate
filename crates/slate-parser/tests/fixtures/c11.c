@@ -500,8 +500,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %119 utf32_state: @type13 [storage=automatic] = aggregate<@type13, zero_fill=true>(field0 = const<i32>(0));
 // DEFAULT-NEXT:         let %120 converted16: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %121 converted32: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         let %122 multibyte16: array<i8, 16> [storage=automatic];
-// DEFAULT-NEXT:         let %123 multibyte32: array<i8, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %122 multibyte16: array<i8, 16> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %123 multibyte32: array<i8, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %124 current_time: @type22 [storage=automatic] = aggregate<@type22, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %125 thread: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %126 mutex: @type34 [storage=automatic];

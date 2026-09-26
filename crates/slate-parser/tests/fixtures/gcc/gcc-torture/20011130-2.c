@@ -103,7 +103,7 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:         let %15 o: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %16 p: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %17 q: ptr<u8> [storage=automatic];
-// DEFAULT-NEXT:         let %18 r: array<ptr<u8>, 3> [storage=automatic];
+// DEFAULT-NEXT:         let %18 r: array<ptr<u8>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<ptr<@type0>>(%8, read<ptr<@type0>>(field0(deref(read<ptr<@type2>>(%6)))));
 // DEFAULT-NEXT:         write<i32>(%13, reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(field0(deref(read<ptr<@type0>>(%8)))))));
 // DEFAULT-NEXT:         write<i32>(%12, reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(field1(deref(read<ptr<@type0>>(%8)))))));

@@ -623,7 +623,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %132 input_state: @type14 [storage=automatic] = aggregate<@type14, zero_fill=true>();
 // DEFAULT-NEXT:         let %133 output_state: @type14 [storage=automatic] = aggregate<@type14, zero_fill=true>();
 // DEFAULT-NEXT:         let %134 character: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %135 output: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>();
+// DEFAULT-NEXT:         let %135 output: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>();
 // DEFAULT-NEXT:         let %136 input_size: u64 [storage=automatic] = call<u64, signature=fn(ptr<u8>, ptr<const i8>, u64, ptr<@type14>) -> u64>(%42, addr_of<ptr<u8>>(%134), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%244)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), addr_of<ptr<@type14>>(%132));
 // DEFAULT-NEXT:         let %137 output_size: u64 [storage=automatic] = call<u64, signature=fn(ptr<i8>, u8, ptr<@type14>) -> u64>(%43, array_decay<ptr<i8>, length=Some(16)>(%135), read<u8>(%134), addr_of<ptr<@type14>>(%133));
 // DEFAULT-NEXT:         let %138 atomic_character: atomic u8 [storage=automatic] = read<u8>(%134);
@@ -690,8 +690,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %153 utc: @type19 [storage=automatic] = aggregate<@type19, zero_fill=true>();
 // DEFAULT-NEXT:         let %154 local: @type19 [storage=automatic] = aggregate<@type19, zero_fill=true>();
 // DEFAULT-NEXT:         let %155 resolution: @type18 [storage=automatic] = aggregate<@type18, zero_fill=true>();
-// DEFAULT-NEXT:         let %156 month: array<i8, 32> [storage=automatic] = aggregate<array<i8, 32>, zero_fill=true>();
-// DEFAULT-NEXT:         let %157 wide_month: array<i32, 32> [storage=automatic] = aggregate<array<i32, 32>, zero_fill=true>();
+// DEFAULT-NEXT:         let %156 month: array<i8, 32> [storage=automatic] [align=16] = aggregate<array<i8, 32>, zero_fill=true>();
+// DEFAULT-NEXT:         let %157 wide_month: array<i32, 32> [storage=automatic] [align=16] = aggregate<array<i32, 32>, zero_fill=true>();
 // DEFAULT-NEXT:         let %158 total: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type19>>(call<ptr<@type19>, signature=fn(ptr<const i64>, ptr<@type19>) -> ptr<@type19>>(%36, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%152)), addr_of<ptr<@type19>>(%153)), addr_of<ptr<@type19>>(%153)));
 // DEFAULT-NEXT:         let %335: i32 [synthetic] = read<i32>(%158);
 // DEFAULT-NEXT:         let %336: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%335), from_bool<i32, reason=promotion>(eq<ptr<@type19>>(call<ptr<@type19>, signature=fn(ptr<const i64>, ptr<@type19>) -> ptr<@type19>>(%37, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%152)), addr_of<ptr<@type19>>(%154)), addr_of<ptr<@type19>>(%154))));
@@ -733,10 +733,10 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%158);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %160 @c23_io() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %161 output: array<i8, 64> [storage=automatic] = aggregate<array<i8, 64>, zero_fill=true>();
-// DEFAULT-NEXT:         let %162 float_output: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>();
-// DEFAULT-NEXT:         let %163 double_output: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>();
-// DEFAULT-NEXT:         let %164 long_double_output: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>();
+// DEFAULT-NEXT:         let %161 output: array<i8, 64> [storage=automatic] [align=16] = aggregate<array<i8, 64>, zero_fill=true>();
+// DEFAULT-NEXT:         let %162 float_output: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>();
+// DEFAULT-NEXT:         let %163 double_output: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>();
+// DEFAULT-NEXT:         let %164 long_double_output: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>();
 // DEFAULT-NEXT:         let %165 binary_value: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         let %166 exact_value: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %167 fast_value: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));

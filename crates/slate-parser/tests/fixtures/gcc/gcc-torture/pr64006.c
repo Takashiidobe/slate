@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i64>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 d: array<i64, 7> [storage=automatic] = aggregate<array<i64, 7>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(975)), index1 = widen<i64, reason=assign>(const<i32>(975)), index2 = widen<i64, reason=assign>(const<i32>(975)), index3 = widen<i64, reason=assign>(const<i32>(975)), index4 = widen<i64, reason=assign>(const<i32>(975)), index5 = widen<i64, reason=assign>(const<i32>(975)), index6 = widen<i64, reason=assign>(const<i32>(975)));
+// DEFAULT-NEXT:         let %7 d: array<i64, 7> [storage=automatic] [align=16] = aggregate<array<i64, 7>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(975)), index1 = widen<i64, reason=assign>(const<i32>(975)), index2 = widen<i64, reason=assign>(const<i32>(975)), index3 = widen<i64, reason=assign>(const<i32>(975)), index4 = widen<i64, reason=assign>(const<i32>(975)), index5 = widen<i64, reason=assign>(const<i32>(975)), index6 = widen<i64, reason=assign>(const<i32>(975)));
 // DEFAULT-NEXT:         let %8 r: i64 [storage=automatic] = call<i64, signature=fn(ptr<i64>, i32) -> i64>(%1, array_decay<ptr<i64>, length=Some(7)>(%7), const<i32>(7));
 // DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64)))), ne<i32>(read<i32>(%0), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);

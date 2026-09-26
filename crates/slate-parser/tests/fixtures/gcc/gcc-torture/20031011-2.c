@@ -39,7 +39,7 @@ void h(int l) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 buf: array<i8, 512> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %2 buf: array<i8, 512> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @f() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @g(%6 <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @h(%4 l: i32) -> void [linkage=external] [fallthrough=ret_void] {

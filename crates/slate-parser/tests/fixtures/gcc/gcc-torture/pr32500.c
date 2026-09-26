@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main(%7 argc: i32, %8 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 numbers: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(57005), index1 = const<i32>(48879), index2 = const<i32>(4919), index3 = const<i32>(16962));
+// DEFAULT-NEXT:         let %10 numbers: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(57005), index1 = const<i32>(48879), index2 = const<i32>(4919), index3 = const<i32>(16962));
 // DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%9, const<i32>(1));

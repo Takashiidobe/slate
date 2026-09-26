@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %8 sh: array<i16, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %8 sh: array<i16, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %9 c: array<i8, 10> [storage=automatic];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(%7), widen<i64, reason=assign>(const<i32>(1)));

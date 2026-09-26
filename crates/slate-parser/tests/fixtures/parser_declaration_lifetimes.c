@@ -152,7 +152,7 @@ int members(void) {
 // DEFAULT-NEXT:         return read<i32>(%6);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @own_bound() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 T: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %8 T: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %9 x: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16)));
 // DEFAULT-NEXT:         return read<i32>(%9);
 // DEFAULT-NEXT:     }
@@ -202,7 +202,7 @@ int members(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     for %71
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             let %56 T: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:                             let %56 T: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:                         condition: ne<u64>(const<u64>(16), const<u64>(0))
 // DEFAULT-NEXT:                         increment: omitted
 // DEFAULT-NEXT:                         body:

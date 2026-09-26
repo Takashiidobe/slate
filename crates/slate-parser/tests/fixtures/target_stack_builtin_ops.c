@@ -135,7 +135,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @printf(%35 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memset(%36 __s: ptr<void>, %37 __c: i32, %38 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %6 @cache_prefetch_probe(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 bytes: array<i8, 16> [storage=automatic] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %8 bytes: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%8), const<i32>(0))), truncate<i8, reason=explicit, fits=unknown>(read<i32>(%7)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<void>) -> void>(__builtin___clear_cache, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%8)), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%8), const<u64>(16))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%8), const<i32>(1))), const<i32>(0), const<i32>(3));

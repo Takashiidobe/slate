@@ -91,7 +91,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 v4flt = vector<f32, 4>;
-// DEFAULT-NEXT:     global %17 buffer: array<f32, 64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %17 buffer: array<f32, 64> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 dst: ptr<f32>, %4 src: ptr<ptr<f32>>, %5 a: i32, %6 n: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
@@ -204,7 +204,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %19 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %20 dst: ptr<f32> [storage=automatic];
-// DEFAULT-NEXT:         let %21 src: array<ptr<f32>, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %21 src: array<ptr<f32>, 2> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %22 cptr: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%22, pointer_cast<ptr<i8>, reason=explicit>(array_decay<ptr<f32>, length=Some(64)>(%17)));
 // DEFAULT-NEXT:         let %56: ptr<i8> [synthetic] = read<ptr<i8>>(%22);

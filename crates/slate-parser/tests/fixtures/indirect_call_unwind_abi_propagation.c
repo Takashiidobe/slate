@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type7 Ctx = struct {
 // DEFAULT-NEXT:         field0 run: ptr<fn(i32, i32) -> void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %11 env: array<@type3, 1> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %11 env: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %12 failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %13 g_callback: ptr<fn(i32) -> void> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %29 .str29: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([113, 117, 105, 101, 116, 32, 37, 100, 10, 0]) [linkage=internal];

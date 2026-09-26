@@ -72,10 +72,10 @@ int main() {
 // DEFAULT-NEXT:         field0 d: ptr<@type0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %4 a_con: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 vc_cons: array<@type1, 63> [storage=static] = aggregate<array<@type1, 63>, zero_fill=true>(index0 = aggregate<@type1, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%4))) [linkage=external];
-// DEFAULT-NEXT:     global %6 default_red: array<i32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 default_grn: array<i32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 default_blu: array<i32, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %5 vc_cons: array<@type1, 63> [storage=static] [align=16] = aggregate<array<@type1, 63>, zero_fill=true>(index0 = aggregate<@type1, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%4))) [linkage=external];
+// DEFAULT-NEXT:     global %6 default_red: array<i32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %7 default_grn: array<i32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %8 default_blu: array<i32, 16> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%16 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %9 @bar(%14 k: i32) -> void [linkage=external] [fallthrough=ret_void] {

@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 buf: array<i8, 65> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 buf: array<i8, 65> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @memset(%7 <unnamed>: ptr<void>, %8 <unnamed>: i32, %9 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: i32) -> void [linkage=external] [fallthrough=ret_void] {

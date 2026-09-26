@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 input: array<u8, 4> [storage=automatic] = code_units<array<u8, 4>>([97, 98, 99, 0]);
-// DEFAULT-NEXT:         let %14 tag: array<u8, 22> [storage=automatic] = code_units<array<u8, 22>>([116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116, 114, 0]);
+// DEFAULT-NEXT:         let %14 tag: array<u8, 22> [storage=automatic] [align=16] = code_units<array<u8, 22>>([116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116, 114, 0]);
 // DEFAULT-NEXT:         let %15 buffer: array<u8, 4> [storage=automatic] = aggregate<array<u8, 4>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         let %16 size_read: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %17 parser: @type2 [storage=automatic];

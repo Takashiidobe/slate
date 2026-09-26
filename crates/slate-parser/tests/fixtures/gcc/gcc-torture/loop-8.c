@@ -49,7 +49,7 @@ e:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 a: array<f64, 3> [storage=static] = aggregate<array<f64, 3>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0), index2 = const<f64>(2.0)) [linkage=external];
+// DEFAULT-NEXT:     global %2 a: array<f64, 3> [storage=static] [align=16] = aggregate<array<f64, 3>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0), index2 = const<f64>(2.0)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @bar(%4 x: i32, %5 y: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] {

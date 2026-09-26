@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%6)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @pick_with_pointer_arithmetic(%9 index: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 values: array<i32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %10 values: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %11 ptr: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(4)>(%10);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%10), const<i32>(0))), const<i32>(4));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%10), const<i32>(1))), const<i32>(8));

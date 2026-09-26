@@ -319,7 +319,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%73);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %74 @gnu_printf_introspection() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %75 types: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=true>();
+// DEFAULT-NEXT:         let %75 types: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=true>();
 // DEFAULT-NEXT:         let %76 arguments: u64 [storage=automatic] = call<u64, signature=fn(ptr<const i8>, u64, ptr<i32>) -> u64>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%130)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), array_decay<ptr<i32>, length=Some(4)>(%75));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(logical_and<bool>(eq<u64>(read<u64>(%76), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), eq<i32>(and<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%75), const<i32>(0)))), not<i32>(const<i32>(65280))), const<i32>(3))), eq<i32>(and<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%75), const<i32>(1)))), not<i32>(const<i32>(65280))), const<i32>(0))));
 // DEFAULT-NEXT:     }

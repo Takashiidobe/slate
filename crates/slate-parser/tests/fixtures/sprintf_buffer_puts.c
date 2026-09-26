@@ -39,7 +39,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @sprintf(%4 __s: ptr<i8> [restrict], %5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @puts(%6 __s: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 buf: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %3 buf: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%0, array_decay<ptr<i8>, length=Some(64)>(%3), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%7)), const<i32>(3), const<i32>(4));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%3)));
 // DEFAULT-NEXT:         return const<i32>(0);

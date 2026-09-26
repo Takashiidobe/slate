@@ -47,8 +47,8 @@ int foo(void *a, void *b, unsigned int c) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 src: array<i32, 10> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 dst: array<i32, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 src: array<i32, 10> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %5 dst: array<i32, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%10 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memcpy(%11 <unnamed>: ptr<void>, %12 <unnamed>: ptr<const void>, %13 <unnamed>: u64) -> ptr<void> [linkage=external];

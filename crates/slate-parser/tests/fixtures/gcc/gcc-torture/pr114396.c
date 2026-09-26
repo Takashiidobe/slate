@@ -109,9 +109,9 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i16 [storage=static] = truncate<i16, reason=assign, fits=always>(const<i32>(15)) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: array<i16, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 b: array<i16, 16> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 ua: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(15))) [linkage=external];
-// DEFAULT-NEXT:     global %3 ub: array<u16, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 ub: array<u16, 16> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %4 @foo(%5 a: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %33
 // DEFAULT-NEXT:             init:

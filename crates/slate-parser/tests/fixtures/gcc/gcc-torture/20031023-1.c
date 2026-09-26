@@ -109,7 +109,7 @@ main (void)
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 s: array<i8, 1099511627776> [storage=automatic];
+// DEFAULT-NEXT:         let %5 s: array<i8, 1099511627776> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1099511627776)>(%5), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(97)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1099511627776)>(%5), sub<u64, overflow=wrap>(const<u64>(1099511627776), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))), truncate<i8, reason=assign, fits=always>(const<i32>(98)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1099511627776)>(%5)));
@@ -121,7 +121,7 @@ main (void)
 // DEFAULT-NEXT:             return call<i32, signature=fn(ptr<const i8>) -> i32>(read<ptr<fn(ptr<const i8>) -> i32>>(%3), null<ptr<const i8>>);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8 s: array<i8, 1099511627776> [storage=automatic];
+// DEFAULT-NEXT:                 let %8 s: array<i8, 1099511627776> [storage=automatic] [align=16];
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1099511627776)>(%8), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(97)));
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1099511627776)>(%8), sub<u64, overflow=wrap>(const<u64>(1099511627776), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))), truncate<i8, reason=assign, fits=always>(const<i32>(98)));
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1099511627776)>(%8)));

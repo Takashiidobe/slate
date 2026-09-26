@@ -85,7 +85,7 @@ main() {
 // DEFAULT-NEXT:         field0 n: ptr<@type0>;
 // DEFAULT-NEXT:         field1 v: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %6 a: array<@type0, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %6 a: array<@type0, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([118, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([101, 0]) [linkage=internal];

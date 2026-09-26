@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 e: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %6 e: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i32>, i32, ptr<i32>) -> void>(%0, const<i32>(1), array_decay<ptr<i32>, length=Some(10)>(%6), const<i32>(1), array_decay<ptr<i32>, length=Some(10)>(%6));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

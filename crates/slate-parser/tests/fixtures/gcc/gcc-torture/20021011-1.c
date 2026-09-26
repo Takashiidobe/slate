@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 buf: array<i8, 64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 buf: array<i8, 64> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 .str4: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([109, 121, 115, 116, 114, 105, 110, 103, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %5 .str5: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([109, 121, 115, 116, 114, 105, 110, 103, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %7 .str7: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([109, 121, 115, 116, 114, 105, 110, 103, 0]) [linkage=internal];

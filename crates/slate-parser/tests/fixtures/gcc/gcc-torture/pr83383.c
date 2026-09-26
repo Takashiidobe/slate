@@ -50,8 +50,8 @@ int main() {
 // DEFAULT-NEXT:     global %1 b: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(195))) [linkage=external];
 // DEFAULT-NEXT:     global %2 c: u64 [storage=static] = not<u64>(const<u64>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %3 d: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %4 e: array<u64, 2> [storage=static] = aggregate<array<u64, 2>, zero_fill=false>(index0 = const<u64>(3625445792498952486), index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     global %5 f: array<u64, 2> [storage=static] = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index1 = const<u64>(8985037393681294663)) [linkage=external];
+// DEFAULT-NEXT:     global %4 e: array<u64, 2> [storage=static] [align=16] = aggregate<array<u64, 2>, zero_fill=false>(index0 = const<u64>(3625445792498952486), index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %5 f: array<u64, 2> [storage=static] [align=16] = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index1 = const<u64>(8985037393681294663)) [linkage=external];
 // DEFAULT-NEXT:     global %6 g: u64 [storage=static] = const<u64>(5052410635626804928) [linkage=external];
 // DEFAULT-NEXT:     fn %7 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u64>(%0, from_bool<u64, reason=assign>(lt<i32>(widen<i32, reason=promotion>(reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%0)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%1))))));

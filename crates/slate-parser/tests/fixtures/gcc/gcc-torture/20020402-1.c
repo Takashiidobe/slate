@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 listElem: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(30), index1 = const<i32>(2), index2 = const<i32>(10), index3 = const<i32>(5));
+// DEFAULT-NEXT:         let %3 listElem: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(30), index1 = const<i32>(2), index2 = const<i32>(10), index3 = const<i32>(5));
 // DEFAULT-NEXT:         let %4 listSmall: array<i32, 2> [storage=automatic];
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 j: i32 [storage=automatic];

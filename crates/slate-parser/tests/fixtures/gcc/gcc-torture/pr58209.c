@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 T = i64;
-// DEFAULT-NEXT:     global %2 buf: array<i64, 1024> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 buf: array<i64, 1024> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%4 n: i64) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0)))

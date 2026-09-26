@@ -91,7 +91,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: array<u32, 256> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %0 a: array<u32, 256> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %1 b: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
 // DEFAULT-NEXT:     global %2 c: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
 // DEFAULT-NEXT:     global %3 d: i32 [storage=static] = const<i32>(0) [linkage=internal];
@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %21 h: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %22 k: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         let %23 l: array<i32, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %23 l: array<i32, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %24 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %25 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(__builtin_strcmp, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>, volatile>(%19)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%28))), const<i32>(0))

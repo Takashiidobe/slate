@@ -44,7 +44,7 @@ int select_type(void) {
 // DEFAULT-NEXT:         %3 D = const<i32>(16);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type1 word = i64;
-// DEFAULT-NEXT:     global %6 table: array<i32, 18> [storage=static] = aggregate<array<i32, 18>, zero_fill=true>(index8 = const<i32>(1), index10..=16 = const<i32>(3), index17 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %6 table: array<i32, 18> [storage=static] [align=16] = aggregate<array<i32, 18>, zero_fill=true>(index8 = const<i32>(1), index10..=16 = const<i32>(3), index17 = const<i32>(2)) [linkage=external];
 // DEFAULT-NEXT:     fn %7 @select_int(%8 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }

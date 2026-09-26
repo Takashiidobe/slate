@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %4 global_values: array<i32, 4> [storage=static] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8)) [linkage=internal];
+// DEFAULT-NEXT:     global %4 global_values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8)) [linkage=internal];
 // DEFAULT-NEXT:     global %45 .str45: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%37 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @free(%38 __ptr: ptr<void>) -> void [linkage=external];
@@ -179,7 +179,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%28);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %30 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %31 local_values: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(3), index2 = const<i32>(5), index3 = const<i32>(7));
+// DEFAULT-NEXT:         let %31 local_values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(3), index2 = const<i32>(5), index3 = const<i32>(7));
 // DEFAULT-NEXT:         let %32 text: array<u8, 4> [storage=automatic] = code_units<array<u8, 4>>([97, 98, 99, 0]);
 // DEFAULT-NEXT:         let %33 total: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i32>, i32) -> i32>(%5, pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(4)>(%4)), const<i32>(4));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%10, array_decay<ptr<i32>, length=Some(4)>(%31), const<i32>(4));

@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 vd: array<f64, 2> [storage=static] = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(0.0)) [linkage=external];
+// DEFAULT-NEXT:     global %0 vd: array<f64, 2> [storage=static] [align=16] = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(0.0)) [linkage=external];
 // DEFAULT-NEXT:     global %1 vi: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1234567890), index1 = const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %2 pd: ptr<f64> [storage=static] = array_decay<ptr<f64>, length=Some(2)>(%0) [linkage=external];
 // DEFAULT-NEXT:     global %3 pi: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(2)>(%1) [linkage=external];
@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:             write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 dummy: array<i32, 1532> [storage=automatic];
+// DEFAULT-NEXT:         let %9 dummy: array<i32, 1532> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         let %11 n: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %12 s: i32 [storage=automatic] = const<i32>(0);

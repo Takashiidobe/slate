@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type4 vector_t = @type3;
 // DEFAULT-NEXT:     global %25 pos: array<@type3, 1> [storage=static] = aggregate<array<@type3, 1>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)))) [linkage=external];
-// DEFAULT-NEXT:     global %26 limit: array<@type3, 2> [storage=static] = aggregate<array<@type3, 2>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index1 = aggregate<@type3, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)))) [linkage=external];
+// DEFAULT-NEXT:     global %26 limit: array<@type3, 2> [storage=static] [align=16] = aggregate<array<@type3, 2>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index1 = aggregate<@type3, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%30 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @w(%8 x: f32, %9 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
@@ -108,7 +108,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @gitter(%17 count: i32, %18 pos: ptr<@type3>, %19 list: ptr<@type0>, %20 nww: ptr<i32>, %21 limit: ptr<@type3> [array=2], %22 r: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %23 d: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %24 gitt: array<array<i32, 128>, 128> [storage=automatic];
+// DEFAULT-NEXT:         let %24 gitt: array<array<i32, 128>, 128> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, read<f32>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%21), const<i32>(0))))), read<f32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%21), const<i32>(0))))));
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%13, read<f32>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%21), const<i32>(1))))), read<f32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%21), const<i32>(1))))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%20)), const<i32>(0));

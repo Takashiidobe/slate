@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 s: volatile array<array<i8, 3>, 256> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 s: volatile array<array<i8, 3>, 256> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 g: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @dummy(%4 a: i8) -> void [linkage=internal] [fallthrough=ret_void] {

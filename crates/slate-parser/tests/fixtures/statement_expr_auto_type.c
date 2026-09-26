@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([37, 108, 100, 32, 37, 108, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 values: array<i64, 3> [storage=automatic] = aggregate<array<i64, 3>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(4)), index1 = widen<i64, reason=assign>(const<i32>(9)), index2 = widen<i64, reason=assign>(const<i32>(16)));
+// DEFAULT-NEXT:         let %2 values: array<i64, 3> [storage=automatic] [align=16] = aggregate<array<i64, 3>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(4)), index1 = widen<i64, reason=assign>(const<i32>(9)), index2 = widen<i64, reason=assign>(const<i32>(16)));
 // DEFAULT-NEXT:         let %3 index: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %4 old: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %9: i64 [synthetic];

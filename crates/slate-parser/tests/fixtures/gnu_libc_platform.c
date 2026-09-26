@@ -479,7 +479,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %275 @gnu_environment_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %276 directory: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %277 canonical: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %278 current: array<i8, 4096> [storage=automatic];
+// DEFAULT-NEXT:         let %278 current: array<i8, 4096> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %279 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %371: i32 [synthetic] = read<i32>(%279);
 // DEFAULT-NEXT:         let %372: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%371), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%38, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%353)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%354)), const<i32>(1)), const<i32>(0))));
@@ -594,7 +594,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %296 @gnu_runtime_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %297 random_bytes: array<u8, 8> [storage=automatic];
-// DEFAULT-NEXT:         let %298 frames: array<ptr<void>, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %298 frames: array<ptr<void>, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %299 information: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>();
 // DEFAULT-NEXT:         let %300 page_size: i64 [storage=automatic] = call<i64, signature=fn(i32) -> i64>(%272, const<i32>(30));
 // DEFAULT-NEXT:         let %301 total: i32 [storage=automatic] = const<i32>(0);

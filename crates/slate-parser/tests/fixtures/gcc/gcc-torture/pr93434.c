@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:         let %3 k: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %5 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 t2: array<@type0, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %6 t2: array<@type0, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %7 inval: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%7, const<f64>(1.0));
 // DEFAULT-NEXT:         for %8

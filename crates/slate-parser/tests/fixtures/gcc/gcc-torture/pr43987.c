@@ -47,7 +47,7 @@ int         main() {
 // DEFAULT-NEXT:         field1 l: ptr<ptr<void>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type2 T = @type1;
-// DEFAULT-NEXT:     global %0 B: array<i8, 2048> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 B: array<i8, 2048> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %4 @add_input_file(%5 file: ptr<ptr<void>>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(read<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%0))))), const<i32>(0))), pointer_cast<ptr<void>, reason=assign>(read<ptr<ptr<void>>>(%5)));
 // DEFAULT-NEXT:     }

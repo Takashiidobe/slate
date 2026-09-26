@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 threads: array<u64, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %12 threads: array<u64, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %23
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %13 i: i32 [storage=automatic] = const<i32>(0);

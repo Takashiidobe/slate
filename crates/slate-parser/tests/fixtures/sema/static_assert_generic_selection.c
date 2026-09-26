@@ -60,7 +60,7 @@ void selected(int n) {
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
 // VALID-NEXT:     type @type0 byte = u8;
-// VALID-NEXT:     extern %1 table: array<i32, 4> [storage=static] [linkage=external];
+// VALID-NEXT:     extern %1 table: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // VALID-NEXT:     fn %2 @routine() -> void [linkage=external];
 // VALID-NEXT:     fn %3 @selected(%4 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // VALID-NEXT:         let %5 a: u32 [storage=automatic];

@@ -211,7 +211,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     global %6 hex: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 hex: array<i8, 17> [storage=static] [align=16] = code_units<array<i8, 17>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %184 .str184: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @exit(%181 <unnamed>: i32) -> void [linkage=external];

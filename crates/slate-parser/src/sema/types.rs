@@ -1639,15 +1639,31 @@ impl TypeResolver {
         declared: Option<QualType>,
         requested: Option<u64>,
     ) -> Result<Option<u64>, ResolveError> {
+        let large_array = (declared.is_some()
+            && matches!(
+                ty,
+                Type::Array {
+                    length: Some(_),
+                    ..
+                }
+            ))
+        .then(|| self.target.large_array_alignment())
+        .flatten();
+        let typedef_aligned = declared.is_some_and(|q| self.ctypes.typedef_alignment(q).is_some());
+        if requested.is_none() && large_array.is_none() && !typedef_aligned {
+            return Ok(None);
+        }
         let storage = self.storage(ty.clone())?;
         let natural = u64::from(storage.alignment_bytes);
         let typed = match declared {
             Some(q) => u64::from(self.typedef_storage(q, storage)?.alignment_bytes),
             None => natural,
         };
-        let effective = requested.map_or(typed, |requested| {
-            self.effective_alignment(requested, typed)
-        });
+        let effective = match (requested, large_array) {
+            (Some(requested), _) => self.effective_alignment(requested, typed),
+            (None, Some(large)) if storage.size_bytes >= large => typed.max(large),
+            (None, _) => typed,
+        };
         Ok((effective != natural).then_some(effective))
     }
 

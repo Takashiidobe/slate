@@ -108,7 +108,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type8 Dispatcher = struct {
 // DEFAULT-NEXT:         field0 run: ptr<fn(i32) -> @type5>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %14 env: array<@type3, 1> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %14 env: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %15 failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %16 g_callback: ptr<fn(i32) -> void> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %31 .str31: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([99, 97, 108, 108, 98, 97, 99, 107, 32, 37, 100, 10, 0]) [linkage=internal];

@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 x: volatile array<i32, 1024> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 x: volatile array<i32, 1024> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %8 vc: volatile complex<f64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %11 t0: f64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %12 t1: f64 [storage=static] [linkage=external];
@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%23 __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @fill_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 y: volatile array<i32, 1024> [storage=automatic];
+// DEFAULT-NEXT:         let %6 y: volatile array<i32, 1024> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %24
 // DEFAULT-NEXT:             init:

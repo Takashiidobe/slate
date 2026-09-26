@@ -148,7 +148,7 @@ int main() {
 // DEFAULT-NEXT:         return read<ptr<@type0>>(field8(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @sort_pagelist(%10 pIn: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 a: array<ptr<@type0>, 25> [storage=automatic];
+// DEFAULT-NEXT:         let %11 a: array<ptr<@type0>, 25> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %12 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %13 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11)), const<i32>(0), const<u64>(200));
@@ -206,7 +206,7 @@ int main() {
 // DEFAULT-NEXT:         return read<ptr<@type0>>(%12);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: array<@type0, 5> [storage=automatic];
+// DEFAULT-NEXT:         let %15 a: array<@type0, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %16 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%15), const<i32>(0)))), reinterpret<u32, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:         write<ptr<@type0>>(field8(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%15), const<i32>(0)))), addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%15), const<i32>(1)))));

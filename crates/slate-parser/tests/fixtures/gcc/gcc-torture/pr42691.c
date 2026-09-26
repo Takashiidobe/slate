@@ -92,7 +92,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 infinit: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<u16, 4>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index2 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index3 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(32752)))));
-// DEFAULT-NEXT:         let %12 table: array<f64, 2> [storage=automatic] = aggregate<array<f64, 2>, zero_fill=false>(index0 = read<f64>(field1(%11)), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(23)));
+// DEFAULT-NEXT:         let %12 table: array<f64, 2> [storage=automatic] [align=16] = aggregate<array<f64, 2>, zero_fill=false>(index0 = read<f64>(field1(%11)), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(23)));
 // DEFAULT-NEXT:         let %13 key: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(23));
 // DEFAULT-NEXT:         let %14 ret: i32 [storage=automatic] = call<i32, signature=fn(ptr<f64>, ptr<f64>) -> i32>(%2, addr_of<ptr<f64>>(%13), array_decay<ptr<f64>, length=Some(2)>(%12));
 // DEFAULT-NEXT:         return read<i32>(%14);

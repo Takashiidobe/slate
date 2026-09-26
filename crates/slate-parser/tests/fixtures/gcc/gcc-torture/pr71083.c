@@ -72,8 +72,8 @@ int main() {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 base: u16;
 // DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     global %9 test: array<@type1, 101> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 test1: array<@type2, 101> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %9 test: array<@type1, 101> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %10 test1: array<@type2, 101> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 chain: ptr<@type1>) -> ptr<@type1> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %12

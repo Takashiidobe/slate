@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
 // DEFAULT-NEXT:     type @type5 VAL = @type4;
 // DEFAULT-NEXT:     type @type6 WORD = u16;
-// DEFAULT-NEXT:     global %1 id_space: array<array<i8, 33>, 2> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %1 id_space: array<array<i8, 33>, 2> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %8 curval: @type4 [storage=static] = aggregate<@type4, zero_fill=true>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
 // DEFAULT-NEXT:     global %9 idc: i16 [storage=static] = truncate<i16, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
 // DEFAULT-NEXT:     global %10 cur_line: i32 [storage=static] [linkage=internal];

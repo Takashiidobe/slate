@@ -332,14 +332,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:         field0 insn: ptr<@type1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     extern %38 n_reloads: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %39 reload_order: array<i16, 60> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %40 reload_spill_index: array<i32, 60> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %41 rld: array<@type17, 60> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %39 reload_order: array<i16, 60> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %40 reload_spill_index: array<i32, 60> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     extern %41 rld: array<@type17, 60> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %42 reg_last_reload_reg: ptr<ptr<@type1>> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %43 reg_reloaded_valid: array<u64, 2> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %44 reg_reloaded_dead: array<u64, 2> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %45 reg_reloaded_died: array<u64, 2> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %46 reg_is_output_reload: array<u64, 2> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %43 reg_reloaded_valid: array<u64, 2> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %44 reg_reloaded_dead: array<u64, 2> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %45 reg_reloaded_died: array<u64, 2> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %46 reg_is_output_reload: array<u64, 2> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     extern %47 mode_size: array<u32, incomplete> [storage=static] [const] [linkage=external];
 // DEFAULT-NEXT:     extern %48 target_flags: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %49 @emit_reload_insns(%50 chain: ptr<@type18>) -> void [linkage=internal] [fallthrough=ret_void] {

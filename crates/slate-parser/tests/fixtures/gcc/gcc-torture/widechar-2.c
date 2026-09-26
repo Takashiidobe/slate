@@ -38,7 +38,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 wchar_t = i32;
-// DEFAULT-NEXT:     global %3 ws: array<i32, 4> [storage=static] [const] = code_units<array<i32, 4>>([102, 111, 111, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %3 ws: array<i32, 4> [storage=static] [const] [align=16] = code_units<array<i32, 4>>([102, 111, 111, 0]) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @exit(%5 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

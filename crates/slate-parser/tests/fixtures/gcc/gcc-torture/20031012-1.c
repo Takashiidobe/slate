@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     fn %0 @memset(%7 <unnamed>: ptr<void>, %8 <unnamed>: i32, %9 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 a: array<i8, 15000> [storage=automatic];
+// DEFAULT-NEXT:         let %3 a: array<i8, 15000> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(15000)>(%3), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(15000)>(%3), const<i32>(0))))), const<i32>(205), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(13371))));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(15000)>(%3), const<i32>(13371))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));

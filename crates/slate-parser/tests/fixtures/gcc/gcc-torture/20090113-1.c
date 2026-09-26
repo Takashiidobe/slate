@@ -92,8 +92,8 @@ int main() {
 // DEFAULT-NEXT:     } [size=96, align=8, offsets=[0, 8, 12]];
 // DEFAULT-NEXT:     type @type3 gfc_array_i4 = @type2;
 // DEFAULT-NEXT:     fn %4 @msum_i4(%5 retarray: ptr<@type2> [const], %6 array: ptr<@type2> [const], %7 pdim: ptr<const i32> [const]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 count: array<i32, 7> [storage=automatic];
-// DEFAULT-NEXT:         let %9 extent: array<i32, 7> [storage=automatic];
+// DEFAULT-NEXT:         let %8 count: array<i32, 7> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %9 extent: array<i32, 7> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 dest: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %11 base: ptr<const i32> [storage=automatic];
 // DEFAULT-NEXT:         let %12 dim: i32 [storage=automatic];
@@ -151,7 +151,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %17 rdata: array<i32, 3> [storage=automatic];
-// DEFAULT-NEXT:         let %18 adata: array<i32, 9> [storage=automatic];
+// DEFAULT-NEXT:         let %18 adata: array<i32, 9> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %19 retarray: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(3)>(%17), field1 = const<i32>(265), field2 = aggregate<array<@type0, 7>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3))));
 // DEFAULT-NEXT:         let %20 array: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = array_decay<ptr<i32>, length=Some(9)>(%18), field1 = const<i32>(266), field2 = aggregate<array<@type0, 7>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(3)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(1), field2 = const<i32>(3))));
 // DEFAULT-NEXT:         let %21 dim: i32 [storage=automatic] = const<i32>(2);

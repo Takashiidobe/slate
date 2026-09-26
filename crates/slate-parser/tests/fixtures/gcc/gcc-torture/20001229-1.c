@@ -73,8 +73,8 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @foo(%3 a: ptr<i8>, %4 b: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @showinfo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 uname: array<i8, 33> [storage=automatic] = code_units<array<i8, 33>>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// DEFAULT-NEXT:         let %7 tty: array<i8, 38> [storage=automatic] = code_units<array<i8, 38>>([47, 100, 101, 118, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// DEFAULT-NEXT:         let %6 uname: array<i8, 33> [storage=automatic] [align=16] = code_units<array<i8, 33>>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// DEFAULT-NEXT:         let %7 tty: array<i8, 38> [storage=automatic] [align=16] = code_units<array<i8, 38>>([47, 100, 101, 118, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<i8>) -> void>(%2, array_decay<ptr<i8>, length=Some(33)>(%6), array_decay<ptr<i8>, length=Some(38)>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

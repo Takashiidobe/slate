@@ -113,7 +113,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 rt: array<@type0, 2> [storage=automatic];
-// DEFAULT-NEXT:         let %9 rta: array<ptr<@type0>, 14> [storage=automatic];
+// DEFAULT-NEXT:         let %9 rta: array<ptr<@type0>, 14> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u16>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(%8), const<i32>(0)))), truncate<u16, reason=assign, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))));
 // DEFAULT-NEXT:         write<u16>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(%8), const<i32>(0)))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));

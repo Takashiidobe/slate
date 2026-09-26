@@ -58,7 +58,7 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4, 8, 12, 16, 20]];
 // DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 gdt_table: array<@type0, 2> [storage=automatic] = aggregate<array<@type0, 2>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(ptr_to_int<u32, reason=explicit>(addr_of<ptr<i32>>(%0)), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(8))))));
+// DEFAULT-NEXT:         let %3 gdt_table: array<@type0, 2> [storage=automatic] [align=16] = aggregate<array<@type0, 2>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(ptr_to_int<u32, reason=explicit>(addr_of<ptr<i32>>(%0)), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(8))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

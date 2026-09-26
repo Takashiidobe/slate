@@ -40,7 +40,7 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 chars_1: volatile array<i8, 1073741823> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %0 chars_1: volatile array<i8, 1073741823> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %1 chars_2: volatile array<i8, 1> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i8, volatile>(deref(ptr_offset<ptr<volatile i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<volatile i8>, length=Some(1073741823)>(%0), const<i32>(10))), truncate<i8, reason=assign, fits=always>(const<i32>(121)));

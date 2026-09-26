@@ -89,17 +89,17 @@ int main(void) {
 // DEFAULT-NEXT:             let %8 my_char: array<i8, 9> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i8>>(%7, addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(9)>(%8), const<i32>(0)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %9 a: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %9 a: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %11 q: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(16)>(%9);
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %12 b: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:             let %12 b: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             write<ptr<i32>>(%10, call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, array_decay<ptr<i32>, length=Some(16)>(%9), array_decay<ptr<i32>, length=Some(16)>(%12)));
 // DEFAULT-NEXT:             call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, array_decay<ptr<i32>, length=Some(16)>(%9), array_decay<ptr<i32>, length=Some(16)>(%12));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, array_decay<ptr<i32>, length=Some(16)>(%9), read<ptr<i32>>(%11));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %13 c: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:             let %13 c: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             write<ptr<i32>>(%11, call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, array_decay<ptr<i32>, length=Some(16)>(%9), array_decay<ptr<i32>, length=Some(16)>(%13)));
 // DEFAULT-NEXT:             call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, array_decay<ptr<i32>, length=Some(16)>(%9), array_decay<ptr<i32>, length=Some(16)>(%13));
 // DEFAULT-NEXT:         }

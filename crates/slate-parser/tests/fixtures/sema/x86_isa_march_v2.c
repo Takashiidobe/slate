@@ -143,6 +143,6 @@ int biggest[__BIGGEST_ALIGNMENT__];
 // CHECK-NEXT:     global %11 has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %12 has__SSE_MATH__: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %13 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %14 biggest: array<i32, 16> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %14 biggest: array<i32, 16> [storage=static] [align=16] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

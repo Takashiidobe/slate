@@ -48,8 +48,8 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @sub1(%2 i: i32, %3 j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%2), const<i32>(2))));
-// DEFAULT-NEXT:         let %5 x: array<i32, 10> [storage=automatic];
-// DEFAULT-NEXT:         let %6 y: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %5 x: array<i32, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %6 y: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), const<i32>(2))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%5)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%6)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))), const<u64>(4)));

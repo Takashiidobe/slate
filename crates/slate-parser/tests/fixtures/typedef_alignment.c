@@ -81,7 +81,7 @@ int locals(void) {
 // IR-NEXT:     global %9 global_raised: i32 [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     global %10 global_lowered: i32 [storage=static] [align=1] [linkage=external];
 // IR-NEXT:     global %11 global_requested: i64 [storage=static] [align=4] [linkage=external];
-// IR-NEXT:     global %12 alignments: array<u64, 11> [storage=static] = aggregate<array<u64, 11>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(1), index2 = const<u64>(16), index3 = const<u64>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = const<u64>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %12 alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(1), index2 = const<u64>(16), index3 = const<u64>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = const<u64>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
 // IR-NEXT:     fn %13 @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %14 r: i32 [storage=automatic] [align=16] = const<i32>(1);
 // IR-NEXT:         let %15 l: i32 [storage=automatic] [align=1] = const<i32>(2);

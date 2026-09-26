@@ -242,9 +242,9 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         field1 s: ptr<ptr<void>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %37 c1: @type20 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %38 s1: array<ptr<void>, 10> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %38 s1: array<ptr<void>, 10> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %39 c2: @type20 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %40 s2: array<ptr<void>, 10> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %40 s2: array<ptr<void>, 10> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %118 .str118: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([103, 111, 49, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %119 .str119: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([103, 111, 50, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %9 @pthread_create(%77 __newthread: ptr<u64> [restrict], %78 __attr: ptr<const @type5> [restrict], %79 __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %80 __arg: ptr<void> [restrict]) -> i32 [linkage=external];
@@ -272,7 +272,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%47), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %48 @down(%49 i: i32, %50 msg: ptr<const i8>, %51 me: ptr<@type20>, %52 mes: ptr<ptr<void>> [array=10], %53 other: ptr<@type20>, %54 others: ptr<ptr<void>> [array=10]) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %55 buf: array<i8, 10000> [storage=automatic];
+// DEFAULT-NEXT:         let %55 buf: array<i8, 10000> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%49), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>) -> void>(%46, array_decay<ptr<i8>, length=Some(10000)>(%55));

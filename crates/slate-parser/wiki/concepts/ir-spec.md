@@ -415,9 +415,24 @@ natural alignment and may lower it (`aligned(1)` gives 1 under clang and
 gcc); the outermost aligned typedef in a chain wins, arrays inherit it from
 their element, `_Atomic` drops it, and an array whose element size is not a
 multiple of it is rejected. Access alignment through a pointer to such a type
-is not modeled, since IR loads and stores carry no alignment. Unnamed
-members and zero-width bit-fields remain in the field list. Enum values are
-evaluated in declaration order, each enumerator entering the ordinary scope
+is not modeled, since IR loads and stores carry no alignment.
+
+On every x86-64 target (Linux, Darwin, Windows) the psABI large-array rule
+raises a declared array object of at least 16 bytes to 16-byte alignment:
+globals, `extern` declarations, static and automatic locals, arrays of
+records, arrays of under-aligned typedef elements, and arrays whose length
+comes from the initializer. clang and gcc agree on it. An `aligned` or
+`_Alignas` on the declaration suppresses it (`long long a[2]
+__attribute__((aligned(4)))` stays 4); a typedef's own alignment does not.
+It does not apply to records, incomplete arrays, VLAs, string literals, or
+compound literals. It is observable because other translation units may
+assume it (clang emits `align 16` on an `extern char x[32]`), so the Rust side
+must give such arrays 16-byte alignment. gcc additionally over-aligns data for
+speed, even at -O0 (a 20-byte record to 16, `char[100]` to 32, `char[15]` to 8);
+that is a speed choice no other unit can rely on and is not modeled.
+
+Unnamed members and zero-width bit-fields remain in the field list. Enum
+values are evaluated in declaration order, each enumerator entering the ordinary scope
 as an `int` constant the moment its value is known, so a later enumerator
 sees it with its type (`enum { A = 1, B = sizeof(A) }`) rather than as a
 substituted literal;

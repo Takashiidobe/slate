@@ -29,8 +29,8 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 bitint_size_9: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 bitint_size_65: array<i32, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 bitint_size_65: array<i32, 16> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 bitint_wrap: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 generic_bound: array<i32, 7> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 generic_bound: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

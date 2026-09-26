@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %4 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %5 k: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 l: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 x: array<array<array<array<f32, 2>, 8>, 2>, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %7 x: array<array<array<array<f32, 2>, 8>, 2>, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%3, const<i32>(0));

@@ -121,7 +121,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%40)));
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %19 line: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %19 line: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         while %41 ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type3>) -> ptr<i8>>(%13, array_decay<ptr<i8>, length=Some(64)>(%19), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(64))), read<ptr<@type3>>(%18)), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%19)), read<ptr<@type3>>(%9));
@@ -141,7 +141,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%48)));
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %22 empty_line: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %22 empty_line: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         while %49 ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type3>) -> ptr<i8>>(%13, array_decay<ptr<i8>, length=Some(64)>(%22), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(64))), read<ptr<@type3>>(%21)), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%22)), read<ptr<@type3>>(%9));

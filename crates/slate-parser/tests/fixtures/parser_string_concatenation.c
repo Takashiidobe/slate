@@ -50,7 +50,7 @@ int literals(void) {
 // DEFAULT-NEXT:     global %1 global_octal: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([1, 50, 51, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %2 global_plain: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %3 global_utf16: array<u16, 3> [storage=static] = code_units<array<u16, 3>>([1, 50, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %4 global_utf32: array<u32, 4> [storage=static] = code_units<array<u32, 4>>([1, 50, 51, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %4 global_utf32: array<u32, 4> [storage=static] [align=16] = code_units<array<u32, 4>>([1, 50, 51, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %5 global_wide: array<i32, 3> [storage=static] = code_units<array<i32, 3>>([1, 50, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %6 global_utf8: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([1, 50, 0]) [linkage=external];
 // DEFAULT-NEXT:     fn %7 @literals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -58,7 +58,7 @@ int literals(void) {
 // DEFAULT-NEXT:         let %9 local_octal: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([1, 50, 51, 0]);
 // DEFAULT-NEXT:         let %10 local_plain: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([97, 98, 0]);
 // DEFAULT-NEXT:         let %11 local_utf16: array<u16, 3> [storage=automatic] = code_units<array<u16, 3>>([1, 50, 0]);
-// DEFAULT-NEXT:         let %12 local_utf32: array<u32, 4> [storage=automatic] = code_units<array<u32, 4>>([1, 50, 51, 0]);
+// DEFAULT-NEXT:         let %12 local_utf32: array<u32, 4> [storage=automatic] [align=16] = code_units<array<u32, 4>>([1, 50, 51, 0]);
 // DEFAULT-NEXT:         let %13 local_wide: array<i32, 3> [storage=automatic] = code_units<array<i32, 3>>([1, 50, 0]);
 // DEFAULT-NEXT:         let %14 local_utf8: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([1, 50, 0]);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(3), const<u64>(4)), const<u64>(3)), const<u64>(6)), const<u64>(16)), const<u64>(12)), const<u64>(3))));

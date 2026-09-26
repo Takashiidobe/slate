@@ -82,7 +82,7 @@ main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: array<i32, 1024> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 a: array<i32, 1024> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 v: volatile i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%4 i: i32, %5 j: i32) -> i32 [linkage=external] [used] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {

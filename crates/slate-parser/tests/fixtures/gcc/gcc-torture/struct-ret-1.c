@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 c1: i8;
 // DEFAULT-NEXT:     } [size=34, align=1, offsets=[0, 33]];
 // DEFAULT-NEXT:     type @type3 X = @type2;
-// DEFAULT-NEXT:     global %5 out: array<i8, 100> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %5 out: array<i8, 100> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %10 c1: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(97)) [linkage=external];
 // DEFAULT-NEXT:     global %11 c2: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(127)) [linkage=external];
 // DEFAULT-NEXT:     global %12 c3: i8 [storage=static] = truncate<i8, reason=explicit, fits=unknown>(const<i32>(128)) [linkage=external];
@@ -135,7 +135,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %37 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %38 Xr: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %39 tmp: array<i8, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %39 tmp: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<@type2>(%38, copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(%29, copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25)))));
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(%29, copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25))));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%1, array_decay<ptr<i8>, length=Some(100)>(%39), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%5)));

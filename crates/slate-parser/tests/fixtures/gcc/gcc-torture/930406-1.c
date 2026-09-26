@@ -52,7 +52,7 @@ int main(void) { f(); }
 // DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 x: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %4 big: array<i8, 4096> [storage=automatic];
+// DEFAULT-NEXT:         let %4 big: array<i8, 4096> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             label %2 mylabel:
 // DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%3);

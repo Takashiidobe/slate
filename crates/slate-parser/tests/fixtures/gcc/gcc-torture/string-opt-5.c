@@ -126,7 +126,7 @@ int main() {
 // DEFAULT-NEXT:     global %9 y: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %31 .str31: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 119, 111, 114, 108, 100, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %10 bar: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(9)>(%31) [linkage=external];
-// DEFAULT-NEXT:     global %11 buf: array<i8, 64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %11 buf: array<i8, 64> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %32 .str32: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %33 .str33: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([108, 111, 32, 119, 111, 114, 108, 100, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %34 .str34: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0]) [linkage=internal];
@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:     fn %7 @memcmp(%28 <unnamed>: ptr<const void>, %29 <unnamed>: ptr<const void>, %30 <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 foo: ptr<const i8> [storage=automatic] [const] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(12)>(%32));
-// DEFAULT-NEXT:         let %14 dst: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %14 dst: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%10))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %44: i32 [synthetic] = read<i32>(%8);

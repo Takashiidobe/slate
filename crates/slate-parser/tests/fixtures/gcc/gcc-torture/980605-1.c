@@ -150,7 +150,7 @@ int main(void) {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%10), read<i32>(%11)), read<i32>(%12)), read<i32>(%13)), read<i32>(%14)), read<i32>(%15)), read<i32>(%16)), read<i32>(%17)), read<i32>(%18)), read<i32>(%19)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%9))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %23 ar: array<i8, 100000> [storage=automatic];
+// DEFAULT-NEXT:         let %23 ar: array<i8, 100000> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %24 a: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %25 b: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %26 c: i32 [storage=automatic];

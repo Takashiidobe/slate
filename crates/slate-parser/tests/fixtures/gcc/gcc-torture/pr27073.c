@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 x: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %15 x: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %16 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32, i32, i16, i32, i32, i32, i32, i32) -> void>(%2, array_decay<ptr<i32>, length=Some(10)>(%15), const<i32>(0), const<i32>(0), const<i32>(0), truncate<i16, reason=arg, fits=always>(const<i32>(2)), const<i32>(100), const<i32>(200), const<i32>(300), const<i32>(400), const<i32>(500));
 // DEFAULT-NEXT:         for %19

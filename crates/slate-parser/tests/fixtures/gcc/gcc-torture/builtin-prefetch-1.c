@@ -98,7 +98,7 @@ int main() {
 // DEFAULT-NEXT:         %1 write = const<i32>(1);
 // DEFAULT-NEXT:         %2 read_shared = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %10 arr: array<i32, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %10 arr: array<i32, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%20 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %11 @good_const(%12 p: ptr<const i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i32>>(%12)), const<i32>(0), const<i32>(0));

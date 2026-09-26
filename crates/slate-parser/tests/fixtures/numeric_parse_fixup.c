@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 whole_unsigned: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([55, 55, 0]);
 // DEFAULT-NEXT:         let %10 leading: array<i8, 10> [storage=automatic] = code_units<array<i8, 10>>([32, 32, 45, 49, 55, 116, 97, 105, 108, 0]);
 // DEFAULT-NEXT:         let %11 empty: array<i8, 1> [storage=automatic] = code_units<array<i8, 1>>([0]);
-// DEFAULT-NEXT:         let %12 large: array<i8, 31> [storage=automatic] = code_units<array<i8, 31>>([57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 0]);
+// DEFAULT-NEXT:         let %12 large: array<i8, 31> [storage=automatic] [align=16] = code_units<array<i8, 31>>([57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 0]);
 // DEFAULT-NEXT:         let %13 flt: array<i8, 13> [storage=automatic] = code_units<array<i8, 13>>([32, 32, 45, 51, 46, 53, 101, 50, 114, 101, 115, 116, 0]);
 // DEFAULT-NEXT:         let %14 end_source: array<i8, 7> [storage=automatic] = code_units<array<i8, 7>>([49, 50, 116, 97, 105, 108, 0]);
 // DEFAULT-NEXT:         let %15 end: ptr<i8> [storage=automatic] = null<ptr<i8>>;

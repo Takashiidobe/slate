@@ -122,6 +122,6 @@ int nested[X];
 // AB-NEXT:         storage d128 [size=16, align=16];
 // AB-NEXT:     }
 // AB-NEXT:     global %0 redefined: array<i32, 2> [storage=static] [linkage=external];
-// AB-NEXT:     global %1 nested: array<i32, 5> [storage=static] [linkage=external];
+// AB-NEXT:     global %1 nested: array<i32, 5> [storage=static] [align=16] [linkage=external];
 // AB-NEXT: }
 // SLATE-FILECHECK-END AB

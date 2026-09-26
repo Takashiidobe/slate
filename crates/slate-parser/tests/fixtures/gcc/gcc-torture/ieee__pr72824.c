@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%1), read<i32>(%3))), read<f32>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 x: array<f32, 32> [storage=automatic];
+// DEFAULT-NEXT:         let %5 x: array<f32, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>, f32) -> void>(%0, array_decay<ptr<f32>, length=Some(32)>(%5), neg<f32>(const<f32>(0.0)));
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(__builtin_copysignf, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(32)>(%5), const<i32>(3))))), neg<f32>(const<f32>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);

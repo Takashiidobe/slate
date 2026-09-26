@@ -74,7 +74,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 arr: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %2 arr: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %3 s: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %22
 // DEFAULT-NEXT:             init:
@@ -108,7 +108,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @bar(%7 n: i32, %8 x: i32, %9 y: u64, %10 z: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 arr: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %11 arr: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %12 s: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(%11), const<i32>(4))), const<i32>(42));
 // DEFAULT-NEXT:         for %24
@@ -129,7 +129,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(%11), read<u64>(%10))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @baz(%15 n: i32, %16 x: i32, %17 z: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %18 arr: array<i32, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %18 arr: array<i32, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %19 s: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(%18), const<i32>(12))), const<i32>(42));
 // DEFAULT-NEXT:         for %25

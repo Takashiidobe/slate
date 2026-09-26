@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 a: array<i32, 6> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 a: array<i32, 6> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %3 c: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %4 d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 e: i16 [storage=static] [linkage=external];

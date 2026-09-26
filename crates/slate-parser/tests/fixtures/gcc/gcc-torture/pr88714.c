@@ -98,7 +98,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32, i32) -> void>(%4, read<ptr<i32>>(field2(deref(read<ptr<@type1>>(%2)))), const<i32>(0), read<i32>(field2(deref(read<ptr<@type0>>(%11)))), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(8), index1 = const<i32>(9), index2 = const<i32>(10), index3 = const<i32>(11));
+// DEFAULT-NEXT:         let %15 a: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(8), index1 = const<i32>(9), index2 = const<i32>(10), index3 = const<i32>(11));
 // DEFAULT-NEXT:         let %16 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2), field2 = const<i32>(3), field3 = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%15), const<i32>(0)))));
 // DEFAULT-NEXT:         let %17 u: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%15), const<i32>(3)))));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%15), const<i32>(2)))));

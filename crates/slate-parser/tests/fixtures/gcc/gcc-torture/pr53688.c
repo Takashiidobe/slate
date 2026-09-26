@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         field0 part1: array<i8, 9>;
 // DEFAULT-NEXT:         field1 part2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=17, align=1, offsets=[0, 9]];
-// DEFAULT-NEXT:     global %0 headline: array<i8, 256> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %0 headline: array<i8, 256> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 p: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 .str7: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([70, 79, 79, 66, 65, 82, 70, 79, 79, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([83, 80, 69, 67, 32, 67, 80, 85, 0]) [linkage=internal];

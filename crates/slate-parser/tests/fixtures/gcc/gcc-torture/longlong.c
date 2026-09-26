@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 uint64 = u64;
 // DEFAULT-NEXT:     global %3 pars: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 b: array<u64, 32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 b: array<u64, 32> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %5 r: ptr<u64> [storage=static] = array_decay<ptr<u64>, length=Some(32)>(%4) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];

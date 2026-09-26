@@ -81,7 +81,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 BM_tab: array<i32, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %8 BM_tab: array<i32, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(256)>(%8)), const<i32>(0), const<u64>(1024));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%3, array_decay<ptr<i32>, length=Some(256)>(%8), const<i32>(6));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(256)>(%8), const<i32>(0)))), const<i32>(6))

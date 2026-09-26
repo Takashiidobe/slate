@@ -67,14 +67,14 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 tp: array<array<@type0, 2>, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %7 tp: array<array<@type0, 2>, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %9 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %10 ki: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %11 kj: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %12 mi: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %13 mj: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %14 bdm: array<array<array<array<f32, 2>, 4>, 2>, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %14 bdm: array<array<array<array<f32, 2>, 4>, 2>, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %16
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%8, const<i32>(0));

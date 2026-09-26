@@ -48,7 +48,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
+// DEFAULT-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
 // DEFAULT-NEXT:         goto %2;
 // DEFAULT-NEXT:         label %1 L0:
 // DEFAULT-NEXT:             return const<i32>(0);
@@ -87,7 +87,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:         storage d128 [size=16, align=16];
 // COMPUTED-NEXT:     }
 // COMPUTED-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// COMPUTED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
+// COMPUTED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
 // COMPUTED-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%4), read<i32>(%3))));
 // COMPUTED-NEXT:         label %1 L0:
 // COMPUTED-NEXT:             return const<i32>(0);
@@ -126,7 +126,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:         storage d128 [size=16, align=16];
 // DOUBLED-NEXT:     }
 // DOUBLED-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DOUBLED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
+// DOUBLED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
 // DOUBLED-NEXT:         goto %2;
 // DOUBLED-NEXT:         label %1 L0:
 // DOUBLED-NEXT:             return const<i32>(0);

@@ -98,8 +98,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 i: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 src: array<u8, 131072> [storage=automatic];
-// DEFAULT-NEXT:         let %12 dst: array<u8, 131072> [storage=automatic];
+// DEFAULT-NEXT:         let %11 src: array<u8, 131072> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %12 dst: array<u8, 131072> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %20
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%10, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));

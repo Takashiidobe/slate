@@ -36,7 +36,7 @@ gl_yank()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 gl_cnt: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %1 gl_buf: array<i8, 1024> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %1 gl_buf: array<i8, 1024> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %2 @gl_yank() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %4

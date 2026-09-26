@@ -35,9 +35,9 @@ static_assert(sizeof(pointers) == 48);
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     global %0 grid: array<array<i8, 3>, 2> [storage=static] [linkage=external];
-// IR-NEXT:     global %1 cube: array<array<array<i32, 4>, 3>, 2> [storage=static] [linkage=external];
-// IR-NEXT:     global %2 pointers: array<array<ptr<i32>, 3>, 2> [storage=static] [linkage=external];
+// IR-NEXT:     global %1 cube: array<array<array<i32, 4>, 3>, 2> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %2 pointers: array<array<ptr<i32>, 3>, 2> [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     global %3 row_pointer: ptr<array<array<i32, 3>, 2>> [storage=static] [linkage=external];
-// IR-NEXT:     global %4 open_rows: array<array<i32, 2>, 3> [storage=static] = aggregate<array<array<i32, 2>, 3>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4)), index2 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6))) [linkage=external];
+// IR-NEXT:     global %4 open_rows: array<array<i32, 2>, 3> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 3>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4)), index2 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6))) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

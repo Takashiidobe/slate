@@ -170,15 +170,15 @@ int main() {
 // DEFAULT-NEXT:         field3 d: array<i8, 8>;
 // DEFAULT-NEXT:         field4 next: ptr<@type0>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 4, 6, 8, 16]];
-// DEFAULT-NEXT:     global %1 glob_int_arr: array<i32, 100> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 glob_int_arr: array<i32, 100> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 glob_ptr_int: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(100)>(%1) [linkage=external];
 // DEFAULT-NEXT:     global %3 glob_int: i32 [storage=static] = const<i32>(4) [linkage=external];
-// DEFAULT-NEXT:     global %4 stat_int_arr: array<i32, 100> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %4 stat_int_arr: array<i32, 100> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %5 stat_ptr_int: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(100)>(%4) [linkage=internal];
 // DEFAULT-NEXT:     global %6 stat_int: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %8 str: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 ptr_str: ptr<@type0> [storage=static] = addr_of<ptr<@type0>>(%8) [linkage=external];
-// DEFAULT-NEXT:     global %13 gx: array<i32, 100> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %13 gx: array<i32, 100> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %14 hx: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(100)>(%13) [linkage=internal];
 // DEFAULT-NEXT:     global %15 ix: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exit(%32 <unnamed>: i32) -> void [linkage=external];
@@ -198,7 +198,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%15)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @simple_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 gx: array<i32, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %17 gx: array<i32, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %18 hx: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(100)>(%17);
 // DEFAULT-NEXT:         let %19 ix: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%17)), const<i32>(0), const<i32>(0));
@@ -231,7 +231,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), read<i32>(%3))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %25 @expr_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %26 b: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %26 b: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %27 pb: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(10)>(%26);
 // DEFAULT-NEXT:         let %28 t: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %29 pt: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(%28);

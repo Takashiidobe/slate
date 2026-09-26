@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 ull = u64;
-// DEFAULT-NEXT:     global %3 gvol: volatile array<i32, 32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 gvol: volatile array<i32, 32> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 gull: u64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%371 <unnamed>: i32) -> void [linkage=external];

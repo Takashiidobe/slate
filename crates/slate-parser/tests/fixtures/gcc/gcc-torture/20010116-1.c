@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 DataList: array<@type0, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %11 DataList: array<@type0, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>) -> void>(%5, ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(%11), const<i32>(0)), ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(%11), const<i32>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:         return read<ptr<i8>>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 buf: array<i8, 128> [storage=automatic];
+// DEFAULT-NEXT:         let %7 buf: array<i8, 128> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%8, call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7)));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7));

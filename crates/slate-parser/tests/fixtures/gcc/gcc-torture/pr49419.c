@@ -110,7 +110,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 s: array<i32, 3> [storage=automatic];
 // DEFAULT-NEXT:         let %13 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %14 buf: array<@type0, 3> [storage=automatic] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0)), index2 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0)));
+// DEFAULT-NEXT:         let %14 buf: array<@type0, 3> [storage=automatic] [align=16] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1), field2 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0)), index2 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0)));
 // DEFAULT-NEXT:         write<ptr<@type0>>(%2, array_decay<ptr<@type0>, length=Some(3)>(%14));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, ptr<i32>, i32) -> i32>(%3, const<i32>(0), const<i32>(1), array_decay<ptr<i32>, length=Some(3)>(%12), const<i32>(3)), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

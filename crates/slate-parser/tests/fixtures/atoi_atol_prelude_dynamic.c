@@ -53,9 +53,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @atoll(%12 __nptr: ptr<const i8>) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @strcpy(%13 __dest: ptr<i8> [restrict], %14 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: array<i8, 32> [storage=automatic];
-// DEFAULT-NEXT:         let %7 b: array<i8, 32> [storage=automatic];
-// DEFAULT-NEXT:         let %8 c: array<i8, 32> [storage=automatic];
+// DEFAULT-NEXT:         let %6 a: array<i8, 32> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %7 b: array<i8, 32> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %8 c: array<i8, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%4, array_decay<ptr<i8>, length=Some(32)>(%6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%15)));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%4, array_decay<ptr<i8>, length=Some(32)>(%7), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(18)>(%16)));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%4, array_decay<ptr<i8>, length=Some(32)>(%8), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%17)));

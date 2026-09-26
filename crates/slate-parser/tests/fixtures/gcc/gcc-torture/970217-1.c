@@ -42,7 +42,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 array: array<i32, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %5 array: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, from_bool<i32, reason=arg>(ne<i32>(call<i32, signature=fn(i32, ptr<i32>) -> i32>(%1, const<i32>(10), array_decay<ptr<i32>, length=Some(10)>(%5)), const<i32>(11))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

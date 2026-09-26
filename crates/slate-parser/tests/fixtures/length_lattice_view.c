@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: array<i32, 5> [storage=automatic] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
+// DEFAULT-NEXT:         let %6 a: array<i32, 5> [storage=automatic] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5));
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i32>, i32) -> i32>(%0, array_decay<ptr<i32>, length=Some(5)>(%6), const<i32>(5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

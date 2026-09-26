@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 cp: ptr<u64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 m: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 r: array<u64, 64> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %13 r: array<u64, 64> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exit(%15 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {

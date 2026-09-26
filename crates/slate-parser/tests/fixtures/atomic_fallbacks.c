@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %21: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%10)), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, const<f32>(2.25)));
 // DEFAULT-NEXT:         write<f32>(%11, read<f32>(%21));
 // DEFAULT-NEXT:         let %12 now_f: f32 [storage=automatic] = read<f32, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%10)));
-// DEFAULT-NEXT:         let %13 values: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30), index3 = const<i32>(40));
+// DEFAULT-NEXT:         let %13 values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30), index3 = const<i32>(40));
 // DEFAULT-NEXT:         let %14 p: atomic ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(4)>(%13);
 // DEFAULT-NEXT:         let %15 old_p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %22: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic ptr<i32>>>(%14)), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=wrap>(old<ptr<i32>>, const<i32>(2)));

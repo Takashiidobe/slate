@@ -41,7 +41,7 @@ void f ()
 // DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %2 x: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %3 y: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 a: array<i8, 4000> [storage=automatic];
+// DEFAULT-NEXT:         let %4 a: array<i8, 4000> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>, ptr<i32>) -> i32>(%0, addr_of<ptr<i32>>(%2), addr_of<ptr<i32>>(%3));
 // DEFAULT-NEXT:         write<i32>(%2, add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%2), read<i32>(%3)), read<i32>(%2)));
 // DEFAULT-NEXT:     }

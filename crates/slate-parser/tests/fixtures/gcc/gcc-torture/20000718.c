@@ -43,7 +43,7 @@ baz(int* arg)
 // DEFAULT-NEXT:     fn %2 @baz(%3 arg: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 tmp: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%0, const<f64>(2.0), const<f64>(1.0)));
 // DEFAULT-NEXT:         let %5 i: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 junk: array<i16, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %6 junk: array<i16, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %11
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%5, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));

@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %1 counter: i32 [storage=static] = const<i32>(4) [linkage=external];
 // DEFAULT-NEXT:     global %2 zeroed: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 numbers: array<i32, 4> [storage=static] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %3 numbers: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
 // DEFAULT-NEXT:     global %5 pair: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(5)) [linkage=external];
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %11 .str11: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];

@@ -231,16 +231,16 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 sc: array<i8, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 ss: array<i16, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 si: array<i32, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 sl: array<i64, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 uc: array<u8, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 us: array<u16, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 ui: array<u32, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 ul: array<u64, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 f: array<f32, 1024> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 d: array<f64, 1024> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 sc: array<i8, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %3 ss: array<i16, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %4 si: array<i32, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %5 sl: array<i64, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %6 uc: array<u8, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %7 us: array<u16, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %8 ui: array<u32, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %9 ul: array<u64, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %10 f: array<f32, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %11 d: array<f64, 1024> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @rand() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @sc2f() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {

@@ -45,7 +45,7 @@ label:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 array: array<i32, 10> [storage=static] = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(1), index2 = const<i32>(1), index3 = const<i32>(1), index4 = const<i32>(1), index5 = const<i32>(1), index6 = const<i32>(1), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %2 array: array<i32, 10> [storage=static] [align=16] = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(1), index2 = const<i32>(1), index3 = const<i32>(1), index4 = const<i32>(1), index5 = const<i32>(1), index6 = const<i32>(1), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 p: ptr<void> [storage=automatic];
-// DEFAULT-NEXT:         let %7 q: array<ptr<i32>, 40> [storage=automatic];
+// DEFAULT-NEXT:         let %7 q: array<ptr<i32>, 40> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 start: u64 [storage=automatic];
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
 // DEFAULT-NEXT:             write<u64>(%8, reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2147483647))));

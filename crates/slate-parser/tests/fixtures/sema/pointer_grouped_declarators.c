@@ -36,7 +36,7 @@ static_assert(sizeof(array_pointer) == 8);
 // IR-NEXT:     global %0 array_pointer: ptr<array<ptr<i32>, 4>> [storage=static] [linkage=external];
 // IR-NEXT:     global %1 nested_pointer: ptr<array<ptr<ptr<i32>>, 4>> [storage=static] [linkage=external];
 // IR-NEXT:     global %2 function_pointer: ptr<fn() -> ptr<i32>> [storage=static] [linkage=external];
-// IR-NEXT:     global %3 function_pointers: array<ptr<fn(i32) -> ptr<i8>>, 2> [storage=static] [linkage=external];
+// IR-NEXT:     global %3 function_pointers: array<ptr<fn(i32) -> ptr<i8>>, 2> [storage=static] [align=16] [linkage=external];
 // IR-NEXT:     fn %4 @plain_function() -> ptr<i32> [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

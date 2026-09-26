@@ -38,7 +38,7 @@ int imag_array_size[__imag__ 5];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 real_array_size: array<i32, 5> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %8 real_array_size: array<i32, 5> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %9 imag_array_size: array<i32, 0> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @real_double_under(%1 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(real(%1));

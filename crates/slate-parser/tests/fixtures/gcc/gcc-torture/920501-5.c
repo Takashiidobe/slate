@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @x(%6 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 j: array<ptr<void>, 3> [storage=automatic] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%3), index1 = label_addr<ptr<void>>(%4), index2 = label_addr<ptr<void>>(%5));
+// DEFAULT-NEXT:         let %7 j: array<ptr<void>, 3> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%3), index1 = label_addr<ptr<void>>(%4), index2 = label_addr<ptr<void>>(%5));
 // DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(3)>(%7), read<i32>(%6))));
 // DEFAULT-NEXT:         label %3 x:
 // DEFAULT-NEXT:             return const<i32>(2);

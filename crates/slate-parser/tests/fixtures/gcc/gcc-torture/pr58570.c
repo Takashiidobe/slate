@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 1], bit_offsets=[Some(0), Some(15)], bit_units=[(0, 6)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %1 e: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: array<@type0, 6> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %3 d: array<@type0, 6> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
 // DEFAULT-NEXT:             {

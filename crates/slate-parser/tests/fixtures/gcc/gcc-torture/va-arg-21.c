@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @exit(%15 __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @doit(%8 s: ptr<const i8>, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 ap_array: array<ptr<va_list>, 3> [storage=automatic];
+// DEFAULT-NEXT:         let %9 ap_array: array<ptr<va_list>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 ap_ptr: ptr<ptr<va_list>> [storage=automatic] = array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9);
 // DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(0))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24))));
 // DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24)));

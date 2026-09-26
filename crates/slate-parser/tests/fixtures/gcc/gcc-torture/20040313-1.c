@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 t: array<i32, 1025> [storage=automatic] = aggregate<array<i32, 1025>, zero_fill=true>(index0 = const<i32>(1024));
+// DEFAULT-NEXT:         let %2 t: array<i32, 1025> [storage=automatic] [align=16] = aggregate<array<i32, 1025>, zero_fill=true>(index0 = const<i32>(1024));
 // DEFAULT-NEXT:         let %3 d: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(0));
 // DEFAULT-NEXT:         let %4: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1025)>(%2), read<i32>(%3));

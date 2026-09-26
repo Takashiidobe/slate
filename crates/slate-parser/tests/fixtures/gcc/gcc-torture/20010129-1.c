@@ -111,7 +111,7 @@ int main() {
 // DEFAULT-NEXT:         let %15 e: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %16 f: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %17 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %18 g: array<i8, 256> [storage=automatic];
+// DEFAULT-NEXT:         let %18 g: array<i8, 256> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %19 h: ptr<ptr<void>> [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(256)>(%18), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(10)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(256)>(%18), const<i32>(1))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));

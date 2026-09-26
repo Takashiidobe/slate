@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         let %14 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 n: array<ptr<i32>, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %15 n: array<ptr<i32>, 8> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         for %17
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%14, const<i32>(0));

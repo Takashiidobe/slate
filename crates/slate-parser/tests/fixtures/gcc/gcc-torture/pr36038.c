@@ -64,10 +64,10 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 list: array<i64, 10> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 expect: array<i64, 10> [storage=static] = aggregate<array<i64, 10>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(0)), index1 = widen<i64, reason=assign>(const<i32>(1)), index2 = widen<i64, reason=assign>(const<i32>(2)), index3 = widen<i64, reason=assign>(const<i32>(3)), index4 = widen<i64, reason=assign>(const<i32>(4)), index5 = widen<i64, reason=assign>(const<i32>(4)), index6 = widen<i64, reason=assign>(const<i32>(5)), index7 = widen<i64, reason=assign>(const<i32>(6)), index8 = widen<i64, reason=assign>(const<i32>(7)), index9 = widen<i64, reason=assign>(const<i32>(9))) [linkage=external];
+// DEFAULT-NEXT:     global %0 list: array<i64, 10> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %1 expect: array<i64, 10> [storage=static] [align=16] = aggregate<array<i64, 10>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(0)), index1 = widen<i64, reason=assign>(const<i32>(1)), index2 = widen<i64, reason=assign>(const<i32>(2)), index3 = widen<i64, reason=assign>(const<i32>(3)), index4 = widen<i64, reason=assign>(const<i32>(4)), index5 = widen<i64, reason=assign>(const<i32>(4)), index6 = widen<i64, reason=assign>(const<i32>(5)), index7 = widen<i64, reason=assign>(const<i32>(6)), index8 = widen<i64, reason=assign>(const<i32>(7)), index9 = widen<i64, reason=assign>(const<i32>(9))) [linkage=external];
 // DEFAULT-NEXT:     global %2 stack_base: ptr<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 indices: array<i32, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 indices: array<i32, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 markstack_ptr: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %5 @doit() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 src: ptr<i64> [storage=automatic];

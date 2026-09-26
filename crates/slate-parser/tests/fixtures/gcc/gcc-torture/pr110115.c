@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @bar(%7 e: i8, %8 f: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 h: array<i8, 20> [storage=automatic];
+// DEFAULT-NEXT:         let %9 h: array<i8, 20> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, i32) -> i32>(%2, array_decay<ptr<i8>, length=Some(20)>(%9), read<i32>(%8));
 // DEFAULT-NEXT:         return read<i32>(%10);
 // DEFAULT-NEXT:     }
@@ -95,7 +95,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %13 k: array<ptr<i8>, 3> [storage=automatic];
+// DEFAULT-NEXT:             let %13 k: array<ptr<i8>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             let %14 d: i32 [storage=automatic];
 // DEFAULT-NEXT:             for %17
 // DEFAULT-NEXT:                 init:

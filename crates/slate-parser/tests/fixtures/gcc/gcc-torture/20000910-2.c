@@ -52,7 +52,7 @@ int main() { foo(); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([42, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %3 list: array<ptr<i8>, 2> [storage=static] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%13), index1 = array_decay<ptr<i8>, length=Some(2)>(%14)) [linkage=external];
+// DEFAULT-NEXT:     global %3 list: array<ptr<i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%13), index1 = array_decay<ptr<i8>, length=Some(2)>(%14)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%10 __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @strchr(%11 __s: ptr<const i8>, %12 __c: i32) -> ptr<i8> [linkage=external];

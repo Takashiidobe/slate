@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %14 g_8: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %15 func_2_BS_COND_1: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %16 g_9: array<array<u8, 1>, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 g_121: volatile array<@type10, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %17 g_121: volatile array<@type10, 1> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %18 g_565: ptr<i64> [storage=static] = pointer_cast<ptr<i64>, reason=assign>(addr_of<ptr<u64>>(%11)) [linkage=external];
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %21 BS_VAR_3: vector<i64, 16> [storage=automatic] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(1)), index1 = const<i64>(8096386231136), index2 = const<i64>(9039249955151));

@@ -81,7 +81,7 @@ int look(struct s *p, struct s **pp) {
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %4 p: ptr<@type0> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 ss: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 sss: array<@type0, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %6 sss: array<@type0, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %7 count: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%18 <unnamed>: i32) -> void [linkage=external];

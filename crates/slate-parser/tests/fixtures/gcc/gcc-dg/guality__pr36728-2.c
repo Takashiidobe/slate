@@ -89,7 +89,7 @@ main() {
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 arg1: i32, %4 arg2: i32, %5 arg3: i32, %6 arg4: i32, %7 arg5: i32, %8 arg6: i32, %9 arg7: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 x: array<i8, 30> [storage=automatic];
+// DEFAULT-NEXT:         let %10 x: array<i8, 30> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %11 y: i32 [storage=automatic] [align=32];
 // DEFAULT-NEXT:         write<i32>(%11, const<i32>(2));
 // DEFAULT-NEXT:         asm "nop" {

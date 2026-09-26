@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:             write<u64>(deref(read<ptr<u64>>(%19)), read<u64>(deref(read<ptr<u64>>(%17))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: array<u64, 5> [storage=automatic];
+// DEFAULT-NEXT:         let %6 a: array<u64, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %7 start: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %8 end: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %9 k: i32 [storage=automatic];

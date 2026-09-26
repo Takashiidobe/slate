@@ -459,16 +459,11 @@ impl Lowerer {
                 }
             }
             let request = self.types.entities.request(&global.variable.id);
-            let declared = self.types.entities.ty(&id);
-            let typedef_aligned =
-                declared.is_some_and(|q| self.types.ctypes.typedef_alignment(q).is_some());
-            if request.alignment.is_some() || typedef_aligned {
-                global.variable.alignment = self.types.object_alignment_override(
-                    &global.variable.ty,
-                    declared,
-                    request.alignment,
-                )?;
-            }
+            global.variable.alignment = self.types.object_alignment_override(
+                &global.variable.ty,
+                self.types.entities.ty(&id),
+                request.alignment,
+            )?;
             let symbol = &global.symbol;
             let tentative = global.definition
                 && global.variable.initializer.is_none()
@@ -877,15 +872,6 @@ impl Lowerer {
                 },
             };
             self.types.entities.merge_request(id, request)?;
-            let automatic_alignment = if storage == StorageDuration::Automatic
-                && (request.alignment.is_some()
-                    || self.types.ctypes.typedef_alignment(resolved).is_some())
-            {
-                self.types
-                    .object_alignment_override(&ty, Some(resolved), request.alignment)?
-            } else {
-                None
-            };
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
                 Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
@@ -940,6 +926,12 @@ impl Lowerer {
                     }),
                 );
             }
+            let automatic_alignment = if storage == StorageDuration::Automatic {
+                self.types
+                    .object_alignment_override(&ty, Some(resolved), request.alignment)?
+            } else {
+                None
+            };
             let variable = Variable {
                 id,
                 name: name.into(),

@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @strcpy(%7 <unnamed>: ptr<i8>, %8 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @test(%3 a: i32) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 buf: array<i8, 16> [storage=automatic];
+// DEFAULT-NEXT:         let %4 buf: array<i8, 16> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %5 output: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(16)>(%4);
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%0, addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%4), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%9)));
 // DEFAULT-NEXT:         let %10: ptr<i8> [synthetic] = read<ptr<i8>>(%5);

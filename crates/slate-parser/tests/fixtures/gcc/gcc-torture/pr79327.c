@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 35, 104, 104, 120, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 buf: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %3 buf: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(__builtin_sprintf, array_decay<ptr<i8>, length=Some(64)>(%3), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%4)), read<i32, volatile>(%0)), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(__builtin_sprintf, array_decay<ptr<i8>, length=Some(64)>(%3), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%5)), read<i32, volatile>(%0)), const<i32>(1))

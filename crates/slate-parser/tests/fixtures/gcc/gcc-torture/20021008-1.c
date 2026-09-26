@@ -35,7 +35,7 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 align_g: array<i32, 5> [storage=static] [const] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(8), index4 = const<i32>(16)) [linkage=internal];
+// DEFAULT-NEXT:     global %1 align_g: array<i32, 5> [storage=static] [const] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(8), index4 = const<i32>(16)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 buf: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         let %3 i: i32 [storage=automatic] = const<i32>(0);

@@ -35,7 +35,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %4 .str4: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([97, 108, 112, 104, 97, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %5 .str5: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([98, 101, 116, 97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %1 names: array<ptr<i8>, 2> [storage=static] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(6)>(%4), index1 = array_decay<ptr<i8>, length=Some(5)>(%5)) [linkage=internal];
+// DEFAULT-NEXT:     global %1 names: array<ptr<i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(6)>(%4), index1 = array_decay<ptr<i8>, length=Some(5)>(%5)) [linkage=internal];
 // DEFAULT-NEXT:     global %6 .str6: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 115, 32, 37, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%3 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

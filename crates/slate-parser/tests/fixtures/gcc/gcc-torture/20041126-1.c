@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: array<i32, 10> [storage=automatic] = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5), index5 = const<i32>(6), index6 = const<i32>(7), index7 = const<i32>(8), index8 = const<i32>(9), index9 = const<i32>(10));
+// DEFAULT-NEXT:         let %6 a: array<i32, 10> [storage=automatic] [align=16] = aggregate<array<i32, 10>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5), index5 = const<i32>(6), index6 = const<i32>(7), index7 = const<i32>(8), index8 = const<i32>(9), index9 = const<i32>(10));
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %11
 // DEFAULT-NEXT:             init:

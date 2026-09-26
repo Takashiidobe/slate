@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 v: array<i32, 8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 v: array<i32, 8> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 p: ptr<void>, %2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%1), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)))
 // DEFAULT-NEXT:             return const<i32>(0);

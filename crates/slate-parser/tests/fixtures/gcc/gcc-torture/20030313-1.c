@@ -127,7 +127,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 a: array<u64, 40> [storage=automatic];
+// DEFAULT-NEXT:         let %10 a: array<u64, 40> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %11 b: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32>(%11);
 // DEFAULT-NEXT:         let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));

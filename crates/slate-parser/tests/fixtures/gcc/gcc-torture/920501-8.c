@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type1 va_list = va_list;
 // DEFAULT-NEXT:     type @type2 va_list = va_list;
-// DEFAULT-NEXT:     global %5 buf: array<i8, 50> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %5 buf: array<i8, 50> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %28 .str28: array<i8, 48> [storage=static] = code_units<array<i8, 48>>([37, 100, 44, 37, 102, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 44, 37, 100, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %29 .str29: array<i8, 45> [storage=static] = code_units<array<i8, 45>>([49, 44, 49, 46, 48, 48, 48, 48, 48, 48, 44, 50, 44, 51, 44, 52, 44, 53, 44, 54, 44, 55, 44, 56, 44, 57, 44, 49, 48, 44, 49, 49, 44, 49, 50, 44, 49, 51, 44, 49, 52, 44, 49, 53, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];

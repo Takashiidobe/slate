@@ -102,7 +102,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%16, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%43)));
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %21 line: array<i8, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %21 line: array<i8, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %22 count: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         while %44 ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<i8>, i32, ptr<@type4>) -> ptr<i8>>(%14, array_decay<ptr<i8>, length=Some(64)>(%21), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(64))), read<ptr<@type4>>(%20)), null<ptr<i8>>)
 // DEFAULT-NEXT:             {

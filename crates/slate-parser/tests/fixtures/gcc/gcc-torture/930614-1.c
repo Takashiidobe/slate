@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%3)), neg<f64>(const<f64>(1.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 foo: array<f64, 6> [storage=automatic];
+// DEFAULT-NEXT:         let %5 foo: array<f64, 6> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %6 tx: f64 [storage=automatic] = const<f64>(0.0);
 // DEFAULT-NEXT:         let %7 ty: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %8 d: f64 [storage=automatic];

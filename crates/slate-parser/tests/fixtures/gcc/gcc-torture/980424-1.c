@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 a: array<i32, 99> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %3 a: array<i32, 99> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @f(%5 one: i32) -> void [linkage=external] [fallthrough=ret_void] {

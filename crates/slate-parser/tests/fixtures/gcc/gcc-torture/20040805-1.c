@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @foo(%7 x: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 buf: array<i8, 65536> [storage=automatic];
+// DEFAULT-NEXT:         let %8 buf: array<i8, 65536> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %9 y: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%2), const<i32>(0))));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%2), const<i32>(1))), read<i32>(%9));
 // DEFAULT-NEXT:         write<i32>(%7, call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, read<i32>(%7), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%8))));

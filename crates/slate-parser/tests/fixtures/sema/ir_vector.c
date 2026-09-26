@@ -216,7 +216,7 @@ v4su convert_signedness(v4si a) {
 // IR-NEXT:     type @type6 v2sf = vector<f32, 2>;
 // IR-NEXT:     global %5 global_vector: vector<i32, 4> [storage=static] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4)) [linkage=external];
 // IR-NEXT:     global %6 partial_vector: vector<i32, 4> [storage=static] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
-// IR-NEXT:     global %7 sizes: array<u64, 5> [storage=static] = aggregate<array<u64, 5>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(16), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16)) [linkage=external];
+// IR-NEXT:     global %7 sizes: array<u64, 5> [storage=static] [align=16] = aggregate<array<u64, 5>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(16), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16)) [linkage=external];
 // IR-NEXT:     fn %9 @holder_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(32);
 // IR-NEXT:     }

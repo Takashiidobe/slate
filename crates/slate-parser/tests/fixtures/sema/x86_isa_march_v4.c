@@ -157,6 +157,6 @@ int biggest[__BIGGEST_ALIGNMENT__];
 // CHECK-NEXT:     global %25 has__MOVBE__: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %26 has__SSE_MATH__: i32 [storage=static] [linkage=external];
 // CHECK-NEXT:     global %27 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %28 biggest: array<i32, 16> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %28 biggest: array<i32, 16> [storage=static] [align=16] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: array<i32, 199> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %1 a: array<i32, 199> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];

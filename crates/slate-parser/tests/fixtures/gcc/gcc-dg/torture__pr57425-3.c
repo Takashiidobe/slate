@@ -60,7 +60,7 @@ main() {
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 sum: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %3 a: array<i64, 20> [storage=automatic];
+// DEFAULT-NEXT:             let %3 a: array<i64, 20> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             let %4 c: ptr<i64> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i64>>(%4, array_decay<ptr<i64>, length=Some(20)>(%3));
 // DEFAULT-NEXT:             asm "" {
@@ -77,7 +77,7 @@ main() {
 // DEFAULT-NEXT:             write<i32>(%2, read<i32>(%8));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %5 b: array<i64, 10> [storage=automatic];
+// DEFAULT-NEXT:             let %5 b: array<i64, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:             let %6 c: ptr<i64> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i64>>(%6, array_decay<ptr<i64>, length=Some(10)>(%5));
 // DEFAULT-NEXT:             asm "" {

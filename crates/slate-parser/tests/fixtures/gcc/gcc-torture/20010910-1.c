@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 rx_ring: ptr<@type0>;
 // DEFAULT-NEXT:         field1 rx_skbuff: array<u32, 5>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %6 check_rx_ring: array<i32, 5> [storage=static] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(12), index1 = const<i32>(14), index2 = const<i32>(16), index3 = const<i32>(18), index4 = const<i32>(10)) [linkage=internal];
+// DEFAULT-NEXT:     global %6 check_rx_ring: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(12), index1 = const<i32>(14), index2 = const<i32>(16), index3 = const<i32>(18), index4 = const<i32>(10)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @epic_init_ring(%4 ep: ptr<@type1>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
@@ -109,7 +109,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 ep: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %9 rx_ring: array<@type0, 5> [storage=automatic];
+// DEFAULT-NEXT:         let %9 rx_ring: array<@type0, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %12
 // DEFAULT-NEXT:             init:

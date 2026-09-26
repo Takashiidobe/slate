@@ -443,7 +443,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 results: array<i64, 400> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %1 results: array<i64, 400> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @compute(%3 x: i64) -> void [linkage=internal] [fallthrough=ret_void] {

@@ -58,8 +58,8 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: array<i32, 70> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: array<array<i32, 70>, 70> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %2 c: array<i32, 70> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %3 d: array<array<i32, 70>, 70> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %4 e: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %5 @f(%6 g: ptr<i64>, %7 p2: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%6)), widen<i64, reason=assign>(read<i32>(%7)));

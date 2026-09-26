@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %5 .str5: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 108, 117, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 a: array<i8, 30> [storage=automatic];
+// DEFAULT-NEXT:         let %2 a: array<i8, 30> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %3 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(__builtin_sprintf, array_decay<ptr<i8>, length=Some(30)>(%2), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%5)), read<u64>(%1))));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);

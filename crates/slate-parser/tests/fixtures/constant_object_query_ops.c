@@ -50,11 +50,11 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 global_array: array<i32, 4> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %1 global_array: array<i32, 4> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 32, 37, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 local: array<i32, 6> [storage=automatic];
+// DEFAULT-NEXT:         let %3 local: array<i32, 6> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %4 p: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(6)>(%3);
 // DEFAULT-NEXT:         let %5 v: volatile i32 [storage=automatic] = const<i32>(3);
 // DEFAULT-NEXT:         let %6 c_literal: i32 [storage=automatic] = const<i32>(1);

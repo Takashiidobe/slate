@@ -36,7 +36,7 @@ pad_home1 ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 letters: array<i8, 27> [storage=static] = code_units<array<i8, 27>>([65, 98, 67, 100, 101, 102, 103, 104, 105, 74, 107, 108, 109, 78, 111, 112, 81, 114, 83, 116, 117, 86, 119, 88, 121, 90, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %0 letters: array<i8, 27> [storage=static] [align=16] = code_units<array<i8, 27>>([65, 98, 67, 100, 101, 102, 103, 104, 105, 74, 107, 108, 109, 78, 111, 112, 81, 114, 83, 116, 117, 86, 119, 88, 121, 90, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %1 letter: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 letter_number: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @pad_home1() -> void [linkage=internal] [fallthrough=ret_void] {

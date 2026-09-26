@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:     global %6 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 h: i32 [storage=static] = const<i32>(8) [linkage=external];
-// DEFAULT-NEXT:     global %9 e: volatile array<i8, 237> [storage=static] = aggregate<array<i8, 237>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %9 e: volatile array<i8, 237> [storage=static] [align=16] = aggregate<array<i8, 237>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4))) [linkage=external];
 // DEFAULT-NEXT:     global %10 f: ptr<i16> [storage=static] = addr_of<ptr<i16>>(%4) [linkage=external];
 // DEFAULT-NEXT:     global %11 i: array<i16, 5> [storage=static] = aggregate<array<i16, 5>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(3))) [linkage=external];
 // DEFAULT-NEXT:     global %12 j: i8 [storage=static] [linkage=external];

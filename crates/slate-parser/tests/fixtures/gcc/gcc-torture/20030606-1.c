@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<ptr<i32>>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: array<i32, 5> [storage=automatic];
+// DEFAULT-NEXT:         let %6 a: array<i32, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(5)>(%6)), const<i32>(1), const<u64>(20));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(ptr_diff<i64, element=i32, same_array=required, overflow=ub>(call<ptr<i32>, signature=fn(ptr<i32>, i32) -> ptr<i32>>(%2, array_decay<ptr<i32>, length=Some(5)>(%6), const<i32>(0)), array_decay<ptr<i32>, length=Some(5)>(%6)), widen<i64, reason=usual_arith>(const<i32>(1))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(5)>(%6), const<i32>(0)))), const<i32>(55))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(5)>(%6), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(5)>(%6), const<i32>(4))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

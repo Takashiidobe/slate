@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 targets: array<ptr<void>, 3> [storage=static] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3), index2 = label_addr<ptr<void>>(%4)) [linkage=internal];
+// DEFAULT-NEXT:     global %6 targets: array<ptr<void>, 3> [storage=static] [align=16] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3), index2 = label_addr<ptr<void>>(%4)) [linkage=internal];
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @jump_probe(%5 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {

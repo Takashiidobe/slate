@@ -64,7 +64,7 @@ int main(void) { exit(0); }
 // DEFAULT-NEXT:     global %2 expect_do1: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %3 expect_do2: i32 [storage=static] = const<i32>(2) [linkage=external];
 // DEFAULT-NEXT:     global %8 jtab_init: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %9 jtab: array<ptr<void>, 2> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %9 jtab: array<ptr<void>, 2> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @doit(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {

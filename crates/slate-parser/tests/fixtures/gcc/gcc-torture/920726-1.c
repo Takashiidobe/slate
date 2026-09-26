@@ -172,8 +172,8 @@ int main(void) {
 // DEFAULT-NEXT:         return copy<@type3, reason=return>(read<@type3>(%20));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %23 buf1: array<i8, 100> [storage=automatic];
-// DEFAULT-NEXT:         let %24 buf2: array<i8, 100> [storage=automatic];
+// DEFAULT-NEXT:         let %23 buf1: array<i8, 100> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %24 buf2: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<i8>, ...) -> i32>(%6, array_decay<ptr<i8>, length=Some(100)>(%23), array_decay<ptr<i8>, length=Some(5)>(%32), const<i32>(5), const<i32>(20));
 // DEFAULT-NEXT:         call<@type3, signature=fn(ptr<i8>, ptr<i8>, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar) -> coerce<i32>>(%14, array_decay<ptr<i8>, length=Some(100)>(%24), array_decay<ptr<i8>, length=Some(5)>(%33), const<i32>(5), const<i32>(20));
 // DEFAULT-NEXT:         let %48: bool [synthetic];

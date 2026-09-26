@@ -101,8 +101,8 @@ T *die (void)
 // DEFAULT-NEXT:     fn %6 @baz(%27 <unnamed>: ptr<@type2>, %28 <unnamed>: i32 [const]) -> u16 [linkage=external];
 // DEFAULT-NEXT:     fn %7 @die() -> ptr<@type2> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 h: array<i8, 8> [storage=automatic];
-// DEFAULT-NEXT:         let %11 i: array<i8, 2053> [storage=automatic];
-// DEFAULT-NEXT:         let %12 j: array<i8, 2053> [storage=automatic];
+// DEFAULT-NEXT:         let %11 i: array<i8, 2053> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %12 j: array<i8, 2053> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %13 k: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %14 l: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %15 m: f64 [storage=automatic];

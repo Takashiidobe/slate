@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:     global %8 a: ptr<@type1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 b: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %10 c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 d: array<@type3, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %11 d: array<@type3, 1> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %28 .str28: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 115, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %29 .str29: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 115, 116, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %30 .str30: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];

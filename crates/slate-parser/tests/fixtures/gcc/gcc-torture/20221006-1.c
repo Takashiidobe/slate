@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:             write<i32>(%23, const<i32>(4));
 // DEFAULT-NEXT:         write<i32>(%5, read<i32>(%23));
 // DEFAULT-NEXT:         let %6 count: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 data: array<i32, 64> [storage=automatic];
+// DEFAULT-NEXT:         let %7 data: array<i32, 64> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %15: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%5)));
 // DEFAULT-NEXT:         let %16: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%5)));
 // DEFAULT-NEXT:         let %8 M1: vla<vla<i32, %16>, %15> [storage=automatic];

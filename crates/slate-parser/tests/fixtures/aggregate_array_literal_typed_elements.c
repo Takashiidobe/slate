@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @count_null_pairs() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 pairs: array<@type1, 1> [storage=automatic] = aggregate<array<@type1, 1>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = null<ptr<const i8>>, field1 = null<ptr<const i8>>));
+// DEFAULT-NEXT:         let %4 pairs: array<@type1, 1> [storage=automatic] [align=16] = aggregate<array<@type1, 1>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = null<ptr<const i8>>, field1 = null<ptr<const i8>>));
 // DEFAULT-NEXT:         let %5 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:

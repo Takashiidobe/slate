@@ -232,7 +232,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %32 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %33 el: @type7 [storage=automatic];
 // DEFAULT-NEXT:         let %34 lsn: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %35 lsn_a: array<@type5, 1235> [storage=automatic];
+// DEFAULT-NEXT:         let %35 lsn_a: array<@type5, 1235> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<i32>(field0(field2(field2(%33))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)));
 // DEFAULT-NEXT:         write<ptr<@type5>>(field2(field2(field2(%33))), array_decay<ptr<@type5>, length=Some(1235)>(%35));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type7>, ptr<@type5>, u32) -> i32>(%24, const<i32>(0), addr_of<ptr<@type7>>(%33), addr_of<ptr<@type5>>(%34), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), const<i32>(1))

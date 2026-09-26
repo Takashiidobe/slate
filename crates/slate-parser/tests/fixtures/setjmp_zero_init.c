@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 __saved_mask: @type1;
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %8 frame: array<@type3, 1> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %8 frame: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([114, 101, 116, 117, 114, 110, 101, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %5 @_setjmp(%10 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @longjmp(%11 __env: ptr<@type3> [array=1], %12 __val: i32) -> void [linkage=external] [noreturn];
