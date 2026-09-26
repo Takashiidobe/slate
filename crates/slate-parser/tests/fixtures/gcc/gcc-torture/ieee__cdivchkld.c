@@ -201,37 +201,30 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6)), const<f80>(3.36210314311209350626E-4932))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f80>(%10, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), read<f80>(%8))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6))));
-// DEFAULT-NEXT:                 div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), read<f80>(%8))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6)), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f80>(%10, call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%8)));
-// DEFAULT-NEXT:                     call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%8));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f80>(%10, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), read<f80>(%8))), const<f80>(3.36210314311209350626E-4932)));
-// DEFAULT-NEXT:                     div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), read<f80>(%8))), const<f80>(3.36210314311209350626E-4932));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7)), const<f80>(3.36210314311209350626E-4932))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f80>(%11, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%7), read<f80>(%9))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7))));
-// DEFAULT-NEXT:                 div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%7), read<f80>(%9))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7)), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f80>(%11, call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%9)));
-// DEFAULT-NEXT:                     call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%9));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f80>(%11, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%7), read<f80>(%9))), const<f80>(3.36210314311209350626E-4932)));
-// DEFAULT-NEXT:                     div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%7), read<f80>(%9))), const<f80>(3.36210314311209350626E-4932));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         write<f80>(%12, call<f80, signature=fn(f80, f80) -> f80>(%39, read<f80>(%10), read<f80>(%11)));
-// DEFAULT-NEXT:         call<f80, signature=fn(f80, f80) -> f80>(%39, read<f80>(%10), read<f80>(%11));
 // DEFAULT-NEXT:         write<i32>(%13, const<i32>(0));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%12), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             {
@@ -243,8 +236,8 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @__builtin_fabsl(%35 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %39 @__builtin_fmaxl(%37 <unnamed>: f80, %38 <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %36 @__builtin_fabsl(%35 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %39 @__builtin_fmaxl(%37 <unnamed>: f80, %38 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %14 @main(%15 argc: i32, %16 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %17 a: complex<f80> [storage=automatic];
 // DEFAULT-NEXT:         let %18 b: complex<f80> [storage=automatic];

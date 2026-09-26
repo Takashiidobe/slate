@@ -26,7 +26,7 @@ extern __typeof (__finite) __finite __asm__ ("" "__GI___finite");
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @__finite(%1 __value: f64) -> i32 [linkage=external] [asm_name="__GI___finite"] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @__finite(%1 __value: f64) -> i32 [linkage=external] [asm_name="__GI___finite"] [inline=hint] [definition=emitted] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

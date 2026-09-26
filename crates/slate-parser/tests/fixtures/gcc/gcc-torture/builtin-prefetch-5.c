@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:     global %4 ptr: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(100)>(%3) [linkage=external];
 // DEFAULT-NEXT:     global %5 idx: i32 [storage=static] = const<i32>(3) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %16 @__builtin_prefetch(%15 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %16 @__builtin_prefetch(%15 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %6 @arg_ptr(%7 p: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%16, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%7)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

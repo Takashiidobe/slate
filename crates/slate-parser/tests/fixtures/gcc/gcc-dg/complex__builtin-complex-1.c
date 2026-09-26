@@ -271,7 +271,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %223 cs: complex<f80> [storage=static] = aggregate<complex<f80>, zero_fill=false>(index0 = call<f80, signature=fn() -> f80>(%353), index1 = call<f80, signature=fn() -> f80>(%353)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exit(%225 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %229 @__builtin_copysignf(%227 <unnamed>: f32, %228 <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %229 @__builtin_copysignf(%227 <unnamed>: f32, %228 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @comparef(%3 a: f32, %4 b: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %226
 // DEFAULT-NEXT:             {
@@ -286,7 +286,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %233 @__builtin_copysign(%231 <unnamed>: f64, %232 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %233 @__builtin_copysign(%231 <unnamed>: f64, %232 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %7 @compare(%8 a: f64, %9 b: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %230
 // DEFAULT-NEXT:             {
@@ -301,7 +301,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %237 @__builtin_copysignl(%235 <unnamed>: f80, %236 <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %237 @__builtin_copysignl(%235 <unnamed>: f80, %236 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %12 @comparel(%13 a: f80, %14 b: f80) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %234
 // DEFAULT-NEXT:             {
@@ -328,8 +328,8 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%12, read<f80>(real(%26)), read<f80>(%27));
 // DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%12, read<f80>(imag(%26)), read<f80>(%28));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %243 @__builtin_nanf(%242 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %249 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %243 @__builtin_nanf(%242 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %249 @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %29 @check_float() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %238
 // DEFAULT-NEXT:             {
@@ -480,8 +480,8 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %295 @__builtin_nan(%294 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %301 @__builtin_inf() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %295 @__builtin_nan(%294 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %301 @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %94 @check_double() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %290
 // DEFAULT-NEXT:             {
@@ -632,8 +632,8 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %347 @__builtin_nanl(%346 <unnamed>: ptr<const i8>) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %353 @__builtin_infl() -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %347 @__builtin_nanl(%346 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %353 @__builtin_infl() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %159 @check_long_double() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         do %342
 // DEFAULT-NEXT:             {

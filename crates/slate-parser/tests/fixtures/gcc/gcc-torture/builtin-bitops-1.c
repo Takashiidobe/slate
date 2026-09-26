@@ -602,24 +602,24 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %63 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %64 @exit(%88 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %91 @__builtin_ffs(%90 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %93 @__builtin_clz(%92 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %95 @__builtin_ctz(%94 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %97 @__builtin_clrsb(%96 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %99 @__builtin_popcount(%98 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %101 @__builtin_parity(%100 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %104 @__builtin_ffsl(%103 <unnamed>: i64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %106 @__builtin_clzl(%105 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %108 @__builtin_ctzl(%107 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %110 @__builtin_clrsbl(%109 <unnamed>: i64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %112 @__builtin_popcountl(%111 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %114 @__builtin_parityl(%113 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %117 @__builtin_ffsll(%116 <unnamed>: i64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %119 @__builtin_clzll(%118 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %121 @__builtin_ctzll(%120 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %123 @__builtin_clrsbll(%122 <unnamed>: i64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %125 @__builtin_popcountll(%124 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %127 @__builtin_parityll(%126 <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %91 @__builtin_ffs(%90 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %93 @__builtin_clz(%92 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %95 @__builtin_ctz(%94 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %97 @__builtin_clrsb(%96 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %99 @__builtin_popcount(%98 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %101 @__builtin_parity(%100 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %104 @__builtin_ffsl(%103 <unnamed>: i64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %106 @__builtin_clzl(%105 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %108 @__builtin_ctzl(%107 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %110 @__builtin_clrsbl(%109 <unnamed>: i64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %112 @__builtin_popcountl(%111 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %114 @__builtin_parityl(%113 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %117 @__builtin_ffsll(%116 <unnamed>: i64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %119 @__builtin_clzll(%118 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %121 @__builtin_ctzll(%120 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %123 @__builtin_clrsbll(%122 <unnamed>: i64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %125 @__builtin_popcountll(%124 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %127 @__builtin_parityll(%126 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %68 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %69 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %89

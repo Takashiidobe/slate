@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %4 TWO23: f32 [storage=static] [const] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(8388608.0)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @__builtin_fabs(%7 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_fabs(%7 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @rintf(%3 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%8, float_widen<f64, reason=arg>(read<f32>(%3))), float_widen<f64, reason=usual_arith>(read<f32>(%4)))
 // DEFAULT-NEXT:             {

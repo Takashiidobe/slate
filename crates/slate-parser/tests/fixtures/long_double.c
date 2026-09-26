@@ -382,13 +382,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %20 @powl(%163 __x: f80, %164 __y: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %21 @sqrtl(%165 __x: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %22 @hypotl(%166 __x: f80, %167 __y: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %23 @cbrtl(%168 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %24 @ceill(%169 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %25 @fabsl(%170 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %26 @floorl(%171 __x: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %23 @cbrtl(%168 __x: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %24 @ceill(%169 __x: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %25 @fabsl(%170 __x: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %26 @floorl(%171 __x: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %27 @fmodl(%172 __x: f80, %173 __y: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %28 @copysignl(%174 __x: f80, %175 __y: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %29 @nanl(%176 __tagb: ptr<const i8>) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %28 @copysignl(%174 __x: f80, %175 __y: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %29 @nanl(%176 __tagb: ptr<const i8>) -> f80 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %30 @erfl(%177 <unnamed>: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %31 @erfcl(%178 <unnamed>: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %32 @lgammal(%179 <unnamed>: f80) -> f80 [linkage=external];
@@ -400,17 +400,17 @@ int main(void) {
 // DEFAULT-NEXT:     fn %38 @scalbnl(%188 __x: f80, %189 __n: i32) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %39 @ilogbl(%190 __x: f80) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %40 @scalblnl(%191 __x: f80, %192 __n: i64) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %41 @nearbyintl(%193 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %42 @roundl(%194 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %43 @truncl(%195 __x: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %41 @nearbyintl(%193 __x: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %42 @roundl(%194 __x: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %43 @truncl(%195 __x: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %44 @remquol(%196 __x: f80, %197 __y: f80, %198 __quo: ptr<i32>) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %45 @lrintl(%199 __x: f80) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %46 @llrintl(%200 __x: f80) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %47 @lroundl(%201 __x: f80) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %48 @llroundl(%202 __x: f80) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %49 @fdiml(%203 __x: f80, %204 __y: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %50 @fmaxl(%205 __x: f80, %206 __y: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %51 @fminl(%207 __x: f80, %208 __y: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %50 @fmaxl(%205 __x: f80, %206 __y: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %51 @fminl(%207 __x: f80, %208 __y: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %52 @fmal(%209 __x: f80, %210 __y: f80, %211 __z: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %53 @canonicalizel(%212 __cx: ptr<f80>, %213 __x: ptr<const f80>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %70 @printf(%214 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
@@ -501,7 +501,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(77)>(%218)), truncate<i64, reason=explicit, fits=unknown>(read<i101b>(%98)), truncate<u64, reason=explicit, fits=unknown>(read<u150b>(%99)), truncate<i64, reason=explicit, fits=unknown>(read<i256b>(%100)), truncate<u64, reason=explicit, fits=unknown>(read<u300b>(%101)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %253 @__builtin_huge_vall() -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %253 @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %103 @check_math_functions() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%219)), call<f80, signature=fn(f80) -> f80>(%21, const<f80>(2)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%220)), call<f80, signature=fn(f80) -> f80>(%23, const<f80>(27)));
@@ -536,12 +536,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %104 exp: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%249)), call<f80, signature=fn(f80, ptr<i32>) -> f80>(%12, const<f80>(100), addr_of<ptr<i32>>(%104)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%250)), read<i32>(%104));
-// DEFAULT-NEXT:         let %286: i32 [synthetic];
-// DEFAULT-NEXT:         if float_class<bool, test=infinite>(call<f80, signature=fn() -> f80>(%253))
-// DEFAULT-NEXT:             write<i32>(%286, conditional<i32>(float_class<bool, test=sign_bit>(call<f80, signature=fn() -> f80>(%253)), const<i32>(-1), const<i32>(1)));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%286, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(61)>(%251)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(call<f80, signature=fn(ptr<const i8>) -> f80>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%252))))), read<i32>(%286), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(neg<f80>(const<f80>(1)))), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(const<f80>(1))), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(const<f80>(1.18973149535723176502E+4932))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(61)>(%251)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(call<f80, signature=fn(ptr<const i8>) -> f80>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%252))))), conditional<i32>(float_class<bool, test=infinite>(call<f80, signature=fn() -> f80>(%253)), conditional<i32>(float_class<bool, test=sign_bit>(call<f80, signature=fn() -> f80>(%253)), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(neg<f80>(const<f80>(1)))), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(const<f80>(1))), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(const<f80>(1.18973149535723176502E+4932))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%254)), const<f80>(1.08420217248550443401E-19));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %105 @check_remaining_math_functions() -> void [linkage=internal] [fallthrough=ret_void] {
@@ -574,58 +569,58 @@ int main(void) {
 // DEFAULT-NEXT:         let %113 vzero: volatile f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %114 vone: volatile f80 [storage=automatic] = const<f80>(1);
 // DEFAULT-NEXT:         let %115 vsub: volatile f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
-// DEFAULT-NEXT:         let %287: bool [synthetic];
+// DEFAULT-NEXT:         let %286: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %116 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%111);
 // DEFAULT-NEXT:             let %117 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             write<bool>(%287, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%117)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%116)), ne<f80, exceptions=ignore>(read<f80, volatile>(%117), read<f80, volatile>(%117)))));
+// DEFAULT-NEXT:             write<bool>(%286, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%117)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%116)), ne<f80, exceptions=ignore>(read<f80, volatile>(%117), read<f80, volatile>(%117)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %288: bool [synthetic];
+// DEFAULT-NEXT:         let %287: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %118 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %119 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%113);
-// DEFAULT-NEXT:             write<bool>(%288, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%119)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%118)), ne<f80, exceptions=ignore>(read<f80, volatile>(%119), read<f80, volatile>(%119)))));
+// DEFAULT-NEXT:             write<bool>(%287, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%119)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%118)), ne<f80, exceptions=ignore>(read<f80, volatile>(%119), read<f80, volatile>(%119)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(86)>(%275)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(read<f80, volatile>(%111))), conditional<i32>(float_class<bool, test=infinite>(read<f80, volatile>(%112)), conditional<i32>(float_class<bool, test=sign_bit>(read<f80, volatile>(%112)), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(read<bool>(%287)), from_bool<i32, reason=vararg>(read<bool>(%288)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(86)>(%275)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(read<f80, volatile>(%111))), conditional<i32>(float_class<bool, test=infinite>(read<f80, volatile>(%112)), conditional<i32>(float_class<bool, test=sign_bit>(read<f80, volatile>(%112)), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(read<bool>(%286)), from_bool<i32, reason=vararg>(read<bool>(%287)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%276)), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%115))));
 // DEFAULT-NEXT:         let %120 vtwo: volatile f80 [storage=automatic] = const<f80>(2);
-// DEFAULT-NEXT:         let %289: bool [synthetic];
+// DEFAULT-NEXT:         let %288: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %121 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %122 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%120);
-// DEFAULT-NEXT:             let %290: bool [synthetic];
+// DEFAULT-NEXT:             let %289: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %123 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%121);
 // DEFAULT-NEXT:                 let %124 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%122);
-// DEFAULT-NEXT:                 write<bool>(%290, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%124)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%123)), ne<f80, exceptions=ignore>(read<f80, volatile>(%124), read<f80, volatile>(%124)))));
+// DEFAULT-NEXT:                 write<bool>(%289, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%124)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%123)), ne<f80, exceptions=ignore>(read<f80, volatile>(%124), read<f80, volatile>(%124)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%289, logical_and<bool>(not<bool>(read<bool>(%290)), ne<f80, exceptions=ignore>(read<f80, volatile>(%121), read<f80, volatile>(%122))));
+// DEFAULT-NEXT:             write<bool>(%288, logical_and<bool>(not<bool>(read<bool>(%289)), ne<f80, exceptions=ignore>(read<f80, volatile>(%121), read<f80, volatile>(%122))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %291: bool [synthetic];
+// DEFAULT-NEXT:         let %290: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %125 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %126 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             let %292: bool [synthetic];
+// DEFAULT-NEXT:             let %291: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %127 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%125);
 // DEFAULT-NEXT:                 let %128 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%126);
-// DEFAULT-NEXT:                 write<bool>(%292, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%128)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%127)), ne<f80, exceptions=ignore>(read<f80, volatile>(%128), read<f80, volatile>(%128)))));
+// DEFAULT-NEXT:                 write<bool>(%291, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%128)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%127)), ne<f80, exceptions=ignore>(read<f80, volatile>(%128), read<f80, volatile>(%128)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%291, logical_and<bool>(not<bool>(read<bool>(%292)), ne<f80, exceptions=ignore>(read<f80, volatile>(%125), read<f80, volatile>(%126))));
+// DEFAULT-NEXT:             write<bool>(%290, logical_and<bool>(not<bool>(read<bool>(%291)), ne<f80, exceptions=ignore>(read<f80, volatile>(%125), read<f80, volatile>(%126))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %293: bool [synthetic];
+// DEFAULT-NEXT:         let %292: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %129 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%111);
 // DEFAULT-NEXT:             let %130 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             let %294: bool [synthetic];
+// DEFAULT-NEXT:             let %293: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %131 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%129);
 // DEFAULT-NEXT:                 let %132 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%130);
-// DEFAULT-NEXT:                 write<bool>(%294, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%132)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%131)), ne<f80, exceptions=ignore>(read<f80, volatile>(%132), read<f80, volatile>(%132)))));
+// DEFAULT-NEXT:                 write<bool>(%293, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%132)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%131)), ne<f80, exceptions=ignore>(read<f80, volatile>(%132), read<f80, volatile>(%132)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%293, logical_and<bool>(not<bool>(read<bool>(%294)), ne<f80, exceptions=ignore>(read<f80, volatile>(%129), read<f80, volatile>(%130))));
+// DEFAULT-NEXT:             write<bool>(%292, logical_and<bool>(not<bool>(read<bool>(%293)), ne<f80, exceptions=ignore>(read<f80, volatile>(%129), read<f80, volatile>(%130))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(62)>(%277)), from_bool<i32, reason=vararg>(read<bool>(%289)), from_bool<i32, reason=vararg>(read<bool>(%291)), from_bool<i32, reason=vararg>(read<bool>(%293)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(62)>(%277)), from_bool<i32, reason=vararg>(read<bool>(%288)), from_bool<i32, reason=vararg>(read<bool>(%290)), from_bool<i32, reason=vararg>(read<bool>(%292)));
 // DEFAULT-NEXT:         let %133 ten_plain: f80 [storage=automatic] = read<f80, volatile>(%106);
 // DEFAULT-NEXT:         let %134 canon: f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %135 canon_r: i32 [storage=automatic] = call<i32, signature=fn(ptr<f80>, ptr<const f80>) -> i32>(%53, addr_of<ptr<f80>>(%134), pointer_cast<ptr<const f80>, reason=arg>(addr_of<ptr<f80>>(%133)));

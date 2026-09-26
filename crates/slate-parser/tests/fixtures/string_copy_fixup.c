@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @strncpy(%15 __dest: ptr<i8> [restrict], %16 __src: ptr<const i8> [restrict], %17 __n: u64) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %4 @strcat(%18 __dest: ptr<i8> [restrict], %19 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @strncat(%20 __dest: ptr<i8> [restrict], %21 __src: ptr<const i8> [restrict], %22 __n: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strlen(%23 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @strlen(%23 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 copy: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %9 append: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);

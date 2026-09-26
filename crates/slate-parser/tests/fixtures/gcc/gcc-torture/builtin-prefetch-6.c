@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:                 write<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(65)>(%1), read<i32>(%4))), pointer_cast<ptr<i32>, reason=assign>(int_to_ptr<ptr<void>, reason=explicit>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%4)))));
 // DEFAULT-NEXT:         write<i32>(%2, add<i32, overflow=ub>(read<i32>(%5), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @__builtin_prefetch(%14 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %15 @__builtin_prefetch(%14 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %6 @prefetch_for_read() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %13

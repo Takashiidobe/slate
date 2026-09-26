@@ -158,7 +158,7 @@ int main() {
 // DEFAULT-NEXT:     global %18 ptr_vol_str: ptr<volatile @type0> [storage=static] = addr_of<ptr<volatile @type0>>(%16) [linkage=external];
 // DEFAULT-NEXT:     global %19 vol_ptr_vol_str: volatile ptr<volatile @type0> [storage=static] = addr_of<ptr<volatile @type0>>(%16) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%24 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %26 @__builtin_prefetch(%25 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %26 @__builtin_prefetch(%25 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %20 @simple_vol_global() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%26, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<volatile i32>, length=Some(100)>(%3)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%26, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>, volatile>(%4)), const<i32>(0), const<i32>(0));

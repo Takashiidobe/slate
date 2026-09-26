@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %2 ld: volatile f80 [storage=static] = call<f80, signature=fn(ptr<const i8>) -> f80>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%10))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @feclearexcept(%6 __excepts: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @fetestexcept(%7 __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_nansl(%8 <unnamed>: ptr<const i8>) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_nansl(%8 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -61,12 +61,12 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @__builtin_inff() -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_inf() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_infl() -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @__builtin_huge_valf() -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @__builtin_huge_val() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @__builtin_huge_vall() -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %9 @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %10 @__builtin_infl() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %11 @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %12 @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %13 @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 fi: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%8);
 // DEFAULT-NEXT:         let %3 di: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%9);

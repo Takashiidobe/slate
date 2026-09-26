@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @g(%1 a: u64) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%11, read<u64>(%1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_bswap64(%10 <unnamed>: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %11 @__builtin_bswap64(%10 <unnamed>: u64) -> u64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @f(%3 c: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %6 b: @type0 [storage=automatic];

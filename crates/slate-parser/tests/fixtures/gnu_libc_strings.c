@@ -134,26 +134,26 @@ int main(void) {
 // DEFAULT-NEXT:     global %131 .str131: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([65, 76, 80, 72, 65, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %132 .str132: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([65, 76, 80, 72, 65, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %133 .str133: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @rawmemchr(%47 __s: ptr<const void>, %48 __c: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @memrchr(%49 __s: ptr<const void>, %50 __c: i32, %51 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strcmp(%52 __s1: ptr<const i8>, %53 __s2: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strchrnul(%54 __s: ptr<const i8>, %55 __c: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strcasestr(%56 __haystack: ptr<const i8>, %57 __needle: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %2 @rawmemchr(%47 __s: ptr<const void>, %48 __c: i32) -> ptr<void> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @memrchr(%49 __s: ptr<const void>, %50 __c: i32, %51 __n: u64) -> ptr<void> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %4 @strcmp(%52 __s1: ptr<const i8>, %53 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %5 @strchrnul(%54 __s: ptr<const i8>, %55 __c: i32) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %6 @strcasestr(%56 __haystack: ptr<const i8>, %57 __needle: ptr<const i8>) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %7 @mempcpy(%58 __dest: ptr<void> [restrict], %59 __src: ptr<const void> [restrict], %60 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %8 @strlen(%61 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @strlen(%61 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %9 @strerrordesc_np(%62 __err: i32) -> ptr<const i8> [linkage=external];
 // DEFAULT-NEXT:     fn %10 @strerrorname_np(%63 __err: i32) -> ptr<const i8> [linkage=external];
 // DEFAULT-NEXT:     fn %11 @strsep(%64 __stringp: ptr<ptr<i8>> [restrict], %65 __delim: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @strverscmp(%66 __s1: ptr<const i8>, %67 __s2: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @strverscmp(%66 __s1: ptr<const i8>, %67 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %13 @memfrob(%68 __s: ptr<void>, %69 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %14 @argz_create_sep(%70 __string: ptr<const i8> [restrict], %71 __sep: i32, %72 __argz: ptr<ptr<i8>> [restrict], %73 __len: ptr<u64> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @argz_count(%74 __argz: ptr<const i8>, %75 __len: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %15 @argz_count(%74 __argz: ptr<const i8>, %75 __len: u64) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %16 @argz_extract(%76 __argz: ptr<const i8> [restrict], %77 __len: u64, %78 __argv: ptr<ptr<i8>> [restrict]) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %17 @argz_stringify(%79 __argz: ptr<i8>, %80 __len: u64, %81 __sep: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %18 @argz_add(%82 __argz: ptr<ptr<i8>> [restrict], %83 __argz_len: ptr<u64> [restrict], %84 __str: ptr<const i8> [restrict]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %19 @argz_replace(%85 __argz: ptr<ptr<i8>> [restrict], %86 __argz_len: ptr<u64> [restrict], %87 __str: ptr<const i8> [restrict], %88 __with: ptr<const i8> [restrict], %89 __replace_count: ptr<u32> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %20 @envz_entry(%90 __envz: ptr<const i8> [restrict], %91 __envz_len: u64, %92 __name: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %21 @envz_get(%93 __envz: ptr<const i8> [restrict], %94 __envz_len: u64, %95 __name: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %20 @envz_entry(%90 __envz: ptr<const i8> [restrict], %91 __envz_len: u64, %92 __name: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %21 @envz_get(%93 __envz: ptr<const i8> [restrict], %94 __envz_len: u64, %95 __name: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %22 @envz_add(%96 __envz: ptr<ptr<i8>> [restrict], %97 __envz_len: ptr<u64> [restrict], %98 __name: ptr<const i8> [restrict], %99 __value: ptr<const i8> [restrict]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %23 @envz_remove(%100 __envz: ptr<ptr<i8>> [restrict], %101 __envz_len: ptr<u64> [restrict], %102 __name: ptr<const i8> [restrict]) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %24 @envz_strip(%103 __envz: ptr<ptr<i8>> [restrict], %104 __envz_len: ptr<u64> [restrict]) -> void [linkage=external];
@@ -174,7 +174,6 @@ int main(void) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%35, add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%35), const<i32>(10)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%8, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%33)))))));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%35), const<i32>(10)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%8, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%33))))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%13, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%30)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%13, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%30)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));

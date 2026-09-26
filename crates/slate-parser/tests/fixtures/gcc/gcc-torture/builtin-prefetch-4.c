@@ -255,29 +255,25 @@ int main() {
 // DEFAULT-NEXT:     global %65 getintcnt: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%72 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %74 @__builtin_prefetch(%73 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %74 @__builtin_prefetch(%73 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %5 @assign_arg_ptr(%6 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 q: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%7, read<ptr<i32>>(%6));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%6)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%7), read<ptr<i32>>(%6)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @assign_glob_ptr() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %9 q: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%9, read<ptr<i32>>(%3));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%3)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%9), read<ptr<i32>>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @assign_arg_idx(%11 p: ptr<i32>, %12 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %13 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%12));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%11), read<i32>(%12))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%13), read<i32>(%12)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @assign_glob_idx() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %15 j: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%15, read<i32>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%4))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%15), read<i32>(%4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @preinc_arg_ptr(%17 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -286,7 +282,6 @@ int main() {
 // DEFAULT-NEXT:         let %75: ptr<i32> [synthetic] = read<ptr<i32>>(%17);
 // DEFAULT-NEXT:         let %76: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%75), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%17, read<ptr<i32>>(%76));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%76)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%17), read<ptr<i32>>(%18)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @preinc_glob_ptr() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -295,7 +290,6 @@ int main() {
 // DEFAULT-NEXT:         let %77: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %78: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%77), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%78));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%78)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%3), read<ptr<i32>>(%20)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @postinc_arg_ptr(%22 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -304,7 +298,6 @@ int main() {
 // DEFAULT-NEXT:         let %79: ptr<i32> [synthetic] = read<ptr<i32>>(%22);
 // DEFAULT-NEXT:         let %80: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%79), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%22, read<ptr<i32>>(%80));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%79)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%22), read<ptr<i32>>(%23)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %24 @postinc_glob_ptr() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -313,7 +306,6 @@ int main() {
 // DEFAULT-NEXT:         let %81: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %82: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%81), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%82));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%81)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%3), read<ptr<i32>>(%25)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %26 @predec_arg_ptr(%27 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -322,7 +314,6 @@ int main() {
 // DEFAULT-NEXT:         let %83: ptr<i32> [synthetic] = read<ptr<i32>>(%27);
 // DEFAULT-NEXT:         let %84: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%83), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%27, read<ptr<i32>>(%84));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%84)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%27), read<ptr<i32>>(%28)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @predec_glob_ptr() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -331,7 +322,6 @@ int main() {
 // DEFAULT-NEXT:         let %85: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %86: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%85), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%86));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%86)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%3), read<ptr<i32>>(%30)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %31 @postdec_arg_ptr(%32 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -340,7 +330,6 @@ int main() {
 // DEFAULT-NEXT:         let %87: ptr<i32> [synthetic] = read<ptr<i32>>(%32);
 // DEFAULT-NEXT:         let %88: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%87), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%32, read<ptr<i32>>(%88));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%87)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%32), read<ptr<i32>>(%33)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %34 @postdec_glob_ptr() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -349,7 +338,6 @@ int main() {
 // DEFAULT-NEXT:         let %89: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %90: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%89), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%90));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%89)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%3), read<ptr<i32>>(%35)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %36 @preinc_arg_idx(%37 p: ptr<i32>, %38 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -357,7 +345,6 @@ int main() {
 // DEFAULT-NEXT:         let %91: i32 [synthetic] = read<i32>(%38);
 // DEFAULT-NEXT:         let %92: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%91), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%38, read<i32>(%92));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%37), read<i32>(%92))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%38), read<i32>(%39)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %40 @preinc_glob_idx() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -365,7 +352,6 @@ int main() {
 // DEFAULT-NEXT:         let %93: i32 [synthetic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %94: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%93), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(%94));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%94))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%4), read<i32>(%41)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %42 @postinc_arg_idx(%43 p: ptr<i32>, %44 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -373,7 +359,6 @@ int main() {
 // DEFAULT-NEXT:         let %95: i32 [synthetic] = read<i32>(%44);
 // DEFAULT-NEXT:         let %96: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%95), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%44, read<i32>(%96));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%43), read<i32>(%95))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%44), read<i32>(%45)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %46 @postinc_glob_idx() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -381,7 +366,6 @@ int main() {
 // DEFAULT-NEXT:         let %97: i32 [synthetic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %98: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%97), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(%98));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%97))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%4), read<i32>(%47)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %48 @predec_arg_idx(%49 p: ptr<i32>, %50 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -389,7 +373,6 @@ int main() {
 // DEFAULT-NEXT:         let %99: i32 [synthetic] = read<i32>(%50);
 // DEFAULT-NEXT:         let %100: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%99), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%50, read<i32>(%100));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%49), read<i32>(%100))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%50), read<i32>(%51)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %52 @predec_glob_idx() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -397,7 +380,6 @@ int main() {
 // DEFAULT-NEXT:         let %101: i32 [synthetic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %102: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%101), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(%102));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%102))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%4), read<i32>(%53)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %54 @postdec_arg_idx(%55 p: ptr<i32>, %56 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -405,7 +387,6 @@ int main() {
 // DEFAULT-NEXT:         let %103: i32 [synthetic] = read<i32>(%56);
 // DEFAULT-NEXT:         let %104: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%103), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%56, read<i32>(%104));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%55), read<i32>(%103))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%56), read<i32>(%57)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %58 @postdec_glob_idx() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -413,7 +394,6 @@ int main() {
 // DEFAULT-NEXT:         let %105: i32 [synthetic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %106: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%105), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(%106));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%74, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%105))))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%4), read<i32>(%59)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %61 @getptr(%62 p: ptr<i32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {

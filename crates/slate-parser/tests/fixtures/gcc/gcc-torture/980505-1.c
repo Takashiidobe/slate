@@ -42,7 +42,7 @@ static int f(int x) { return x; }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @f(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @f(%7 x: i32) -> i32 [linkage=internal] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -51,10 +51,8 @@ static int f(int x) { return x; }
 // DEFAULT-NEXT:         let %6 x: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%6, const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6));
 // DEFAULT-NEXT:         write<i32>(%6, const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(%5, call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%4), const<i32>(1)), ne<i32>(read<i32>(%5), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

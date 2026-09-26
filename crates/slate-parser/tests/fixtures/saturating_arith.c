@@ -80,8 +80,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %32 .str32: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %33 .str33: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @__builtin_elementwise_add_sat(%20 <unnamed>: i32, %21 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %27 @__builtin_elementwise_sub_sat(%25 <unnamed>: i16, %26 <unnamed>: i16) -> i16 [linkage=external];
+// DEFAULT-NEXT:     fn %22 @__builtin_elementwise_add_sat(%20 <unnamed>: i32, %21 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %27 @__builtin_elementwise_sub_sat(%25 <unnamed>: i16, %26 <unnamed>: i16) -> i16 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 add_i: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%22, sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(5)), const<i32>(10));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%23)), read<i32>(%6));

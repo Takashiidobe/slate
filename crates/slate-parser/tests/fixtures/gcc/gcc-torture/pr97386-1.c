@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_bswap16(%4 <unnamed>: u16) -> u16 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_bswap16(%4 <unnamed>: u16) -> u16 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %0 @foo(%1 c: u32) -> u8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%5, truncate<u16, reason=arg, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(52428), read<u32>(%1)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(52428), and<u32>(neg<u32, overflow=wrap>(read<u32>(%1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(63))))))));
 // DEFAULT-NEXT:     }

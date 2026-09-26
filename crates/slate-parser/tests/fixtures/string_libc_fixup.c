@@ -63,16 +63,16 @@ int main(void) {
 // DEFAULT-NEXT:     global %51 .str51: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %52 .str52: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%27 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memcmp(%28 __s1: ptr<const void>, %29 __s2: ptr<const void>, %30 __n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strcmp(%31 __s1: ptr<const i8>, %32 __s2: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strncmp(%33 __s1: ptr<const i8>, %34 __s2: ptr<const i8>, %35 __n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strchr(%36 __s: ptr<const i8>, %37 __c: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strrchr(%38 __s: ptr<const i8>, %39 __c: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @strcspn(%40 __s: ptr<const i8>, %41 __reject: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @strspn(%42 __s: ptr<const i8>, %43 __accept: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @strpbrk(%44 __s: ptr<const i8>, %45 __accept: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %10 @strstr(%46 __haystack: ptr<const i8>, %47 __needle: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @strlen(%48 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @memcmp(%28 __s1: ptr<const void>, %29 __s2: ptr<const void>, %30 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @strcmp(%31 __s1: ptr<const i8>, %32 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %4 @strncmp(%33 __s1: ptr<const i8>, %34 __s2: ptr<const i8>, %35 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %5 @strchr(%36 __s: ptr<const i8>, %37 __c: i32) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %6 @strrchr(%38 __s: ptr<const i8>, %39 __c: i32) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %7 @strcspn(%40 __s: ptr<const i8>, %41 __reject: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %8 @strspn(%42 __s: ptr<const i8>, %43 __accept: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %9 @strpbrk(%44 __s: ptr<const i8>, %45 __accept: ptr<const i8>) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %10 @strstr(%46 __haystack: ptr<const i8>, %47 __needle: ptr<const i8>) -> ptr<i8> [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %11 @strlen(%48 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 alpha: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 99, 0]);
 // DEFAULT-NEXT:         let %14 beta: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 100, 0]);

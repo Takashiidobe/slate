@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %21 .str21: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([67, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %22 .str22: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %23 .str23: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %14 @setlocale(%18 __category: i32, %19 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %15 @printf(%20 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

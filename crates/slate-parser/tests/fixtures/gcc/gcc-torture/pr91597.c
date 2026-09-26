@@ -91,7 +91,7 @@ int main() {
 // DEFAULT-NEXT:             write<bool>(%21, eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%21));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @baz(%10 o: ptr<@type1>, %11 d: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%18, from_bool<i64, reason=arg>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type1>) -> i32>(%7, read<ptr<@type1>>(%10)), const<i32>(0)))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))

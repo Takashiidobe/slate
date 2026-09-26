@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @malloc(%19 __size: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @free(%20 __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @memcpy(%21 __dest: ptr<void> [restrict], %22 __src: ptr<const void> [restrict], %23 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strlen(%24 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @strlen(%24 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %6 @consume_text(%7 text: ptr<i8>, %8 len: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%5, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%7)));
 // DEFAULT-NEXT:         let %9 score: i32 [storage=automatic] = const<i32>(0);

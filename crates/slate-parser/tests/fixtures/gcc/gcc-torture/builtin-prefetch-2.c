@@ -182,7 +182,7 @@ int main() {
 // DEFAULT-NEXT:     global %14 hx: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(100)>(%13) [linkage=internal];
 // DEFAULT-NEXT:     global %15 ix: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exit(%32 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %34 @__builtin_prefetch(%33 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %34 @__builtin_prefetch(%33 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %10 @simple_global() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%1)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(0), const<i32>(0));

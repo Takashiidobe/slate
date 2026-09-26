@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %45 .str45: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%37 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @free(%38 __ptr: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strlen(%39 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @strlen(%39 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %5 @sum_values(%6 values: ptr<const i32>, %7 len: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 sum: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %40

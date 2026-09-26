@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %14 @fgets(%28 __s: ptr<i8> [restrict], %29 __n: i32, %30 __stream: ptr<@type4> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %15 @fputs(%31 __s: ptr<const i8> [restrict], %32 __stream: ptr<@type4> [restrict]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %16 @puts(%33 __s: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %17 @strlen(%34 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %17 @strlen(%34 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(38)>(%35)));
 // DEFAULT-NEXT:         let %19 f: ptr<@type4> [storage=automatic] = call<ptr<@type4>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<@type4>>(%12, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(38)>(%36)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%37)));

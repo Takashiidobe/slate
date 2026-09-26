@@ -121,7 +121,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @sin(%56 __x: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %5 @sincos(%57 __x: f64, %58 __sinx: ptr<f64>, %59 __cosx: ptr<f64>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %6 @exp10(%60 __x: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @fabs(%61 __x: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @fabs(%61 __x: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %8 @drem(%62 __x: f64, %63 __y: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %9 @significand(%64 __x: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %10 @j0(%65 <unnamed>: f64) -> f64 [linkage=external];
@@ -137,7 +137,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %20 @sinf(%79 __x: f32) -> f32 [linkage=external];
 // DEFAULT-NEXT:     fn %21 @sincosf(%80 __x: f32, %81 __sinx: ptr<f32>, %82 __cosx: ptr<f32>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %22 @exp10f(%83 __x: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %23 @fabsf(%84 __x: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %23 @fabsf(%84 __x: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %24 @dremf(%85 __x: f32, %86 __y: f32) -> f32 [linkage=external];
 // DEFAULT-NEXT:     fn %25 @significandf(%87 __x: f32) -> f32 [linkage=external];
 // DEFAULT-NEXT:     fn %26 @j0f(%88 <unnamed>: f32) -> f32 [linkage=external];
@@ -147,7 +147,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %30 @sinl(%93 __x: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %31 @sincosl(%94 __x: f80, %95 __sinx: ptr<f80>, %96 __cosx: ptr<f80>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %32 @exp10l(%97 __x: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %33 @fabsl(%98 __x: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %33 @fabsl(%98 __x: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %34 @printf(%99 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %35 @gnu_sincos_extensions() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %36 sine: f64 [storage=automatic] = const<f64>(0.0);

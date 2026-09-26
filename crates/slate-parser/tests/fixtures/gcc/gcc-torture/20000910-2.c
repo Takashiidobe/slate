@@ -55,7 +55,7 @@ int main() { foo(); }
 // DEFAULT-NEXT:     global %3 list: array<ptr<i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%13), index1 = array_decay<ptr<i8>, length=Some(2)>(%14)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%10 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @strchr(%11 __s: ptr<const i8>, %12 __c: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %2 @strchr(%11 __s: ptr<const i8>, %12 __c: i32) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %4 @bar(%5 fmt: ptr<const i8>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<ptr<const i8>>(pointer_cast<ptr<const i8>, reason=explicit>(call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%2, read<ptr<const i8>>(%5), const<i32>(42))), null<ptr<const i8>>));
 // DEFAULT-NEXT:     }

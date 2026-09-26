@@ -1,13 +1,14 @@
 use super::numeric::ResolveError;
 use crate::ast::Span;
 use crate::ir::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub(super) struct Hoister {
     next_id: u32,
     old: Vec<Value>,
     unsequenced: bool,
     pub(super) access: HashMap<BindingId, Access>,
+    effect_free: HashSet<BindingId>,
 }
 
 impl Hoister {
@@ -15,12 +16,14 @@ impl Hoister {
         next_id: u32,
         _pointer_width: u32,
         access: HashMap<BindingId, Access>,
+        effect_free: HashSet<BindingId>,
     ) -> Self {
         Self {
             next_id,
             old: Vec::new(),
             unsequenced: false,
             access,
+            effect_free,
         }
     }
 
@@ -73,9 +76,9 @@ impl Hoister {
         span: Option<Span<()>>,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<(), ResolveError> {
-        let had_effects = effects(&value);
+        let had_effects = self.effects(&value);
         let value = self.value(value, out)?;
-        if !(had_effects && !effects(&value)) {
+        if !(had_effects && !self.effects(&value)) {
             let span = span.unwrap_or_else(|| value.node.derive(()));
             out.push(span.with_value(Statement::Expression(value)));
         }
@@ -481,7 +484,7 @@ impl Hoister {
             }
             ValueKind::Logical { op, left, right } => {
                 let left = self.value(*left, out)?;
-                if effects(&right) {
+                if self.effects(&right) {
                     let constant = Value {
                         ty: Type::Bool,
                         node: source.derive(ValueKind::Constant(Number::Bool(matches!(
@@ -506,7 +509,7 @@ impl Hoister {
                 else_value,
             } => {
                 let condition = self.value(*condition, out)?;
-                if effects(&then_value) || effects(&else_value) {
+                if self.effects(&then_value) || self.effects(&else_value) {
                     return self.branch(&template, condition, *then_value, *else_value, out);
                 }
                 ValueKind::Conditional {
@@ -720,81 +723,92 @@ impl Hoister {
             node: source.with_value(kind),
         })
     }
-}
 
-fn place_effects(place: &Place) -> bool {
-    match &place.kind {
-        PlaceKind::Binding(_) => false,
-        PlaceKind::Deref(value) => effects(value),
-        PlaceKind::CompoundLiteral { initializer, .. } => effects(initializer),
-        PlaceKind::Temporary { initializer, .. } => effects(initializer),
-        PlaceKind::ComplexPart { base, .. } => place_effects(base),
-        PlaceKind::Field { base, .. } => place_effects(base),
-        PlaceKind::Index { base, index } => effects(base) || effects(index),
-        PlaceKind::Lane { base, index } => place_effects(base) || effects(index),
-        PlaceKind::Swizzle { base, .. } => place_effects(base),
-    }
-}
-
-fn atomicity_effects(ordering: &Atomicity) -> bool {
-    matches!(&ordering.order, MemoryOrder::Dynamic(value) if effects(value))
-        || matches!(&ordering.scope, SyncScope::Dynamic(value) if effects(value))
-}
-
-fn effects(value: &Value) -> bool {
-    match &value.node.value {
-        ValueKind::Store { .. }
-        | ValueKind::Update { .. }
-        | ValueKind::CompareExchange { .. }
-        | ValueKind::Overflow { .. }
-        | ValueKind::Fence { .. }
-        | ValueKind::Call { .. }
-        | ValueKind::VaArg { .. }
-        | ValueKind::StatementExpression(_)
-        | ValueKind::Capture { .. }
-        | ValueKind::VaStart { .. }
-        | ValueKind::VaEnd { .. }
-        | ValueKind::VaCopy { .. }
-        | ValueKind::Sequence { .. } => true,
-        ValueKind::Arith { left, right, .. }
-        | ValueKind::Compare { left, right, .. }
-        | ValueKind::Logical { left, right, .. }
-        | ValueKind::PointerDifference { left, right, .. } => effects(left) || effects(right),
-        ValueKind::PointerOffset {
-            pointer, amount, ..
-        } => effects(pointer) || effects(amount),
-        ValueKind::Conditional {
-            condition,
-            then_value,
-            else_value,
-        } => effects(condition) || effects(then_value) || effects(else_value),
-        ValueKind::Aggregate { members, .. } => members.iter().any(|member| effects(&member.value)),
-        ValueKind::Lane { vector, index } => effects(vector) || effects(index),
-        ValueKind::Shuffle { left, right, mask } => {
-            effects(left)
-                || right.as_deref().is_some_and(effects)
-                || match mask {
-                    ShuffleMask::Lanes(_) => false,
-                    ShuffleMask::Dynamic(mask) => effects(mask),
-                }
+    fn place_effects(&self, place: &Place) -> bool {
+        match &place.kind {
+            PlaceKind::Binding(_) => false,
+            PlaceKind::Deref(value) => self.effects(value),
+            PlaceKind::CompoundLiteral { initializer, .. } => self.effects(initializer),
+            PlaceKind::Temporary { initializer, .. } => self.effects(initializer),
+            PlaceKind::ComplexPart { base, .. } => self.place_effects(base),
+            PlaceKind::Field { base, .. } => self.place_effects(base),
+            PlaceKind::Index { base, index } => self.effects(base) || self.effects(index),
+            PlaceKind::Lane { base, index } => self.place_effects(base) || self.effects(index),
+            PlaceKind::Swizzle { base, .. } => self.place_effects(base),
         }
-        ValueKind::Copy { operand, .. }
-        | ValueKind::Unary { operand, .. }
-        | ValueKind::FloatClass { operand, .. }
-        | ValueKind::Convert { operand, .. } => effects(operand),
-        ValueKind::Read {
-            place,
-            ordering: Some(ordering),
-        } => place_effects(place) || atomicity_effects(ordering),
-        ValueKind::Read { place, .. }
-        | ValueKind::AddressOf(place)
-        | ValueKind::ArrayDecay { place, .. }
-        | ValueKind::FunctionDecay { place } => place_effects(place),
-        ValueKind::OldValue
-        | ValueKind::Constant(_)
-        | ValueKind::Null
-        | ValueKind::LabelAddress(_)
-        | ValueKind::Void
-        | ValueKind::CodeUnits(_) => false,
+    }
+
+    fn atomicity_effects(&self, ordering: &Atomicity) -> bool {
+        matches!(&ordering.order, MemoryOrder::Dynamic(value) if self.effects(value))
+            || matches!(&ordering.scope, SyncScope::Dynamic(value) if self.effects(value))
+    }
+
+    fn effects(&self, value: &Value) -> bool {
+        match &value.node.value {
+            ValueKind::Call {
+                callee: Callee::Direct(id),
+                arguments,
+                ..
+            } if self.effect_free.contains(id) => {
+                arguments.iter().any(|argument| self.effects(argument))
+            }
+            ValueKind::Store { .. }
+            | ValueKind::Update { .. }
+            | ValueKind::CompareExchange { .. }
+            | ValueKind::Overflow { .. }
+            | ValueKind::Fence { .. }
+            | ValueKind::Call { .. }
+            | ValueKind::VaArg { .. }
+            | ValueKind::StatementExpression(_)
+            | ValueKind::Capture { .. }
+            | ValueKind::VaStart { .. }
+            | ValueKind::VaEnd { .. }
+            | ValueKind::VaCopy { .. }
+            | ValueKind::Sequence { .. } => true,
+            ValueKind::Arith { left, right, .. }
+            | ValueKind::Compare { left, right, .. }
+            | ValueKind::Logical { left, right, .. }
+            | ValueKind::PointerDifference { left, right, .. } => {
+                self.effects(left) || self.effects(right)
+            }
+            ValueKind::PointerOffset {
+                pointer, amount, ..
+            } => self.effects(pointer) || self.effects(amount),
+            ValueKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => self.effects(condition) || self.effects(then_value) || self.effects(else_value),
+            ValueKind::Aggregate { members, .. } => {
+                members.iter().any(|member| self.effects(&member.value))
+            }
+            ValueKind::Lane { vector, index } => self.effects(vector) || self.effects(index),
+            ValueKind::Shuffle { left, right, mask } => {
+                self.effects(left)
+                    || right.as_deref().is_some_and(|right| self.effects(right))
+                    || match mask {
+                        ShuffleMask::Lanes(_) => false,
+                        ShuffleMask::Dynamic(mask) => self.effects(mask),
+                    }
+            }
+            ValueKind::Copy { operand, .. }
+            | ValueKind::Unary { operand, .. }
+            | ValueKind::FloatClass { operand, .. }
+            | ValueKind::Convert { operand, .. } => self.effects(operand),
+            ValueKind::Read {
+                place,
+                ordering: Some(ordering),
+            } => self.place_effects(place) || self.atomicity_effects(ordering),
+            ValueKind::Read { place, .. }
+            | ValueKind::AddressOf(place)
+            | ValueKind::ArrayDecay { place, .. }
+            | ValueKind::FunctionDecay { place } => self.place_effects(place),
+            ValueKind::OldValue
+            | ValueKind::Constant(_)
+            | ValueKind::Null
+            | ValueKind::LabelAddress(_)
+            | ValueKind::Void
+            | ValueKind::CodeUnits(_) => false,
+        }
     }
 }

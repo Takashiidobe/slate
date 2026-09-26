@@ -51,7 +51,7 @@ int         main() {
 // DEFAULT-NEXT:         write<i32>(%0, neg<i32, overflow=ub>(read<i32>(%0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @test(%4 c: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {

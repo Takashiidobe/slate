@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %15 @__builtin_fma(%12 <unnamed>: f64, %13 <unnamed>: f64, %14 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %18 @__builtin_hypot(%16 <unnamed>: f64, %17 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %21 @__builtin_fdim(%19 <unnamed>: f64, %20 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %23 @__builtin_cbrt(%22 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %23 @__builtin_cbrt(%22 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %26 @__builtin_ldexp(%24 <unnamed>: f64, %25 <unnamed>: i32) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %29 @__builtin_scalbn(%27 <unnamed>: f64, %28 <unnamed>: i32) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %31 @__builtin_logb(%30 <unnamed>: f64) -> f64 [linkage=external];

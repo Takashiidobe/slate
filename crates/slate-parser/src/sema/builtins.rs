@@ -1,6 +1,6 @@
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
 use super::types::TypeResolver;
-use crate::ir::{ArithOp, CompareOp, FloatClassTest};
+use crate::ir::{ArithOp, CompareOp, FloatClassTest, MemoryEffects};
 use crate::target_info::TargetInfo;
 
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
@@ -127,6 +127,16 @@ pub(super) struct ClangBuiltin {
 impl ClangBuiltin {
     pub fn has(&self, attribute: BuiltinAttribute) -> bool {
         self.attributes.contains(&attribute)
+    }
+
+    pub fn memory_effects(&self) -> Option<MemoryEffects> {
+        if self.has(BuiltinAttribute::Const) {
+            Some(MemoryEffects::None)
+        } else if self.has(BuiltinAttribute::Pure) {
+            Some(MemoryEffects::Read)
+        } else {
+            None
+        }
     }
 }
 

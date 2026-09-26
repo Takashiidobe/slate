@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %14 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %15 @classify(%16 c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024))))));

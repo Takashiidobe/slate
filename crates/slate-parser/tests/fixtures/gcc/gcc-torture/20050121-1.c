@@ -80,7 +80,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 ldouble_t = f80;
 // DEFAULT-NEXT:     type @type1 llong = i64;
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo_float(%4 x: i32) -> complex<f32> [linkage=external] [abi=sysv64(scalar) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @foo_float(%4 x: i32) -> complex<f32> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 r: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         write<f32>(real(%5), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
 // DEFAULT-NEXT:         write<f32>(imag(%5), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
@@ -88,13 +88,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @bar_float(%7 x: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%7)), complex_to_real<f32, reason=explicit>(call<complex<f32>, signature=fn(i32) -> complex<f32>, abi=sysv64(scalar) -> coerce<pair<f32>>>(%3, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<f32, reason=explicit>(call<complex<f32>, signature=fn(i32) -> complex<f32>, abi=sysv64(scalar) -> coerce<pair<f32>>>(%3, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @baz_float(%9 x: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%9)), complex_to_imag<f32, reason=explicit>(call<complex<f32>, signature=fn(i32) -> complex<f32>, abi=sysv64(scalar) -> coerce<pair<f32>>>(%3, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<f32, reason=explicit>(call<complex<f32>, signature=fn(i32) -> complex<f32>, abi=sysv64(scalar) -> coerce<pair<f32>>>(%3, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @foo_double(%11 x: i32) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %10 @foo_double(%11 x: i32) -> complex<f64> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12 r: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(real(%12), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(read<i32>(%11), const<i32>(1))));
 // DEFAULT-NEXT:         write<f64>(imag(%12), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(sub<i32, overflow=ub>(read<i32>(%11), const<i32>(1))));
@@ -102,13 +100,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @bar_double(%14 x: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%14)), complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn(i32) -> complex<f64>, abi=sysv64(scalar) -> coerce<f64, f64>>(%10, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn(i32) -> complex<f64>, abi=sysv64(scalar) -> coerce<f64, f64>>(%10, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @baz_double(%16 x: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%16)), complex_to_imag<f64, reason=explicit>(call<complex<f64>, signature=fn(i32) -> complex<f64>, abi=sysv64(scalar) -> coerce<f64, f64>>(%10, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<f64, reason=explicit>(call<complex<f64>, signature=fn(i32) -> complex<f64>, abi=sysv64(scalar) -> coerce<f64, f64>>(%10, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @foo_ldouble_t(%18 x: i32) -> complex<f80> [linkage=external] [abi=sysv64(scalar) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %17 @foo_ldouble_t(%18 x: i32) -> complex<f80> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %19 r: complex<f80> [storage=automatic];
 // DEFAULT-NEXT:         write<f80>(real(%19), int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(read<i32>(%18), const<i32>(1))));
 // DEFAULT-NEXT:         write<f80>(imag(%19), int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(sub<i32, overflow=ub>(read<i32>(%18), const<i32>(1))));
@@ -116,13 +112,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @bar_ldouble_t(%21 x: ptr<f80>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f80>(deref(read<ptr<f80>>(%21)), complex_to_real<f80, reason=explicit>(call<complex<f80>, signature=fn(i32) -> complex<f80>, abi=sysv64(scalar) -> coerce<f80, f80>>(%17, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<f80, reason=explicit>(call<complex<f80>, signature=fn(i32) -> complex<f80>, abi=sysv64(scalar) -> coerce<f80, f80>>(%17, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @baz_ldouble_t(%23 x: ptr<f80>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f80>(deref(read<ptr<f80>>(%23)), complex_to_imag<f80, reason=explicit>(call<complex<f80>, signature=fn(i32) -> complex<f80>, abi=sysv64(scalar) -> coerce<f80, f80>>(%17, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<f80, reason=explicit>(call<complex<f80>, signature=fn(i32) -> complex<f80>, abi=sysv64(scalar) -> coerce<f80, f80>>(%17, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @foo_char(%25 x: i32) -> complex<i8> [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %24 @foo_char(%25 x: i32) -> complex<i8> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %26 r: complex<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(real(%26), truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(read<i32>(%25), const<i32>(1))));
 // DEFAULT-NEXT:         write<i8>(imag(%26), truncate<i8, reason=assign, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%25), const<i32>(1))));
@@ -130,13 +124,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %27 @bar_char(%28 x: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%28)), complex_to_real<i8, reason=explicit>(call<complex<i8>, signature=fn(i32) -> complex<i8>, abi=sysv64(scalar) -> coerce<i64>>(%24, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<i8, reason=explicit>(call<complex<i8>, signature=fn(i32) -> complex<i8>, abi=sysv64(scalar) -> coerce<i64>>(%24, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @baz_char(%30 x: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%30)), complex_to_imag<i8, reason=explicit>(call<complex<i8>, signature=fn(i32) -> complex<i8>, abi=sysv64(scalar) -> coerce<i64>>(%24, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<i8, reason=explicit>(call<complex<i8>, signature=fn(i32) -> complex<i8>, abi=sysv64(scalar) -> coerce<i64>>(%24, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @foo_short(%32 x: i32) -> complex<i16> [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %31 @foo_short(%32 x: i32) -> complex<i16> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %33 r: complex<i16> [storage=automatic];
 // DEFAULT-NEXT:         write<i16>(real(%33), truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(read<i32>(%32), const<i32>(1))));
 // DEFAULT-NEXT:         write<i16>(imag(%33), truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%32), const<i32>(1))));
@@ -144,13 +136,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %34 @bar_short(%35 x: ptr<i16>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%35)), complex_to_real<i16, reason=explicit>(call<complex<i16>, signature=fn(i32) -> complex<i16>, abi=sysv64(scalar) -> coerce<i64>>(%31, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<i16, reason=explicit>(call<complex<i16>, signature=fn(i32) -> complex<i16>, abi=sysv64(scalar) -> coerce<i64>>(%31, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %36 @baz_short(%37 x: ptr<i16>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%37)), complex_to_imag<i16, reason=explicit>(call<complex<i16>, signature=fn(i32) -> complex<i16>, abi=sysv64(scalar) -> coerce<i64>>(%31, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<i16, reason=explicit>(call<complex<i16>, signature=fn(i32) -> complex<i16>, abi=sysv64(scalar) -> coerce<i64>>(%31, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @foo_int(%39 x: i32) -> complex<i32> [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %38 @foo_int(%39 x: i32) -> complex<i32> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %40 r: complex<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(real(%40), add<i32, overflow=ub>(read<i32>(%39), const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(imag(%40), sub<i32, overflow=ub>(read<i32>(%39), const<i32>(1)));
@@ -158,13 +148,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %41 @bar_int(%42 x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%42)), complex_to_real<i32, reason=explicit>(call<complex<i32>, signature=fn(i32) -> complex<i32>, abi=sysv64(scalar) -> coerce<i64>>(%38, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<i32, reason=explicit>(call<complex<i32>, signature=fn(i32) -> complex<i32>, abi=sysv64(scalar) -> coerce<i64>>(%38, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %43 @baz_int(%44 x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%44)), complex_to_imag<i32, reason=explicit>(call<complex<i32>, signature=fn(i32) -> complex<i32>, abi=sysv64(scalar) -> coerce<i64>>(%38, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<i32, reason=explicit>(call<complex<i32>, signature=fn(i32) -> complex<i32>, abi=sysv64(scalar) -> coerce<i64>>(%38, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @foo_long(%46 x: i32) -> complex<i64> [linkage=external] [abi=sysv64(scalar) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %45 @foo_long(%46 x: i32) -> complex<i64> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %47 r: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(real(%47), widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%46), const<i32>(1))));
 // DEFAULT-NEXT:         write<i64>(imag(%47), widen<i64, reason=assign>(sub<i32, overflow=ub>(read<i32>(%46), const<i32>(1))));
@@ -172,13 +160,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %48 @bar_long(%49 x: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%49)), complex_to_real<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%45, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%45, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %50 @baz_long(%51 x: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%51)), complex_to_imag<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%45, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%45, const<i32>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @foo_llong(%53 x: i32) -> complex<i64> [linkage=external] [abi=sysv64(scalar) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %52 @foo_llong(%53 x: i32) -> complex<i64> [linkage=external] [memory=read] [abi=sysv64(scalar) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %54 r: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(real(%54), widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%53), const<i32>(1))));
 // DEFAULT-NEXT:         write<i64>(imag(%54), widen<i64, reason=assign>(sub<i32, overflow=ub>(read<i32>(%53), const<i32>(1))));
@@ -186,11 +172,9 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %55 @bar_llong(%56 x: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%56)), complex_to_real<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%52, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_real<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%52, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %57 @baz_llong(%58 x: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%58)), complex_to_imag<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%52, const<i32>(5))));
-// DEFAULT-NEXT:         complex_to_imag<i64, reason=explicit>(call<complex<i64>, signature=fn(i32) -> complex<i64>, abi=sysv64(scalar) -> coerce<i64, i64>>(%52, const<i32>(5)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %59 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         {

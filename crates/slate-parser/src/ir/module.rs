@@ -96,6 +96,13 @@ pub struct FunctionSemantics {
     pub inlining: Option<Inlining>,
     pub inline_only: bool,
     pub noreturn: bool,
+    pub memory: Option<MemoryEffects>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum MemoryEffects {
+    None,
+    Read,
 }
 
 #[derive(Debug, Clone, Copy)]

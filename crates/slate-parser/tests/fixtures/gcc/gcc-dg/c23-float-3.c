@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 f: volatile f32 [storage=static] = call<f32, signature=fn() -> f32>(%4) [linkage=external];
-// DEFAULT-NEXT:     fn %4 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

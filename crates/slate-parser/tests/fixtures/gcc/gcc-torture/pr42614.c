@@ -123,7 +123,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @__builtin_abs(%26 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %27 @__builtin_abs(%26 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %16 index: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %17 table_p: ptr<@type2> [storage=automatic] = call<ptr<@type2>, signature=fn() -> ptr<@type2>>(%7);

@@ -9,7 +9,13 @@ pub(super) fn normalize(
     next_id: u32,
     access: HashMap<BindingId, Access>,
 ) -> Result<(), ResolveError> {
-    let mut hoister = Hoister::new(next_id, module.target.pointer_width, access);
+    let effect_free = module
+        .functions
+        .iter()
+        .filter(|function| function.semantics.memory.is_some())
+        .map(|function| function.value.id)
+        .collect();
+    let mut hoister = Hoister::new(next_id, module.target.pointer_width, access, effect_free);
     for function in &mut module.functions {
         if let Some(body) = &mut function.value.body {
             *body = hoister.statements(std::mem::take(body))?;

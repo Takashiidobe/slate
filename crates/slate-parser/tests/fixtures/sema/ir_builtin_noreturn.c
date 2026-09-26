@@ -76,7 +76,7 @@ void again(void) {
 // IR-NEXT:     fn %5 @stop_block_scope(%6 status: i32 [c="int"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int)"] {
 // IR-NEXT:         call<void>(%7, read<i32>(%6));
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @__builtin_abs(%15 <unnamed>: i32) -> i32 [linkage=external] [c_builtin="__builtin_abs"];
+// IR-NEXT:     fn %16 @__builtin_abs(%15 <unnamed>: i32) -> i32 [linkage=external] [memory=none] [c_builtin="__builtin_abs"];
 // IR-NEXT:     fn %8 @ordinary(%9 value: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
 // IR-NEXT:         return add<i32>(add<i32>(call<i32>(%16, read<i32>(%9)), reinterpret<i32>(truncate<u32>(const<u64>(8) [size_of="i64"]))), call<i32>(%16, neg<i32>(read<i32>(%9))));
 // IR-NEXT:     }

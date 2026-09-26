@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:                 return const<i32>(3);
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_inf() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 a: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%6);

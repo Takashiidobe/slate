@@ -36,7 +36,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_ffs(%4 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_ffs(%4 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %1 x: i32 [storage=automatic];

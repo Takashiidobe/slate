@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %6 dst: array<i8, 80> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @memcpy(%14 __dest: ptr<void> [restrict], %15 __src: ptr<const void> [restrict], %16 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memset(%17 __s: ptr<void>, %18 __c: i32, %19 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @memcmp(%20 __s1: ptr<const void>, %21 __s2: ptr<const void>, %22 __n: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @memcmp(%20 __s1: ptr<const void>, %21 __s2: ptr<const void>, %22 __n: u64) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @check(%8 test: ptr<i8>, %9 match: ptr<i8>, %10 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%3, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%8)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))), const<i32>(0))

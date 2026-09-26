@@ -72,7 +72,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%26));
 // DEFAULT-NEXT:         return read<i32>(%3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__builtin_expect(%15 <unnamed>: i64, %16 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %17 @__builtin_expect(%15 <unnamed>: i64, %16 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %4 @use_expect(%5 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%17, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%5))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             {
@@ -80,7 +80,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @__builtin_expect_with_probability(%18 <unnamed>: i64, %19 <unnamed>: i64, %20 <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %21 @__builtin_expect_with_probability(%18 <unnamed>: i64, %19 <unnamed>: i64, %20 <unnamed>: f64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %6 @use_expect_with_probability(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64, f64) -> i64>(%21, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%7))), widen<i64, reason=arg>(const<i32>(1)), const<f64>(0.9)), const<i64>(0))
 // DEFAULT-NEXT:             {
@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_unpredictable(%22 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %23 @__builtin_unpredictable(%22 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %8 @use_unpredictable(%9 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%23, from_bool<i64, reason=arg>(gt<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9)), const<i32>(0)))), const<i64>(0))
 // DEFAULT-NEXT:             {

@@ -37,7 +37,7 @@ long long llabs(long long b) { abort(); }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i64 [storage=static] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @llabs(%4 b: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @llabs(%4 b: i64) -> i64 [linkage=external] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];

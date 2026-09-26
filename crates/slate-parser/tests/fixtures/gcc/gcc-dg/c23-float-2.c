@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%3 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         if not<bool>(ge<f32, exceptions=ignore>(call<f32, signature=fn() -> f32>(%4), const<f32>(3.4028235e38)))

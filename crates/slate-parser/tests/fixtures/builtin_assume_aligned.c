@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %10 buf: array<u8, 64> [storage=static] [align=32] [linkage=internal];
 // DEFAULT-NEXT:     global %17 .str17: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @__builtin_assume_aligned(%14 <unnamed>: ptr<const void>, %15 <unnamed>: u64, ...) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %16 @__builtin_assume_aligned(%14 <unnamed>: ptr<const void>, %15 <unnamed>: u64, ...) -> ptr<void> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @first_word(%3 p: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<const void>, u64, ...) -> ptr<void>>(%16, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%3)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32))));
 // DEFAULT-NEXT:         return read<ptr<void>>(%4);

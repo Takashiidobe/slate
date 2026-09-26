@@ -33,7 +33,7 @@ int         main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @__builtin_abs(%4 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abs(%4 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @foo(%2 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%5, sub<i32, overflow=ub>(read<i32>(%2), const<i32>(2))));
 // DEFAULT-NEXT:     }

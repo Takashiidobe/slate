@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @__builtin_inf() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %11 @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @test(%2 f: f64, %3 i: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(%11))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
@@ -122,7 +122,7 @@ int main() {
 // DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(%11)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %4 @testf(%5 f: f32, %6 i: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(%12))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
@@ -143,7 +143,7 @@ int main() {
 // DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(%12)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_infl() -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_infl() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %7 @testl(%8 f: f80, %9 i: f80) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(%13))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

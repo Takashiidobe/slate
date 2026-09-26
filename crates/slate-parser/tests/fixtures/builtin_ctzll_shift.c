@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_ctzll(%8 <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_ctzll(%8 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @lowest_bit(%3 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(call<i32, signature=fn(u64) -> i32>(%9, read<u64>(%3)))));
 // DEFAULT-NEXT:     }

@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @getenv(%14 __name: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @setenv(%15 __name: ptr<const i8>, %16 __value: ptr<const i8>, %17 __replace: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @unsetenv(%18 __name: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strcmp(%19 __s1: ptr<const i8>, %20 __s2: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @strcmp(%19 __s1: ptr<const i8>, %20 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %5 @present_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%21)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%22)), const<i32>(1));
 // DEFAULT-NEXT:         let %6 value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%23)));
@@ -118,7 +118,6 @@ int main(void) {
 // DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%10), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%11, from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%10)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%29))), const<i32>(0))));
-// DEFAULT-NEXT:                 from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%10)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%29))), const<i32>(0)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {

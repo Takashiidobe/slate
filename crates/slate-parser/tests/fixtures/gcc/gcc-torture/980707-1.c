@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%12 __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @strcpy(%13 __dest: ptr<i8> [restrict], %14 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strcmp(%15 __s1: ptr<const i8>, %16 __s2: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @strcmp(%15 __s1: ptr<const i8>, %16 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %4 @buildargv(%5 input: ptr<i8>) -> ptr<ptr<i8>> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 numargs: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         while %17 ne<i32>(const<i32>(1), const<i32>(0))

@@ -69,7 +69,7 @@ is_dst (const char *start, const char *name, const char *str,
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %12 @__builtin_expect(%10 <unnamed>: i64, %11 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @__builtin_expect(%10 <unnamed>: i64, %11 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @is_dst(%2 start: ptr<const i8>, %3 name: ptr<const i8>, %4 str: ptr<const i8>, %5 is_path: i32, %6 secure: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 len: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %8 is_curly: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));

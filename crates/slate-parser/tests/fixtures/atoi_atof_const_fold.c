@@ -60,10 +60,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %28 .str28: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 46, 50, 102, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %29 .str29: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([54, 46, 53, 103, 97, 114, 98, 97, 103, 101, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @atof(%8 __nptr: ptr<const i8>) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @atoi(%9 __nptr: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @atol(%10 __nptr: ptr<const i8>) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @atoll(%11 __nptr: ptr<const i8>) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @atof(%8 __nptr: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %2 @atoi(%9 __nptr: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @atol(%10 __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %4 @atoll(%11 __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(6)>(%12));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), call<i32, signature=fn(ptr<const i8>) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%14))));

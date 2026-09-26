@@ -61,7 +61,7 @@ carg_test (void)
 // DEFAULT-NEXT:     global %4 minus_zero: f64 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @check_complex(%10 <unnamed>: complex<f64>, %11 <unnamed>: complex<f64>, %12 <unnamed>: complex<f64>, %13 <unnamed>: complex<i32>) -> void [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<i64>) -> void];
 // DEFAULT-NEXT:     fn %1 @check_float(%14 <unnamed>: f64, %15 <unnamed>: f64, %16 <unnamed>: f64, %17 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @conj(%18 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>];
+// DEFAULT-NEXT:     fn %2 @conj(%18 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>];
 // DEFAULT-NEXT:     fn %3 @carg(%19 __z: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar];
 // DEFAULT-NEXT:     fn %5 @conj_test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %20: complex<f64> [synthetic];

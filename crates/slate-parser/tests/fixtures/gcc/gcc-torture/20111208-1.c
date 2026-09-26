@@ -116,7 +116,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %30 .str30: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([128, 1, 255, 254, 29, 192, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %31 .str31: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([115, 108, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @memcpy(%23 __dest: ptr<void> [restrict], %24 __src: ptr<const void> [restrict], %25 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @strlen(%26 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @strlen(%26 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @do_something(%8 item: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%6, read<i32>(%8));
@@ -127,9 +127,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %15 type: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %16 integer_size: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%13, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%11), call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11)))));
-// DEFAULT-NEXT:         ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%11), call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11))));
 // DEFAULT-NEXT:         write<ptr<i8>>(%14, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%12), call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%12)))));
-// DEFAULT-NEXT:         ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%12), call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%12))));
 // DEFAULT-NEXT:         while %27 lt<ptr<i8>>(read<ptr<i8>>(%12), read<ptr<i8>>(%14))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %32: ptr<i8> [synthetic] = read<ptr<i8>>(%12);

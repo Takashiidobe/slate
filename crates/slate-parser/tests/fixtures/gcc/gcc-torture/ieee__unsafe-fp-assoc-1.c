@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:     type @type2 hexdouble = @type0;
 // DEFAULT-NEXT:     global %4 twoTo52: f64 [storage=static] [const] = const<f64>(4503599627370496.0) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %14 @__builtin_expect(%12 <unnamed>: i64, %13 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %14 @__builtin_expect(%12 <unnamed>: i64, %13 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %5 @func(%6 x: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 argument: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %8 y: f64 [storage=automatic];

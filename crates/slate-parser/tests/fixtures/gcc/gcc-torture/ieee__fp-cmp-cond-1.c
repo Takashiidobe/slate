@@ -116,7 +116,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %22 c1: vector<i32, 1> [storage=automatic] [const] = ge<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%19), read<vector<f32, 1>>(%20));
 // DEFAULT-NEXT:         return or<vector<i32, 1>, elementwise=true>(and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%21), read<vector<i32, 1>>(%17)), and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%22), read<vector<i32, 1>>(%18)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @__builtin_nan(%28 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %29 @__builtin_nan(%28 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %31 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%30))));

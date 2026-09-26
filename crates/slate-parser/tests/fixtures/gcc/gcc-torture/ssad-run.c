@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @abs(%20 __x: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abs(%20 __x: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @foo(%3 w: ptr<i8>, %4 i: i32, %5 x: ptr<i8>, %6 j: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 tot: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %21

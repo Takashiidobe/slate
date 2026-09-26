@@ -53,16 +53,16 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %40 .str40: array<i8, 34> [storage=static] = code_units<array<i8, 34>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__builtin_bitreverse32(%18 <unnamed>: u32) -> u32 [linkage=external];
-// DEFAULT-NEXT:     fn %21 @__builtin_bswap32(%20 <unnamed>: u32) -> u32 [linkage=external];
-// DEFAULT-NEXT:     fn %23 @__builtin_clz(%22 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %25 @__builtin_ctz(%24 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %27 @__builtin_ffs(%26 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %29 @__builtin_popcount(%28 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %31 @__builtin_parity(%30 <unnamed>: u32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %33 @__builtin_clrsb(%32 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %36 @__builtin_rotateleft32(%34 <unnamed>: u32, %35 <unnamed>: u32) -> u32 [linkage=external];
-// DEFAULT-NEXT:     fn %39 @__builtin_rotateright32(%37 <unnamed>: u32, %38 <unnamed>: u32) -> u32 [linkage=external];
+// DEFAULT-NEXT:     fn %19 @__builtin_bitreverse32(%18 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %21 @__builtin_bswap32(%20 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %23 @__builtin_clz(%22 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %25 @__builtin_ctz(%24 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %27 @__builtin_ffs(%26 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %29 @__builtin_popcount(%28 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %31 @__builtin_parity(%30 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %33 @__builtin_clrsb(%32 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %36 @__builtin_rotateleft32(%34 <unnamed>: u32, %35 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %39 @__builtin_rotateright32(%37 <unnamed>: u32, %38 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 u: u32 [storage=automatic] = const<u32>(305419896);
 // DEFAULT-NEXT:         let %3 z: u32 [storage=automatic] = const<u32>(0);

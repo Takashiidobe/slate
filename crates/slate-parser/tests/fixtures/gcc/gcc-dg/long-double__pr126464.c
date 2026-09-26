@@ -78,14 +78,14 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_inff() -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %2 y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%1));
 // DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%2), neg<f32>(call<f32, signature=fn() -> f32>(%13)))
 // DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), const<f64>(0.5));
 // DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_inf() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %14 @__builtin_inf() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %3 @bar(%4 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%4));
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%5), call<f64, signature=fn() -> f64>(%14))

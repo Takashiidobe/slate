@@ -56,7 +56,7 @@ reports concerning the INT() function, just so you know.
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @floor(%3 __x: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %0 @floor(%3 __x: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%0, const<f64>(0.1)), const<f64>(0.0))

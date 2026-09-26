@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %6 .str6: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %0 f: volatile f32 [storage=static] = call<f32, signature=fn(ptr<const i8>) -> f32>(%5, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%6))) [linkage=external];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @__builtin_nanf(%4 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_nanf(%4 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

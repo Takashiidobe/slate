@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), call<f64, signature=fn(f64, i32) -> f64>(%2, read<f64>(%3), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_copysign(%7 <unnamed>: f64, %8 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_copysign(%7 <unnamed>: f64, %8 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%9, const<f64>(1.0), call<f64, signature=fn(f64, i32) -> f64>(%2, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(0.0), neg<f64>(const<f64>(5.0))), const<i32>(10))), neg<f64>(const<f64>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

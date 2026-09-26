@@ -123,7 +123,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %36 fp: ptr<fn(@type0, i8, f64, @type0) -> @type2> [storage=static] = addr_of<ptr<fn(@type0, i8, f64, @type0) -> @type2>>(%29) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @sprintf(%40 __s: ptr<i8> [restrict], %41 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @strcpy(%42 __dest: ptr<i8> [restrict], %43 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @strcmp(%44 __s1: ptr<const i8>, %45 __s2: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @strcmp(%44 __s1: ptr<const i8>, %45 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @exit(%46 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %29 @f(%30 a: @type0, %31 b: i8, %32 c: f64, %33 d: @type0) -> @type2 [linkage=external] [abi=sysv64(native_c, scalar, scalar, native_c) -> native_c] [fallthrough=ub_if_used] {

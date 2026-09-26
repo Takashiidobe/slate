@@ -173,6 +173,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
+              [ "[memory=" ( "none" | "read" ) "]" ]
               [ "[abi=" abi_signature "]" ]
               [ "[fallthrough=" fallthrough "]" ] { metadata }
               ( ";" | "{" { statement } "}" ) ;
@@ -193,6 +194,8 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 - Inlining preference and definition emission are independent. Inline bodies
   print whether they supply a linkable definition; `inline_only` bodies do not.
   `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
+- `memory=none` (GNU `const`) reads and writes no memory beyond the arguments;
+  `memory=read` (`pure`) may read but not write. Absent means unrestricted.
 
 ## ABI signatures
 

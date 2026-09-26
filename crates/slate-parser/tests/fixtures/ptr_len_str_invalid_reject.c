@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @strlen(%12 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @strlen(%12 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @first_byte(%4 bytes: ptr<const u8>, %5 len: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const u8>>(%4)));
 // DEFAULT-NEXT:         let %6 value: i32 [storage=automatic] = const<i32>(0);

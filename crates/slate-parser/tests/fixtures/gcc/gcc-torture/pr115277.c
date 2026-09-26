@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 array: array<i32, 1000> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_expect(%8 <unnamed>: i64, %9 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_expect(%8 <unnamed>: i64, %9 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @test(%2 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%10, from_bool<i64, reason=arg>(gt<i32>(read<i32>(%2), const<i32>(3))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             return;

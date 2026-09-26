@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:     global %6 ninf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(neg<f64>(const<f64>(1.0)), const<f64>(0.0)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @__builtin_huge_val() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%5), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), read<f64>(%2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

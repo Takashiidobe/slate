@@ -175,7 +175,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=80, align=16, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     global %5 u1: @type1 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %6 u2: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @strncmp(%24 __s1: ptr<const i8>, %25 __s2: ptr<const i8>, %26 __n: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @strncmp(%24 __s1: ptr<const i8>, %25 __s2: ptr<const i8>, %26 __n: u64) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%27 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @test(%8 s1: ptr<const u8>, %9 s2: ptr<const u8>, %10 len: u64, %11 expected: i32) -> void [linkage=external] [fallthrough=ret_void] {

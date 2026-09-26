@@ -84,7 +84,7 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i32, %2 b: i32, %3 c: i32, %4 d: i32, %5 e: i32, %6 f: i32, %7 g: i32, %8 h: i32, %9 i: i32, %10 j: i32, %11 k: i32, %12 l: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @foo(%1 a: i32, %2 b: i32, %3 c: i32, %4 d: i32, %5 e: i32, %6 f: i32, %7 g: i32, %8 h: i32, %9 i: i32, %10 j: i32, %11 k: i32, %12 l: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %30: i32 [synthetic] = read<i32>(%1);
 // DEFAULT-NEXT:         let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%31));
@@ -144,7 +144,7 @@ main() {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%1), read<i32>(%2)), read<i32>(%3)), read<i32>(%4)), read<i32>(%5)), read<i32>(%6)), read<i32>(%7)), read<i32>(%8)), read<i32>(%9)), read<i32>(%10)), read<i32>(%11)), read<i32>(%12));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bar(%14 a: i32, %15 b: i32, %16 c: i32, %17 d: i32, %18 e: i32, %19 f: i32, %20 g: i32, %21 h: i32, %22 i: i32, %23 j: i32, %24 k: i32, %25 l: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %13 @bar(%14 a: i32, %15 b: i32, %16 c: i32, %17 d: i32, %18 e: i32, %19 f: i32, %20 g: i32, %21 h: i32, %22 i: i32, %23 j: i32, %24 k: i32, %25 l: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %54: i32 [synthetic] = read<i32>(%14);
 // DEFAULT-NEXT:         let %55: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%54), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%14, read<i32>(%55));

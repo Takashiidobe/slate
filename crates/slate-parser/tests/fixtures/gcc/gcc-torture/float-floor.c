@@ -47,8 +47,8 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 d: f64 [storage=static] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1024.0), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(32768.0))) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @floor(%7 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @floorf(%8 <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @floor(%7 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %2 @floorf(%8 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 df: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%0));

@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %23 .str23: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %20 @__builtin_assume(%19 <unnamed>: bool) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @likely_nonzero(%2 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%18, from_bool<i64, reason=arg>(ne<i32>(read<i32>(%2), const<i32>(0))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))

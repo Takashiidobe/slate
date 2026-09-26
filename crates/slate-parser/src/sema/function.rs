@@ -3,7 +3,7 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClass};
 use crate::compiler_options::InlineSemantics;
-use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage};
+use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects};
 
 #[derive(Default)]
 pub(super) struct FunctionDeclarations {
@@ -12,7 +12,14 @@ pub(super) struct FunctionDeclarations {
     definition: Option<DefinitionSpecifiers>,
     has_external_declaration: bool,
     noreturn: bool,
+    memory: Option<MemoryEffects>,
     attributes: Vec<Attribute>,
+}
+
+impl FunctionDeclarations {
+    fn restrict_memory(&mut self, memory: MemoryEffects) {
+        self.memory = Some(self.memory.map_or(memory, |current| current.min(memory)));
+    }
 }
 
 enum DefinitionSpecifiers {
@@ -99,6 +106,8 @@ impl Lowerer {
                     state.inlining = Some(preference);
                 }
                 Attribute::NoReturn => state.noreturn = true,
+                Attribute::Const => state.restrict_memory(MemoryEffects::None),
+                Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
                 _ => {}
             }
             if !state.attributes.contains(&attribute.value) {
@@ -127,8 +136,10 @@ impl Lowerer {
                 .entry(node)
                 .or_default()
                 .push(("c_builtin".into(), builtin.name.into()));
-            if builtin.has(BuiltinAttribute::NoReturn) {
-                self.function_declarations.entry(id).or_default().noreturn = true;
+            let state = self.function_declarations.entry(id).or_default();
+            state.noreturn |= builtin.has(BuiltinAttribute::NoReturn);
+            if let Some(memory) = builtin.memory_effects() {
+                state.restrict_memory(memory);
             }
         }
         let retained_attributes: Vec<_> = self
@@ -159,6 +170,7 @@ impl Lowerer {
                         _ => false,
                     },
                 noreturn: state.noreturn,
+                memory: state.memory,
             };
             if state.noreturn && function.body.is_some() {
                 function.value.fallthrough = Some(Fallthrough::Undefined);

@@ -50,14 +50,14 @@ size_t undeclared(const char *s) { return __builtin_strlen(s); }
 // IR-NEXT:     type @type0 size_t = u64;
 // IR-NEXT:     fn %1 @strlen(%32 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // IR-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// IR-NEXT:     fn %3 @abs(unprototyped) -> i32 [linkage=external];
+// IR-NEXT:     fn %3 @abs(unprototyped) -> i32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %4 @malloc(%33 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %5 @fabs(%34 <unnamed>: f64 [const]) -> f64 [linkage=external];
+// IR-NEXT:     fn %5 @fabs(%34 <unnamed>: f64 [const]) -> f64 [linkage=external] [memory=none];
 // IR-NEXT:     fn %6 @memcpy(%35 <unnamed>: ptr<void> [restrict], %36 <unnamed>: ptr<const void> [restrict], %37 <unnamed>: u64) -> ptr<void> [linkage=external];
 // IR-NEXT:     fn %7 @labs(%8 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i32>(%8);
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @__builtin_popcount(%38 <unnamed>: u32) -> i32 [linkage=external];
+// IR-NEXT:     fn %9 @__builtin_popcount(%38 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %10 @matching(%11 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(%11));
 // IR-NEXT:     }

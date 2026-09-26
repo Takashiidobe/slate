@@ -344,8 +344,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @mallopt(%276 __param: i32, %277 __val: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %9 @malloc_usable_size(%278 __ptr: ptr<void>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %10 @memcpy(%279 __dest: ptr<void> [restrict], %280 __src: ptr<const void> [restrict], %281 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @strcmp(%282 __s1: ptr<const i8>, %283 __s2: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @index(%284 __s: ptr<const i8>, %285 __c: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %11 @strcmp(%282 __s1: ptr<const i8>, %283 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %12 @index(%284 __s: ptr<const i8>, %285 __c: i32) -> ptr<i8> [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %16 @_obstack_newchunk(%286 <unnamed>: ptr<@type2>, %287 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %17 @_obstack_begin(%288 <unnamed>: ptr<@type2>, %289 <unnamed>: i32, %290 <unnamed>: i32, %291 <unnamed>: ptr<fn(i64) -> ptr<void>>, %292 <unnamed>: ptr<fn(ptr<void>) -> void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %18 @obstack_free(%293 <unnamed>: ptr<@type2>, %294 <unnamed>: ptr<void>) -> void [linkage=external];

@@ -100,7 +100,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     global %10 arr: array<i32, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%20 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %22 @__builtin_prefetch(%21 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %22 @__builtin_prefetch(%21 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %11 @good_const(%12 p: ptr<const i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%22, pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i32>>(%12)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%22, pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i32>>(%12)), const<i32>(0), const<i32>(1));

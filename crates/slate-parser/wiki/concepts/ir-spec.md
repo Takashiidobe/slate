@@ -107,9 +107,11 @@ used without a declaration gets one implicit `fn` per spelling
 (`fn %9 @__builtin_abort() -> void [linkage=external] [noreturn]`) with unnamed
 parameters and the registry prototype, and every function that is a builtin
 carries `c_builtin` metadata. The builtin's `NoReturn` attribute becomes the
-function's `[noreturn]`; `Const`, `Pure` and `NoThrow` are dropped, since they
-only license optimizations and change nothing a C program can observe
-(`tests/fixtures/sema/ir_builtin_noreturn.c`). A builtin used only inside an
+function's `[noreturn]` (`tests/fixtures/sema/ir_builtin_noreturn.c`), and
+`Const`/`Pure` become `[memory=none]`/`[memory=read]`, exactly as GNU
+`__attribute__((const))`/`((pure))` on a declaration do (`const` wins when both
+are given). `ConstIgnoringErrno` and similar variants do not count, and
+`NoThrow` is dropped since C without `-fexceptions` never unwinds. A builtin used only inside an
 unevaluated `sizeof`/`_Generic` operand leaves no declaration.
 Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
@@ -952,7 +954,11 @@ Hard cases hoisting must respect (evaluation order and sequencing):
   the temporary; removing temporaries that turn out unnecessary is left to
   the analysis pass.
 - `&&`, `||`, `?:`, comma with side effects in a later operand: hoisting
-  must turn into `if`, not unconditional statements.
+  must turn into `if`, not unconditional statements. A direct call to a
+  `[memory=none]` or `[memory=read]` function is not a side effect, only its
+  arguments can be, so `a && square(b)` stays `logical_and` instead of
+  spilling into a synthetic and an `if`
+  (`tests/fixtures/sema/ir_const_pure_calls.c`).
 - Loop conditions and `for` increments with side effects stay attached to
   their `while`/`for` as a statement block with a trailing expression, so
   they re-run per iteration without changing the loop's form.

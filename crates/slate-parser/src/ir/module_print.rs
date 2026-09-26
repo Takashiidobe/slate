@@ -1,7 +1,7 @@
 use super::{
-    ArrayExtent, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, Metadata, Module,
-    NumericType, Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel,
-    Type, TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects,
+    Metadata, Module, NumericType, Parameters, RecordKind, Statement, StorageDuration,
+    SymbolAttributes, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -772,6 +772,11 @@ impl fmt::Display for DisplayModule<'_> {
             }
             if function.semantics.noreturn {
                 f.write_str(" [noreturn]")?;
+            }
+            match function.semantics.memory {
+                Some(MemoryEffects::None) => f.write_str(" [memory=none]")?,
+                Some(MemoryEffects::Read) => f.write_str(" [memory=read]")?,
+                None => {}
             }
             if function.abi.has_nontrivial_pass() {
                 write!(f, " [abi={}]", function.abi)?;

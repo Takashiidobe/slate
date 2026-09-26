@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     global %22 .str22: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memcmp(%19 __s1: ptr<const void>, %20 __s2: ptr<const void>, %21 __n: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @memcmp(%19 __s1: ptr<const void>, %20 __s2: ptr<const void>, %21 __n: u64) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @get_count() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }

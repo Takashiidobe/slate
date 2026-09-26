@@ -53,7 +53,7 @@ int read_constant(void) {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @aborting() -> void [linkage=external] [noreturn] [c="void(void)"] [c_attributes="[NoReturn, Cold]"];
-// DEFAULT-NEXT:     fn %3 @inspect(%4 x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c="int(int)"] [c_attributes="[WarnUnusedResult, Pure]"] {
+// DEFAULT-NEXT:     fn %3 @inspect(%4 x: i32 [c="int"]) -> i32 [linkage=external] [memory=read] [fallthrough=ub_if_used] [c="int(int)"] [c_attributes="[WarnUnusedResult, Pure]"] {
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @read_constant() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {

@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<vector<f32, 4>>(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(read<ptr<vector<f32, 4>>>(%2), read<i32>(%4))), read<vector<f32, 4>>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_copysignf(%9 <unnamed>: f32, %10 <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %11 @__builtin_copysignf(%9 <unnamed>: f32, %10 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 x: array<vector<f32, 4>, 32> [storage=automatic];

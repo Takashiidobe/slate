@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @f(%1 a: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%8, read<u32>(%1)), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @__builtin_bswap32(%7 <unnamed>: u32) -> u32 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_bswap32(%7 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @g(%3 a: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))));
 // DEFAULT-NEXT:     }

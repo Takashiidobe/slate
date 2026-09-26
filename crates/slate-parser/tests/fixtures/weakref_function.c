@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %11 .str11: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abs(%8 __x: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abs(%8 __x: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @weakref_target(%3 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(7));
 // DEFAULT-NEXT:     }

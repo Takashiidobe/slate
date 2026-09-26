@@ -52,8 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %34 .str34: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([37, 100, 32, 37, 108, 100, 32, 37, 108, 117, 32, 37, 108, 100, 32, 37, 108, 100, 32, 37, 108, 117, 32, 37, 46, 49, 102, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %35 .str35: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([37, 108, 100, 32, 37, 99, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @atoi(%18 __nptr: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @atol(%19 __nptr: ptr<const i8>) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @atoi(%18 __nptr: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %2 @atol(%19 __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @strtod(%20 __nptr: ptr<const i8> [restrict], %21 __endptr: ptr<ptr<i8>> [restrict]) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @strtol(%22 __nptr: ptr<const i8> [restrict], %23 __endptr: ptr<ptr<i8>> [restrict], %24 __base: i32) -> i64 [linkage=external] [asm_name="__isoc23_strtol"];
 // DEFAULT-NEXT:     fn %5 @strtoul(%25 __nptr: ptr<const i8> [restrict], %26 __endptr: ptr<ptr<i8>> [restrict], %27 __base: i32) -> u64 [linkage=external] [asm_name="__isoc23_strtoul"];

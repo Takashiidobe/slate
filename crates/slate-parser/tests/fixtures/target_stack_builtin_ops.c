@@ -135,7 +135,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @printf(%35 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memset(%36 __s: ptr<void>, %37 __c: i32, %38 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %41 @__builtin___clear_cache(%39 <unnamed>: ptr<void>, %40 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %43 @__builtin_prefetch(%42 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %43 @__builtin_prefetch(%42 <unnamed>: ptr<const void>, ...) -> void [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %6 @cache_prefetch_probe(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 bytes: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%8), const<i32>(0))), truncate<i8, reason=explicit, fits=unknown>(read<i32>(%7)));
@@ -179,9 +179,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %22 fraction_f: f32 [storage=automatic] = call<f32, signature=fn(f32, ptr<i32>) -> f32>(%51, read<f32, volatile>(%18), addr_of<ptr<i32>>(%20));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(100), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(10), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(read<f64>(%21), const<f64>(0.75)))), read<i32>(%19))), mul<i32, overflow=ub>(const<i32>(10), from_bool<i32, reason=promotion>(eq<f32, exceptions=ignore>(read<f32>(%22), const<f32>(0.5))))), read<i32>(%20));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @__builtin_elementwise_cosh(%52 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %55 @__builtin_elementwise_sinh(%54 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %57 @__builtin_elementwise_tanh(%56 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %53 @__builtin_elementwise_cosh(%52 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %55 @__builtin_elementwise_sinh(%54 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %57 @__builtin_elementwise_tanh(%56 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %23 @hyperbolic_probe() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %24 input: volatile f64 [storage=automatic] = const<f64>(0.0);
 // DEFAULT-NEXT:         let %25 c: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%53, read<f64, volatile>(%24));

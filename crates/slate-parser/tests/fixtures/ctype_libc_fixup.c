@@ -53,8 +53,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @tolower(%11 __c: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @toupper(%12 __c: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %0 @tolower(%11 __c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %1 @toupper(%12 __c: i32) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %2 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @next_lower() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %17: i32 [synthetic] = read<i32>(%4);

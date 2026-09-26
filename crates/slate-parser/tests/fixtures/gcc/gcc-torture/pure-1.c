@@ -132,10 +132,10 @@ void link_error7() {}
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @link_error7() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @func0(%26 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %9 @func0(%26 a: i32) -> i32 [linkage=external] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%26), read<i32>(%8));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @func1(%27 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %10 @func1(%27 a: i32) -> i32 [linkage=external] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%27), read<i32>(%27));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @func2(%12 a: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
@@ -161,12 +161,10 @@ void link_error7() {}
 // DEFAULT-NEXT:         let %25 r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%25, call<i32, signature=fn(i32) -> i32>(%9, const<i32>(0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%9, const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(0)))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(1))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%25, call<i32, signature=fn(i32) -> i32>(%10, const<i32>(0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%10, const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(1)))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%24), const<i32>(2))), const<i32>(0));

@@ -149,7 +149,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %46 .str46: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 121, 101, 115, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %47 .str47: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %48 .str48: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %14 @printf(%21 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %16 alpha: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));

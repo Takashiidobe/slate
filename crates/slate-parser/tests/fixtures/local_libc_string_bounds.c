@@ -59,10 +59,10 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     global %34 .str34: array<i8, 34> [storage=static] = code_units<array<i8, 34>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%24 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @strncmp(%25 __s1: ptr<const i8>, %26 __s2: ptr<const i8>, %27 __n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strcspn(%28 __s: ptr<const i8>, %29 __reject: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strspn(%30 __s: ptr<const i8>, %31 __accept: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strnlen(%32 __string: ptr<const i8>, %33 __maxlen: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @strncmp(%25 __s1: ptr<const i8>, %26 __s2: ptr<const i8>, %27 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @strcspn(%28 __s: ptr<const i8>, %29 __reject: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %4 @strspn(%30 __s: ptr<const i8>, %31 __accept: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %5 @strnlen(%32 __string: ptr<const i8>, %33 __maxlen: u64) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %6 @bounded_cmp(%7 a: ptr<const i8>, %8 b: ptr<const i8>, %9 n: u64) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%2, read<ptr<const i8>>(%7), read<ptr<const i8>>(%8), read<u64>(%9));
 // DEFAULT-NEXT:     }

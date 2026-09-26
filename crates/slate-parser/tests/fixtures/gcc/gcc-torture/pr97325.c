@@ -36,14 +36,9 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_ffs(%3 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_ffs(%3 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %0 @foo(%1 c: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6: i32 [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%1), const<u64>(0))
-// DEFAULT-NEXT:             write<i32>(%6, call<i32, signature=fn(i32) -> i32>(%4, neg<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u16, reason=explicit, fits=unknown>(read<u64>(%1)))))));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%6, const<i32>(0));
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(read<i32>(%6)));
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(conditional<i32>(ne<u64>(read<u64>(%1), const<u64>(0)), call<i32, signature=fn(i32) -> i32>(%4, neg<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u16, reason=explicit, fits=unknown>(read<u64>(%1)))))), const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

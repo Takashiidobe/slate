@@ -82,8 +82,8 @@ main(void) {
 // DEFAULT-NEXT:     fn %0 @fetestexcept(%7 __excepts: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @__builtin_nanf16(%9 <unnamed>: ptr<const i8>) -> f16 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @__builtin_nansf16(%12 <unnamed>: ptr<const i8>) -> f16 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_nanf16(%9 <unnamed>: ptr<const i8>) -> f16 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %13 @__builtin_nansf16(%12 <unnamed>: ptr<const i8>) -> f16 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 r: volatile f16 [storage=automatic];
 // DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%3)));

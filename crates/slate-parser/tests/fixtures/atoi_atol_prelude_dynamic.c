@@ -48,9 +48,9 @@ int main(void) {
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @atoi(%10 __nptr: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @atol(%11 __nptr: ptr<const i8>) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @atoll(%12 __nptr: ptr<const i8>) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @atoi(%10 __nptr: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %2 @atol(%11 __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @atoll(%12 __nptr: ptr<const i8>) -> i64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %4 @strcpy(%13 __dest: ptr<i8> [restrict], %14 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 a: array<i8, 32> [storage=automatic] [align=16];

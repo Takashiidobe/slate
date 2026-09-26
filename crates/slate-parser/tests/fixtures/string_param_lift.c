@@ -46,8 +46,8 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @atoi(%14 __nptr: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strlen(%15 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @atoi(%14 __nptr: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @strlen(%15 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %4 @parse_num(%5 s: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%5)));
 // DEFAULT-NEXT:     }

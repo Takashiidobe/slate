@@ -199,10 +199,10 @@ int main(void) {
 // DEFAULT-NEXT:     fn %15 @csqrtl(%67 __z: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
 // DEFAULT-NEXT:     fn %16 @cabsl(%68 __z: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
 // DEFAULT-NEXT:     fn %17 @cargl(%69 __z: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
-// DEFAULT-NEXT:     fn %18 @conjl(%70 __z: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
-// DEFAULT-NEXT:     fn %19 @cprojl(%71 __z: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
-// DEFAULT-NEXT:     fn %20 @cimagl(%72 __z: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
-// DEFAULT-NEXT:     fn %21 @creall(%73 __z: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
+// DEFAULT-NEXT:     fn %18 @conjl(%70 __z: complex<f80>) -> complex<f80> [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
+// DEFAULT-NEXT:     fn %19 @cprojl(%71 __z: complex<f80>) -> complex<f80> [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>];
+// DEFAULT-NEXT:     fn %20 @cimagl(%72 __z: complex<f80>) -> f80 [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> scalar];
+// DEFAULT-NEXT:     fn %21 @creall(%73 __z: complex<f80>) -> f80 [linkage=external] [memory=none] [abi=sysv64(byval<align=16>) -> scalar];
 // DEFAULT-NEXT:     fn %22 @printf(%74 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %23 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %24 @print_lc(%25 name: ptr<const i8>, %26 z: complex<f80>) -> void [linkage=internal] [abi=sysv64(scalar, byval<align=16>) -> void] [fallthrough=ret_void] {

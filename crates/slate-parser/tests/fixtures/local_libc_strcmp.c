@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %22 .str22: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @strcmp(%18 __s1: ptr<const i8>, %19 __s2: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @strcmp(%18 __s1: ptr<const i8>, %19 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %2 @cmp_texts(%3 a: ptr<const i8>, %4 alen: i32, %5 b: ptr<const i8>, %6 blen: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 sa: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %8 sb: i32 [storage=automatic] = const<i32>(0);

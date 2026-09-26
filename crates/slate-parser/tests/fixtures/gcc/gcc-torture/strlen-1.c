@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 align_fp: f80;
 // DEFAULT-NEXT:     } [size=96, align=16, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     global %5 u: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @strlen(%12 __s: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @strlen(%12 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -174,7 +174,6 @@ int main(void) {
 // DEFAULT-NEXT:                                     write<i8>(deref(read<ptr<i8>>(%35)), truncate<i8, reason=assign, fits=always>(const<i32>(98)));
 // DEFAULT-NEXT:                             write<ptr<i8>>(%11, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(81)>(field0(%5)), read<u64>(%7)));
 // DEFAULT-NEXT:                             write<u64>(%9, call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11))));
-// DEFAULT-NEXT:                             call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11)));
 // DEFAULT-NEXT:                             if ne<u64>(read<u64>(%8), read<u64>(%9))
 // DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                         }

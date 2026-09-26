@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abs(%8 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abs(%8 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @check(%3 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];

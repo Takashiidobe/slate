@@ -47,7 +47,7 @@ main (void)
 // DEFAULT-NEXT:         field0 __d: f64;
 // DEFAULT-NEXT:         field1 __i: array<i32, 2>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @finite(%1 __x: f64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @finite(%1 __x: f64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [memory=none] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(add<u32, overflow=wrap>(or<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(compound_literal %5 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<f64>(%1)))), const<i32>(1))))), const<u32>(2148532223)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<i32>(31)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

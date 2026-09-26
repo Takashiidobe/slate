@@ -199,6 +199,7 @@ impl Lowerer {
             symbol: SymbolAttributes::default(),
             semantics: FunctionSemantics {
                 noreturn: builtin.has(BuiltinAttribute::NoReturn),
+                memory: builtin.memory_effects(),
                 ..FunctionSemantics::default()
             },
             body: None,

@@ -83,9 +83,9 @@ int main(void) {
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %17 .str17: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %18 .str18: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %7 @__builtin_nansf(%6 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_nans(%9 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @__builtin_nansl(%12 <unnamed>: ptr<const i8>) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @__builtin_nansf(%6 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %10 @__builtin_nans(%9 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %13 @__builtin_nansl(%12 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

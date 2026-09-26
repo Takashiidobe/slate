@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 p: ptr<i8> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 .str5: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 98, 99, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @is_end_of_statement() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @is_end_of_statement() -> i32 [linkage=internal] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(logical_or<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%0)))), const<i32>(10)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%0)))), const<i32>(59))), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%0)))), const<i32>(33))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {

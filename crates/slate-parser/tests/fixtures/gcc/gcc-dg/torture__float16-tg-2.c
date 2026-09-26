@@ -102,8 +102,8 @@ main(void) {
 // DEFAULT-NEXT:     global %10 negmax: volatile f16 [storage=static] = neg<f16>(const<f16>(65504)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %13 @__builtin_inf() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @__builtin_nan(%14 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %15 @__builtin_nan(%14 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%2)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%2)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);

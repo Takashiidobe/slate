@@ -41,8 +41,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %12 .str12: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @tolower(%7 __c: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @toupper(%8 __c: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %0 @tolower(%7 __c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %1 @toupper(%8 __c: i32) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %2 @setlocale(%9 __category: i32, %10 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

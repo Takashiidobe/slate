@@ -349,15 +349,12 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @__builtin_inf() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %55 @__builtin_nan(%54 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %53 @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %55 @__builtin_nan(%54 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %52 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32>(%1, float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%53)));
-// DEFAULT-NEXT:         float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%53));
 // DEFAULT-NEXT:         write<f32>(%2, float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(call<f64, signature=fn() -> f64>(%53))));
-// DEFAULT-NEXT:         float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(call<f64, signature=fn() -> f64>(%53)));
 // DEFAULT-NEXT:         write<f32>(%3, float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%55, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%56)))));
-// DEFAULT-NEXT:         float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%55, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%56))));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%4, read<f32>(%2), read<f32>(%1), const<i32>(0));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%4, read<f32>(%3), read<f32>(%3), const<i32>(1));
 // DEFAULT-NEXT:         call<i32, signature=fn(f32, f32, i32) -> i32>(%4, read<f32>(%1), read<f32>(%2), const<i32>(0));

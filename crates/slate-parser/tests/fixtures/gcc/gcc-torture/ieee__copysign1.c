@@ -123,13 +123,13 @@ int main() {
 // DEFAULT-NEXT:     global %59 .str59: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %25 Tl: array<@type3, 8> [storage=static] [const] = aggregate<array<@type3, 8>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(1.0))), index1 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index2 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index3 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(0.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index4 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index5 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(0.0))), index6 = aggregate<@type3, zero_fill=false>(field0 = call<f80, signature=fn() -> f80>(%55), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field2 = neg<f80>(call<f80, signature=fn() -> f80>(%55))), index7 = aggregate<@type3, zero_fill=false>(field0 = neg<f80>(call<f80, signature=fn(ptr<const i8>) -> f80>(%57, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%58)))), field1 = call<f80, signature=fn() -> f80>(%55), field2 = call<f80, signature=fn(ptr<const i8>) -> f80>(%57, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%59))))) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @memcmp(%31 __s1: ptr<const void>, %32 __s2: ptr<const void>, %33 __n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %36 @__builtin_copysignf(%34 <unnamed>: f32, %35 <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @memcmp(%31 __s1: ptr<const void>, %32 __s2: ptr<const void>, %33 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %36 @__builtin_copysignf(%34 <unnamed>: f32, %35 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %3 @cf(%4 x: f32, %5 y: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<f32, signature=fn(f32, f32) -> f32>(%36, read<f32>(%4), read<f32>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @__builtin_inff() -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %39 @__builtin_nanf(%38 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %37 @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %39 @__builtin_nanf(%38 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %8 @testf() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %10 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(96), const<u64>(12))));
@@ -152,12 +152,12 @@ int main() {
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @__builtin_copysign(%43 <unnamed>: f64, %44 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %45 @__builtin_copysign(%43 <unnamed>: f64, %44 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %12 @c(%13 x: f64, %14 y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<f64, signature=fn(f64, f64) -> f64>(%45, read<f64>(%13), read<f64>(%14));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @__builtin_inf() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %48 @__builtin_nan(%47 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %46 @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %48 @__builtin_nan(%47 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %17 @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %18 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %19 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(192), const<u64>(24))));
@@ -180,12 +180,12 @@ int main() {
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @__builtin_copysignl(%52 <unnamed>: f80, %53 <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %54 @__builtin_copysignl(%52 <unnamed>: f80, %53 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %21 @cl(%22 x: f80, %23 y: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<f80, signature=fn(f80, f80) -> f80>(%54, read<f80>(%22), read<f80>(%23));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @__builtin_infl() -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %57 @__builtin_nanl(%56 <unnamed>: ptr<const i8>) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %55 @__builtin_infl() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %57 @__builtin_nanl(%56 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %26 @testl() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %27 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %28 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(384), const<u64>(48))));

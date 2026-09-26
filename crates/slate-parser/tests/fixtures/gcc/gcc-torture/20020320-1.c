@@ -54,7 +54,7 @@ foo (void)
 // DEFAULT-NEXT:     extern %1 x: array<ptr<fn() -> void>, incomplete> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 p: ptr<ptr<fn() -> void>> [storage=static] = array_decay<ptr<ptr<fn() -> void>>, length=None>(%1) [linkage=internal];
 // DEFAULT-NEXT:     global %4 a: bool [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %8 @__builtin_expect(%6 <unnamed>: i64, %7 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_expect(%6 <unnamed>: i64, %7 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 f: ptr<fn() -> void> [storage=automatic];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%8, from_bool<i64, reason=arg>(read<bool>(%4)), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))

@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %39 @__builtin_fmod(%37 <unnamed>: f64, %38 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %41 @__builtin_lround(%40 <unnamed>: f64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %43 @__builtin_llround(%42 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %45 @__builtin_elementwise_exp10(%44 <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %45 @__builtin_elementwise_exp10(%44 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 a: volatile f64 [storage=automatic] = const<f64>(0.5);
 // DEFAULT-NEXT:         let %3 b: volatile f64 [storage=automatic] = const<f64>(2.0);

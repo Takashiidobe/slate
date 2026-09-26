@@ -110,7 +110,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %20 @fprintf(%43 __stream: ptr<@type5> [restrict], %44 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %21 @printf(%45 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %22 @memcpy(%46 __dest: ptr<void> [restrict], %47 __src: ptr<const void> [restrict], %48 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %23 @memcmp(%49 __s1: ptr<const void>, %50 __s2: ptr<const void>, %51 __n: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %23 @memcmp(%49 __s1: ptr<const void>, %50 __s2: ptr<const void>, %51 __n: u64) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %25 @gnu_cookie_write(%26 state: ptr<void>, %27 buffer: ptr<const i8>, %28 size: u64) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %29 cookie: ptr<@type18> [storage=automatic] = pointer_cast<ptr<@type18>, reason=assign>(read<ptr<void>>(%26));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%22, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(deref(read<ptr<@type18>>(%29)))), read<u64>(field1(deref(read<ptr<@type18>>(%29)))))), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%27)), read<u64>(%28));

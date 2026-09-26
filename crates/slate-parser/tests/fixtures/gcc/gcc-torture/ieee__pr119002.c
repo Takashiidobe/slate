@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%4, read<u32>(%15));
 // DEFAULT-NEXT:         return read<u32>(%4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_nanf(%10 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %11 @__builtin_nanf(%10 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<void>, f32, f32) -> u32>(%0, null<ptr<void>>, const<f32>(0.0), call<f32, signature=fn(ptr<const i8>) -> f32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%12)))), const<u32>(0))

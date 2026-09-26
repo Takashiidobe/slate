@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%3), read<complex<f64>>(%1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @bar(%6 z: complex<f64>) -> complex<f64> [linkage=external] [memory=read] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<complex<f64>>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
