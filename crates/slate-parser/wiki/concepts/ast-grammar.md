@@ -487,6 +487,7 @@ Attribute = (* no arguments *)
             (* other *)
           | "CallingConvention(" CallingConvention ")"
           | Unknown { name: string, arguments: vec<string> }
+          | IgnoredDeclspec { name: string, arguments: vec<string> }
           | Invalid { name: string, arguments: vec<string> } ;
 
 AlignAsOperand    = Type { ty: TypeName } | "Expr(" expr ")" ;
@@ -502,5 +503,8 @@ CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
   used is not kept.
 - `Unknown` is an attribute the parser does not model, or one the flavor
   does not register for the target (`src/attribute_support.rs`), kept by
-  name with its argument token spellings. `Invalid` is a known attribute whose
+  name with its argument token spellings. `IgnoredDeclspec` is a
+  `__declspec` entry the flavor does not register for the target, which
+  clang ignores as "not supported" even when the name is a GNU attribute.
+  `Invalid` is a known attribute whose
   arguments did not fit its form.

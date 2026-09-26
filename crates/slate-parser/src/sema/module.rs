@@ -449,6 +449,12 @@ impl Lowerer {
                         self.warn(Warning::UnknownAttributes, &message, attribute);
                     }
                 }
+                Use::UnsupportedDeclspec => {
+                    if let ast::Attribute::IgnoredDeclspec { name, .. } = &attribute.value {
+                        let message = format!("__declspec attribute '{name}' is not supported");
+                        self.warn(Warning::IgnoredAttributes, &message, attribute);
+                    }
+                }
                 Use::Symbol | Use::Layout | Use::Ignored => {}
             }
         }

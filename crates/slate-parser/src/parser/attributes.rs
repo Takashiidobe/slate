@@ -116,18 +116,21 @@ pub(super) fn parse_attribute_groups(
                     "allocate" => "section",
                     _ => &name,
                 };
-                attributes.push(locate_attribute(
-                    tokens,
-                    start,
-                    end,
+                let attribute = if declspec_registered(&name, context) {
                     parse_attribute_spelling(
                         &name,
                         canonical,
                         arguments,
                         biggest_alignment,
                         context,
-                    )?,
-                ));
+                    )?
+                } else {
+                    Attribute::IgnoredDeclspec {
+                        name,
+                        arguments: arguments.values().map(String::from).collect(),
+                    }
+                };
+                attributes.push(locate_attribute(tokens, start, end, attribute));
                 cursor.consume(&Token::Comma);
             }
         } else if cursor.consume(&Token::Ident("_Alignas".into()))
@@ -585,6 +588,12 @@ fn c23_attribute_name(name: &str) -> Option<&str> {
 fn gnu_registered(name: &str, context: Option<&Parser>) -> bool {
     context
         .is_none_or(|parser| attribute_support::gnu_registered(name, parser.flavor, &parser.target))
+}
+
+fn declspec_registered(name: &str, context: Option<&Parser>) -> bool {
+    context.is_none_or(|parser| {
+        attribute_support::declspec_registered(name, parser.flavor, &parser.target)
+    })
 }
 
 fn c23_registered(name: &str, context: Option<&Parser>) -> bool {

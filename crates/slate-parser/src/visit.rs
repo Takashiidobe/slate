@@ -505,6 +505,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::MaybeUnused
         | Attribute::Fallthrough
         | Attribute::Unknown { .. }
+        | Attribute::IgnoredDeclspec { .. }
         | Attribute::Invalid { .. } => Ok(()),
     }
 }

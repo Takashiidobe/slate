@@ -672,5 +672,12 @@ the effective ABI are sema responsibilities.
 
 `__declspec(...)` accepts single-parenthesis attribute groups, including
 space-separated entries. `dllimport` and `dllexport` become `DllImport` and
-`DllExport`; `align(expr)` becomes `Aligned(Expr)`. Unrecognized entries
-retain their name and argument tokens through `Unknown`.
+`DllExport`; `align(expr)` becomes `Aligned(Expr)`. Which names apply is
+per flavor (`attribute_support::declspec_registered`): clang honors only its
+own declspec set (dllimport/dllexport only on Windows, no `__name__`
+unwrapping), gcc treats `__declspec(x)` as `__attribute__((x))` as mingw
+does, and msvc accepts every modeled name. A name the flavor does not
+register becomes `IgnoredDeclspec { name, arguments }` and has no effect, so
+`__declspec(packed)` or `__declspec(dllimport)` on ELF under clang changes
+nothing. Registered but unmodeled entries retain their name and argument
+tokens through `Unknown`.

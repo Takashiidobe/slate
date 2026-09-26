@@ -893,6 +893,10 @@ pub enum Attribute {
         name: String,
         arguments: Vec<String>,
     },
+    IgnoredDeclspec {
+        name: String,
+        arguments: Vec<String>,
+    },
     Invalid {
         name: String,
         arguments: Vec<String>,

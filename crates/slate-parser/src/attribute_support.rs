@@ -165,6 +165,36 @@ const GNU_ATTRIBUTES: &[Support] = &[
     both("fallthrough"),
 ];
 
+// clang never unwraps `__name__` in a declspec and ignores every name not listed
+#[rustfmt::skip]
+const CLANG_DECLSPECS: &[(&str, Gate)] = &[
+    ("align", Gate::Always),
+    ("allocate", Gate::Always),
+    ("allocator", Gate::Always),
+    ("code_seg", Gate::Always),
+    ("cpu_dispatch", Gate::Always),
+    ("cpu_specific", Gate::Always),
+    ("deprecated", Gate::Always),
+    ("dllexport", Gate::Windows),
+    ("dllimport", Gate::Windows),
+    ("empty_bases", Gate::Windows),
+    ("guard", Gate::Windows),
+    ("layout_version", Gate::Windows),
+    ("naked", Gate::Always),
+    ("no_init_all", Gate::Always),
+    ("noalias", Gate::Always),
+    ("noinline", Gate::Always),
+    ("noreturn", Gate::Always),
+    ("nothrow", Gate::Always),
+    ("novtable", Gate::Windows),
+    ("property", Gate::Always),
+    ("restrict", Gate::Always),
+    ("safebuffers", Gate::Always),
+    ("selectany", Gate::Always),
+    ("thread", Gate::Always),
+    ("uuid", Gate::Always),
+];
+
 // `__has_c_attribute` values of the standard attributes; cl answers only in C23 mode
 #[rustfmt::skip]
 const STANDARD_ATTRIBUTES: &[(&str, i64, i64, i64)] = &[
@@ -193,6 +223,17 @@ pub fn gnu_registered(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -
             CompilerFlavor::Gcc => listed(registered::GCC, name),
             CompilerFlavor::Msvc => false,
         },
+    }
+}
+
+// mingw gcc defines `__declspec(x)` as `__attribute__((x))`; cl rejects names it does not know
+pub fn declspec_registered(name: &str, flavor: CompilerFlavor, target: &TargetInfo) -> bool {
+    match flavor {
+        CompilerFlavor::Clang => CLANG_DECLSPECS
+            .iter()
+            .any(|(declspec, gate)| *declspec == name && gate.admits(target)),
+        CompilerFlavor::Gcc => gnu_registered(name, flavor, target),
+        CompilerFlavor::Msvc => true,
     }
 }
 

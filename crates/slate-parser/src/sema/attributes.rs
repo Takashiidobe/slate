@@ -14,6 +14,7 @@ pub(super) enum Use {
     Layout,
     Ignored,
     Unknown,
+    UnsupportedDeclspec,
     Inapplicable {
         spelling: &'static str,
         applies_to: Option<&'static str>,
@@ -160,6 +161,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Fallthrough => Use::Ignored,
 
         Attribute::Unknown { .. } => Use::Unknown,
+        Attribute::IgnoredDeclspec { .. } => Use::UnsupportedDeclspec,
     }
 }
 
