@@ -590,8 +590,10 @@ Designator indices are expressions, not evaluated integers.
 ## Attributes and asm
 
 `Attribute` is a closed set of known GNU/C23 attributes with parsed
-arguments. Unknown attributes are `Unknown { name, arguments }`, malformed
-ones `Invalid`. Each attribute retains its spelling span, and attribute
+arguments. Unknown attributes are `Unknown { name, arguments }` — including
+a modeled `__attribute__` or `[[scope::name]]` spelling that the flavor does
+not register for the target (`src/attribute_support.rs`), such as
+`dllimport` off Windows — and malformed ones `Invalid`. Each attribute retains its spelling span, and attribute
 _placement_ is preserved: specifiers, declarators, init-declarators, tag
 definitions, statements. `GnuAsm` holds the parsed
 template, operands with constraints, clobbers and labels.

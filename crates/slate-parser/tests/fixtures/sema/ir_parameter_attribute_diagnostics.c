@@ -23,7 +23,7 @@ void f(int p __attribute__((nocommon)));
 #elif defined(WARN_IGNORED)
 void f(int p __attribute__((packed)));
 #elif defined(ERR_UNSUPPORTED)
-void f(int p __attribute__((code_seg("s"))));
+void f(__declspec(code_seg("s")) int p);
 #endif
 
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL

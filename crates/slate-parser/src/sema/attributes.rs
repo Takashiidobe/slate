@@ -13,6 +13,7 @@ pub(super) enum Use {
     Symbol,
     Layout,
     Ignored,
+    Unknown,
     Inapplicable {
         spelling: &'static str,
         applies_to: Option<&'static str>,
@@ -123,8 +124,9 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Deprecated(_)
         | Attribute::NoDiscard(_)
         | Attribute::MaybeUnused
-        | Attribute::Fallthrough
-        | Attribute::Unknown { .. } => Use::Ignored,
+        | Attribute::Fallthrough => Use::Ignored,
+
+        Attribute::Unknown { .. } => Use::Unknown,
     }
 }
 

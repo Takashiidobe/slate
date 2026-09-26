@@ -120,6 +120,8 @@ think about refactoring it.
 
 ### Testing
 
+Oracle compilers: `clang` and `gcc` are installed natively; MSVC is `tools/cl.exe`.
+
 FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.

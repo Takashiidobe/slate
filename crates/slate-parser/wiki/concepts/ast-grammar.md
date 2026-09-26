@@ -500,6 +500,7 @@ CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
 - Every attribute syntax (GNU `__attribute__`, C23 `[[...]]`, keywords such
   as `_Alignas` and `__cdecl`) produces an `Attribute`; which syntax was
   used is not kept.
-- `Unknown` is an attribute the parser does not model, kept by name with
-  its argument token spellings. `Invalid` is a known attribute whose
+- `Unknown` is an attribute the parser does not model, or one the flavor
+  does not register for the target (`src/attribute_support.rs`), kept by
+  name with its argument token spellings. `Invalid` is a known attribute whose
   arguments did not fit its form.

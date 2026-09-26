@@ -28,7 +28,7 @@ __attribute__((aligned(4 + 4))) int aligned_value;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 ordered: i32 [storage=static] [linkage=external] [c="int"] [c_attributes="[ScalarStorageOrder(\"big-endian\")]"];
+// IR-NEXT:     global %0 ordered: i32 [storage=static] [linkage=external] [c="int"] [c_attributes="[Unknown { name: \"scalar_storage_order\", arguments: [\"\\\"big-endian\\\"\"] }]"];
 // IR-NEXT:     global %1 device_memory: ptr<i32> [storage=static] [linkage=external] [c="int *"] [c_attributes="[AddressSpace(IntegerLiteral(IntegerLiteral { value: 3, radix: Decimal, suffix: IntegerSuffix { unsigned: false, size: None }, spelling: \"3\" }))]"];
 // IR-NEXT:     global %2 aligned_value: i32 [storage=static] [align=8] [linkage=external] [c="int"] [c_attributes="[Aligned(IntegerLiteral(IntegerLiteral { value: 8, radix: Decimal, suffix: IntegerSuffix { unsigned: false, size: None }, spelling: \"8\" }))]"];
 // IR-NEXT: }

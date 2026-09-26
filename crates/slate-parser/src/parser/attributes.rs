@@ -1,5 +1,6 @@
 use super::Parser;
 use crate::ast::*;
+use crate::attribute_support;
 use crate::const_expr;
 use crate::lexer::{Token, TokenSpanExt};
 
@@ -164,12 +165,12 @@ pub(super) fn parse_attribute_groups(
                 let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(locate_attribute(
-                    tokens,
-                    start,
-                    end,
-                    parse_attribute(&name, arguments, biggest_alignment, context)?,
-                ));
+                let attribute = if gnu_registered(&name, context) {
+                    parse_attribute(&name, arguments, biggest_alignment, context)?
+                } else {
+                    unknown_attribute(&name, arguments)
+                };
+                attributes.push(locate_attribute(tokens, start, end, attribute));
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -200,7 +201,9 @@ pub(super) fn parse_attribute_groups(
                 let end = cursor.pos;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                let attribute = match c23_attribute_name(&name) {
+                let attribute = match c23_attribute_name(&name)
+                    .filter(|canonical| c23_registered(&name, canonical, context))
+                {
                     Some(canonical) => parse_attribute_spelling(
                         &name,
                         canonical,
@@ -504,7 +507,9 @@ fn parse_attribute_value(
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "maybe_unused" | "unused" if arguments.is_empty() => Ok(Attribute::MaybeUnused),
         "fallthrough" if arguments.is_empty() => Ok(Attribute::Fallthrough),
-        _ if canonical_name.is_attribute_name() => Ok(invalid_attribute(name, arguments)),
+        _ if attribute_support::is_modeled(canonical_name) => {
+            Ok(invalid_attribute(name, arguments))
+        }
         _ => Ok(unknown_attribute(name, arguments)),
     }
 }
@@ -541,108 +546,6 @@ fn parse_attribute_expression(
     context: Option<&Parser>,
 ) -> Result<Expr, String> {
     const_expr::Parser::parse_expression(arguments, context).map_err(|error| error.to_string())
-}
-
-trait AttributeName {
-    fn is_attribute_name(&self) -> bool;
-}
-
-impl AttributeName for str {
-    fn is_attribute_name(&self) -> bool {
-        matches!(
-            self,
-            "packed"
-                | "address_space"
-                | "pass_object_size"
-                | "pass_dynamic_object_size"
-                | "lifetimebound"
-                | "overloadable"
-                | "gnu_inline"
-                | "nothrow"
-                | "selectany"
-                | "thread"
-                | "noalias"
-                | "restrict"
-                | "code_seg"
-                | "optnone"
-                | "unused"
-                | "preserve_most"
-                | "preserve_all"
-                | "preserve_none"
-                | "aligned"
-                | "vector_size"
-                | "mode"
-                | "visibility"
-                | "section"
-                | "annotate"
-                | "target"
-                | "alias"
-                | "weakref"
-                | "nonnull"
-                | "weak"
-                | "used"
-                | "retain"
-                | "noinline"
-                | "always_inline"
-                | "noreturn"
-                | "constructor"
-                | "destructor"
-                | "malloc"
-                | "assume_aligned"
-                | "alloc_size"
-                | "alloc_align"
-                | "cleanup"
-                | "returns_nonnull"
-                | "warn_unused_result"
-                | "sentinel"
-                | "cold"
-                | "flatten"
-                | "hot"
-                | "leaf"
-                | "noipa"
-                | "noclone"
-                | "optimize"
-                | "naked"
-                | "interrupt"
-                | "no_split_stack"
-                | "returns_twice"
-                | "cpu_dispatch"
-                | "cpu_specific"
-                | "target_clones"
-                | "ifunc"
-                | "dllimport"
-                | "weak_import"
-                | "tls_model"
-                | "ms_struct"
-                | "stdcall"
-                | "cdecl"
-                | "fastcall"
-                | "vectorcall"
-                | "thiscall"
-                | "ms_abi"
-                | "sysv_abi"
-                | "regparm"
-                | "pcs"
-                | "dllexport"
-                | "nomips16"
-                | "availability"
-                | "ext_vector_type"
-                | "scalar_storage_order"
-                | "transparent_union"
-                | "format"
-                | "format_arg"
-                | "gcc_struct"
-                | "common"
-                | "nocommon"
-                | "pure"
-                | "const"
-                | "may_alias"
-                | "deprecated"
-                | "nodiscard"
-                | "maybe_unused"
-                | "fallthrough"
-        )
-    }
 }
 
 fn keyword_calling_convention(token: Option<&Token>) -> Option<CallingConvention> {
@@ -768,6 +671,27 @@ fn c23_attribute_name(name: &str) -> Option<&str> {
         ("msvc", "forceinline") => Some("always_inline"),
         _ => None,
     }
+}
+
+fn gnu_registered(name: &str, context: Option<&Parser>) -> bool {
+    context.is_none_or(|parser| {
+        attribute_support::gnu_registered(
+            unwrapped_attribute_name(name),
+            parser.flavor,
+            &parser.target,
+        )
+    })
+}
+
+fn c23_registered(name: &str, canonical: &str, context: Option<&Parser>) -> bool {
+    let Some((scope, _)) = name.split_once("::") else {
+        return true;
+    };
+    let scope = unwrapped_attribute_name(scope);
+    context.is_none_or(|parser| {
+        attribute_support::scope_registered(scope, parser.flavor)
+            && (scope == "msvc" || gnu_registered(canonical, context))
+    })
 }
 
 fn parse_attribute_spelling(

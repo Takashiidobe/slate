@@ -18,11 +18,12 @@ pub enum Warning {
     ConflictingTypes,
     ParameterAlignment,
     IgnoredAttributes,
+    UnknownAttributes,
     DeprecatedNonPrototype,
 }
 
 impl Warning {
-    pub const ALL: [Self; 15] = [
+    pub const ALL: [Self; 16] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -37,6 +38,7 @@ impl Warning {
         Self::ConflictingTypes,
         Self::ParameterAlignment,
         Self::IgnoredAttributes,
+        Self::UnknownAttributes,
         Self::DeprecatedNonPrototype,
     ];
 
@@ -58,6 +60,7 @@ impl Warning {
             Self::ConflictingTypes => "conflicting-types",
             Self::ParameterAlignment => "parameter-alignment",
             Self::IgnoredAttributes => "ignored-attributes",
+            Self::UnknownAttributes => "unknown-attributes",
             Self::DeprecatedNonPrototype => "deprecated-non-prototype",
         }
     }

@@ -436,6 +436,12 @@ impl Lowerer {
                     };
                     self.warn(Warning::IgnoredAttributes, &message, attribute);
                 }
+                Use::Unknown => {
+                    if let ast::Attribute::Unknown { name, .. } = &attribute.value {
+                        let message = format!("unknown attribute '{name}' ignored");
+                        self.warn(Warning::UnknownAttributes, &message, attribute);
+                    }
+                }
                 Use::Symbol | Use::Layout | Use::Ignored => {}
             }
         }

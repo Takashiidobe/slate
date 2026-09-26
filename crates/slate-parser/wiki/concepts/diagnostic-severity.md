@@ -83,6 +83,7 @@ to (1) needs no justification beyond the measurement. (3) is always a bug.
 | `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
 | `parameter-alignment`         | on        | no       | an alignment attribute on a function parameter, which no two of the three compilers agree to reject |
 | `ignored-attributes`          | on        | no       | an attribute written on a subject outside clang's subject list for it; see [attribute applicability](#attribute-applicability) |
+| `unknown-attributes`          | on        | no       | a `__attribute__` or `[[scope::name]]` spelling the flavor does not register for the target (gcc calls it `-Wattributes`, cl C5030); see [attribute applicability](#attribute-applicability) |
 
 `incompatible-pointer-types` and `int-conversion` were at (2): one global
 warning, chosen because MSVC only warns on all of them (C4047, C4057, C4133)
@@ -159,12 +160,27 @@ Measured against clang 22.1.8 (2026-09-21); `ok` is silently accepted and
 | `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign` | `ign` | `ign` | `ign` |
 | `malloc`, `cold`, `ifunc`, `alloc_size`, … | `ign` | ok | `ign` | `ign` |
 
-Two gaps remain, both filed rather than guessed at: clang reports
-`scalar_storage_order`, `dllimport`, `dllexport` and any unrecognized spelling
-under `-Wunknown-attributes` when the target or flavor does not register them,
-which is a different warning identity from `ignored-attributes`; and the
-record and field subjects are not diagnosed, because lowering does not route
-their attributes through `check_attributes` yet.
+Before subject applicability comes registration: whether the flavor knows the
+spelling at all on this target. `src/attribute_support.rs` is the one
+hand-maintained table of it — per `__attribute__` name, a clang, gcc and msvc
+gate (`Always`, `Never`, `Windows`, `X86`, …), plus which `[[scope::]]`
+namespaces each flavor accepts (clang: gnu/clang/msvc; gcc: gnu; msvc:
+msvc). The parser turns an unregistered spelling into `Attribute::Unknown`, so
+it never reaches lowering (no `dllimport` marker on an ELF target), and
+`check_attributes` reports it as `-Wunknown-attributes`. Measured 2026-09-26
+(slate-parser-dyd.46) against clang 22.1.8 over 13 triples, gcc 16.2.1 on
+x86_64 and aarch64, and cl 19.51 — e.g. clang does not register `noipa`,
+`noclone`, `optimize` or `scalar_storage_order`, registers `dllimport` only on
+Windows and `interrupt` everywhere but aarch64; gcc has none of the clang-only
+spellings and, on aarch64, no `naked`, `interrupt` or x86 calling conventions;
+cl has no `__attribute__` syntax, so msvc registers no GNU spelling.
+`__declspec` is not gated yet: clang reports an unsupported declspec under
+`-Wignored-attributes` and cl rejects it (C2485), so it needs its own column.
+Fixtures: `sema/unknown_attributes_{clang_linux,clang_windows,gcc_aarch64}.c`.
+
+One gap remains, filed rather than guessed at: the record and field subjects
+are not diagnosed, because lowering does not route their attributes through
+`check_attributes` yet.
 
 Fixtures: `sema/ir_attribute_applicability.c` (the applied/dropped half, in
 the IR) and `sema/attribute_applicability_warnings.c` (the diagnostics).
