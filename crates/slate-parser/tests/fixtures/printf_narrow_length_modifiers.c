@@ -63,11 +63,11 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 j: i64 [storage=automatic] = const<i64>(123456789);
 // DEFAULT-NEXT:         let %12 ju: u64 [storage=automatic] = const<u64>(123456789);
 // DEFAULT-NEXT:         let %13 t: i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(7)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(%18)), widen<i32, reason=vararg>(read<i16>(%7)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%8))), widen<i32, reason=vararg>(read<i8>(%9)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%10))), read<i64>(%11), read<u64>(%12), read<i64>(%13));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%5, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(%18)), widen<i32, reason=vararg>(read<i16>(%7)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%8))), widen<i32, reason=vararg>(read<i8>(%9)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%10))), read<i64>(%11), read<u64>(%12), read<i64>(%13));
 // DEFAULT-NEXT:         let %14 full_int: i32 [storage=automatic] = const<i32>(300);
 // DEFAULT-NEXT:         let %15 negative: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         let %16 wide: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(70000));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(24)>(%19)), read<i32>(%14), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%10))), read<i32>(%15), read<u32>(%16), read<u32>(%16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%5, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(24)>(%19)), read<i32>(%14), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%10))), read<i32>(%15), read<u32>(%16), read<u32>(%16));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

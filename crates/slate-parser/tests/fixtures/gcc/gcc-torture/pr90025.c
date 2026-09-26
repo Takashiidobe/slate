@@ -48,6 +48,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([102, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @bar(%1 p: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %2 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %7
@@ -55,31 +56,32 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%2, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%2), const<i32>(6))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%11));
+// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%14));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%1), read<i32>(%2))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%8), read<i32>(%2))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         for %9
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:         for %10
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%2), const<i32>(32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%13));
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%16));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%1), read<i32>(%2))))), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_bswap32(%11 <unnamed>: u32) -> u32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 s: array<i8, 32> [storage=automatic] [align=16] = aggregate<array<i8, 32>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(102)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(111)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(111)), index3 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), index4 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), index5 = truncate<i8, reason=assign, fits=always>(const<i32>(114)), index6 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(pointer_cast<ptr<u32>, reason=explicit>(array_decay<ptr<i8>, length=Some(32)>(%5)), const<i32>(2))), call<u32, signature=fn(u32) -> u32>(__builtin_bswap32, read<u32>(%4)));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(__builtin_bswap32, read<u32>(%4));
+// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(pointer_cast<ptr<u32>, reason=explicit>(array_decay<ptr<i8>, length=Some(32)>(%5)), const<i32>(2))), call<u32, signature=fn(u32) -> u32>(%12, read<u32>(%4)));
+// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%12, read<u32>(%4));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%0, array_decay<ptr<i8>, length=Some(32)>(%5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -46,11 +46,12 @@ int main() {
 // DEFAULT-NEXT:         field1 c: i32 : 28;
 // DEFAULT-NEXT:         field2 d: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 3], bit_offsets=[Some(0), Some(3), Some(31)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0)]];
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 e: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>();
 // DEFAULT-NEXT:         write<i32>(bitfield1<unit=0, bytes=0..4, bits=3..31>(%2), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield2<unit=0, bytes=0..4, bits=31..32>(%2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

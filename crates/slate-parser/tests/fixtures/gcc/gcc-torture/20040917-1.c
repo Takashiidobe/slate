@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 test_var: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @not_inlinable() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:     }
@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(10));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%1), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 a: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 s: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(%3, widen<i64, reason=assign>(read<i32>(%1)));
@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%3, const<i64>(2147483647));
 // DEFAULT-NEXT:         if lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

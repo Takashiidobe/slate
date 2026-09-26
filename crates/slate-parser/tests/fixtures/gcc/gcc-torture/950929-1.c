@@ -49,8 +49,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @f(%3 p: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -73,8 +73,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %17: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(and<i32>(widen<i32, reason=promotion>(read<i8>(%16)), read<i32>(deref(read<ptr<i32>>(%10)))));
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%15)), read<i8>(%17));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%9)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

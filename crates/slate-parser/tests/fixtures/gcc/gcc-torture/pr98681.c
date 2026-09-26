@@ -45,14 +45,15 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return read<i32>(%1);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3: bool [synthetic];
+// DEFAULT-NEXT:         let %4: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(32)), const<i32>(32))
-// DEFAULT-NEXT:             write<bool>(%3, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%4, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%3, ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(150))), neg<i32, overflow=ub>(const<i32>(150))));
-// DEFAULT-NEXT:         if read<bool>(%3)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%4, ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(150))), neg<i32, overflow=ub>(const<i32>(150))));
+// DEFAULT-NEXT:         if read<bool>(%4)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

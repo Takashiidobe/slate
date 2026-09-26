@@ -63,8 +63,8 @@ int main() {
 // DEFAULT-NEXT:         field1 i2: i64;
 // DEFAULT-NEXT:         field2 i3: i16;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 s: @type0) -> @type0 [linkage=external] [abi=sysv64(byval<align=8>) -> sret<align=8>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %9: i64 [synthetic] = read<i64>(field1(%4));
 // DEFAULT-NEXT:         let %10: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%9), widen<i64, reason=usual_arith>(const<i32>(1)));
@@ -74,8 +74,8 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(byval<align=8>) -> sret<align=8>>(%3, copy<@type0, reason=arg>(read<@type0>(compound_literal %8 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(1000)), field1 = const<i64>(2000), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(3000)))))));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%6))), const<i32>(1000)), ne<i64>(read<i64>(field1(%6)), const<i64>(2001))), ne<i32>(widen<i32, reason=promotion>(read<i16>(field2(%6))), const<i32>(3000)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

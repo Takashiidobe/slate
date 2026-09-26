@@ -63,8 +63,8 @@ int main(void) {
 // DEFAULT-NEXT:         field3 year: i16;
 // DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 1, 2, 4]];
 // DEFAULT-NEXT:     type @type1 T = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @g() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i48>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 now: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(field0(%5), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
@@ -96,8 +96,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%16, ne<i32>(widen<i32, reason=promotion>(read<i16>(field3(temporary %13 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i48>>(%6)))), const<i32>(4)));
 // DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

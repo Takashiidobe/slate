@@ -56,31 +56,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_memcpy(%8 <unnamed>: ptr<void>, %9 <unnamed>: ptr<const void>, %10 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: u32, %2 p: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, read<ptr<void>>(%2), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u32>>(%1)), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%11, read<ptr<void>>(%2), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u32>>(%1)), const<u64>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @bar(%4 type: i32, %5 number: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %8 read<i32>(%4)
+// DEFAULT-NEXT:         switch %12 read<i32>(%4)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %8 const<i32>(1):
+// DEFAULT-NEXT:                 case %12 const<i32>(1):
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, ptr<void>) -> void>(%0, reinterpret<u32, reason=arg, fits=always>(const<i32>(305419896)), read<ptr<void>>(%5));
-// DEFAULT-NEXT:                 break %8;
-// DEFAULT-NEXT:                 case %8 const<i32>(7):
+// DEFAULT-NEXT:                 break %12;
+// DEFAULT-NEXT:                 case %12 const<i32>(7):
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, ptr<void>) -> void>(%0, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), read<ptr<void>>(%5));
-// DEFAULT-NEXT:                 break %8;
-// DEFAULT-NEXT:                 case %8 const<i32>(8):
+// DEFAULT-NEXT:                 break %12;
+// DEFAULT-NEXT:                 case %12 const<i32>(8):
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, ptr<void>) -> void>(%0, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), read<ptr<void>>(%5));
-// DEFAULT-NEXT:                 break %8;
-// DEFAULT-NEXT:                 case %8 const<i32>(9):
+// DEFAULT-NEXT:                 break %12;
+// DEFAULT-NEXT:                 case %12 const<i32>(9):
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, ptr<void>) -> void>(%0, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), read<ptr<void>>(%5));
-// DEFAULT-NEXT:                 break %8;
+// DEFAULT-NEXT:                 break %12;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 x: u32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<void>) -> void>(%3, const<i32>(1), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u32>>(%7)));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(305419896)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

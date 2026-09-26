@@ -87,8 +87,9 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_alloca(%13 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 arg1: i32, %2 arg2: i32, %3 arg3: i32, %4 arg4: i32, %5 arg5: i32, %6 arg6: i32, %7 arg7: i32, %8 arg8: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 x: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%7)))));
+// DEFAULT-NEXT:         let %9 x: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%7)))));
 // DEFAULT-NEXT:         let %10 y: i32 [storage=automatic] [align=32];
 // DEFAULT-NEXT:         write<i32>(%10, const<i32>(2));
 // DEFAULT-NEXT:         asm "nop" {

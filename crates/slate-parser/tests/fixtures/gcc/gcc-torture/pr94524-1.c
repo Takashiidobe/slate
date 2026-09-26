@@ -42,15 +42,16 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 V = vector<i8, 16>;
 // DEFAULT-NEXT:     fn %1 @foo(%2 c: vector<i8, 16>) -> vector<i8, 16> [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6: vector<i8, 16> [synthetic] = read<vector<i8, 16>>(%2);
-// DEFAULT-NEXT:         let %7: vector<i8, 16> [synthetic] = rem<vector<i8, 16>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(read<vector<i8, 16>>(%6), vector_splat<vector<i8, 16>, reason=usual_arith>(truncate<i8, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(19)))))));
-// DEFAULT-NEXT:         write<vector<i8, 16>>(%2, read<vector<i8, 16>>(%7));
+// DEFAULT-NEXT:         let %7: vector<i8, 16> [synthetic] = read<vector<i8, 16>>(%2);
+// DEFAULT-NEXT:         let %8: vector<i8, 16> [synthetic] = rem<vector<i8, 16>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(read<vector<i8, 16>>(%7), vector_splat<vector<i8, 16>, reason=usual_arith>(truncate<i8, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(19)))))));
+// DEFAULT-NEXT:         write<vector<i8, 16>>(%2, read<vector<i8, 16>>(%8));
 // DEFAULT-NEXT:         return read<vector<i8, 16>>(%2);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 x: vector<i8, 16> [storage=automatic] = call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%1, read<vector<i8, 16>>(compound_literal %5 [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(31)))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%4, const<i32>(0)))), const<i32>(12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

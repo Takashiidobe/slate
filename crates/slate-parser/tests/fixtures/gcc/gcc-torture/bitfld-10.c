@@ -64,10 +64,11 @@ int main(void) {
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%1, addr_of<ptr<@type0>>(%6), const<i32>(1)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

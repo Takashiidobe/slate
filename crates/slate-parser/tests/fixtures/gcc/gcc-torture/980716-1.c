@@ -55,8 +55,8 @@ int main() {
 // DEFAULT-NEXT:     global %12 .str12: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([98, 99, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %14 .str14: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([99, 120, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @stub(%4 num: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %6 end: ptr<i8> [storage=automatic];
@@ -86,7 +86,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%3, const<i32>(1), array_decay<ptr<i8>, length=Some(3)>(%12), array_decay<ptr<i8>, length=Some(3)>(%13), array_decay<ptr<i8>, length=Some(3)>(%14), null<ptr<i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -43,10 +43,10 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @DisplayNumber(%2 v: u64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%2), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(154)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @ReadNumber() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=always>(const<i64>(10092544));

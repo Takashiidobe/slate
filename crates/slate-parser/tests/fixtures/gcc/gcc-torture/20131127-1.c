@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %4 c: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 d: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 e: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @fn1() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64, i48>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
 // DEFAULT-NEXT:     }
@@ -82,7 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

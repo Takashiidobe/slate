@@ -92,9 +92,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 a: f16 [storage=automatic] = const<f16>(3);
 // DEFAULT-NEXT:         let %16 b: f16 [storage=automatic] = const<f16>(4);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%3, read<f16>(%15), read<f16>(%16))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%6, read<f16>(%15), read<f16>(%16))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(i32, ...) -> f16>(%9, const<i32>(3), const<f16>(1), const<f16>(2), const<f16>(3))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%3, read<f16>(%15), read<f16>(%16))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%6, read<f16>(%15), read<f16>(%16))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(i32, ...) -> f16>(%9, const<i32>(3), const<f16>(1), const<f16>(2), const<f16>(3))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

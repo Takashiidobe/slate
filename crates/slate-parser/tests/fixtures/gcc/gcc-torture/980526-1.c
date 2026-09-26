@@ -65,8 +65,8 @@ int main(void) { exit(0); }
 // DEFAULT-NEXT:     global %3 expect_do2: i32 [storage=static] = const<i32>(2) [linkage=external];
 // DEFAULT-NEXT:     global %8 jtab_init: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %9 jtab: array<ptr<void>, 2> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @doit(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%8), const<i32>(0)))
 // DEFAULT-NEXT:             {
@@ -82,14 +82,14 @@ int main(void) { exit(0); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @do1() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(0)), read<i32>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @do2() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1)), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

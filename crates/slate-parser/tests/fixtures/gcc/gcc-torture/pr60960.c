@@ -61,20 +61,22 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @f3(%6 x: vector<u8, 4>, %7 y: vector<u8, 4>) -> vector<u8, 4> [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(coerce<i32>, coerce<i32>) -> coerce<i32>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<vector<u8, 4>, elementwise=true, by_zero=ub>(read<vector<u8, 4>>(%6), read<vector<u8, 4>>(%7));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %16 @__builtin_memcmp(%13 <unnamed>: ptr<const void>, %14 <unnamed>: ptr<const void>, %15 <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 x: vector<u8, 4> [storage=automatic] = aggregate<vector<u8, 4>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), index3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))));
 // DEFAULT-NEXT:         let %10 y: vector<u8, 4> [storage=automatic] = aggregate<vector<u8, 4>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))), index3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         let %11 z: vector<u8, 4> [storage=automatic] = call<vector<u8, 4>, signature=fn(vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>) -> coerce<i32>>(%1, read<vector<u8, 4>>(%9));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         write<vector<u8, 4>>(%11, call<vector<u8, 4>, signature=fn(vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>) -> coerce<i32>>(%3, read<vector<u8, 4>>(%9)));
 // DEFAULT-NEXT:         call<vector<u8, 4>, signature=fn(vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>) -> coerce<i32>>(%3, read<vector<u8, 4>>(%9));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         write<vector<u8, 4>>(%11, call<vector<u8, 4>, signature=fn(vector<u8, 4>, vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>, coerce<i32>) -> coerce<i32>>(%5, read<vector<u8, 4>>(%9), read<vector<u8, 4>>(%10)));
 // DEFAULT-NEXT:         call<vector<u8, 4>, signature=fn(vector<u8, 4>, vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>, coerce<i32>) -> coerce<i32>>(%5, read<vector<u8, 4>>(%9), read<vector<u8, 4>>(%10));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%11)), const<u64>(4)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

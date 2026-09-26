@@ -64,20 +64,21 @@ int main() {
 // DEFAULT-NEXT:     fn %4 @mul(%5 r: ptr<u32>, %6 a: ptr<const u32>, %7 b: ptr<const u32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<u32>(deref(read<ptr<const u32>>(%6))), read<u32>(deref(read<ptr<const u32>>(%7))), deref(read<ptr<u32>>(%5))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 x: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%9, div<u32, by_zero=ub>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u32>, ptr<const u32>, ptr<const u32>) -> i32>(%0, addr_of<ptr<u32>>(%9), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9)), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u32>(%9, shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(1), div<u64, by_zero=ub>(mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u32>, ptr<const u32>, ptr<const u32>) -> i32>(%4, addr_of<ptr<u32>>(%9), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9)), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u32>(%9, add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(1)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<u32>, ptr<const u32>, ptr<const u32>) -> i32>(%0, addr_of<ptr<u32>>(%9), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9)), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u32>(%9, shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(1), div<u64, by_zero=ub>(mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<u32>, ptr<const u32>, ptr<const u32>) -> i32>(%4, addr_of<ptr<u32>>(%9), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9)), pointer_cast<ptr<const u32>, reason=arg>(addr_of<ptr<u32>>(%9))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

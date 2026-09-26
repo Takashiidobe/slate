@@ -87,17 +87,17 @@ main() {
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @check(%9 t: ptr<@type4>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(lane(deref(ptr_offset<ptr<vector<i64, 2>>, subtract=false, element=vector<i64, 2>, overflow=ub>(array_decay<ptr<vector<i64, 2>>, length=Some(0)>(field1(field1(deref(read<ptr<@type4>>(%9))))), const<i32>(0))), const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(3))), ne<i64>(read<i64>(lane(deref(ptr_offset<ptr<vector<i64, 2>>, subtract=false, element=vector<i64, 2>, overflow=ub>(array_decay<ptr<vector<i64, 2>>, length=Some(0)>(field1(field1(deref(read<ptr<@type4>>(%9))))), const<i32>(0))), const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @foo(%11 p: ptr<@type2>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %12 a: vector<i64, 2> [storage=automatic] = aggregate<vector<i64, 2>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(3)), index1 = widen<i64, reason=assign>(const<i32>(4)));
 // DEFAULT-NEXT:         write<vector<i64, 2>>(deref(ptr_offset<ptr<vector<i64, 2>>, subtract=false, element=vector<i64, 2>, overflow=ub>(array_decay<ptr<vector<i64, 2>>, length=Some(0)>(field1(deref(read<ptr<@type2>>(%11)))), const<i32>(0))), read<vector<i64, 2>>(%12));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 t: ptr<@type4> [storage=automatic] = pointer_cast<ptr<@type4>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(calloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(128))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         let %14 t: ptr<@type4> [storage=automatic] = pointer_cast<ptr<@type4>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%1, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(128))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type2>) -> void>(%10, addr_of<ptr<@type2>>(field1(deref(read<ptr<@type4>>(%14)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type4>) -> void>(%8, read<ptr<@type4>>(%14));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(free, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type4>>(%14)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%2, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type4>>(%14)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

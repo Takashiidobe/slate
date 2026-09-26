@@ -57,9 +57,9 @@ int main(void) {
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: le<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %12: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %13: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%13));
+// DEFAULT-NEXT:                 let %13: u32 [synthetic] = read<u32>(%5);
+// DEFAULT-NEXT:                 let %14: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%14));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -71,9 +71,9 @@ int main(void) {
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%2), const<i32>(10))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %14: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                             let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%2, read<i32>(%15));
+// DEFAULT-NEXT:                             let %15: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                             let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%2, read<i32>(%16));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
@@ -83,19 +83,20 @@ int main(void) {
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                         condition: le<i32>(read<i32>(%0), const<i32>(2))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %16: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:                             let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%0, read<i32>(%17));
+// DEFAULT-NEXT:                             let %17: i32 [synthetic] = read<i32>(%0);
+// DEFAULT-NEXT:                             let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%0, read<i32>(%18));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<i32>(%1, widen<i32, reason=assign>(read<i16>(%3)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

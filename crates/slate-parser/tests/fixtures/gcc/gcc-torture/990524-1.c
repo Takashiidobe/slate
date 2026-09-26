@@ -55,8 +55,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 a: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([49, 50, 51, 52, 53, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %3 b: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([49, 50, 51, 52, 53, 0]) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @loop(%6 pz: ptr<i8>, %7 pzDta: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %10
 // DEFAULT-NEXT:             init:
@@ -87,11 +87,11 @@ int main(void) {
 // DEFAULT-NEXT:         label %5 loopDone2:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%2), read<ptr<i8>>(%6)), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%3), read<ptr<i8>>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<i8>) -> void>(%4, array_decay<ptr<i8>, length=Some(6)>(%2), array_decay<ptr<i8>, length=Some(6)>(%3));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

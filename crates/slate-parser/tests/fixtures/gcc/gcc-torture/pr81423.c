@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %2 ull1: u64 [storage=static] = const<u64>(1) [linkage=external];
 // DEFAULT-NEXT:     global %3 ull2: u64 [storage=static] = const<u64>(12008284144813806346) [linkage=external];
 // DEFAULT-NEXT:     global %4 ull3: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @foo() -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<u64>(%1, reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(const<i64>(5597998501375493990))));
 // DEFAULT-NEXT:         write<u64>(%1, widen<u64, reason=assign>(sub<u32, overflow=wrap>(truncate<u32, reason=explicit, fits=unknown>(sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(5677365550390624949)), read<u64>(%1))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(gt<u64>(read<u64>(%2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))))))));
@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%4, call<u64, signature=fn() -> u64>(%5));
 // DEFAULT-NEXT:         call<u64, signature=fn() -> u64>(%5);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -39,9 +39,10 @@ void set_bh_page(struct blah *bh, unsigned long offset)
 // DEFAULT-NEXT:     type @type0 blah = struct {
 // DEFAULT-NEXT:         field0 b_data: ptr<i8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
+// DEFAULT-NEXT:     fn %4 @__builtin_trap() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @set_bh_page(%2 bh: ptr<@type0>, %3 offset: u64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if le<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(12)), read<u64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_trap);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         write<ptr<i8>>(field0(deref(read<ptr<@type0>>(%2))), int_to_ptr<ptr<i8>, reason=explicit>(read<u64>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 length: i32;
 // DEFAULT-NEXT:         field2 flag: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @fetch(%4 p: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%4))), const<i32>(128));
 // DEFAULT-NEXT:     }
@@ -122,7 +122,7 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %11 rv: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> coerce<i16>>(%5, addr_of<ptr<@type1>>(%9)));
 // DEFAULT-NEXT:                     if logical_or<bool>(logical_and<bool>(eq<i32>(read<i32>(%10), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%11)))), const<i32>(65535))), logical_and<bool>(gt<i32>(read<i32>(%10), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%11)))), const<i32>(0))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

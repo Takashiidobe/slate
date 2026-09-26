@@ -40,15 +40,15 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 p: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(%2, const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%5))), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

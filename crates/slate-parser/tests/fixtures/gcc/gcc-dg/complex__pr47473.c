@@ -38,16 +38,18 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_fabsl(%2 <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %1 w: complex<f80> [storage=automatic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f80>(0.200000000000000000003), aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = const<f80>(0.300000000000000000011)));
 // DEFAULT-NEXT:         write<complex<f80>>(%1, mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%1), sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f80>(0.300000000000000000011), mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f80>, reason=usual_arith>(add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f32>(0.0), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))), const<f80>(0.899999999999999999978)))));
-// DEFAULT-NEXT:         let %2: bool [synthetic];
-// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(__builtin_fabsl, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(real(%1)), const<f80>(0.209999999999999999994))), const<f80>(9.99999999999999999958E-4))
-// DEFAULT-NEXT:             write<bool>(%2, const<bool>(true));
+// DEFAULT-NEXT:         let %5: bool [synthetic];
+// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%3, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(real(%1)), const<f80>(0.209999999999999999994))), const<f80>(9.99999999999999999958E-4))
+// DEFAULT-NEXT:             write<bool>(%5, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%2, gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(__builtin_fabsl, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(imag(%1)), const<f80>(0.27000000000000000001))), const<f80>(9.99999999999999999958E-4)));
-// DEFAULT-NEXT:         if read<bool>(%2)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%5, gt<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%3, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(imag(%1)), const<f80>(0.27000000000000000001))), const<f80>(9.99999999999999999958E-4)));
+// DEFAULT-NEXT:         if read<bool>(%5)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

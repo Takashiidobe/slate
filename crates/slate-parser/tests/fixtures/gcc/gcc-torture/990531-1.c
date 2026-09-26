@@ -53,8 +53,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 word: u64;
 // DEFAULT-NEXT:         field1 byte: array<u8, 4>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @bad(%3 reg: i32, %4 inWord: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 data: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(field0(%6), read<u64>(%4));
@@ -63,10 +63,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:         if eq<u64>(call<u64, signature=fn(i32, u64) -> u64>(%2, const<i32>(0), widen<u64, reason=arg>(const<u32>(3735928559))), widen<u64, reason=usual_arith>(const<u32>(3735928559)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

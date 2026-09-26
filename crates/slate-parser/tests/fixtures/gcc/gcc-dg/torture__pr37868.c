@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 b: u32 : 24;
 // DEFAULT-NEXT:         field3 c: u32 : 6;
 // DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 0, 4, 7], bit_offsets=[Some(0), Some(4), Some(36), Some(60)], bit_units=[(0, 9)], field_units=[Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 x: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %4 bad_bits: u32 [storage=automatic];
@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..9, bits=60..66>(%3), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%4, xor<u32>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(pointer_cast<ptr<u32>, reason=explicit>(addr_of<ptr<@type0>>(%3)), const<i32>(1))))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

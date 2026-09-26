@@ -60,8 +60,8 @@ int main(void) {
 // DEFAULT-NEXT:         field2 c: u32 : 28;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(3), Some(4)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %3 x: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8: i32 [synthetic];
 // DEFAULT-NEXT:         {
@@ -70,8 +70,8 @@ int main(void) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(compound_literal %7 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field2 = reinterpret<u32, reason=assign, fits=unknown>(read<i32>(%8))))));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=4..32>(%3))), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

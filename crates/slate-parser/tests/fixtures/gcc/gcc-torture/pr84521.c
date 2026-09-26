@@ -71,32 +71,35 @@ int main(void) {
 // DEFAULT-NEXT:     global %3 x: volatile i32 [storage=static] = const<i32>(256) [linkage=external];
 // DEFAULT-NEXT:     global %4 p: volatile ptr<void> [storage=static] = pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile i32>>(%3)) [linkage=external];
 // DEFAULT-NEXT:     global %5 p1: volatile ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %15 @__builtin_longjmp(%13 <unnamed>: ptr<ptr<void>>, %14 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @broken_longjmp(%2 p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(__builtin_longjmp, pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%2)), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%15, pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%2)), const<i32>(1));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_setjmp(%16 <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 buf: array<ptr<void>, 5> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %8 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(__builtin_setjmp, array_decay<ptr<ptr<void>>, length=Some(5)>(%7)), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%17, array_decay<ptr<ptr<void>>, length=Some(5)>(%7)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(5)>(%7)));
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %19 @__builtin_alloca(%18 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %9 @test2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %10 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
-// DEFAULT-NEXT:         write<ptr<void>, volatile>(%5, call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3))));
+// DEFAULT-NEXT:         write<ptr<void>, volatile>(%5, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3))));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -58,22 +58,23 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_memset(%11 <unnamed>: ptr<void>, %12 <unnamed>: i32, %13 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %0 @bar(%1 p: ptr<i16>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<i16>>(%1)), const<i32>(0), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(17))), const<u64>(2)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%14, pointer_cast<ptr<void>, reason=arg>(read<ptr<i16>>(%1)), const<i32>(0), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(17))), const<u64>(2)));
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             in 0 "r" read<ptr<i16>>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @f1(%3 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%3), const<i32>(1))));
-// DEFAULT-NEXT:         let %4 a: vla<i8, %11> [storage=automatic];
+// DEFAULT-NEXT:         let %15: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%3), const<i32>(1))));
+// DEFAULT-NEXT:         let %4 a: vla<i8, %15> [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%4), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%4), const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @f2(%6 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%6), const<i32>(2)), const<i32>(7))));
-// DEFAULT-NEXT:         let %7 a: vla<i16, %12> [storage=automatic];
+// DEFAULT-NEXT:         let %16: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%6), const<i32>(2)), const<i32>(7))));
+// DEFAULT-NEXT:         let %7 a: vla<i16, %16> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i16>) -> void>(%0, array_decay<ptr<i16>, length=None>(%7));
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=None>(%7), add<i32, overflow=ub>(read<i32>(%6), const<i32>(4))))));
 // DEFAULT-NEXT:     }

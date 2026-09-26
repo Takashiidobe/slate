@@ -52,10 +52,11 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(bitfield1<unit=0, bytes=0..4, bits=24..32>(%1), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..4, bits=0..24>(%1), neg<i64, overflow=ub>(const<i64>(1193165)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(bitfield1<unit=0, bytes=0..4, bits=24..32>(%1))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

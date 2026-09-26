@@ -39,11 +39,12 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @foo(%1 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ge<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%1), const<i32>(7)), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ge<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

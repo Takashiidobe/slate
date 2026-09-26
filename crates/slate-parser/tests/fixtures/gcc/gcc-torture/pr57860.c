@@ -55,7 +55,7 @@ int main() {
 // DEFAULT-NEXT:     global %7 g: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 h: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%4) [linkage=external];
 // DEFAULT-NEXT:     global %9 k: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @foo(%11 p: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%10, const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

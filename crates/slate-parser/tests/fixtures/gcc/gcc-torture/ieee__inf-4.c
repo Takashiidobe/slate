@@ -62,10 +62,12 @@ int main() {
 // DEFAULT-NEXT:                 return const<i32>(3);
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_inf() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 a: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(__builtin_inf);
+// DEFAULT-NEXT:         let %5 a: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%6);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64, f64) -> i32>(%0, read<f64>(%5), read<f64>(%5)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

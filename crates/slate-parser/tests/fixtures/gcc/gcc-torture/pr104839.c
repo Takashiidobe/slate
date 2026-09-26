@@ -64,9 +64,9 @@ int main() {
 // DEFAULT-NEXT:         let %5 s: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(300));
 // DEFAULT-NEXT:         if lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %7: i64 [synthetic] = read<i64>(%3);
-// DEFAULT-NEXT:                 let %8: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%7), read<i64, volatile>(%5));
-// DEFAULT-NEXT:                 write<i64>(%3, read<i64>(%8));
+// DEFAULT-NEXT:                 let %8: i64 [synthetic] = read<i64>(%3);
+// DEFAULT-NEXT:                 let %9: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%8), read<i64, volatile>(%5));
+// DEFAULT-NEXT:                 write<i64>(%3, read<i64>(%9));
 // DEFAULT-NEXT:                 if lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:             }
@@ -77,9 +77,10 @@ int main() {
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -47,14 +47,15 @@ main() {
 // DEFAULT-NEXT:     global %0 a: u1b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: u8b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 x: u16b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5: u1b [synthetic] = read<u1b>(%0);
-// DEFAULT-NEXT:         let %6: u1b [synthetic] = truncate<u1b, reason=assign, fits=unknown>(add<u16b, overflow=wrap>(widen<u16b, reason=usual_arith>(read<u1b>(%5)), or<u16b>(shl<u16b, overflow=wrap, amount_out_of_range=ub>(read<u16b>(%3), const<i32>(2)), widen<u16b, reason=usual_arith>(read<u8b>(%1)))));
-// DEFAULT-NEXT:         write<u1b>(%0, read<u1b>(%6));
+// DEFAULT-NEXT:         let %6: u1b [synthetic] = read<u1b>(%0);
+// DEFAULT-NEXT:         let %7: u1b [synthetic] = truncate<u1b, reason=assign, fits=unknown>(add<u16b, overflow=wrap>(widen<u16b, reason=usual_arith>(read<u1b>(%6)), or<u16b>(shl<u16b, overflow=wrap, amount_out_of_range=ub>(read<u16b>(%3), const<i32>(2)), widen<u16b, reason=usual_arith>(read<u8b>(%1)))));
+// DEFAULT-NEXT:         write<u1b>(%0, read<u1b>(%7));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u16b) -> void>(%2, const<u16b>(65265));
 // DEFAULT-NEXT:         if ne<u1b>(read<u1b>(%0), const<u1b>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -103,34 +103,35 @@ int main() { return 0; }
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 0, 0, 0]];
 // DEFAULT-NEXT:     global %2 v: volatile @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = aggregate<@type0, zero_fill=true>(field3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16521)))) [linkage=external];
 // DEFAULT-NEXT:     global %5 i: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @bar(%4 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%12));
-// DEFAULT-NEXT:         switch %10 read<i32>(%11)
+// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%13));
+// DEFAULT-NEXT:         switch %10 read<i32>(%12)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %10 const<i32>(0):
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(read<u32, volatile>(bitfield3<unit=0, bytes=12..16, bits=0..30>(field0(%2)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:                 case %10 const<i32>(1):
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(read<u32, volatile>(bitfield4<unit=0, bytes=12..16, bits=30..32>(field0(%2)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:                 case %10 const<i32>(2):
 // DEFAULT-NEXT:                     if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%4)), read<u32, volatile>(deref(ptr_offset<ptr<volatile u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<volatile u32>, length=Some(4)>(field1(%2)), const<i32>(3)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:                 case %10 const<i32>(3):
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(deref(ptr_offset<ptr<volatile u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<volatile u16>, length=Some(8)>(field2(%2)), const<i32>(6)))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:                 case %10 const<i32>(4):
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(deref(ptr_offset<ptr<volatile u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<volatile u16>, length=Some(8)>(field2(%2)), const<i32>(7)))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:                 default %10:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 break %10;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

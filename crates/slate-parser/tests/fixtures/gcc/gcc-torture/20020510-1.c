@@ -96,46 +96,46 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @testc(%2 c: u8, %3 ok: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%2))), const<i32>(1)), le<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%2))), const<i32>(127)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%3), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%3), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @tests(%5 s: u16, %6 ok: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%5))), const<i32>(1)), le<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%5))), const<i32>(32767)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%6), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @testi(%8 i: u32, %9 ok: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ge<u32>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), le<u32>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%9), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%9), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @testl(%11 l: u64, %12 ok: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ge<u64>(read<u64>(%11), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), le<u64>(read<u64>(%11), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(9223372036854775807))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%12), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%12), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u8, i32) -> void>(%1, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), const<i32>(0));

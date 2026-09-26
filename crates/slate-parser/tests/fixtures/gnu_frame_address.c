@@ -36,8 +36,9 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 uintptr_t = u64;
+// DEFAULT-NEXT:     fn %5 @__builtin_frame_address(%4 <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @frame_address_is_plausible() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 fp: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_frame_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %2 fp: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(%5, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<void>>(%2)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4096)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

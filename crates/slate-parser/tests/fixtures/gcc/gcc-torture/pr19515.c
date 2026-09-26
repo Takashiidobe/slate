@@ -44,11 +44,11 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 aun = @type0;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i8, 8>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(field0(%4)), const<i32>(2))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

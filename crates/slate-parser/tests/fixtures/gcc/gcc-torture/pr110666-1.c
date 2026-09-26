@@ -142,43 +142,44 @@ functions()
 // DEFAULT-NEXT:     fn %46 @nene_2_v(%47 a: volatile i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(from_bool<i32, reason=promotion>(ne<i32>(read<i32, volatile>(%47), const<i32>(2))), read<i32, volatile>(%47)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %75 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %48 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %74
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %49 n: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:             condition: le<i32>(read<i32>(%49), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %75: i32 [synthetic] = read<i32>(%49);
-// DEFAULT-NEXT:                 let %76: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%75), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%49, read<i32>(%76));
+// DEFAULT-NEXT:                 let %76: i32 [synthetic] = read<i32>(%49);
+// DEFAULT-NEXT:                 let %77: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%76), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%49, read<i32>(%77));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%4, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%10, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%8, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%14, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%12, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%18, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%16, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%22, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%20, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%26, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%24, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%30, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%28, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%34, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%32, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%38, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%36, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%42, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%40, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%46, read<i32>(%49)), call<i32, signature=fn(i32) -> i32>(%44, read<i32>(%49)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%75);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

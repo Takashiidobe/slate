@@ -52,22 +52,22 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
 // DEFAULT-NEXT:     type @type1 L = f64;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%16 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%16 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f(%5 p0: f64, %6 p1: f64, %7 p2: f64, %8 p3: f64, %9 p4: f64, %10 p5: f64, %11 p6: f64, %12 p7: f64, %13 p8: f64, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %14 select: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%14);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%14), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%14), const<i32>(11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%14), const<i32>(12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%14);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f64, f64, ...) -> void>(%4, const<f64>(1.0), const<f64>(2.0), const<f64>(3.0), const<f64>(4.0), const<f64>(5.0), const<f64>(6.0), const<f64>(7.0), const<f64>(8.0), const<f64>(9.0), const<i32>(10), const<i32>(11), const<i32>(12));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

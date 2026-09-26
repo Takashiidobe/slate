@@ -35,11 +35,12 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %1 d: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(0.0));
 // DEFAULT-NEXT:         let %2 b: bool [storage=automatic] = logical_and<bool>(eq<f64, exceptions=ignore>(read<f64>(%1), read<f64>(%1)), ne<f64, exceptions=ignore>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), read<f64>(%1)), sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), read<f64>(%1))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

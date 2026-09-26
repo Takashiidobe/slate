@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 a: array<i32, 2> [storage=static] [const] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo(%3 x: ptr<const i32>, %4 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = const<i32>(0);
@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%8), const<i32>(0))
 // DEFAULT-NEXT:                         break %10;
 // DEFAULT-NEXT:                     if logical_and<bool>(ne<i32>(read<i32>(%6), const<i32>(0)), le<i32>(read<i32>(%8), read<i32>(%7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     write<i32>(%7, read<i32>(%8));
 // DEFAULT-NEXT:                     write<i32>(%6, const<i32>(1));
 // DEFAULT-NEXT:                 }

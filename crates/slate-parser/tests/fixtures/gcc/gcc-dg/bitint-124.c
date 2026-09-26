@@ -61,9 +61,10 @@ int main() {
 // DEFAULT-NEXT:         let %4 a: array<@type0, 12> [storage=automatic] [align=16] = aggregate<array<@type0, 12>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index1 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index2 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(neg<i135b, overflow=ub>(const<i135b>(13055525270329736316393717310914023773847)))), index3 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index4 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index5 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index6 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index7 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index8 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index9 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index10 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index11 = aggregate<@type0, zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))));
 // DEFAULT-NEXT:         return call<i156b, signature=fn(ptr<@type0>) -> i156b>(%1, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(12)>(%4), const<i32>(1)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i156b>(call<i156b, signature=fn() -> i156b>(%3), widen<i156b, reason=usual_arith>(neg<i135b, overflow=ub>(const<i135b>(13055525270329736316393717310914023773847))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

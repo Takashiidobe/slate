@@ -40,10 +40,10 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @fn_4parms(%2 a: u8, %3 b: ptr<i64>, %4 c: ptr<i64>, %5 d: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(read<ptr<i64>>(%3))), widen<i64, reason=usual_arith>(const<i32>(1))), ne<i64>(read<i64>(deref(read<ptr<i64>>(%4))), widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(deref(read<ptr<u32>>(%5))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 a: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));

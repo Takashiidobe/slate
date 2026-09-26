@@ -52,12 +52,13 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @bar(%3 x: ptr<u64>) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=explicit>(call<u32, signature=fn(u32) -> u32>(%0, truncate<u32, reason=arg, fits=unknown>(read<u64>(deref(read<ptr<u64>>(%3)))))), const<i32>(32)), widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%0, truncate<u32, reason=arg, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(deref(read<ptr<u64>>(%3))), const<i32>(32))))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(8), const<i32>(8)), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %5 l: u64 [storage=automatic] = or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%0, const<u32>(4276993704))), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=explicit>(call<u32, signature=fn(u32) -> u32>(%0, const<u32>(3735928559))), const<i32>(32)));
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<u64>) -> u64>(%2, addr_of<ptr<u64>>(%5)), const<u64>(18369548087613832943))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

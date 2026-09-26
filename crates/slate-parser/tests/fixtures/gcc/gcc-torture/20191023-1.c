@@ -110,8 +110,9 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 k: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 aa: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %11 @error() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%22);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %22 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @see_me_here() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @aaa() -> void [linkage=internal] [fallthrough=ret_void] {
@@ -143,13 +144,13 @@ int main(void) {
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:         label %17 bd:
 // DEFAULT-NEXT:             write<i64>(%19, widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         while %22 lt<i64>(read<i64>(%19), read<i64>(%3))
+// DEFAULT-NEXT:         while %23 lt<i64>(read<i64>(%19), read<i64>(%3))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 switch %23 read<i64>(%1)
+// DEFAULT-NEXT:                 switch %24 read<i64>(%1)
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         case %23 const<i64>(8):
+// DEFAULT-NEXT:                         case %24 const<i64>(8):
 // DEFAULT-NEXT:                             goto %18;
-// DEFAULT-NEXT:                         case %23 const<i64>(4):
+// DEFAULT-NEXT:                         case %24 const<i64>(4):
 // DEFAULT-NEXT:                             return;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 label %18 bh:
@@ -160,29 +161,29 @@ int main(void) {
 // DEFAULT-NEXT:                 if eq<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 if ge<i64>(read<i64>(%20), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:                     let %24: i64 [synthetic] = read<i64>(%19);
-// DEFAULT-NEXT:                     let %25: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%24), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i64>(%19, read<i64>(%25));
+// DEFAULT-NEXT:                     let %25: i64 [synthetic] = read<i64>(%19);
+// DEFAULT-NEXT:                     let %26: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%25), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i64>(%19, read<i64>(%26));
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %26: i8 [synthetic] = read<i8>(%8);
-// DEFAULT-NEXT:         let %27: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%26)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(%8, read<i8>(%27));
-// DEFAULT-NEXT:         let %28: i8 [synthetic] = read<i8>(%9);
-// DEFAULT-NEXT:         let %29: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%28)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(%9, read<i8>(%29));
-// DEFAULT-NEXT:         let %30: i64 [synthetic] = read<i64>(%5);
-// DEFAULT-NEXT:         let %31: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%30), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%5, read<i64>(%31));
-// DEFAULT-NEXT:         let %32: i8 [synthetic] = read<i8>(%6);
-// DEFAULT-NEXT:         let %33: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%32)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(%6, read<i8>(%33));
-// DEFAULT-NEXT:         let %34: i8 [synthetic] = read<i8>(%7);
-// DEFAULT-NEXT:         let %35: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%34)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(%7, read<i8>(%35));
+// DEFAULT-NEXT:         let %27: i8 [synthetic] = read<i8>(%8);
+// DEFAULT-NEXT:         let %28: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%27)), const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(%8, read<i8>(%28));
+// DEFAULT-NEXT:         let %29: i8 [synthetic] = read<i8>(%9);
+// DEFAULT-NEXT:         let %30: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%29)), const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(%9, read<i8>(%30));
+// DEFAULT-NEXT:         let %31: i64 [synthetic] = read<i64>(%5);
+// DEFAULT-NEXT:         let %32: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%31), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%5, read<i64>(%32));
+// DEFAULT-NEXT:         let %33: i8 [synthetic] = read<i8>(%6);
+// DEFAULT-NEXT:         let %34: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%33)), const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(%6, read<i8>(%34));
+// DEFAULT-NEXT:         let %35: i8 [synthetic] = read<i8>(%7);
+// DEFAULT-NEXT:         let %36: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%35)), const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(%7, read<i8>(%36));
 // DEFAULT-NEXT:         write<i64>(%3, widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%14);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -46,6 +46,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 d: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%1), const<i32>(30));
 // DEFAULT-NEXT:         {
@@ -58,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %5 t: volatile i32 [storage=automatic] = read<i32>(%0);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(28))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

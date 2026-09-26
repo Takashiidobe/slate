@@ -47,8 +47,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @g(%3 v: ptr<u64>, %4 n: i32, %5 a: ptr<u32>, %6 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 cnt: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%3)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
@@ -73,8 +73,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%9, call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%2, addr_of<ptr<u64>>(%11), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%10), const<i32>(16)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%2, addr_of<ptr<u64>>(%11), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%10), const<i32>(16));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%11), const<u64>(703710))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

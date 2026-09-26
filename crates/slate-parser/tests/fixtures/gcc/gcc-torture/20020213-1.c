@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %3 a: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @bar(%6 x: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2241);
 // DEFAULT-NEXT:     }
@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:         call<i32, signature=fn(f32) -> i32>(%1, read<f32>(field0(%3)));
 // DEFAULT-NEXT:         write<i32>(field1(%3), conditional<i32>(lt<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))), read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32>(field0(%3), const<f32>(1.0));

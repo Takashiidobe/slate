@@ -43,16 +43,16 @@ int    main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 x: f64 [storage=static] = neg<f64>(const<f64>(9007199254740992.0)) [linkage=external];
 // DEFAULT-NEXT:     global %3 y: f64 [storage=static] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         while %6 gt<f64, exceptions=ignore>(read<f64>(%3), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
 // DEFAULT-NEXT:             let %7: f64 [synthetic] = read<f64>(%3);
 // DEFAULT-NEXT:             let %8: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), read<f64>(%2));
 // DEFAULT-NEXT:             write<f64>(%3, read<f64>(%8));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%2), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

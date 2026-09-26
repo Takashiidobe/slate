@@ -53,21 +53,22 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @test(%2 a: u32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(add<u32, overflow=wrap>(read<u32>(%0), read<u32>(%2)))), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(%0))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%0, reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(2))), neg<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         write<u32>(%0, reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), neg<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(2))), neg<i64, overflow=ub>(reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

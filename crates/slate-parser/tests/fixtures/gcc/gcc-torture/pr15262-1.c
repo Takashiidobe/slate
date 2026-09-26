@@ -77,10 +77,11 @@ int main(void) {
 // DEFAULT-NEXT:         field0 t: i32;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_malloc(%11 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 loc: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %5 locp: ptr<@type0> [storage=automatic];
@@ -95,15 +96,15 @@ int main(void) {
 // DEFAULT-NEXT:         conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0)), addr_of<ptr<f32>>(%7), addr_of<ptr<f32>>(%6));
 // DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%8)))), const<f64>(0.0))
 // DEFAULT-NEXT:             write<f32>(%7, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_malloc, const<u64>(8))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_malloc, const<u64>(8)));
+// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%12, const<u64>(8))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%12, const<u64>(8)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type0>>(%5))), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(%9, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
 // DEFAULT-NEXT:         write<ptr<i32>>(%10, addr_of<ptr<i32>>(field1(deref(read<ptr<@type0>>(%5)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%10)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%9, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

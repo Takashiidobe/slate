@@ -96,7 +96,7 @@ int main() {
 // DEFAULT-NEXT:     global %6 s3: @type2 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 s4: @type3 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 s5: @type4 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @offs(%12 a: ptr<const void>, %13 b: ptr<const void>) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%12)), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%13)));
 // DEFAULT-NEXT:     }
@@ -122,7 +122,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%18, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%10))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type4>>(%10))), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

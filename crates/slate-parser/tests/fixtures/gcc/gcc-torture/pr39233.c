@@ -39,11 +39,11 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 l: i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(read<ptr<void>>(%2));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0))), gt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i16 [storage=automatic];

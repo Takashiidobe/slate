@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:         field4 e: u16;
 // DEFAULT-NEXT:         field5 f: ptr<i64>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 18, 20, 24]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo(%3 s: ptr<@type0>) -> i64 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
 // DEFAULT-NEXT:         let %9: i64 [synthetic] = read<i64>(%4);
@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(%6, call<i64, signature=fn(ptr<@type0>) -> i64>(%2, addr_of<ptr<@type0>>(%7)));
 // DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>) -> i64>(%2, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

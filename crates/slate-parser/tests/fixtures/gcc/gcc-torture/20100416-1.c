@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         field1 ret: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %8 tests: array<@type0, 5> [storage=static] [align=16] = aggregate<array<@type0, 5>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704640)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704639)), field1 = const<i32>(1)), index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704641)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index3 = aggregate<@type0, zero_fill=false>(field0 = const<i64>(0), field1 = neg<i32, overflow=ub>(const<i32>(1))), index4 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)), field1 = const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @movegt(%2 x: i32, %3 y: i32, %4 a: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 ret: i32 [storage=automatic] = const<i32>(0);
@@ -98,7 +98,7 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32, i64) -> i32>(%1, neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1), read<i64>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%8), read<i32>(%10)))))), read<i32>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%8), read<i32>(%10))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

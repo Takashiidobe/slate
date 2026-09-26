@@ -57,6 +57,7 @@ int main() {
 // DEFAULT-NEXT:     fn %4 @foo(%5 p: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(conditional<i32>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%5)), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%5)), read<i32>(%0)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16)))), ne<u64>(mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32)))))
 // DEFAULT-NEXT:             return const<i32>(0);
@@ -67,7 +68,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%1, widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%4, reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%7)))));
 // DEFAULT-NEXT:         widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%4, reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%7))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(56374))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

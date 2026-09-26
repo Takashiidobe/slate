@@ -52,10 +52,11 @@ int main() {
 // DEFAULT-NEXT:         overflow_mul<bool>(truncate<u8, reason=explicit, fits=unknown>(read<u128>(%8)), neg<i32, overflow=ub>(const<i32>(16)), deref(addr_of<ptr<u128>>(%8)));
 // DEFAULT-NEXT:         return add<u128, overflow=wrap>(read<u128>(%1), read<u128>(%8));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 x: u128 [storage=automatic] = call<u128, signature=fn(u128, u128, u128, u128, u128, u128) -> u128>(%2, reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(0))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(4))));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%10), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(64)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

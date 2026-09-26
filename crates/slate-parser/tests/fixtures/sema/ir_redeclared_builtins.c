@@ -49,7 +49,7 @@ size_t undeclared(const char *s) { return __builtin_strlen(s); }
 // IR-NEXT:     }
 // IR-NEXT:     type @type0 size_t = u64;
 // IR-NEXT:     fn %1 @strlen(%32 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// IR-NEXT:     fn %2 @abort() -> void [linkage=external];
+// IR-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // IR-NEXT:     fn %3 @abs(unprototyped) -> i32 [linkage=external];
 // IR-NEXT:     fn %4 @malloc(%33 <unnamed>: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %5 @fabs(%34 <unnamed>: f64 [const]) -> f64 [linkage=external];
@@ -59,35 +59,36 @@ size_t undeclared(const char *s) { return __builtin_strlen(s); }
 // IR-NEXT:     }
 // IR-NEXT:     fn %9 @__builtin_popcount(%38 <unnamed>: u32) -> i32 [linkage=external];
 // IR-NEXT:     fn %10 @matching(%11 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%11));
+// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(%11));
 // IR-NEXT:     }
 // IR-NEXT:     fn %12 @missing_noreturn() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn() -> void>(abort);
+// IR-NEXT:         call<void, signature=fn() -> void>(%2);
 // IR-NEXT:     }
 // IR-NEXT:     fn %13 @unprototyped(%14 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(i32) -> i32>(abs, read<i32>(%14));
+// IR-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%14));
 // IR-NEXT:     }
 // IR-NEXT:     fn %15 @incompatible() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(i32) -> i32>(%4, const<i32>(4));
 // IR-NEXT:     }
 // IR-NEXT:     fn %16 @qualified_parameter(%17 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<f64, signature=fn(f64) -> f64>(fabs, read<f64>(%17));
+// IR-NEXT:         return call<f64, signature=fn(f64) -> f64>(%5, read<f64>(%17));
 // IR-NEXT:     }
 // IR-NEXT:     fn %18 @restricted(%19 d: ptr<void>, %20 s: ptr<const void>, %21 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, read<ptr<void>>(%19), read<ptr<const void>>(%20), read<u64>(%21));
+// IR-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%6, read<ptr<void>>(%19), read<ptr<const void>>(%20), read<u64>(%21));
 // IR-NEXT:     }
 // IR-NEXT:     fn %22 @internal_linkage(%23 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(i32) -> i32>(%7, read<i32>(%23));
 // IR-NEXT:     }
 // IR-NEXT:     fn %24 @reserved(%25 x: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(u32) -> i32>(__builtin_popcount, read<u32>(%25));
+// IR-NEXT:         return call<i32, signature=fn(u32) -> i32>(%9, read<u32>(%25));
 // IR-NEXT:     }
 // IR-NEXT:     fn %29 @strcmp(%39 <unnamed>: ptr<const i8>, %40 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // IR-NEXT:     fn %26 @block_scope(%27 a: ptr<const i8>, %28 b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%27), read<ptr<const i8>>(%28));
+// IR-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%29, read<ptr<const i8>>(%27), read<ptr<const i8>>(%28));
 // IR-NEXT:     }
+// IR-NEXT:     fn %42 @__builtin_strlen(%41 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // IR-NEXT:     fn %30 @undeclared(%31 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(__builtin_strlen, read<ptr<const i8>>(%31));
+// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%42, read<ptr<const i8>>(%31));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

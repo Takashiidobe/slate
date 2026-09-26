@@ -181,54 +181,55 @@ int main() {
 // DEFAULT-NEXT:     global %13 gx: array<i32, 100> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %14 hx: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(100)>(%13) [linkage=internal];
 // DEFAULT-NEXT:     global %15 ix: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%32 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%32 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %34 @__builtin_prefetch(%33 <unnamed>: ptr<const void>, ...) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %10 @simple_global() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%1)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%3)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%1)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%3)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @simple_file() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%4)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%5)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%6)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%4)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%5)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%6)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @simple_static_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%13)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%14)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%15)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%13)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%14)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%15)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @simple_local() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %17 gx: array<i32, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %18 hx: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(100)>(%17);
 // DEFAULT-NEXT:         let %19 ix: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%17)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%18)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%19)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(100)>(%17)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%18)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%19)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @simple_arg(%21 g: ptr<i32> [array=100], %22 h: ptr<i32>, %23 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%21)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%22)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%23)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%21)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%22)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(%23)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %24 @expr_global() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%8)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%9)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(%8))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(%8))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(%8))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(%8)))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%9)))))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i32, 100>>>(%1)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), const<i32>(2))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(3))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), const<i32>(3))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), read<i32>(%3))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(5))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), read<i32>(%3))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%8)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%9)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(%8))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(%8))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(%8))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%9))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(%8)))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%9)))))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i32, 100>>>(%1)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), const<i32>(2))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(3))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), const<i32>(3))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(100)>(%1), read<i32>(%3))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(5))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), read<i32>(%3))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %25 @expr_local() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %26 b: array<i32, 10> [storage=automatic] [align=16];
@@ -236,24 +237,24 @@ int main() {
 // DEFAULT-NEXT:         let %28 t: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %29 pt: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(%28);
 // DEFAULT-NEXT:         let %30 j: i32 [storage=automatic] = const<i32>(4);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%28)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%29)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(%28))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(%28))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(%28))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(%28)))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%29)))))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i32, 10>>>(%26)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%27)), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), const<i32>(2))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), const<i32>(3))))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), const<i32>(3))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), read<i32>(%30))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), const<i32>(5))), const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(__builtin_prefetch, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), read<i32>(%30))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%28)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%29)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(%28))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i16>>(field1(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(%28))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i8, 8>>>(field3(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(%28))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%29))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(%28)))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(field3(deref(read<ptr<@type0>>(field4(deref(read<ptr<@type0>>(%29)))))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<array<i32, 10>>>(%26)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%27)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), const<i32>(2))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), const<i32>(3))))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), const<i32>(3))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%26), read<i32>(%30))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), const<i32>(5))), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, ...) -> void>(%34, pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%27), read<i32>(%30))), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %31 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
@@ -264,7 +265,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field4(%8), addr_of<ptr<@type0>>(%8));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%24);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

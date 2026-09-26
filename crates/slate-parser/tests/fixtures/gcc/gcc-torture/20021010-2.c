@@ -90,8 +90,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<u32>>(%10, ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%6), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field2(%12))), widen<i32, reason=promotion>(read<i16>(field2(%13))))));
 // DEFAULT-NEXT:         write<i32>(%11, sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field1(%12))), widen<i32, reason=promotion>(read<i16>(field0(%12)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%11), read<i32>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

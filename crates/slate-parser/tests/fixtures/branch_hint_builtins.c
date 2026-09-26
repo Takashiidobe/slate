@@ -64,30 +64,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 side_effect_calls: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @bump(%3 v: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%17));
+// DEFAULT-NEXT:         let %25: i32 [synthetic] = read<i32>(%1);
+// DEFAULT-NEXT:         let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%26));
 // DEFAULT-NEXT:         return read<i32>(%3);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_expect(%15 <unnamed>: i64, %16 <unnamed>: i64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @use_expect(%5 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(__builtin_expect, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%5))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%17, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%5))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %21 @__builtin_expect_with_probability(%18 <unnamed>: i64, %19 <unnamed>: i64, %20 <unnamed>: f64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @use_expect_with_probability(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64, f64) -> i64>(__builtin_expect_with_probability, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%7))), widen<i64, reason=arg>(const<i32>(1)), const<f64>(0.9)), const<i64>(0))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64, f64) -> i64>(%21, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%7))), widen<i64, reason=arg>(const<i32>(1)), const<f64>(0.9)), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %23 @__builtin_unpredictable(%22 <unnamed>: i64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %8 @use_unpredictable(%9 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(__builtin_unpredictable, from_bool<i64, reason=arg>(gt<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9)), const<i32>(0)))), const<i64>(0))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%23, from_bool<i64, reason=arg>(gt<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9)), const<i32>(0)))), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
@@ -97,7 +100,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1));
 // DEFAULT-NEXT:         let %12 b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%6, const<i32>(1));
 // DEFAULT-NEXT:         let %13 c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%8, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%15)), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%24)), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -66,18 +66,18 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %3 u: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = neg<f64>(const<f64>(0.25))) [linkage=external];
 // DEFAULT-NEXT:     global %4 endianness_test: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @signbit(%6 x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 u: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = read<f64>(%6));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%8)), read<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<i64>>(%4))))))), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(4)), const<u64>(8)), ge<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%3)), read<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<i64>>(%4))))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f64) -> i32>(%5, neg<f64>(const<f64>(0.25))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

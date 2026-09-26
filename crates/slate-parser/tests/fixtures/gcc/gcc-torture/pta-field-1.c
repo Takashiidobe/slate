@@ -67,10 +67,10 @@ int         main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>) -> void>(%1, addr_of<ptr<ptr<i32>>>(field0(%5)));
 // DEFAULT-NEXT:         return read<i32>(%7);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

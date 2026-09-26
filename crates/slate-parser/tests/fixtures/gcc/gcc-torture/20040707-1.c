@@ -46,13 +46,13 @@ int main() {
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     global %4 s1: @type0 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %6 s2: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo(%3 s: @type0) -> void [linkage=external] [abi=sysv64(coerce<i16>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(read<@type0>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(coerce<i16>) -> void>(%2, copy<@type0, reason=arg>(read<@type0>(%6)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

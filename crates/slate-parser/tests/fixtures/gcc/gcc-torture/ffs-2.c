@@ -68,8 +68,9 @@ int main(void) {
 // DEFAULT-NEXT:         field1 output: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %1 ffstesttab: array<@type0, 8> [storage=static] [align=16] = aggregate<array<@type0, 8>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2147483648)), field1 = const<i32>(32)), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2779096485)), field1 = const<i32>(1)), index2 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1515870810), field1 = const<i32>(2)), index3 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(3405643776)), field1 = const<i32>(18)), index4 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(32768), field1 = const<i32>(16)), index5 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(42405), field1 = const<i32>(1)), index6 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(23130), field1 = const<i32>(2)), index7 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3232), field1 = const<i32>(6))) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %9 @__builtin_ffs(%8 <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %7
@@ -77,17 +78,17 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%5))), div<u64, by_zero=ub>(const<u64>(64), const<u64>(8)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%9));
+// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%11));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, read<i32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(8)>(%1), read<i32>(%5)))))), read<i32>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(8)>(%1), read<i32>(%5))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(%9, read<i32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(8)>(%1), read<i32>(%5)))))), read<i32>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(8)>(%1), read<i32>(%5))))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

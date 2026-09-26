@@ -36,10 +36,10 @@ int         main() {
 // DEFAULT-NEXT:     fn %0 @foo(%1 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=explicit, fits=unknown>(mul<u32, overflow=wrap>(reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(%1), const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))), const<i32>(4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1073741823)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

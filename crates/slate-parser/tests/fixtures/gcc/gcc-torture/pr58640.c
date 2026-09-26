@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     global %3 c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 d: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %5 e: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @foo() -> i8 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 f: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %8 g: i32 [storage=automatic] = read<i32>(%1);
@@ -132,7 +132,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i8, signature=fn() -> i8>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

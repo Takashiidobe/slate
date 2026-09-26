@@ -56,11 +56,12 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @Avg(%2 p: ptr<@type0>, %3 s: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%3)), widen<i64, reason=explicit>(add<i32, overflow=ub>(read<i32>(field1(deref(read<ptr<@type0>>(%2)))), read<i32>(field3(deref(read<ptr<@type0>>(%2))))))), const<i32>(17)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field1(%4), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(17)));
 // DEFAULT-NEXT:         write<i32>(field3(%4), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(2), const<i32>(17)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%1, addr_of<ptr<@type0>>(%4), const<i32>(1)), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

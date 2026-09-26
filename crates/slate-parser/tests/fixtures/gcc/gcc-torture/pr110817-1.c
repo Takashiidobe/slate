@@ -37,10 +37,11 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 V = vector<u64, 1>;
 // DEFAULT-NEXT:     global %1 c: vector<u64, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 v: vector<u64, 1> [storage=automatic] = vector_bit_cast<vector<u64, 1>, reason=assign>(not<vector<i64, 1>, elementwise=true>(le<vector<u64, 1>, result=vector<i64, 1>>(read<vector<u64, 1>>(compound_literal %4 [storage=automatic] = aggregate<vector<u64, 1>, zero_fill=true>()), vector_splat<vector<u64, 1>, reason=usual_arith>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))))));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(lane(%3, const<i32>(0))), const<u64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

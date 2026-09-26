@@ -59,18 +59,19 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 bit_size: i32 [storage=automatic] = const<i32>(32);
 // DEFAULT-NEXT:         let %7 mask: u64 [storage=automatic] = widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         let %8 tmp: u64 [storage=automatic] = and<u64>(read<u64>(%5), read<u64>(%7));
-// DEFAULT-NEXT:         let %15: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:         let %16: u64 [synthetic] = and<u64>(read<u64>(%15), read<u64>(%7));
-// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%16));
+// DEFAULT-NEXT:         let %16: u64 [synthetic] = read<u64>(%4);
+// DEFAULT-NEXT:         let %17: u64 [synthetic] = and<u64>(read<u64>(%16), read<u64>(%7));
+// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%17));
 // DEFAULT-NEXT:         if gt<u64>(read<u64>(%8), read<u64>(%4))
-// DEFAULT-NEXT:             let %17: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:             let %18: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%17), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%6)));
-// DEFAULT-NEXT:             write<u64>(%4, read<u64>(%18));
-// DEFAULT-NEXT:         let %19: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:         let %20: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%19), and<u64>(read<u64>(%5), not<u64>(read<u64>(%7))));
-// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%20));
+// DEFAULT-NEXT:             let %18: u64 [synthetic] = read<u64>(%4);
+// DEFAULT-NEXT:             let %19: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%18), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), read<i32>(%6)));
+// DEFAULT-NEXT:             write<u64>(%4, read<u64>(%19));
+// DEFAULT-NEXT:         let %20: u64 [synthetic] = read<u64>(%4);
+// DEFAULT-NEXT:         let %21: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%20), and<u64>(read<u64>(%5), not<u64>(read<u64>(%7))));
+// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%21));
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%2)), read<u64>(%4));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 value: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %11 new_value: u64 [storage=automatic];
@@ -80,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%11, and<u64>(add<u64, overflow=wrap>(read<u64>(%10), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>, u64) -> void>(%1, addr_of<ptr<u64>>(%10), read<u64>(%11));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%10), add<u64, overflow=wrap>(read<u64>(%12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -70,18 +70,20 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(read<i32>(%9), const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %18 @__builtin_memcmp(%15 <unnamed>: ptr<const void>, %16 <unnamed>: ptr<const void>, %17 <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%1, read<vector<i32, 8>>(compound_literal %12 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(5), index5 = const<i32>(6), index6 = const<i32>(7), index7 = const<i32>(8))));
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%2, read<vector<i32, 8>>(compound_literal %13 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(64), index1 = const<i32>(128), index2 = const<i32>(64), index3 = const<i32>(128), index4 = const<i32>(64), index5 = const<i32>(128), index6 = const<i32>(64), index7 = const<i32>(128))));
 // DEFAULT-NEXT:         write<vector<i32, 8>>(%5, read<vector<i32, 8>>(compound_literal %14 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(65), index1 = const<i32>(130), index2 = const<i32>(67), index3 = const<i32>(132), index4 = const<i32>(69), index5 = const<i32>(134), index6 = const<i32>(71), index7 = const<i32>(136))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%7, const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%4)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%5)), const<u64>(32)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         write<vector<i32, 8>>(%3, read<vector<i32, 8>>(compound_literal %15 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(128), index1 = const<i32>(64), index2 = const<i32>(128), index3 = const<i32>(64), index4 = const<i32>(128), index5 = const<i32>(64), index6 = const<i32>(128), index7 = const<i32>(64))));
-// DEFAULT-NEXT:         write<vector<i32, 8>>(%6, read<vector<i32, 8>>(compound_literal %16 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(129), index1 = const<i32>(66), index2 = const<i32>(131), index3 = const<i32>(68), index4 = const<i32>(133), index5 = const<i32>(70), index6 = const<i32>(135), index7 = const<i32>(72))));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%18, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%4)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%5)), const<u64>(32)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
+// DEFAULT-NEXT:         write<vector<i32, 8>>(%3, read<vector<i32, 8>>(compound_literal %20 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(128), index1 = const<i32>(64), index2 = const<i32>(128), index3 = const<i32>(64), index4 = const<i32>(128), index5 = const<i32>(64), index6 = const<i32>(128), index7 = const<i32>(64))));
+// DEFAULT-NEXT:         write<vector<i32, 8>>(%6, read<vector<i32, 8>>(compound_literal %21 [storage=automatic] = aggregate<vector<i32, 8>, zero_fill=false>(index0 = const<i32>(129), index1 = const<i32>(66), index2 = const<i32>(131), index3 = const<i32>(68), index4 = const<i32>(133), index5 = const<i32>(70), index6 = const<i32>(135), index7 = const<i32>(72))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%7, const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%4)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%6)), const<u64>(32)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%18, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%4)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i32, 8>>>(%6)), const<u64>(32)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

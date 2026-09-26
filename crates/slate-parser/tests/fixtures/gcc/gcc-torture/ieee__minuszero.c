@@ -52,8 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:         field1 i: array<u16, 4>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 u: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %5 a: i32 [storage=automatic] = const<i32>(0);
@@ -73,9 +73,9 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(4)>(field1(%4)), read<i32>(%7)))))), const<i32>(32768))
-// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

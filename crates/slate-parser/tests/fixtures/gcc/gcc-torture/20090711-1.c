@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @div(%2 val: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(32768)));
 // DEFAULT-NEXT:     }
@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %4 d1: i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(990000000)));
 // DEFAULT-NEXT:         let %5 d2: i64 [storage=automatic] = call<i64, signature=fn(i64) -> i64>(%1, read<i64>(%4));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(30212))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

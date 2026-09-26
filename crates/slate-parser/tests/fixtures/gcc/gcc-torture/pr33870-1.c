@@ -134,7 +134,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=80, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 50, 56, 64, 72]];
 // DEFAULT-NEXT:     global %5 xx: ptr<ptr<@type0>> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 vx: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @merge_pagelist(%8 pA: ptr<@type0>, %9 pB: ptr<@type0>) -> ptr<@type0> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 result: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %11 pTail: ptr<@type0> [storage=automatic];
@@ -171,24 +171,25 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<ptr<@type0>>(field8(field1(%10)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %24 @__builtin_memset(%21 <unnamed>: ptr<void>, %22 <unnamed>: i32, %23 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %12 @sort_pagelist(%13 pIn: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %14 a: array<ptr<@type0>, 25> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %15 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %16 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%14)), const<i32>(0), const<u64>(200));
-// DEFAULT-NEXT:         while %21 ne<ptr<@type0>>(read<ptr<@type0>>(%13), null<ptr<@type0>>)
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%24, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%14)), const<i32>(0), const<u64>(200));
+// DEFAULT-NEXT:         while %25 ne<ptr<@type0>>(read<ptr<@type0>>(%13), null<ptr<@type0>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type0>>(%15, read<ptr<@type0>>(%13));
 // DEFAULT-NEXT:                 write<ptr<@type0>>(%13, read<ptr<@type0>>(field8(field1(deref(read<ptr<@type0>>(%15))))));
 // DEFAULT-NEXT:                 write<ptr<@type0>>(field8(field1(deref(read<ptr<@type0>>(%15)))), null<ptr<@type0>>);
-// DEFAULT-NEXT:                 for %22
+// DEFAULT-NEXT:                 for %26
 // DEFAULT-NEXT:                     init:
 // DEFAULT-NEXT:                         write<i32>(%16, const<i32>(0));
 // DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%16), sub<i32, overflow=ub>(const<i32>(25), const<i32>(1)))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %24: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                         let %25: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%24), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%16, read<i32>(%25));
+// DEFAULT-NEXT:                         let %28: i32 [synthetic] = read<i32>(%16);
+// DEFAULT-NEXT:                         let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%16, read<i32>(%29));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
@@ -196,7 +197,7 @@ int main() {
 // DEFAULT-NEXT:                             if eq<ptr<@type0>>(read<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%14), read<i32>(%16)))), null<ptr<@type0>>)
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     write<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%14), read<i32>(%16))), read<ptr<@type0>>(%15));
-// DEFAULT-NEXT:                                     break %22;
+// DEFAULT-NEXT:                                     break %26;
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 {
@@ -213,14 +214,14 @@ int main() {
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<ptr<@type0>>(%15, read<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%14), const<i32>(0)))));
-// DEFAULT-NEXT:         for %23
+// DEFAULT-NEXT:         for %27
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%16, const<i32>(1));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(25))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %26: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %27: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%26), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%27));
+// DEFAULT-NEXT:                 let %30: i32 [synthetic] = read<i32>(%16);
+// DEFAULT-NEXT:                 let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%31));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -244,7 +245,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%19, call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%12, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%18), const<i32>(0))))));
 // DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%12, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%18), const<i32>(0)))));
 // DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(field8(field1(deref(read<ptr<@type0>>(%19))))), read<ptr<@type0>>(%19))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

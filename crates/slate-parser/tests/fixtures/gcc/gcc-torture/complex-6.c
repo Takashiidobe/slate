@@ -100,7 +100,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%3, read<complex<f32>>(%8));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%7)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%35)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%35)));
 // DEFAULT-NEXT:                 let %40: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %41: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%40), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%41));
@@ -119,7 +119,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%9, read<complex<f64>>(%14));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%13), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%36)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%36)));
 // DEFAULT-NEXT:                 let %42: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %43: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%42), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%43));
@@ -138,7 +138,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<complex<f80>, signature=fn(complex<f80>) -> complex<f80>, abi=sysv64(byval<align=16>) -> coerce<f80, f80>>(%15, read<complex<f80>>(%20));
 // DEFAULT-NEXT:         if ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%19), complex_convert<complex<f80>, reason=usual_arith>(sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%37)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%37)));
 // DEFAULT-NEXT:                 let %44: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %45: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%44), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%45));
@@ -157,7 +157,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(coerce<i64>) -> coerce<i64>>(%21, read<complex<i32>>(%26));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%25)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%38)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%38)));
 // DEFAULT-NEXT:                 let %46: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %47: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%46), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%47));
@@ -176,7 +176,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>>(%27, read<complex<i64>>(%32));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<complex<i64>>(%31)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%39)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%39)));
 // DEFAULT-NEXT:                 let %48: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %49: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%48), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%49));
@@ -190,7 +190,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%24);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%30);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

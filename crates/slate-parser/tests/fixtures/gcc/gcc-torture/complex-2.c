@@ -54,8 +54,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %5 ag: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))) [linkage=external];
 // DEFAULT-NEXT:     global %6 bg: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @f(%3 x: complex<f64>, %4 y: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12: complex<f64> [synthetic] = read<complex<f64>>(%3);
 // DEFAULT-NEXT:         let %13: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%12), read<complex<f64>>(%4));
@@ -71,12 +71,12 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<f64>>(%10, call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>>(%2, read<complex<f64>>(%8), read<complex<f64>>(%9)));
 // DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>>(%2, read<complex<f64>>(%8), read<complex<f64>>(%9));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%8), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%9), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%10), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(neg<f64>(const<f64>(1.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(3.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

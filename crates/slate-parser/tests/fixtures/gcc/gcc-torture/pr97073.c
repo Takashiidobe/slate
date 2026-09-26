@@ -59,11 +59,12 @@ int main() {
 // DEFAULT-NEXT:     fn %4 @foo(%5 x: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u64>(field1(field1(%3)), and<u64>(read<u64>(field0(%3)), read<u64>(%5)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(field0(%3), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
 // DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%4, neg<u64, overflow=wrap>(const<u64>(1)));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(field1(field1(%3))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -53,9 +53,10 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%3), const<i32>(16));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ge<i64>(call<i64, signature=fn(i64) -> i64>(%2, read<i64>(%4)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

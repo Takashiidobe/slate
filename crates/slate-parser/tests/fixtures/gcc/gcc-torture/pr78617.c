@@ -58,9 +58,10 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%2, sub<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%3), const<i32>(1000)));
 // DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%7, from_bool<i32, reason=arg>(gt<i32>(from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%1), const<i32>(0)))), call<i32, signature=fn(i32, i32) -> i32>(%4, from_bool<i32, reason=arg>(logical_or<bool>(ne<i32>(sub<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%3), const<i32>(1000)), const<i32>(0)), ne<i32>(read<i32>(%11), const<i32>(0)))), read<i32>(%10)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%9, const<i32>(0), const<i32>(0)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

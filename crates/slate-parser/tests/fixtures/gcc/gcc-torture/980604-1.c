@@ -50,8 +50,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %3 b: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %4 c: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %5 d: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 e: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %8 f: f64 [storage=automatic];
@@ -60,8 +60,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<f64>(%9, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)));
 // DEFAULT-NEXT:         write<f64>(%7, conditional<f64>(lt<i32>(read<i32>(%2), read<i32>(%3)), read<f64>(%8), read<f64>(%9)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

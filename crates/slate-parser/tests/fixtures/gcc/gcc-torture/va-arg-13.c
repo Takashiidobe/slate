@@ -71,11 +71,11 @@ int main(void) {
 // DEFAULT-NEXT:         field2 nChar: i32;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 32]];
 // DEFAULT-NEXT:     type @type2 ScanfState = @type1;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @dummy(%6 vap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%6), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @test(%8 fmt: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -92,7 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%7, const<i32>(456), const<i32>(1234));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

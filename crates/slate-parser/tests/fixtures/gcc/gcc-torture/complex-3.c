@@ -53,8 +53,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 r: f32;
 // DEFAULT-NEXT:         field1 i: f32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @cmplx(%11 <unnamed>: f32, %12 <unnamed>: f32) -> @type0 [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<pair<f32>>];
 // DEFAULT-NEXT:     fn %4 @f(%5 a: f32, %6 b: f32) -> @type0 [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 c: @type0 [storage=automatic];
@@ -65,8 +65,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 z: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(f32, f32) -> @type0, abi=sysv64(scalar, scalar) -> coerce<pair<f32>>>(%4, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(field0(%9))), const<f64>(1.0)), ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(field1(%9))), const<f64>(0.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

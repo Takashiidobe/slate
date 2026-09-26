@@ -63,9 +63,10 @@ int main() {
 // DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%2)), copy<@type0, reason=assign>(read<@type0>(%7)));
 // DEFAULT-NEXT:         return read<i32>(%6);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%5), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

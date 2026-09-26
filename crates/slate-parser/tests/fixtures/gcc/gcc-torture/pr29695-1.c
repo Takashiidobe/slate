@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @f1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %2 a: i32 [storage=automatic] = const<i32>(128);
 // DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(read<i32>(%2), const<i32>(128)), const<i32>(0)), const<i32>(128), const<i32>(0));
@@ -127,21 +127,21 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(128))), neg<i32, overflow=ub>(const<i32>(128))), ne<i64>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), neg<i64, overflow=ub>(const<i64>(2147483648))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%1), const<i32>(128))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(128))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%5), const<i32>(896))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%7), neg<i32, overflow=ub>(const<i32>(128)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%9), const<i64>(2147483648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%11), const<i64>(2147483648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%13), const<i64>(15032385536))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%15), neg<i64, overflow=ub>(const<i64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

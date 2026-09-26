@@ -46,11 +46,12 @@ int main(void) {
 // DEFAULT-NEXT:             return sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i64>(9223372036854775807);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%0, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1)))), sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%0, widen<i64, reason=arg>(const<i32>(1))), const<i64>(9223372036854775807))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

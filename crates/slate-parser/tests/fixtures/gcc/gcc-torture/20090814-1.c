@@ -48,13 +48,13 @@ int         main() {
 // DEFAULT-NEXT:     fn %3 @foo(%4 a: ptr<array<i32, 2>>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i32>) -> i32>(%0, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(deref(read<ptr<array<i32, 2>>>(%4))), read<i32>(%2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%6), const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%6), const<i32>(1))), const<i32>(42));
 // DEFAULT-NEXT:         write<i32>(%2, const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<array<i32, 2>>) -> i32>(%3, addr_of<ptr<array<i32, 2>>>(%6)), const<i32>(42))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

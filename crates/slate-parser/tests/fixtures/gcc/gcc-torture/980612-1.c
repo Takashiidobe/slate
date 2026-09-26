@@ -48,8 +48,8 @@ int main() {
 // DEFAULT-NEXT:         field1 b: u8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     global %3 f: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @g() -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return addr_of<ptr<@type0>>(%3);
 // DEFAULT-NEXT:     }
@@ -61,8 +61,8 @@ int main() {
 // DEFAULT-NEXT:         write<u8>(field1(deref(read<ptr<@type0>>(%7))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%5))));
 // DEFAULT-NEXT:         reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%5)));
 // DEFAULT-NEXT:         if le<i32>(and<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type0>>(%7)))))), const<i32>(127)), not<i32>(const<i32>(16))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

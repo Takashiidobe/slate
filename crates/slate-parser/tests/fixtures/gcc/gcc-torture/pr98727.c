@@ -46,19 +46,20 @@ int main() {
 // DEFAULT-NEXT:             return widen<i64, reason=return>(neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<i64>(%3);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, widen<i64, reason=arg>(const<i32>(4)), widen<i64, reason=arg>(const<i32>(24))), widen<i64, reason=usual_arith>(const<i32>(96)))
-// DEFAULT-NEXT:             write<bool>(%5, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%5, ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, widen<i64, reason=arg>(const<i32>(124)), widen<i64, reason=arg>(const<i32>(126))), mul<i64, overflow=ub>(const<i64>(124), widen<i64, reason=usual_arith>(const<i32>(126)))));
 // DEFAULT-NEXT:         let %6: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%5)
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, widen<i64, reason=arg>(const<i32>(4)), widen<i64, reason=arg>(const<i32>(24))), widen<i64, reason=usual_arith>(const<i32>(96)))
 // DEFAULT-NEXT:             write<bool>(%6, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%6, ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, div<i64, by_zero=ub, min_by_neg_one=ub>(const<i64>(9223372036854775807), widen<i64, reason=usual_arith>(const<i32>(16))), widen<i64, reason=arg>(const<i32>(17))), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1)))));
+// DEFAULT-NEXT:             write<bool>(%6, ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, widen<i64, reason=arg>(const<i32>(124)), widen<i64, reason=arg>(const<i32>(126))), mul<i64, overflow=ub>(const<i64>(124), widen<i64, reason=usual_arith>(const<i32>(126)))));
+// DEFAULT-NEXT:         let %7: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%7, const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%7, ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%0, div<i64, by_zero=ub, min_by_neg_one=ub>(const<i64>(9223372036854775807), widen<i64, reason=usual_arith>(const<i32>(16))), widen<i64, reason=arg>(const<i32>(17))), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1)))));
+// DEFAULT-NEXT:         if read<bool>(%7)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

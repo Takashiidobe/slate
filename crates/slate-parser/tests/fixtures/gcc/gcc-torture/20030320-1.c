@@ -69,36 +69,37 @@ is_dst (const char *start, const char *name, const char *str,
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
+// DEFAULT-NEXT:     fn %12 @__builtin_expect(%10 <unnamed>: i64, %11 <unnamed>: i64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @is_dst(%2 start: ptr<const i8>, %3 name: ptr<const i8>, %4 str: ptr<const i8>, %5 is_path: i32, %6 secure: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 len: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %8 is_curly: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), const<i32>(0))))), const<i32>(123))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<bool>(%8, ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:                 let %10: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
-// DEFAULT-NEXT:                 let %11: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%11));
+// DEFAULT-NEXT:                 let %13: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
+// DEFAULT-NEXT:                 let %14: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%13), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%14));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<u64>(%7, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
 // DEFAULT-NEXT:         while %9 logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%4), read<u64>(%7)))))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)))
-// DEFAULT-NEXT:             let %12: u64 [synthetic] = read<u64>(%7);
-// DEFAULT-NEXT:             let %13: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:             write<u64>(%7, read<u64>(%13));
+// DEFAULT-NEXT:             let %15: u64 [synthetic] = read<u64>(%7);
+// DEFAULT-NEXT:             let %16: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             write<u64>(%7, read<u64>(%16));
 // DEFAULT-NEXT:         if read<bool>(%8)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(125))
 // DEFAULT-NEXT:                     return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %14: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
-// DEFAULT-NEXT:                 let %15: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%15));
-// DEFAULT-NEXT:                 let %16: u64 [synthetic] = read<u64>(%7);
-// DEFAULT-NEXT:                 let %17: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
-// DEFAULT-NEXT:                 write<u64>(%7, read<u64>(%17));
+// DEFAULT-NEXT:                 let %17: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
+// DEFAULT-NEXT:                 let %18: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%17), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%18));
+// DEFAULT-NEXT:                 let %19: u64 [synthetic] = read<u64>(%7);
+// DEFAULT-NEXT:                 let %20: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%19), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
+// DEFAULT-NEXT:                 write<u64>(%7, read<u64>(%20));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_and<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(47))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(58))))
 // DEFAULT-NEXT:                 return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(__builtin_expect, widen<i64, reason=arg>(read<i32>(%6)), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0)), logical_or<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(58)))), logical_and<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(%3), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%2), const<i32>(1))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), neg<i32, overflow=ub>(const<i32>(2)))))), const<i32>(58))))))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%12, widen<i64, reason=arg>(read<i32>(%6)), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0)), logical_or<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(58)))), logical_and<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(%3), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%2), const<i32>(1))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), neg<i32, overflow=ub>(const<i32>(2)))))), const<i32>(58))))))
 // DEFAULT-NEXT:             return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
 // DEFAULT-NEXT:         return read<u64>(%7);
 // DEFAULT-NEXT:     }

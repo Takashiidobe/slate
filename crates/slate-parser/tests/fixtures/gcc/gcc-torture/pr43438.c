@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %1 g_2: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=internal];
 // DEFAULT-NEXT:     global %2 g_9: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %3 l_8: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @func_12(%5 p_13: i32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 l_17: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%2);
 // DEFAULT-NEXT:         let %9: ptr<i32> [synthetic] = read<ptr<i32>>(%6);
@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u8>(%8, read<u8>(%16));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, reinterpret<i32, reason=arg, fits=unknown>(widen<u32, reason=arg>(read<u8>(%8))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

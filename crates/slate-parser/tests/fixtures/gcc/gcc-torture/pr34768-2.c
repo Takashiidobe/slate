@@ -59,11 +59,11 @@ int         main() {
 // DEFAULT-NEXT:         let %6 res: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(conditional<ptr<fn() -> i32>>(ne<i32>(read<i32>(%4), const<i32>(0)), function_decay<ptr<fn() -> i32>>(%1), function_decay<ptr<fn() -> i32>>(%2)));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%5), read<i32>(%0)), read<i32>(%6));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%0, const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%3, const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

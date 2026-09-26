@@ -77,8 +77,8 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:     type @type2 u16 = u16;
 // DEFAULT-NEXT:     global %5 hi: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %6 lo: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo(%11 ptr: ptr<@type0>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12 a: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type0>>(%11))));
 // DEFAULT-NEXT:         let %13 c: i32 [storage=automatic] = const<i32>(0);
@@ -112,9 +112,9 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>) -> i32>(%4, addr_of<ptr<@type0>>(%8));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(read<i32>(%9), const<i32>(2)), eq<i32>(read<i32>(%6), const<i32>(0))), eq<i32>(read<i32>(%5), const<i32>(1)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

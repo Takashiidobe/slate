@@ -46,8 +46,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 a: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 terminate_me: ptr<fn(i32) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%8 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @t(%5 c: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %9
@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%3, function_decay<ptr<fn(i32) -> void>>(%0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(100));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

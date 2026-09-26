@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @calc_mp(%3 mod: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 a: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %5 b: u32 [storage=automatic];
@@ -72,8 +72,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         let %10 x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1234));
 // DEFAULT-NEXT:         let %11 y: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%2, read<u32>(%10));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), ne<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(680)))), logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(134)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

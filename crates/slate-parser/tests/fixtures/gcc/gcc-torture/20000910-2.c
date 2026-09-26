@@ -57,7 +57,7 @@ int main() { foo(); }
 // DEFAULT-NEXT:     fn %1 @exit(%10 __status: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @strchr(%11 __s: ptr<const i8>, %12 __c: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %4 @bar(%5 fmt: ptr<const i8>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<ptr<const i8>>(pointer_cast<ptr<const i8>, reason=explicit>(call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(strchr, read<ptr<const i8>>(%5), const<i32>(42))), null<ptr<const i8>>));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<ptr<const i8>>(pointer_cast<ptr<const i8>, reason=explicit>(call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%2, read<ptr<const i8>>(%5), const<i32>(42))), null<ptr<const i8>>));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @foo() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
@@ -77,9 +77,9 @@ int main() { foo(); }
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%4, read<ptr<const i8>>(%8)), const<i32>(0))
 // DEFAULT-NEXT:                         continue %15;
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%7), const<i32>(0))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

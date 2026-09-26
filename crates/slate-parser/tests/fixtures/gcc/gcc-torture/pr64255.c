@@ -47,9 +47,10 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @bar(%1 i: i64, %2 j: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%1), widen<i64, reason=usual_arith>(const<i32>(1))), ne<u64>(read<u64>(%2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @foo(%4 i: i64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 j: u64 [storage=automatic];
@@ -57,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         write<u64>(%5, conditional<u64>(ge<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0))), reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%4)), neg<u64, overflow=wrap>(reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%4)))));
 // DEFAULT-NEXT:         if ne<u64>(conditional<u64>(ge<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0))), reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%4)), neg<u64, overflow=wrap>(reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%4)))), read<u64>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         call<void, signature=fn(i64, u64) -> void>(%0, read<i64>(%4), read<u64>(%5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

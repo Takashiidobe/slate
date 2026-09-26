@@ -76,10 +76,11 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type1>>(%5))), const<i32>(2));
 // DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 z: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%1, addr_of<ptr<@type0>>(%8), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

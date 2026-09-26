@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 x: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%1);
 // DEFAULT-NEXT:     }
@@ -71,13 +71,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(26));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(26))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i32>(%1, neg<i32, overflow=ub>(const<i32>(39)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%3), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i32>(%1, neg<i32, overflow=ub>(const<i32>(38)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%3), neg<i32, overflow=ub>(const<i32>(37)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

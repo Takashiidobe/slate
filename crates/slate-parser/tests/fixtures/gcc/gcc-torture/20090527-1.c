@@ -74,7 +74,7 @@ int main() {
 // DEFAULT-NEXT:         field1 status: @type2;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type5 unit_flags = @type4;
-// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @new_unit(%12 flags: ptr<@type4>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(field1(deref(read<ptr<@type4>>(%12))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             write<@type2>(field1(deref(read<ptr<@type4>>(%12))), int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
@@ -85,7 +85,7 @@ int main() {
 // DEFAULT-NEXT:                 case %15 const<u32>(0):
 // DEFAULT-NEXT:                     break %15;
 // DEFAULT-NEXT:                 default %15:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

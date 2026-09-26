@@ -45,18 +45,19 @@ int main() {
 // DEFAULT-NEXT:     global %0 w: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: i32, %3 y: i32, %4 z: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%0, read<i32>(%8));
-// DEFAULT-NEXT:         write<i32>(%5, add<i32, overflow=ub>(read<i32>(%4), and<i32>(sub<i32, overflow=ub>(read<i32>(%7), read<i32>(%4)), neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%2), read<i32>(%3)))))));
+// DEFAULT-NEXT:         let %8: i32 [synthetic] = read<i32>(%0);
+// DEFAULT-NEXT:         let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%0, read<i32>(%9));
+// DEFAULT-NEXT:         write<i32>(%5, add<i32, overflow=ub>(read<i32>(%4), and<i32>(sub<i32, overflow=ub>(read<i32>(%8), read<i32>(%4)), neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%2), read<i32>(%3)))))));
 // DEFAULT-NEXT:         return read<i32>(%5);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%0, const<i32>(4));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(i32, i32, i32) -> i32>(%1, const<i32>(5), const<i32>(7), const<i32>(12)), const<i32>(4)), ne<i32>(read<i32>(%0), const<i32>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(i32, i32, i32) -> i32>(%1, const<i32>(7), const<i32>(5), const<i32>(12)), const<i32>(12)), ne<i32>(read<i32>(%0), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

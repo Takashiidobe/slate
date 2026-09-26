@@ -60,13 +60,14 @@ int main() {
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([65, 66, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %4 @foo(%5 s: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         while %18 {
-// DEFAULT-NEXT:             let %20: ptr<const i8> [synthetic] = read<ptr<const i8>>(%5);
-// DEFAULT-NEXT:             let %21: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%20), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<const i8>>(%5, read<ptr<const i8>>(%21));
-// DEFAULT-NEXT:             yield ne<i8>(read<i8>(deref(read<ptr<const i8>>(%20))), const<i8>(0));
+// DEFAULT-NEXT:             let %21: ptr<const i8> [synthetic] = read<ptr<const i8>>(%5);
+// DEFAULT-NEXT:             let %22: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%21), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<const i8>>(%5, read<ptr<const i8>>(%22));
+// DEFAULT-NEXT:             yield ne<i8>(read<i8>(deref(read<ptr<const i8>>(%21))), const<i8>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             write<i8, volatile>(%0, read<i8>(deref(read<ptr<const i8>>(%5))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %20 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 d: volatile i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %8 e: volatile i32 [storage=automatic] = const<i32>(1);
@@ -82,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%12), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<const i8>) -> void>(%4, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%19)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%17)), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%20);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

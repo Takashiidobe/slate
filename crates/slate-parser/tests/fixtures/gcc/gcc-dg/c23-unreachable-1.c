@@ -57,15 +57,16 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     extern %0 p: ptr<void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 x: volatile i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_unreachable() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @not_defined() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @exit(%5 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32, volatile>(%1), const<i32>(2))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(__builtin_unreachable);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

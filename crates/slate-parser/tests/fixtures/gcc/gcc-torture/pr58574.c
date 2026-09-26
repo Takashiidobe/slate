@@ -886,10 +886,11 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<f64>(1.0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 d: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%0, const<f64>(78.4));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=ignore>(read<f64>(%4), const<f64>(0.38)), gt<f64, exceptions=ignore>(read<f64>(%4), const<f64>(0.42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

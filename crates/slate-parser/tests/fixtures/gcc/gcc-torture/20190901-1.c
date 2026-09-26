@@ -80,10 +80,11 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..8, bits=0..1>(field0(%4)), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return read<f64>(field1(%4));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 x: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%3);
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%6), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

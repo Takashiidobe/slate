@@ -63,11 +63,12 @@ int main(void) {
 // DEFAULT-NEXT:         field7 c7: i8 : 1;
 // DEFAULT-NEXT:         field8 c8: i8 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 3, 3, 3, 3, 3, 3, 3, 3], bit_offsets=[Some(0), Some(24), Some(25), Some(26), Some(27), Some(28), Some(29), Some(30), Some(31)], bit_units=[(0, 4)], field_units=[Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0)]];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 s0: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1193046), field1 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field2 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field3 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field4 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field5 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field6 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field7 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field8 = truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         let %3 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%2));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%3)))), const<i32>(86))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

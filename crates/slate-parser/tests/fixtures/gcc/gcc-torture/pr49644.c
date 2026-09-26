@@ -39,7 +39,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 a: array<complex<f64>, 12> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %3 c: ptr<complex<f64>> [storage=automatic] = array_decay<ptr<complex<f64>>, length=Some(12)>(%2);
@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:                 write<ptr<complex<f64>>>(%3, read<ptr<complex<f64>>>(%14));
 // DEFAULT-NEXT:                 write<complex<f64>>(deref(read<ptr<complex<f64>>>(%13)), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(deref(read<ptr<f64>>(%11))), read<complex<f64>>(%4)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<complex<f64>>>(read<ptr<complex<f64>>>(%3), ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(12)>(%2), const<i32>(6))), ne<ptr<f64>>(read<ptr<f64>>(%6), ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(12)>(%5), const<i32>(6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

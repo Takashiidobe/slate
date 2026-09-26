@@ -225,6 +225,7 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%31)), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(or<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%35))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%34))), const<i32>(8))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%33))), const<i32>(16))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%32))), const<i32>(24))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %41 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %36 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %37 bfin: @type3 [storage=automatic];
 // DEFAULT-NEXT:         let %38 out: u32 [storage=automatic];
@@ -235,31 +236,31 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(@type3) -> u32, abi=sysv64(native_c) -> scalar>(%4, copy<@type3, reason=arg>(read<@type3>(%37))));
 // DEFAULT-NEXT:         call<u32, signature=fn(@type3) -> u32, abi=sysv64(native_c) -> scalar>(%4, copy<@type3, reason=arg>(read<@type3>(%37)));
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%38), const<u32>(2307360131))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         write<@type2>(field0(%37), copy<@type2, reason=assign>(read<@type2>(compound_literal %41 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(131))), field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(133))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(135))), field3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(137)))))));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:         write<@type2>(field0(%37), copy<@type2, reason=assign>(read<@type2>(compound_literal %42 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(131))), field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(133))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(135))), field3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(137)))))));
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(@type3) -> u32, abi=sysv64(native_c) -> scalar>(%6, copy<@type3, reason=arg>(read<@type3>(%37))));
 // DEFAULT-NEXT:         call<u32, signature=fn(@type3) -> u32, abi=sysv64(native_c) -> scalar>(%6, copy<@type3, reason=arg>(read<@type3>(%37)));
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%38), const<u32>(2206566281))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%8, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))))));
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%8, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2)))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%38), const<u32>(2298578307))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))), truncate<i8, reason=assign, fits=unknown>(const<i32>(135)));
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%15, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))))));
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%15, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2)))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%38), const<u32>(2206531977))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))), truncate<i8, reason=assign, fits=unknown>(const<i32>(135)));
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%22, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))))));
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%22, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2)))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%38), const<u32>(2307360131))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))), truncate<i8, reason=assign, fits=unknown>(const<i32>(135)));
 // DEFAULT-NEXT:         write<u32>(%38, call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%29, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2))))));
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<i8>, ptr<i8>) -> u32>(%29, array_decay<ptr<i8>, length=Some(4)>(%39), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(%39), const<i32>(2)))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%38), const<u32>(2206566281))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -96,48 +96,49 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 m: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%3)))));
 // DEFAULT-NEXT:         return from_bool<i8, reason=return>(logical_or<bool>(logical_or<bool>(ne<i8>(read<i8>(%4), const<i8>(0)), ne<i8>(read<i8>(%5), const<i8>(0))), ne<i8>(read<i8>(%6), const<i8>(0))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 newbutton1: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%8), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(coerce<i8>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%8))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

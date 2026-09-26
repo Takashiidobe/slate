@@ -68,9 +68,10 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 e: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @bar(%2 x: i8) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(%2)), const<i32>(84)), ne<i32>(widen<i32, reason=promotion>(read<i8>(%2)), widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(135)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: ptr<const i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 d: i8 [storage=automatic] = read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%4), const<i32>(0))));
@@ -90,17 +91,17 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(%0, truncate<i8, reason=assign, fits=always>(const<i32>(33)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%3, array_decay<ptr<const i8>, length=Some(2)>(%12));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(%0)), const<i32>(33))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%3, ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(2)>(%12), const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(%0)), widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(135))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         write<i8>(%0, truncate<i8, reason=assign, fits=always>(const<i32>(33)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%7, array_decay<ptr<const i8>, length=Some(2)>(%12));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(%0)), const<i32>(33))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%7, ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(2)>(%12), const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(%0)), widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(135))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

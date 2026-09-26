@@ -100,18 +100,18 @@ void f2(void) { abort(); }
 // DEFAULT-NEXT:         field2 c: i16;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     global %14 beenhere: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f1(%13 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %19: i32 [synthetic] = read<i32>(%14);
 // DEFAULT-NEXT:         let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%14, read<i32>(%20));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%19), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i32>(read<i32>(%14), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @f2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @foo(%6 p: ptr<@type0>, %7 b: i32, %8 c: i32, %9 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 a: i32 [storage=automatic];
@@ -149,8 +149,8 @@ void f2(void) { abort(); }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = addr_of<ptr<@type0>>(%12), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(23)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i32, i32, i32) -> i32>(%5, addr_of<ptr<@type0>>(%12), const<i32>(0), const<i32>(0), const<i32>(0)), const<i32>(0)), ne<i32>(read<i32>(field0(%12)), const<i32>(0))), ne<ptr<@type0>>(read<ptr<@type0>>(field1(%12)), addr_of<ptr<@type0>>(%12))), ne<i32>(widen<i32, reason=promotion>(read<i16>(field2(%12))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -222,16 +222,16 @@ void c(int n, ...) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
 // DEFAULT-NEXT:     type @type1 l = array<i32, 500>;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%100 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%100 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @s(%91 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %92 list: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%92);
 // DEFAULT-NEXT:         while %105 {
-// DEFAULT-NEXT:             let %108: i32 [synthetic] = read<i32>(%91);
-// DEFAULT-NEXT:             let %109: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%108), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%91, read<i32>(%109));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%108), const<i32>(0));
+// DEFAULT-NEXT:             let %112: i32 [synthetic] = read<i32>(%91);
+// DEFAULT-NEXT:             let %113: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%112), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%91, read<i32>(%113));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%112), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %93 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%92);
@@ -243,30 +243,30 @@ void c(int n, ...) {
 // DEFAULT-NEXT:         let %95 list: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%95);
 // DEFAULT-NEXT:         while %106 {
-// DEFAULT-NEXT:             let %110: i32 [synthetic] = read<i32>(%94);
-// DEFAULT-NEXT:             let %111: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%110), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%94, read<i32>(%111));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%110), const<i32>(0));
+// DEFAULT-NEXT:             let %114: i32 [synthetic] = read<i32>(%94);
+// DEFAULT-NEXT:             let %115: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%114), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%94, read<i32>(%115));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%114), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %96 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%95);
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%96)), const<i32>(0), const<u64>(2000));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%110, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%96)), const<i32>(0), const<u64>(2000));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         va_end(%95);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @c(%97 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %98 list: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%98);
-// DEFAULT-NEXT:         while %107 {
-// DEFAULT-NEXT:             let %112: i32 [synthetic] = read<i32>(%97);
-// DEFAULT-NEXT:             let %113: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%112), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%97, read<i32>(%113));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%112), const<i32>(0));
+// DEFAULT-NEXT:         while %111 {
+// DEFAULT-NEXT:             let %116: i32 [synthetic] = read<i32>(%97);
+// DEFAULT-NEXT:             let %117: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%116), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%97, read<i32>(%117));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%116), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %99 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%98);
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%99), read<i32>(%97)))), read<i32>(%97))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         va_end(%98);
 // DEFAULT-NEXT:     }
@@ -357,9 +357,9 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                 write<i32>(%9, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), read<i32>(%8))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %114: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                 let %115: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%114), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%115));
+// DEFAULT-NEXT:                 let %118: i32 [synthetic] = read<i32>(%9);
+// DEFAULT-NEXT:                 let %119: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%118), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%119));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -451,9 +451,10 @@ void c(int n, ...) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %90 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if lt<i32>(const<i32>(500), const<i32>(40))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%7, const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %110 @__builtin_memset(%107 <unnamed>: ptr<void>, %108 <unnamed>: i32, %109 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

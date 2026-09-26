@@ -53,9 +53,9 @@ void link_failure(void) { abort(); }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 v: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @link_failure() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @foo(%4 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%4), const<i32>(0)), lt<u64>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))), widen<u64, reason=usual_arith>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1))))))

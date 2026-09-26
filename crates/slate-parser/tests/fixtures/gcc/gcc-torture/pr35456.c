@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @not_fabs(%2 x: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<f64>(ge<f64, exceptions=ignore>(read<f64>(%2), const<f64>(0.0)), read<f64>(%2), neg<f64>(read<f64>(%2)));
 // DEFAULT-NEXT:     }
@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4)));
 // DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4));
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=sign_bit>(read<f64>(%5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

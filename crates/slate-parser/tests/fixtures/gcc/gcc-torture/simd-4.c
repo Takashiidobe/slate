@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:         field1 i: array<i32, 2>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %6 s64: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @__ev_convert_s64(%8 a: vector<i32, 2>) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%8));
 // DEFAULT-NEXT:     }
@@ -68,7 +68,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%6, call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(compound_literal %13 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295))))));
 // DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(compound_literal %13 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295)))));
 // DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%6)), conditional<u64>(ne<i32>(read<i32>(%12), const<i32>(0)), const<u64>(18446744069414584321), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934591))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

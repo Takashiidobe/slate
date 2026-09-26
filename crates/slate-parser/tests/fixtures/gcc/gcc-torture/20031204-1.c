@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:     type @type0 u32 = u64;
 // DEFAULT-NEXT:     global %12 addr: array<i8, 19> [storage=static] [align=16] = code_units<array<i8, 19>>([49, 48, 46, 49, 49, 46, 49, 50, 46, 49, 51, 58, 47, 104, 101, 108, 108, 111, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @strcpy(%14 __dest: ptr<i8> [restrict], %15 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @in_aton(%4 x: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(168496141)));
 // DEFAULT-NEXT:     }
@@ -114,7 +114,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%24)), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                 write<u64>(%7, call<u64, signature=fn(ptr<const i8>) -> u64>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%6))));
 // DEFAULT-NEXT:                 call<u64, signature=fn(ptr<const i8>) -> u64>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%6)));
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(strcpy, read<ptr<i8>>(%6), pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%9)));
+// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%0, read<ptr<i8>>(%6), pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%9)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<u64>(%7, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
@@ -124,7 +124,7 @@ int main() {
 // DEFAULT-NEXT:         let %13 result: u64 [storage=automatic] = call<u64, signature=fn(ptr<i8>) -> u64>(%5, array_decay<ptr<i8>, length=Some(19)>(%12));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%13), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(168496141))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

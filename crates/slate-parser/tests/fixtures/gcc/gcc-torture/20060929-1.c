@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<ptr<i32>>, %3 q: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %14: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %15: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%14), const<i32>(1));
@@ -106,17 +106,17 @@ int main(void) {
 // DEFAULT-NEXT:         let %13 p: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%11);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>, ptr<i32>) -> void>(%1, addr_of<ptr<ptr<i32>>>(%13), addr_of<ptr<i32>>(%12));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%13), const<i32>(1)), addr_of<ptr<i32>>(%11)), ne<i32>(read<i32>(%12), const<i32>(0))), ne<i32>(read<i32>(%11), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i32>(%11, const<i32>(43));
 // DEFAULT-NEXT:         write<ptr<i32>>(%13, addr_of<ptr<i32>>(%11));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>, ptr<i32>) -> void>(%4, addr_of<ptr<ptr<i32>>>(%13), addr_of<ptr<i32>>(%12));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%13), const<i32>(1)), addr_of<ptr<i32>>(%11)), ne<i32>(read<i32>(%12), const<i32>(0))), ne<i32>(read<i32>(%11), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i32>(%11, const<i32>(44));
 // DEFAULT-NEXT:         write<ptr<i32>>(%13, addr_of<ptr<i32>>(%11));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>, ptr<i32>) -> void>(%7, addr_of<ptr<ptr<i32>>>(%13), addr_of<ptr<i32>>(%12));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%13), const<i32>(1)), addr_of<ptr<i32>>(%11)), ne<i32>(read<i32>(%12), const<i32>(0))), ne<i32>(read<i32>(%11), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

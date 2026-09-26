@@ -207,8 +207,8 @@ int main() {
 // DEFAULT-NEXT:     global %133 .str133: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 49, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %134 .str134: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 48, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %10 @fprintf(%97 __stream: ptr<@type3> [restrict], %98 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %12 @exit(%99 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %11 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @exit(%99 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %13 @fp_add(%14 a: f32, %15 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%14), read<f32>(%15));
 // DEFAULT-NEXT:     }
@@ -375,8 +375,8 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%60, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%94, array_decay<ptr<i8>, length=Some(11)>(%134));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%93), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%12, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

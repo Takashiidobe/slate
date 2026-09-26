@@ -72,8 +72,8 @@ int main(void) {
 // DEFAULT-NEXT:         field1 p_y: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type1 Point = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%14 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f(%5 basePt: @type0, %6 pt1: @type0, %7 pt2: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i64>, coerce<i64, i64>, coerce<i64, i64>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 vector: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(%8, sub<i64, overflow=ub>(mul<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(field0(%6)), read<i64>(field0(%5))), sub<i64, overflow=ub>(read<i64>(field1(%7)), read<i64>(field1(%5)))), mul<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(field1(%6)), read<i64>(field1(%5))), sub<i64, overflow=ub>(read<i64>(field0(%7)), read<i64>(field0(%5))))));
@@ -99,8 +99,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%13, call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i64>, coerce<i64, i64>, coerce<i64, i64>) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%10)), copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%12))));
 // DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i64>, coerce<i64, i64>, coerce<i64, i64>) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%10)), copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%12)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%13), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

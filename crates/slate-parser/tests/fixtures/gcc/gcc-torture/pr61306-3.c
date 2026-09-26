@@ -39,11 +39,12 @@ int main() {
 // DEFAULT-NEXT:     global %0 a: i16 [storage=static] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 c: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8>(%2, truncate<i8, reason=assign, fits=unknown>(read<i16>(%0)));
 // DEFAULT-NEXT:         write<i32>(%1, or<i32>(widen<i32, reason=promotion>(read<i16>(%0)), widen<i32, reason=promotion>(read<i8>(%2))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

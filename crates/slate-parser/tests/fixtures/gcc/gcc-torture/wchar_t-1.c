@@ -44,16 +44,16 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 wchar_t = i32;
 // DEFAULT-NEXT:     global %1 x: array<i32, 2> [storage=static] = code_units<array<i32, 2>>([196, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %2 y: i32 [storage=static] = const<i32>(196) [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %4 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(div<u64, by_zero=ub>(const<u64>(8), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%1), const<i32>(0)))), const<i32>(196)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%1), const<i32>(1)))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(196))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -90,8 +90,8 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type1 token = @type0;
 // DEFAULT-NEXT:     global %23 tok: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%26 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%26 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %24 @atom() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_and<bool>(ge<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(0)), lt<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(8)))), ge<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(273))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(257))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(258))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(259))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(260))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(261))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(262))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%23)), const<i32>(263)))
 // DEFAULT-NEXT:             return const<i32>(1);
@@ -101,8 +101,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %25 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<@type0>(%23, int_to_enum<@type0, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%24), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

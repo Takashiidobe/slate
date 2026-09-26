@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:         field1 bf_cnt: u32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type1 foo_t = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 pxp: ptr<@type0> [const], %5 offset: i64, %6 extent: u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 blkoffset: i64 [storage=automatic] = sub<i64, overflow=ub>(read<i64>(%5), rem<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%5), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(field0(deref(read<ptr<@type0>>(%4))))))));
 // DEFAULT-NEXT:         let %8 diff: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(sub<i64, overflow=ub>(read<i64>(%5), read<i64>(%7))));
@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%12, call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096))));
 // DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096)));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%12), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

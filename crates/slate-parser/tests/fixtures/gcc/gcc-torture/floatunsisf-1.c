@@ -47,14 +47,14 @@ int            main(void) {
 // DEFAULT-NEXT:     global %2 u: volatile u32 [storage=static] = const<u32>(2147483777) [linkage=external];
 // DEFAULT-NEXT:     global %3 f1: volatile f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 f2: volatile f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32, volatile>(%3, int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u32, volatile>(%2)));
 // DEFAULT-NEXT:         write<f32, volatile>(%4, int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(const<u32>(2147483777)));
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32, volatile>(%3), read<f32, volatile>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

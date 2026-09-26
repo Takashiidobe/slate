@@ -74,13 +74,13 @@ int main(void) {
 // DEFAULT-NEXT:         field2 c: u8;
 // DEFAULT-NEXT:         field3 d: u8;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 1, 2, 3]];
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @exit(%13 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @foo(%10 s: ptr<@type2>) -> @type0 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type2>>(%10)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type2>>(%10)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type2>>(%10)))))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return int_to_enum<@type0, reason=return>(widen<u32, reason=return>(read<u8>(field3(deref(read<ptr<@type2>>(%10))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -94,8 +94,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<u8>(field2(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%12), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(field3(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%12), const<i32>(1)))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type2>) -> @type0>(%9, array_decay<ptr<@type2>, length=Some(2)>(%12))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%8, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

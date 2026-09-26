@@ -58,25 +58,26 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @foo(%8 p: u32) -> u32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         do %11
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %13: u32 [synthetic] = div<u32, by_zero=ub>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4095)));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%13));
+// DEFAULT-NEXT:                 let %13: u32 [synthetic] = read<u32>(%5);
+// DEFAULT-NEXT:                 let %14: u32 [synthetic] = div<u32, by_zero=ub>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4095)));
+// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%14));
 // DEFAULT-NEXT:                 if gt<u32>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6)))))
 // DEFAULT-NEXT:                     write<u32>(%4, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %14: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %15: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%14), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%15));
-// DEFAULT-NEXT:                 let %16: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %17: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%16), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(le<u32>(read<u32>(%3), read<u32>(%2)))));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%17));
+// DEFAULT-NEXT:                 let %15: u32 [synthetic] = read<u32>(%5);
+// DEFAULT-NEXT:                 let %16: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%15), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%16));
+// DEFAULT-NEXT:                 let %17: u32 [synthetic] = read<u32>(%5);
+// DEFAULT-NEXT:                 let %18: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%17), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(le<u32>(read<u32>(%3), read<u32>(%2)))));
+// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%18));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ge<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(88030)));
 // DEFAULT-NEXT:         return read<u32>(%5);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 x: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%7, reinterpret<u32, reason=arg, fits=always>(const<i32>(1164)));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%10), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(253)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

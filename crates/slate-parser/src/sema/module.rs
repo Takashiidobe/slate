@@ -44,6 +44,7 @@ pub fn resolve_module(
         module: Module::new(context.target.clone()),
         names,
         function_declarations: HashMap::new(),
+        builtin_declarations: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
         break_targets: Vec::new(),

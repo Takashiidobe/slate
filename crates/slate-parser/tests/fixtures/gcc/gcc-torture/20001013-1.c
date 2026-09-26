@@ -48,8 +48,8 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %3 z: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(4028)), field1 = const<i32>(4096)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo(%5 p: ptr<@type0>, %6 y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(and<i32>(read<i32>(%6), const<i32>(255)), read<i32>(%6)), ge<i32>(neg<i32, overflow=ub>(read<i32>(field1(deref(read<ptr<@type0>>(%5))))), read<i32>(field0(deref(read<ptr<@type0>>(%5))))))
 // DEFAULT-NEXT:             return const<i32>(1);
@@ -57,8 +57,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%4, addr_of<ptr<@type0>>(%3), const<i32>(10)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

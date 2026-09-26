@@ -82,7 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 idc: i16 [storage=static] = truncate<i16, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
 // DEFAULT-NEXT:     global %10 cur_line: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %11 char_pos: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%18 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%18 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %13 @get_id(%14 c: i8) -> u16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(field1(%8))), const<i32>(0))), read<i8>(%14));
 // DEFAULT-NEXT:     }
@@ -94,7 +94,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%15);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

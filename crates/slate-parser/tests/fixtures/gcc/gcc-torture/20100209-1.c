@@ -36,7 +36,7 @@ int         main() {
 // DEFAULT-NEXT:     fn %0 @bar(%1 foo: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(div<u64, by_zero=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%1))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4: bool [synthetic];
 // DEFAULT-NEXT:         if gt<u64>(const<u64>(8), const<u64>(4))
@@ -44,7 +44,7 @@ int         main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%4, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%4)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

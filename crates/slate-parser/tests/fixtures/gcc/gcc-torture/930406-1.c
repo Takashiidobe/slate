@@ -49,7 +49,7 @@ int main(void) { f(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 x: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %4 big: array<i8, 4096> [storage=automatic] [align=16];
@@ -61,7 +61,7 @@ int main(void) { f(); }
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%3), const<i32>(3))
 // DEFAULT-NEXT:                 goto %2;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);

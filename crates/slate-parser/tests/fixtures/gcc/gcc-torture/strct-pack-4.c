@@ -51,8 +51,8 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: u16;
 // DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1]];
 // DEFAULT-NEXT:     type @type1 three_char_t = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @my_set_a() -> u8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(const<i32>(171)));
 // DEFAULT-NEXT:     }
@@ -66,8 +66,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<u16>(field1(%7), call<u16, signature=fn() -> u16>(%5));
 // DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%5);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(%7)))), const<i32>(171)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(%7)))), const<i32>(4660)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

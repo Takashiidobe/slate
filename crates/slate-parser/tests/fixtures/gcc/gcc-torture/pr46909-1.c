@@ -42,7 +42,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: u32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(not<bool>(logical_or<bool>(eq<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))), eq<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6))))), logical_or<bool>(eq<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), eq<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6)))))
 // DEFAULT-NEXT:             return const<i32>(1);
@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(u32) -> i32>(%1, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%4))), sub<i32, overflow=ub>(const<i32>(1), mul<i32, overflow=ub>(const<i32>(2), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%4), const<i32>(4))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

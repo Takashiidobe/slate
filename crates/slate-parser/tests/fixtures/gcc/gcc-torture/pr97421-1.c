@@ -56,9 +56,9 @@ int main(void) {
 // DEFAULT-NEXT:                 let %6 g: i32 [storage=automatic] = const<i32>(2);
 // DEFAULT-NEXT:             condition: ge<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%11));
+// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%6);
+// DEFAULT-NEXT:                 let %12: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%12));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -69,9 +69,9 @@ int main(void) {
 // DEFAULT-NEXT:                             write<i32>(%1, const<i32>(0));
 // DEFAULT-NEXT:                         condition: le<i32>(read<i32>(%1), const<i32>(2))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %12: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                             let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%1, read<i32>(%13));
+// DEFAULT-NEXT:                             let %13: i32 [synthetic] = read<i32>(%1);
+// DEFAULT-NEXT:                             let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%1, read<i32>(%14));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
@@ -79,10 +79,11 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(%3, read<i32>(deref(read<ptr<i32>, volatile>(%4))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

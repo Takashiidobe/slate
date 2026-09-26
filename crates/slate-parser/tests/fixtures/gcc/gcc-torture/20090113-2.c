@@ -303,10 +303,10 @@ int main() {
 // DEFAULT-NEXT:                 write<u32>(field2(deref(read<ptr<@type11>>(%26))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %31 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %32 @catchme(%33 i: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%33), const<i32>(0)), ne<i32>(read<i32>(%33), const<i32>(64)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %34 @foobar(%35 chain: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %36 rsi: @type11 [storage=automatic];

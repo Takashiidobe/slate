@@ -50,11 +50,11 @@ e:
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 a: array<f64, 3> [storage=static] [align=16] = aggregate<array<f64, 3>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0), index2 = const<f64>(2.0)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @bar(%4 x: i32, %5 y: ptr<f64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%4), const<i32>(0)), ne<f64, exceptions=ignore>(read<f64>(deref(read<ptr<f64>>(%5))), const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 c: f64 [storage=automatic];
@@ -76,10 +76,10 @@ e:
 // DEFAULT-NEXT:                         goto %7;
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<f64>) -> void>(%3, const<i32>(1), addr_of<ptr<f64>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(1));
 // DEFAULT-NEXT:         label %7 e:
 // DEFAULT-NEXT:             call<void, signature=fn(i32, ptr<f64>) -> void>(%3, const<i32>(0), addr_of<ptr<f64>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -176,18 +176,18 @@ int main(void) {
 // DEFAULT-NEXT:     global %5 u1: @type1 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %6 u2: @type1 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @strncmp(%24 __s1: ptr<const i8>, %25 __s2: ptr<const i8>, %26 __n: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @exit(%27 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @exit(%27 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @test(%8 s1: ptr<const u8>, %9 s2: ptr<const u8>, %10 len: u64, %11 expected: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 value: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(strncmp, pointer_cast<ptr<const i8>, reason=arg>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<const u8>>(%8))), pointer_cast<ptr<const i8>, reason=arg>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<const u8>>(%9))), read<u64>(%10));
+// DEFAULT-NEXT:         let %12 value: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<const u8>>(%8))), pointer_cast<ptr<const i8>, reason=arg>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<const u8>>(%9))), read<u64>(%10));
 // DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%11), const<i32>(0)), ge<i32>(read<i32>(%12), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_and<bool>(eq<i32>(read<i32>(%11), const<i32>(0)), ne<i32>(read<i32>(%12), const<i32>(0)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 if logical_and<bool>(gt<i32>(read<i32>(%11), const<i32>(0)), le<i32>(read<i32>(%12), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 off1: u64 [storage=automatic];
@@ -381,7 +381,7 @@ int main(void) {
 // DEFAULT-NEXT:                                     call<void, signature=fn(ptr<const u8>, ptr<const u8>, u64, i32) -> void>(%7, pointer_cast<ptr<const u8>, reason=arg>(read<ptr<u8>>(%18)), pointer_cast<ptr<const u8>, reason=arg>(read<ptr<u8>>(%19)), add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(8))), const<u64>(8)), const<i32>(1));
 // DEFAULT-NEXT:                                     call<void, signature=fn(ptr<const u8>, ptr<const u8>, u64, i32) -> void>(%7, pointer_cast<ptr<const u8>, reason=arg>(read<ptr<u8>>(%18)), pointer_cast<ptr<const u8>, reason=arg>(read<ptr<u8>>(%19)), read<u64>(%16), const<i32>(0));
 // DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

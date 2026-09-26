@@ -59,17 +59,17 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 v: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @bar(%4 a: i32, %5 b: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 x: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%1)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%2), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6)))), ne<i32>(read<i32>(%5), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(1))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_or<bool>(ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(1))))))), ne<i32>(read<i32>(%5), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6)))))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = xor<i32>(read<i32>(%13), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%2, read<i32>(%14));

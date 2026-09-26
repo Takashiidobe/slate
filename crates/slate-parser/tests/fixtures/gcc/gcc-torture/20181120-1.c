@@ -63,15 +63,16 @@ int main(void) {
 // DEFAULT-NEXT:     global %3 b: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=external];
 // DEFAULT-NEXT:     global %6 u: volatile @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(67305985))) [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%1, const<i32>(0));
 // DEFAULT-NEXT:             condition: le<i32>(read<i32>(%1), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%11));
+// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%1);
+// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%12));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -82,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%8))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), reinterpret<i32, reason=promotion, fits=unknown>(read<u32, volatile>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

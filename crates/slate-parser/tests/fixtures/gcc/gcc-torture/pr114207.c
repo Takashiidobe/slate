@@ -52,11 +52,12 @@ int main() {
 // DEFAULT-NEXT:         let %3 ss: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %6 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(field1(deref(read<ptr<@type0>>(%2)))), field1 = read<i32>(field0(deref(read<ptr<@type0>>(%2)))))));
 // DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%2)), copy<@type0, reason=assign>(read<@type0>(%3)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(6), field1 = const<i32>(12));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, addr_of<ptr<@type0>>(%5));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%5)), const<i32>(12)), ne<i32>(read<i32>(field1(%5)), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

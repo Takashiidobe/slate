@@ -46,10 +46,11 @@ int main() {
 // DEFAULT-NEXT:         let %2 v: vector<i64, 1> [storage=automatic] = aggregate<vector<i64, 1>, zero_fill=false>(index0 = ptr_to_int<i64, reason=explicit>(function_decay<ptr<fn() -> vector<i64, 1>>>(%1)));
 // DEFAULT-NEXT:         return read<vector<i64, 1>>(%2);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 v: vector<i64, 1> [storage=automatic] = call<vector<i64, 1>, signature=fn() -> vector<i64, 1>, abi=sysv64() -> coerce<f64>>(%1);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(lane(%4, const<i32>(0))), ptr_to_int<i64, reason=explicit>(function_decay<ptr<fn() -> vector<i64, 1>>>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

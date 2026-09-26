@@ -62,10 +62,11 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 t: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %15 @__builtin_memcpy(%12 <unnamed>: ptr<void>, %13 <unnamed>: ptr<const void>, %14 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @foo(%6 s: ptr<void>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(read<ptr<void>>(%6));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<@type1>>>(field0(deref(read<ptr<@type1>>(%7))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<@type1>>>(field0(%4))), const<u64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%15, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<@type1>>>(field0(deref(read<ptr<@type1>>(%7))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<@type1>>>(field0(%4))), const<u64>(8));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @bar(%9 p: ptr<void>, %10 q: ptr<@type0>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%10))), addr_of<ptr<@type0>>(%2));
@@ -75,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type1>>(field0(%4), addr_of<ptr<@type1>>(%4));
 // DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<@type0>) -> ptr<void>>(%8, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%2)), addr_of<ptr<@type0>>(%2)), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type1>>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

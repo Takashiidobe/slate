@@ -64,6 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %4 g3: vector<i64, 16> [storage=static] = aggregate<vector<i64, 16>, zero_fill=true>(index0 = widen<i64, reason=assign>(const<i32>(7))) [linkage=external];
 // DEFAULT-NEXT:     global %5 p: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 q: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 b: vector<i64, 16> [storage=automatic] = read<vector<i64, 16>>(%1);
 // DEFAULT-NEXT:         let %9 a: vector<i64, 16> [storage=automatic];
@@ -80,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:             write<vector<i64, 16>>(%10, read<vector<i64, 16>>(%4));
 // DEFAULT-NEXT:         write<vector<i64, 16>>(%4, read<vector<i64, 16>>(%10));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(lane(%2, const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(5))), ne<i64>(read<i64>(lane(%2, const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0)))), ne<i64>(read<i64>(lane(%4, const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(7)))), ne<i64>(read<i64>(lane(%4, const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

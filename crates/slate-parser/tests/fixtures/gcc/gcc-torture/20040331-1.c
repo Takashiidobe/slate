@@ -50,8 +50,8 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 = struct {
 // DEFAULT-NEXT:         field0 count: i32 : 31;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 4)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0));
 // DEFAULT-NEXT:         while %6 {
@@ -60,8 +60,8 @@ int main(void) {
 // DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%4), read<i32>(%8));
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%7), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

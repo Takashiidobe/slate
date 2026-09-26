@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %32: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<atomic i32>>(%11)), addr_of<ptr<i32>>(%21), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%22, from_bool<i32, reason=assign>(read<bool>(%32)));
 // DEFAULT-NEXT:         fence<scope=thread, order=seq_cst>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%24)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15), read<i32>(%16), read<i32>(%17), read<i32>(%18), read<i32>(%20), read<i32>(%19), read<i32>(%22), read<i32>(%21), read<i32, atomic=seq_cst>(%11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%24)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15), read<i32>(%16), read<i32>(%17), read<i32>(%18), read<i32>(%20), read<i32>(%19), read<i32>(%22), read<i32>(%21), read<i32, atomic=seq_cst>(%11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

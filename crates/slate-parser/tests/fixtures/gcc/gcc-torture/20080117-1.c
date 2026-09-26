@@ -61,10 +61,10 @@ int         main() {
 // DEFAULT-NEXT:     fn %6 @gs_state_update_overprint() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(field0(field0(%3)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

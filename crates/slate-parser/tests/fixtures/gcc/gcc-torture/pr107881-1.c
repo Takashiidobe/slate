@@ -821,15 +821,16 @@ funcs(funcs1)
 // DEFAULT-NEXT:         let %719 y: volatile bool [storage=automatic] = ne<i32>(read<i32>(%716), read<i32>(%717));
 // DEFAULT-NEXT:         return ne<i32, reason=return>(xor<i32>(from_bool<i32, reason=promotion>(read<bool, volatile>(%718)), from_bool<i32, reason=promotion>(read<bool, volatile>(%719))), const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %726 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %720 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %723
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %721 x: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%721), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %797: i32 [synthetic] = read<i32>(%721);
-// DEFAULT-NEXT:                 let %798: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%797), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%721, read<i32>(%798));
+// DEFAULT-NEXT:                 let %798: i32 [synthetic] = read<i32>(%721);
+// DEFAULT-NEXT:                 let %799: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%798), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%721, read<i32>(%799));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -838,9 +839,9 @@ funcs(funcs1)
 // DEFAULT-NEXT:                         let %722 y: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
 // DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%722), const<i32>(10))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %799: i32 [synthetic] = read<i32>(%722);
-// DEFAULT-NEXT:                         let %800: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%799), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%722, read<i32>(%800));
+// DEFAULT-NEXT:                         let %800: i32 [synthetic] = read<i32>(%722);
+// DEFAULT-NEXT:                         let %801: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%800), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%722, read<i32>(%801));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
@@ -848,433 +849,433 @@ funcs(funcs1)
 // DEFAULT-NEXT:                             do %725
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%0, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%5, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %726
-// DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%10, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%15, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %727
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%20, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%25, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%10, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%15, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %728
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%30, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%35, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%20, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%25, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %729
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%40, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%45, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%30, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%35, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %730
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%50, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%55, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%40, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%45, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %731
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%60, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%65, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%50, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%55, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %732
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%70, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%75, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%60, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%65, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %733
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%80, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%85, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%70, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%75, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %734
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%90, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%95, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%80, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%85, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %735
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%100, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%105, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%90, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%95, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %736
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%110, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%115, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%100, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%105, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %737
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%120, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%125, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%110, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%115, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %738
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%130, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%135, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%120, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%125, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %739
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%140, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%145, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%130, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%135, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %740
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%150, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%155, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%140, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%145, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %741
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%160, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%165, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%150, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%155, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %742
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%170, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%175, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%160, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%165, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %743
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%180, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%185, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%170, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%175, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %744
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%190, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%195, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%180, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%185, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %745
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%200, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%205, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%190, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%195, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %746
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%210, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%215, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%200, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%205, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %747
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%220, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%225, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%210, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%215, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %748
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%230, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%235, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%220, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%225, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %749
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%240, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%245, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%230, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%235, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %750
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%250, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%255, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%240, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%245, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %751
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%260, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%265, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%250, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%255, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %752
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%270, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%275, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%260, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%265, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %753
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%280, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%285, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%270, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%275, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %754
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%290, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%295, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%280, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%285, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %755
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%300, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%305, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%290, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%295, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %756
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%310, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%315, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%300, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%305, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %757
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%320, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%325, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%310, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%315, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %758
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%330, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%335, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%320, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%325, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %759
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%340, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%345, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%330, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%335, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %760
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%350, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%355, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%340, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%345, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %761
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%360, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%365, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%350, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%355, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %762
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%370, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%375, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%360, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%365, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %763
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%380, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%385, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%370, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%375, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %764
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%390, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%395, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%380, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%385, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %765
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%400, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%405, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%390, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%395, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %766
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%410, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%415, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%400, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%405, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %767
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%420, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%425, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%410, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%415, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %768
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%430, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%435, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%420, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%425, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %769
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%440, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%445, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%430, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%435, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %770
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%450, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%455, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%440, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%445, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %771
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%460, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%465, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%450, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%455, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %772
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%470, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%475, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%460, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%465, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %773
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%480, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%485, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%470, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%475, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %774
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%490, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%495, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%480, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%485, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %775
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%500, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%505, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%490, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%495, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %776
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%510, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%515, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%500, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%505, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %777
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%520, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%525, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%510, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%515, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %778
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%530, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%535, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%520, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%525, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %779
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%540, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%545, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%530, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%535, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %780
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%550, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%555, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%540, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%545, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %781
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%560, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%565, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%550, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%555, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %782
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%570, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%575, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%560, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%565, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %783
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%580, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%585, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%570, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%575, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %784
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%590, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%595, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%580, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%585, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %785
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%600, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%605, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%590, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%595, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %786
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%610, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%615, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%600, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%605, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %787
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%620, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%625, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%610, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%615, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %788
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%630, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%635, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%620, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%625, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %789
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%640, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%645, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%630, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%635, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %790
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%650, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%655, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%640, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%645, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %791
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%660, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%665, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%650, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%655, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %792
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%670, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%675, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%660, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%665, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %793
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%680, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%685, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%670, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%675, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %794
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%690, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%695, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%680, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%685, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %795
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%700, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%705, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%690, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%695, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                             do %796
 // DEFAULT-NEXT:                                 {
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%700, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%705, read<i32>(%721), read<i32>(%722))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
+// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:                             do %797
+// DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%710, read<i32>(%721), read<i32>(%722))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%715, read<i32>(%721), read<i32>(%722))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%726);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                         }

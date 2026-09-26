@@ -44,9 +44,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @fn1() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(or<i32>(read<i32>(%1), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%0), and<i32>(read<i32>(%0), read<i32>(%2))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

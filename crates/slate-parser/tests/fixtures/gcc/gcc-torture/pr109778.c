@@ -57,11 +57,12 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%4)), from_bool<i32, reason=assign>(gt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8)), sub<u32, overflow=wrap>(call<u32, signature=fn(u8) -> u32>(%5, truncate<u8, reason=arg, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))));
 // DEFAULT-NEXT:         from_bool<i32, reason=assign>(gt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8)), sub<u32, overflow=wrap>(call<u32, signature=fn(u8) -> u32>(%5, truncate<u8, reason=arg, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%3, from_bool<i32, reason=assign>(logical_and<bool>(ne<i32>(read<i32>(%0), const<i32>(0)), ne<i32>(read<i32>(%1), const<i32>(0)))));
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%7, reinterpret<u32, reason=arg, fits=unknown>(add<i32, overflow=ub>(read<i32>(%3), const<i32>(4))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

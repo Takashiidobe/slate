@@ -75,27 +75,27 @@ int main(void) {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f(%5 attr: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 va_values: @type1 [storage=automatic];
 // DEFAULT-NEXT:         let %7 va: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%7);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         write<@type1>(%6, copy<@type1, reason=assign>(va_arg<@type1>(%7)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%7));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%6)), const<i32>(43690)), ne<i32>(read<i32>(field1(%6)), const<i32>(21845)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         write<i32>(%5, va_arg<i32>(%7));
 // DEFAULT-NEXT:         va_arg<i32>(%7);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         write<@type1>(%6, copy<@type1, reason=assign>(va_arg<@type1>(%7)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%7));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%6)), const<i32>(65535)), ne<i32>(read<i32>(field1(%6)), const<i32>(4369)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -106,7 +106,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(65535));
 // DEFAULT-NEXT:         write<i32>(field1(%11), const<i32>(4369));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<i64>, scalar, coerce<i64>) -> void>(%4, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%10)), const<i32>(3), copy<@type1, reason=vararg>(read<@type1>(%11)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

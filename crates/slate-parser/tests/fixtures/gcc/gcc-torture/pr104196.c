@@ -41,6 +41,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] = const<i32>(6) [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         while %3 ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -48,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%2), sub<i32, overflow=ub>(const<i32>(4096), const<i32>(2147483647)))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         if lt<i32>(read<i32>(%0), const<i32>(6))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:                         break %3;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }

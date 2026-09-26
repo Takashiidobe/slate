@@ -125,71 +125,71 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                 case %22 const<i32>(0):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%23)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%24)), read<va_list>(%17)), const<i32>(5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(1):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%25)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%26)), read<va_list>(%17)), const<i32>(6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(2):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%27)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%28)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(3):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%29)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%30)), read<va_list>(%17)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(4):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%31)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%32)), read<va_list>(%17)), const<i32>(5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(5):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%33)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%34)), read<va_list>(%17)), const<i32>(6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(6):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%35)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%36)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(7):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%37)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%38)), read<va_list>(%17)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(8):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%39)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%40)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(9):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%41)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%42)), read<va_list>(%17)), const<i32>(7))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 case %22 const<i32>(10):
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%43)), read<va_list>(%16));
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%44)), read<va_list>(%17)), const<i32>(2))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:                 break %22;
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:                 default %22:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         va_end(%16);
 // DEFAULT-NEXT:         va_end(%17);

@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 Link: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
 // DEFAULT-NEXT:     global %1 W: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f(%4 k: i32, %5 p: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 pdest: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %7 j: i32 [storage=automatic];
@@ -140,7 +140,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%3, const<i32>(0), const<i32>(2)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

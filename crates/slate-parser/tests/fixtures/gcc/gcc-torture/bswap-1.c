@@ -75,8 +75,9 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: array<u8, 8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     fn %0 @g(%1 a: u64) -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(__builtin_bswap64, read<u64>(%1));
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%11, read<u64>(%1));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_bswap64(%10 <unnamed>: u64) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @f(%3 c: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %6 b: @type0 [storage=automatic];
@@ -91,26 +92,27 @@ int main(void) {
 // DEFAULT-NEXT:         write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(8)>(field1(%6)), const<i32>(7))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(8)>(field1(%5)), const<i32>(0)))));
 // DEFAULT-NEXT:         return read<u64>(field0(%6));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 i: u64 [storage=automatic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(18)))), call<u64, signature=fn(u64) -> u64>(%0, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(18)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4660)))), call<u64, signature=fn(u64) -> u64>(%0, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4660)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1193046)))), call<u64, signature=fn(u64) -> u64>(%0, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1193046)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, const<u64>(305419896)), call<u64, signature=fn(u64) -> u64>(%0, const<u64>(305419896)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, const<u64>(78187493520)), call<u64, signature=fn(u64) -> u64>(%0, const<u64>(78187493520)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, const<u64>(20015998341138)), call<u64, signature=fn(u64) -> u64>(%0, const<u64>(20015998341138)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, const<u64>(5124095575331380)), call<u64, signature=fn(u64) -> u64>(%0, const<u64>(5124095575331380)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%2, const<u64>(1311768467284833366)), call<u64, signature=fn(u64) -> u64>(%0, const<u64>(1311768467284833366)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

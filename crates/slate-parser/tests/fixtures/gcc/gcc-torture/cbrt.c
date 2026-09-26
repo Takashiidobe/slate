@@ -131,8 +131,8 @@ int main(void) { exit(0); }
 // DEFAULT-NEXT:     global %6 E: f64 [storage=static] [const] = const<f64>(1.4142857142857144) [linkage=internal];
 // DEFAULT-NEXT:     global %7 F: f64 [storage=static] [const] = const<f64>(1.6071428571428572) [linkage=internal];
 // DEFAULT-NEXT:     global %8 G: f64 [storage=static] [const] = const<f64>(0.35714285714285715) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%23 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%23 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @cbrtl(%10 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 hx: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %12 r: f64 [storage=automatic];
@@ -194,8 +194,8 @@ int main(void) { exit(0); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64) -> f64>(%9, const<f64>(27.0)), const<f64>(0.5))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

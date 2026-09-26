@@ -31,8 +31,9 @@ int f (char *p, char *q, int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_bcmp(%4 <unnamed>: ptr<const void>, %5 <unnamed>: ptr<const void>, %6 <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %0 @f(%1 p: ptr<i8>, %2 q: ptr<i8>, %3 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_bcmp, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%1)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%2)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%3))));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%7, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%1)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%2)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%3))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

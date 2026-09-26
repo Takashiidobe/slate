@@ -80,8 +80,8 @@ int main(void) {
 // DEFAULT-NEXT:         field1 w: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type3 bu = @type2;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @f(%7 i: @type2) -> @type2 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 o: @type2 [storage=automatic] = copy<@type2, reason=assign>(read<@type2>(%7));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..1>(field0(%8)))), const<i32>(0))
@@ -100,8 +100,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type2>(%11, copy<@type2, reason=assign>(call<@type2, signature=fn(@type2) -> @type2, abi=sysv64(native_c) -> native_c>(%6, copy<@type2, reason=arg>(read<@type2>(%10)))));
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(@type2) -> @type2, abi=sysv64(native_c) -> native_c>(%6, copy<@type2, reason=arg>(read<@type2>(%10))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%10)), read<u32>(field1(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

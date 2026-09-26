@@ -46,9 +46,10 @@ int main() {
 // DEFAULT-NEXT:             return read<f64>(%1);
 // DEFAULT-NEXT:         return const<f64>(0.0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%0, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(2.220446049250313e-16), const<f64>(8.0))), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

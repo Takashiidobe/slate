@@ -64,7 +64,7 @@ int main() { exit(0); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 q: ptr<volatile i8> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 n: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         for %7
@@ -98,7 +98,7 @@ int main() { exit(0); }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

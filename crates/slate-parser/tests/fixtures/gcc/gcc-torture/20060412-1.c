@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:         field1 m: array<@type0, 82>;
 // DEFAULT-NEXT:     } [size=664, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %3 t: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %6 q: ptr<@type0> [storage=automatic];
@@ -79,9 +79,9 @@ int main() {
 // DEFAULT-NEXT:             write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if gt<ptr<@type0>>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

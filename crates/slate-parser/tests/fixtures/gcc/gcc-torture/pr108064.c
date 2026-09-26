@@ -55,15 +55,16 @@ int main() {
 // DEFAULT-NEXT:                 let %5 i: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: u64 [synthetic] = read<u64>(%5);
-// DEFAULT-NEXT:                 let %12: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%11), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%5, read<u64>(%12));
+// DEFAULT-NEXT:                 let %12: u64 [synthetic] = read<u64>(%5);
+// DEFAULT-NEXT:                 let %13: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<u64>(%5, read<u64>(%13));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%3), read<u64>(%5))), call<i16, signature=fn(i16) -> i16>(%0, read<i16>(deref(ptr_offset<ptr<const i16>, subtract=false, element=i16, overflow=ub>(read<ptr<const i16>>(%4), read<u64>(%5))))));
 // DEFAULT-NEXT:                 call<i16, signature=fn(i16) -> i16>(%0, read<i16>(deref(ptr_offset<ptr<const i16>, subtract=false, element=i16, overflow=ub>(read<ptr<const i16>>(%4), read<u64>(%5)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 a: array<i16, 4> [storage=automatic] [align=16] = aggregate<array<i16, 4>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(255)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %8 b: array<i16, 4> [storage=automatic] [align=16];
@@ -71,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i16>, ptr<const i16>) -> void>(%2, array_decay<ptr<i16>, length=Some(4)>(%8), pointer_cast<ptr<const i16>, reason=arg>(array_decay<ptr<i16>, length=Some(4)>(%7)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i16>, ptr<const i16>) -> void>(%2, array_decay<ptr<i16>, length=Some(4)>(%9), pointer_cast<ptr<const i16>, reason=arg>(array_decay<ptr<i16>, length=Some(4)>(%8)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(4)>(%7), const<i32>(0))))), widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(4)>(%9), const<i32>(0))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -47,6 +47,7 @@ int        main(int argc) {
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external] [alias="a"];
 // DEFAULT-NEXT:     global %2 c: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %3 d: i32 [storage=static] [linkage=external] [alias="c"];
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main(%5 argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %7 q: ptr<i32> [storage=automatic];
@@ -59,7 +60,7 @@ int        main(int argc) {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%6)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%7)), const<i32>(2));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%6))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

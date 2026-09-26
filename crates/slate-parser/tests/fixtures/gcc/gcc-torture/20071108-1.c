@@ -72,13 +72,14 @@ int main(void) {
 // DEFAULT-NEXT:         field4 s5: u8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16, 17, 18]];
 // DEFAULT-NEXT:     global %3 s: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo() -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(addr_of<ptr<@type0>>(%3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @bar() -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_memset(%14 <unnamed>: ptr<void>, %15 <unnamed>: i32, %16 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @test(%6 a: ptr<void>, %7 b: ptr<void>) -> ptr<@type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %9 q: @type0 [storage=automatic];
@@ -87,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(%8), null<ptr<@type0>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type0>>(%8, addr_of<ptr<@type0>>(%9));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%8)), const<i32>(0), const<u64>(24));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%17, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%8)), const<i32>(0), const<u64>(24));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<ptr<void>>(field0(deref(read<ptr<@type0>>(%8))), read<ptr<void>>(%6));
 // DEFAULT-NEXT:         write<ptr<void>>(field1(deref(read<ptr<@type0>>(%8))), read<ptr<void>>(%7));
@@ -100,7 +101,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %12 b: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %13 z: ptr<@type0> [storage=automatic] = call<ptr<@type0>, signature=fn(ptr<void>, ptr<void>) -> ptr<@type0>>(%5, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%11)), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%12)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(eq<ptr<@type0>>(read<ptr<@type0>>(%13), null<ptr<@type0>>), ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type0>>(%13)))), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%11)))), ne<ptr<void>>(read<ptr<void>>(field1(deref(read<ptr<@type0>>(%13)))), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%12)))), ne<u8>(read<u8>(field2(deref(read<ptr<@type0>>(%13)))), const<u8>(0))), ne<u8>(read<u8>(field3(deref(read<ptr<@type0>>(%13)))), const<u8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

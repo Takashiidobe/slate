@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 s: array<i8, 25>;
 // DEFAULT-NEXT:     } [size=25, align=1, offsets=[0]];
 // DEFAULT-NEXT:     global %3 p: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @memset(%18 s: ptr<void>, %19 c: i32, %20 n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %4 @foo(%5 x: ptr<@type0>, %6 set: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
@@ -106,7 +106,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(25)>(field0(deref(read<ptr<@type0>>(%5)))), read<i32>(%7))))), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:                         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(25)>(field0(deref(read<ptr<@type0>>(%5)))), read<i32>(%7))), truncate<i8, reason=assign, fits=unknown>(read<i32>(%6)));
@@ -114,7 +114,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @test1() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%9))), const<i32>(0), const<u64>(25));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%9))), const<i32>(0), const<u64>(25));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%9), const<i32>(0));
 // DEFAULT-NEXT:         let %10 b: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%9));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%10), const<i32>(1));
@@ -124,7 +124,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @test2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %12 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%12))), const<i32>(0), const<u64>(25));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%12))), const<i32>(0), const<u64>(25));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%12), const<i32>(0));
 // DEFAULT-NEXT:         let %13 b: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%12));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%13), const<i32>(1));
@@ -134,7 +134,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @test3() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %15 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%15))), const<i32>(0), const<u64>(25));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 25>>>(field0(%15))), const<i32>(0), const<u64>(25));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%15), const<i32>(0));
 // DEFAULT-NEXT:         let %16 b: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%15));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%4, addr_of<ptr<@type0>>(%16), const<i32>(1));

@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 first: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%5, array_decay<ptr<u32>, length=Some(3)>(%3));
 // DEFAULT-NEXT:         let %11 second: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%5, array_decay<ptr<u32>, length=Some(3)>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), read<u32>(%10), read<u32>(%11), call<u32, signature=fn(ptr<array<u32, 3>>) -> u32>(%7, addr_of<ptr<array<u32, 3>>>(%3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), read<u32>(%10), read<u32>(%11), call<u32, signature=fn(ptr<array<u32, 3>>) -> u32>(%7, addr_of<ptr<array<u32, 3>>>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

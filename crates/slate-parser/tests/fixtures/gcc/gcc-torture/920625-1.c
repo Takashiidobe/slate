@@ -83,8 +83,8 @@ int main(void) {
 // DEFAULT-NEXT:     type @type4 ipoint = @type3;
 // DEFAULT-NEXT:     global %5 pts: array<@type1, 4> [storage=static] [align=16] = aggregate<array<@type1, 4>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = const<f64>(1.0), field1 = const<f64>(2.0)), index1 = aggregate<@type1, zero_fill=false>(field0 = const<f64>(3.0), field1 = const<f64>(4.0)), index2 = aggregate<@type1, zero_fill=false>(field0 = const<f64>(5.0), field1 = const<f64>(6.0)), index3 = aggregate<@type1, zero_fill=false>(field0 = const<f64>(7.0), field1 = const<f64>(8.0))) [linkage=external];
 // DEFAULT-NEXT:     global %13 ipts: array<@type3, 4> [storage=static] [align=16] = aggregate<array<@type3, 4>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), index1 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)), index2 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(5), field1 = const<i32>(6)), index3 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(7), field1 = const<i32>(8))) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%20 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%20 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @va1(%7 nargs: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 args: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
@@ -105,7 +105,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type1>(%10, copy<@type1, reason=assign>(va_arg<@type1>(%8)));
 // DEFAULT-NEXT:                     copy<@type1, reason=assign>(va_arg<@type1>(%8));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), read<i32>(%9))))), read<f64>(field0(%10))), ne<f64, exceptions=ignore>(read<f64>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), read<i32>(%9))))), read<f64>(field1(%10))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%8);
 // DEFAULT-NEXT:     }
@@ -129,14 +129,14 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type3>(%18, copy<@type3, reason=assign>(va_arg<@type3>(%16)));
 // DEFAULT-NEXT:                     copy<@type3, reason=assign>(va_arg<@type3>(%16));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), read<i32>(%17))))), read<i32>(field0(%18))), ne<i32>(read<i32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), read<i32>(%17))))), read<i32>(field1(%18))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%16);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>) -> scalar>(%6, const<i32>(4), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(0))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(1))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(2))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(3))))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, coerce<i64>, coerce<i64>, coerce<i64>, coerce<i64>) -> scalar>(%14, const<i32>(4), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(0))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(1))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(2))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(3))))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

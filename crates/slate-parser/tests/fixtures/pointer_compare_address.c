@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 local: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>();
 // DEFAULT-NEXT:         let %10 utc_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type2>>(call<ptr<@type2>, signature=fn(ptr<const i64>, ptr<@type2>) -> ptr<@type2>>(%4, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%7)), addr_of<ptr<@type2>>(%8)), addr_of<ptr<@type2>>(%8)));
 // DEFAULT-NEXT:         let %11 local_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type2>>(call<ptr<@type2>, signature=fn(ptr<const i64>, ptr<@type2>) -> ptr<@type2>>(%5, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%7)), addr_of<ptr<@type2>>(%9)), addr_of<ptr<@type2>>(%9)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%17)), read<i32>(%10), read<i32>(%11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%17)), read<i32>(%10), read<i32>(%11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

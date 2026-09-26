@@ -37,12 +37,13 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         write<i16>(%0, from_bool<i16, reason=assign>(ge<i32>(const<i32>(0), const<i32>(0))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%0)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

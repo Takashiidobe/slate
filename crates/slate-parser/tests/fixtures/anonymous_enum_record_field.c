@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 conditional: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<@type1>(field0(%7), int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type1>(field0(%7)))), const<i32>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type1>(field0(%7)))), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

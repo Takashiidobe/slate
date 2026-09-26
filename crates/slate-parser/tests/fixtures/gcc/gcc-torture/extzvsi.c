@@ -67,8 +67,8 @@ int main(void) {
 // DEFAULT-NEXT:         field3 mantissa1: u32 : 32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 0, 1, 4], bit_offsets=[Some(0), Some(1), Some(12), Some(32)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %3 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo() -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 exponent: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%5, reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%3)))));
@@ -82,7 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%3), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn() -> u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -45,9 +45,10 @@ int main() {
 // DEFAULT-NEXT:         let %4 t3: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(le<u64>(read<u64>(%2), read<u64>(%3)))));
 // DEFAULT-NEXT:         return read<u64>(%4);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u8) -> u64>(%0, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))), neg<u64, overflow=wrap>(const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

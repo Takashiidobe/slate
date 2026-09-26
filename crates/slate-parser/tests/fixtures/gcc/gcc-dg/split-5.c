@@ -316,7 +316,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>) -> void>(%33, addr_of<ptr<i32>>(%68), null<ptr<i32>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>) -> void>(%31, read<ptr<ptr<void>>>(field1(deref(read<ptr<@type22>>(%67)))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const @type20>) -> i32>(%27, pointer_cast<ptr<const @type20>, reason=arg>(read<ptr<@type20>>(field0(deref(read<ptr<@type22>>(%67))))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %69 @main(%70 argc: i32, %71 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %72 tid: u64 [storage=automatic];
@@ -325,12 +325,12 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         let %75 tc: @type22 [storage=automatic];
 // DEFAULT-NEXT:         let %76 block: i32 [storage=automatic];
 // DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<@type20>) -> i32>(%26, addr_of<ptr<@type20>>(%37)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         write<@type20>(%39, copy<@type20, reason=assign>(read<@type20>(%37)));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%37)), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%38), const<i32>(0)))), addr_of<ptr<u64>>(%74)));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%38), const<i32>(0)))), addr_of<ptr<u64>>(%74));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%37))), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%37)), const<i32>(0));
 // DEFAULT-NEXT:         write<u64>(field2(field2(%37)), read<u64>(%74));
 // DEFAULT-NEXT:         write<ptr<@type20>>(field1(%37), null<ptr<@type20>>);
@@ -340,7 +340,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%39)), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%40), const<i32>(0)))), addr_of<ptr<u64>>(%74)));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%40), const<i32>(0)))), addr_of<ptr<u64>>(%74));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%39))), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%39)), const<i32>(0));
 // DEFAULT-NEXT:         write<u64>(field2(field2(%39)), read<u64>(%74));
 // DEFAULT-NEXT:         write<ptr<@type20>>(field1(%39), null<ptr<@type20>>);
@@ -353,11 +353,11 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(ptr<u64>, ptr<const @type5>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%9, addr_of<ptr<u64>>(%72), null<ptr<const @type5>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, ptr<const @type5>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%9, addr_of<ptr<u64>>(%72), null<ptr<const @type5>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%73), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%11, read<u64>(%72), null<ptr<ptr<void>>>));
 // DEFAULT-NEXT:         call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%11, read<u64>(%72), null<ptr<ptr<void>>>);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%73), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

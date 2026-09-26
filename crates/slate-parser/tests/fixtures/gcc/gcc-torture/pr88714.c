@@ -78,15 +78,16 @@ int main() {
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     global %2 t: ptr<@type1> [storage=static] = null<ptr<@type1>> [linkage=external];
 // DEFAULT-NEXT:     global %3 o: ptr<i32> [storage=static] = null<ptr<i32>> [linkage=external];
+// DEFAULT-NEXT:     fn %18 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @bar(%5 x: ptr<i32>, %6 y: i32, %7 z: i32, %8 w: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%8), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(read<ptr<i32>>(%5), null<ptr<i32>>), ne<i32>(read<i32>(%6), const<i32>(0))), ne<i32>(read<i32>(%7), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%18);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%8), const<i32>(0)), ne<ptr<i32>>(read<ptr<i32>>(%5), read<ptr<i32>>(field2(deref(read<ptr<@type1>>(%2)))))), ne<i32>(read<i32>(%6), const<i32>(0))), ne<i32>(read<i32>(%7), const<i32>(12)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%18);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @foo(%10 x: ptr<@type0>, %11 y: ptr<@type0>, %12 z: ptr<i32>, %13 w: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%3)), read<i32>(%13));
@@ -105,7 +106,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type1>>(%2, addr_of<ptr<@type1>>(%17));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>, ptr<i32>, i32) -> void>(%9, addr_of<ptr<@type0>>(%16), addr_of<ptr<@type0>>(%16), addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%15), const<i32>(1)))), const<i32>(5));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field2(%16)), const<i32>(12)), ne<ptr<i32>>(read<ptr<i32>>(field3(%16)), addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%15), const<i32>(1))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%18);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

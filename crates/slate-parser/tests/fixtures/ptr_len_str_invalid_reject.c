@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @strlen(%12 __s: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @first_byte(%4 bytes: ptr<const u8>, %5 len: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const u8>>(%4)));
+// DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%2, pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const u8>>(%4)));
 // DEFAULT-NEXT:         let %6 value: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 bytes: array<u8, 3> [storage=automatic] [const] = aggregate<array<u8, 3>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(195))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(169))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         let %10 value: i32 [storage=automatic] = call<i32, signature=fn(ptr<const u8>, i32) -> i32>(%3, array_decay<ptr<const u8>, length=Some(3)>(%9), const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), read<i32>(%10));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), read<i32>(%10));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

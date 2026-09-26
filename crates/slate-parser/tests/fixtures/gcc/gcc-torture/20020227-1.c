@@ -60,11 +60,11 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 f: complex<f32>;
 // DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f2(%8 y: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(field1(deref(read<ptr<@type1>>(%8)))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type1>>(%8))))), const<i32>(42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @f1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 s: @type1 [storage=automatic];
@@ -74,7 +74,7 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

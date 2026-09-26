@@ -101,8 +101,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %21 buf: array<i8, 10> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %39 .str39: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @sprintf(%36 __s: ptr<i8> [restrict], %37 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%38 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%38 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @dummy(%4 x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 y: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%5, truncate<i32, reason=assign, fits=unknown>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%4)), const<f64>(4711.3)))));
@@ -184,13 +184,13 @@ int main(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%6);
 // DEFAULT-NEXT:         write<i32>(%34, call<i32, signature=fn(f64) -> i32>(%7, const<f64>(17.0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(%7, const<f64>(17.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(sprintf, array_decay<ptr<i8>, length=Some(10)>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%39)), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%0, array_decay<ptr<i8>, length=Some(10)>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%39)), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)));
 // DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)), const<i32>(227))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %35 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%22);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

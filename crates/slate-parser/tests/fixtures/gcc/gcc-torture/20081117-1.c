@@ -52,13 +52,13 @@ int main() {
 // DEFAULT-NEXT:         field2 c: u64 : 16;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 2, 6], bit_offsets=[Some(0), Some(16), Some(48)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %5 s: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))), field1 = widen<u64, reason=assign>(const<u32>(2271560481)), field2 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @f(%3 s: @type0, %4 i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<u32, reason=return>(eq<u64>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=16..48>(%3)), widen<u64, reason=usual_arith>(read<u32>(%4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(ne<u32>(call<u32, signature=fn(@type0, u32) -> u32, abi=sysv64(native_c, scalar) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5)), const<u32>(2271560481)), const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

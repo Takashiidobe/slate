@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:     type @type0 tree_type = struct {
 // DEFAULT-NEXT:         field0 precision: u32 : 9;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 2)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @sign_bit_p(%3 t: ptr<@type0>, %4 val_hi: i64, %5 val_lo: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 mask_lo: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %7 lo: u64 [storage=automatic];
@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:         let %12 t: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..9>(%12), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i64, u64) -> i32>(%2, addr_of<ptr<@type0>>(%12), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

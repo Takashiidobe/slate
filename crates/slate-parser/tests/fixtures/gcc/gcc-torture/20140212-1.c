@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 k: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 g: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %11 j: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @fn1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %13 l: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%5, const<i32>(0));
@@ -96,7 +96,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

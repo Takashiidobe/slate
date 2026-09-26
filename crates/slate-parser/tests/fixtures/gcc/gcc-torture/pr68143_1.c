@@ -60,9 +60,10 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         field5 f: ptr<i8>;
 // DEFAULT-NEXT:         field6 g: i32;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 4, 8, 12, 16, 24, 32]];
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @bar(%2 x: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field6(deref(read<ptr<@type0>>(%2)))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main(%4 argc: i32, %5 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 x: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = null<ptr<i8>>, field6 = const<i32>(0));

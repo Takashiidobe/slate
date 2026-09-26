@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 u32 = u32;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @bug(%3 result: ptr<u32>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 ss: volatile u32 [storage=automatic] = const<u32>(4294967295);
 // DEFAULT-NEXT:         let %5 d: volatile u32 [storage=automatic] = const<u32>(4008636142);
@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 l: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %12 off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%2, addr_of<ptr<u32>>(%11));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:     global %3 e: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 b: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(1)) [linkage=internal];
 // DEFAULT-NEXT:     global %7 a: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @bar() -> void [linkage=external] [fallthrough=ret_void] {
@@ -87,7 +87,7 @@ int main() {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..5, bits=0..31>(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

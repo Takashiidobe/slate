@@ -42,7 +42,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 x1: volatile i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %3 x2: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         let %7 x6: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
 // DEFAULT-NEXT:         let %8 t: i64 [storage=automatic] = add<i64, overflow=ub>(div<i64, by_zero=ub, min_by_neg_one=ub>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32, volatile>(%2)), shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i64, volatile>(%3), read<i32, volatile>(%4))), widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(read<i32, volatile>(%5), read<i32, volatile>(%6)))), read<i64, volatile>(%7));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%8), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

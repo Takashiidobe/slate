@@ -40,15 +40,16 @@ int                                   main() {
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external] [alias="a"];
 // DEFAULT-NEXT:     fn %2 @inc() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %5: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%4), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%5));
+// DEFAULT-NEXT:         let %5: i32 [synthetic] = read<i32>(%1);
+// DEFAULT-NEXT:         let %6: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%6));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%0, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

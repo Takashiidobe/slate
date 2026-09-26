@@ -43,14 +43,15 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %1 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %2 c: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %4: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %5: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(or<i64>(widen<i64, reason=usual_arith>(read<i32>(%4)), xor<i64>(const<i64>(4294967295), or<i64>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%0)), const<i64>(4073709551608)))));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%5));
+// DEFAULT-NEXT:         let %5: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:         let %6: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(or<i64>(widen<i64, reason=usual_arith>(read<i32>(%5)), xor<i64>(const<i64>(4294967295), or<i64>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%0)), const<i64>(4073709551608)))));
+// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%6));
 // DEFAULT-NEXT:         return read<i32>(%2);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(call<i32, signature=fn() -> i32>(%1)), const<u32>(2214412293))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

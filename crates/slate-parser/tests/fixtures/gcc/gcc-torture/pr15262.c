@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 t: i32;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @bar(%3 p: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%3)), float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(5.2)));
 // DEFAULT-NEXT:     }
@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%15, call<i32, signature=fn(ptr<@type0>, i32, i32) -> i32>(%4, addr_of<ptr<@type0>>(%14), const<i32>(10), const<i32>(3)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>, i32, i32) -> i32>(%4, addr_of<ptr<@type0>>(%14), const<i32>(10), const<i32>(3));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%15), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

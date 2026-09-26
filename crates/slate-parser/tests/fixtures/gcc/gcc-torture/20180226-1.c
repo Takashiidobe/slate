@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:         field3 dp: ptr<u64>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 4, 8, 16]];
 // DEFAULT-NEXT:     type @type2 mp_int = @type1;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @mytest(%5 a: ptr<@type1>, %6 b: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(field2(deref(read<ptr<@type1>>(%5)))), const<i32>(1))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 i: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>(field0 = const<i32>(2), field1 = const<i32>(0), field2 = neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type1>, u64) -> i32>(%4, addr_of<ptr<@type1>>(%8), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:     global %1 a: array<i32, 20> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @fn1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 d: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 e: i32 [storage=automatic];
@@ -125,7 +125,7 @@ int main() {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%4);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(20)>(%1), const<i32>(0)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

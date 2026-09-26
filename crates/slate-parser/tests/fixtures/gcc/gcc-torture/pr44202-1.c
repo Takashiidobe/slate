@@ -72,8 +72,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%14, ne<i32>(call<i32, signature=fn(i32, ptr<i32>) -> i32>(%6, neg<i32, overflow=ub>(const<i32>(513)), addr_of<ptr<i32>>(%12)), const<i32>(0)));
 // DEFAULT-NEXT:         if logical_or<bool>(read<bool>(%14), ne<i32>(read<i32>(%12), neg<i32, overflow=ub>(const<i32>(513))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

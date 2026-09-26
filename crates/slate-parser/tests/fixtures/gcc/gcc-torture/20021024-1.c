@@ -68,8 +68,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %2 cp: ptr<u64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 m: u64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %13 r: array<u64, 64> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%15 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @bar(%7 rop: u32, %8 r: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
@@ -95,8 +95,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(64)>(%13), const<i32>(8))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(11))));
 // DEFAULT-NEXT:         call<void, signature=fn(u32, ptr<u64>) -> void>(%5, reinterpret<u32, reason=arg, fits=unknown>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(8), const<i32>(23)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(4), const<i32>(9))), const<i32>(15))), array_decay<ptr<u64>, length=Some(64)>(%13));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(47), const<i32>(11)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

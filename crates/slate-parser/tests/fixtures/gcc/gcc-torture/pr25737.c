@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 succ: ptr<@type0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %2 Timer_Queue: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @time_enqueue(%4 d: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 q: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(field0(%2));
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%4))), null<ptr<@type0>>);
@@ -58,7 +58,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(%2), addr_of<ptr<@type0>>(%2));
 // DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%3, addr_of<ptr<@type0>>(%2)), null<ptr<@type0>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

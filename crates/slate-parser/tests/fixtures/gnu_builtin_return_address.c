@@ -40,15 +40,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @__builtin_return_address(%6 <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_frame_address(%8 <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @address_probe() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 return_address: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %3 frame_address: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_frame_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %2 return_address: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(%7, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %3 frame_address: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u32) -> ptr<void>>(%9, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(ne<ptr<void>>(read<ptr<void>>(%2), null<ptr<void>>)), from_bool<i32, reason=promotion>(ne<ptr<void>>(read<ptr<void>>(%3), null<ptr<void>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), call<i32, signature=fn() -> i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn() -> i32>(%1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

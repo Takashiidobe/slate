@@ -64,15 +64,16 @@ int main(void) {
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         let %8 c: u32 [storage=automatic] = xor<u32>(div<u32, by_zero=ub>(const<u32>(28672), reinterpret<u32, reason=usual_arith, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(2)))), read<u32>(%3));
 // DEFAULT-NEXT:         let %9 d: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%0, read<u32>(%3), read<u32>(%3));
-// DEFAULT-NEXT:         let %11: u32 [synthetic] = read<u32>(%4);
-// DEFAULT-NEXT:         let %12: u32 [synthetic] = and<u32>(read<u32>(%11), add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<u32>(sub<u32, overflow=wrap>(read<u32>(%3), read<u32>(%9)), const<u32>(0)), ne<u32>(sub<u32, overflow=wrap>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))))), read<u32>(%8)));
-// DEFAULT-NEXT:         write<u32>(%4, read<u32>(%12));
+// DEFAULT-NEXT:         let %12: u32 [synthetic] = read<u32>(%4);
+// DEFAULT-NEXT:         let %13: u32 [synthetic] = and<u32>(read<u32>(%12), add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<u32>(sub<u32, overflow=wrap>(read<u32>(%3), read<u32>(%9)), const<u32>(0)), ne<u32>(sub<u32, overflow=wrap>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))))), read<u32>(%8)));
+// DEFAULT-NEXT:         write<u32>(%4, read<u32>(%13));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u8, u32) -> void>(%5, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         call<void, signature=fn(u8, u32) -> void>(%5, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if logical_and<bool>(ne<u32>(read<u32>(%4), const<u32>(0)), eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))))), const<i32>(255)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

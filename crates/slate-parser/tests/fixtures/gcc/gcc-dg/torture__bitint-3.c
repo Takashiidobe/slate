@@ -179,16 +179,17 @@ main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %9 qe: array<i128b, 41> [storage=static] [align=16] = aggregate<array<i128b, 41>, zero_fill=false>(index0 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159217733))), index1 = widen<i128b, reason=assign>(const<i126b>(42535215170872629927260810424811808699)), index2 = widen<i128b, reason=assign>(const<i69b>(211591633426360068027)), index3 = widen<i128b, reason=assign>(neg<i7b, overflow=ub>(const<i7b>(42))), index4 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504143312912))), index5 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504158749662))), index6 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159685804))), index7 = widen<i128b, reason=assign>(neg<i126b, overflow=ub>(const<i126b>(37770635800678787757188047309203503043))), index8 = widen<i128b, reason=assign>(neg<i89b, overflow=ub>(const<i89b>(172397445426026523786998466))), index9 = widen<i128b, reason=assign>(neg<i19b, overflow=ub>(const<i19b>(238647))), index10 = widen<i128b, reason=assign>(const<i44b>(7852928270336)), index11 = widen<i128b, reason=assign>(neg<i83b, overflow=ub>(const<i83b>(4809751789450982869595538))), index12 = widen<i128b, reason=assign>(const<i71b>(821095840985901334959)), index13 = widen<i128b, reason=assign>(const<i65b>(13895798174897154898)), index14 = widen<i128b, reason=assign>(const<i72b>(1465897921835729857453)), index15 = widen<i128b, reason=assign>(const<i79b>(154987847598437549873142)), index16 = widen<i128b, reason=assign>(const<i32>(0)), index17 = widen<i128b, reason=assign>(const<i32>(1)), index18 = widen<i128b, reason=assign>(const<i32>(0)), index19 = widen<i128b, reason=assign>(const<i32>(1)), index20 = widen<i128b, reason=assign>(const<i32>(0)), index21 = widen<i128b, reason=assign>(const<i32>(1)), index22 = widen<i128b, reason=assign>(const<i32>(1)), index23 = widen<i128b, reason=assign>(const<i32>(1)), index24 = widen<i128b, reason=assign>(const<i32>(0)), index25 = widen<i128b, reason=assign>(const<i20b>(271395)), index26 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159021057))), index27 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159292452))), index28 = widen<i128b, reason=assign>(const<i107b>(80694244678005661015504159217732)), index29 = widen<i128b, reason=assign>(const<i107b>(80694244678240648474427914115297)), index30 = widen<i128b, reason=assign>(neg<i74b, overflow=ub>(const<i74b>(5822736520666880936123))), index31 = widen<i128b, reason=assign>(const<i45b>(9818355413803)), index32 = widen<i128b, reason=assign>(const<i67b>(54398547589478975845)), index33 = widen<i128b, reason=assign>(const<i116b>(39390147499089156967386811811758080)), index34 = widen<i128b, reason=assign>(const<i16b>(30486)), index35 = widen<i128b, reason=assign>(const<i74b>(5910462358441918751905)), index36 = widen<i128b, reason=assign>(const<i72b>(1342984375894755194479)), index37 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244535621434450947930710749))), index38 = widen<i128b, reason=assign>(const<i32>(1)), index39 = widen<i128b, reason=assign>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159217733))), index40 = widen<i128b, reason=assign>(const<i107b>(80694244678005661015504159217732))) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: i125b, %2 b: i128b, %3 p: ptr<i125b>, %4 q: ptr<i128b>, %5 c: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i125b>(deref(ptr_offset<ptr<i125b>, subtract=false, element=i125b, overflow=ub>(read<ptr<i125b>>(%3), const<i32>(0))), truncate<i125b, reason=assign, fits=unknown>(read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(0))), widen<i128b, reason=assign>(read<i125b>(%1)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(1))), reinterpret<i128b, reason=assign, fits=unknown>(widen<u128b, reason=assign>(reinterpret<u125b, reason=explicit, fits=unknown>(read<i125b>(%1)))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(2))), reinterpret<i128b, reason=assign, fits=unknown>(widen<u128b, reason=assign>(reinterpret<u68b, reason=explicit, fits=unknown>(truncate<i68b, reason=explicit, fits=unknown>(read<i125b>(%1))))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(3))), float_to_int<i128b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(%5)));
-// DEFAULT-NEXT:         let %13: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(4));
-// DEFAULT-NEXT:         let %14: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%13)));
-// DEFAULT-NEXT:         let %15: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%14), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%13)), read<i128b>(%15));
+// DEFAULT-NEXT:         let %14: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(4));
+// DEFAULT-NEXT:         let %15: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%14)));
+// DEFAULT-NEXT:         let %16: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%15), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%14)), read<i128b>(%16));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(5))), add<i128b, overflow=ub>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(6))), sub<i128b, overflow=ub>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(7))), mul<i128b, overflow=ub>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
@@ -196,22 +197,22 @@ main() {
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(9))), rem<i128b, by_zero=ub, min_by_neg_one=ub>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(10))), shl<i128b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i128b>(%2), sub<i125b, overflow=ub>(widen<i125b, reason=usual_arith>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159217709))), read<i125b>(%1))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(11))), widen<i128b, reason=assign>(shr<i125b, amount_out_of_range=ub, fill=sign_extend>(read<i125b>(%1), sub<i125b, overflow=ub>(widen<i125b, reason=usual_arith>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159217709))), read<i125b>(%1)))));
-// DEFAULT-NEXT:         let %16: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(12));
-// DEFAULT-NEXT:         let %17: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%16)));
-// DEFAULT-NEXT:         let %18: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%17), widen<i128b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%16)), read<i128b>(%18));
-// DEFAULT-NEXT:         let %19: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(13));
-// DEFAULT-NEXT:         let %20: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%19)));
-// DEFAULT-NEXT:         let %21: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%20), widen<i128b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%19)), read<i128b>(%21));
-// DEFAULT-NEXT:         let %22: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(14));
-// DEFAULT-NEXT:         let %23: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%22)));
-// DEFAULT-NEXT:         let %24: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%23), widen<i128b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%22)), read<i128b>(%24));
-// DEFAULT-NEXT:         let %25: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(15));
-// DEFAULT-NEXT:         let %26: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%25)));
-// DEFAULT-NEXT:         let %27: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%26), widen<i128b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%25)), read<i128b>(%27));
+// DEFAULT-NEXT:         let %17: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(12));
+// DEFAULT-NEXT:         let %18: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%17)));
+// DEFAULT-NEXT:         let %19: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%18), widen<i128b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%17)), read<i128b>(%19));
+// DEFAULT-NEXT:         let %20: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(13));
+// DEFAULT-NEXT:         let %21: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%20)));
+// DEFAULT-NEXT:         let %22: i128b [synthetic] = add<i128b, overflow=ub>(read<i128b>(%21), widen<i128b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%20)), read<i128b>(%22));
+// DEFAULT-NEXT:         let %23: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(14));
+// DEFAULT-NEXT:         let %24: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%23)));
+// DEFAULT-NEXT:         let %25: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%24), widen<i128b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%23)), read<i128b>(%25));
+// DEFAULT-NEXT:         let %26: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(15));
+// DEFAULT-NEXT:         let %27: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%26)));
+// DEFAULT-NEXT:         let %28: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%27), widen<i128b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%26)), read<i128b>(%28));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(16))), from_bool<i128b, reason=assign>(eq<i128b>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(17))), from_bool<i128b, reason=assign>(ne<i128b>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(18))), from_bool<i128b, reason=assign>(gt<i128b>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2))));
@@ -225,42 +226,42 @@ main() {
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(26))), or<i128b>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(27))), xor<i128b>(widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(28))), widen<i128b, reason=assign>(not<i125b>(read<i125b>(%1))));
-// DEFAULT-NEXT:         let %28: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(29));
-// DEFAULT-NEXT:         let %29: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%28)));
-// DEFAULT-NEXT:         let %30: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%29), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%28)), read<i128b>(%30));
-// DEFAULT-NEXT:         let %31: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(30));
-// DEFAULT-NEXT:         let %32: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%31)));
-// DEFAULT-NEXT:         let %33: i128b [synthetic] = mul<i128b, overflow=ub>(read<i128b>(%32), read<i128b>(%2));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%31)), read<i128b>(%33));
-// DEFAULT-NEXT:         let %34: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(31));
-// DEFAULT-NEXT:         let %35: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%34)));
-// DEFAULT-NEXT:         let %36: i128b [synthetic] = div<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%35), read<i128b>(%2));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%34)), read<i128b>(%36));
-// DEFAULT-NEXT:         let %37: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(32));
-// DEFAULT-NEXT:         let %38: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%37)));
-// DEFAULT-NEXT:         let %39: i128b [synthetic] = rem<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%38), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%37)), read<i128b>(%39));
-// DEFAULT-NEXT:         let %40: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(33));
-// DEFAULT-NEXT:         let %41: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%40)));
-// DEFAULT-NEXT:         let %42: i128b [synthetic] = shl<i128b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i128b>(%41), sub<i128b, overflow=ub>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i20b>(468021))));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%40)), read<i128b>(%42));
-// DEFAULT-NEXT:         let %43: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(34));
-// DEFAULT-NEXT:         let %44: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%43)));
-// DEFAULT-NEXT:         let %45: i128b [synthetic] = shr<i128b, amount_out_of_range=ub, fill=sign_extend>(read<i128b>(%44), sub<i128b, overflow=ub>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i20b>(468021))));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%43)), read<i128b>(%45));
-// DEFAULT-NEXT:         let %46: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(35));
-// DEFAULT-NEXT:         let %47: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%46)));
-// DEFAULT-NEXT:         let %48: i128b [synthetic] = and<i128b>(read<i128b>(%47), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%46)), read<i128b>(%48));
-// DEFAULT-NEXT:         let %49: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(36));
-// DEFAULT-NEXT:         let %50: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%49)));
-// DEFAULT-NEXT:         let %51: i128b [synthetic] = or<i128b>(read<i128b>(%50), read<i128b>(%2));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%49)), read<i128b>(%51));
-// DEFAULT-NEXT:         let %52: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(37));
-// DEFAULT-NEXT:         let %53: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%52)));
-// DEFAULT-NEXT:         let %54: i128b [synthetic] = xor<i128b>(read<i128b>(%53), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%52)), read<i128b>(%54));
+// DEFAULT-NEXT:         let %29: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(29));
+// DEFAULT-NEXT:         let %30: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%29)));
+// DEFAULT-NEXT:         let %31: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%30), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%29)), read<i128b>(%31));
+// DEFAULT-NEXT:         let %32: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(30));
+// DEFAULT-NEXT:         let %33: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%32)));
+// DEFAULT-NEXT:         let %34: i128b [synthetic] = mul<i128b, overflow=ub>(read<i128b>(%33), read<i128b>(%2));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%32)), read<i128b>(%34));
+// DEFAULT-NEXT:         let %35: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(31));
+// DEFAULT-NEXT:         let %36: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%35)));
+// DEFAULT-NEXT:         let %37: i128b [synthetic] = div<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%36), read<i128b>(%2));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%35)), read<i128b>(%37));
+// DEFAULT-NEXT:         let %38: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(32));
+// DEFAULT-NEXT:         let %39: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%38)));
+// DEFAULT-NEXT:         let %40: i128b [synthetic] = rem<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%39), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%38)), read<i128b>(%40));
+// DEFAULT-NEXT:         let %41: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(33));
+// DEFAULT-NEXT:         let %42: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%41)));
+// DEFAULT-NEXT:         let %43: i128b [synthetic] = shl<i128b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i128b>(%42), sub<i128b, overflow=ub>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i20b>(468021))));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%41)), read<i128b>(%43));
+// DEFAULT-NEXT:         let %44: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(34));
+// DEFAULT-NEXT:         let %45: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%44)));
+// DEFAULT-NEXT:         let %46: i128b [synthetic] = shr<i128b, amount_out_of_range=ub, fill=sign_extend>(read<i128b>(%45), sub<i128b, overflow=ub>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i20b>(468021))));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%44)), read<i128b>(%46));
+// DEFAULT-NEXT:         let %47: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(35));
+// DEFAULT-NEXT:         let %48: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%47)));
+// DEFAULT-NEXT:         let %49: i128b [synthetic] = and<i128b>(read<i128b>(%48), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%47)), read<i128b>(%49));
+// DEFAULT-NEXT:         let %50: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(36));
+// DEFAULT-NEXT:         let %51: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%50)));
+// DEFAULT-NEXT:         let %52: i128b [synthetic] = or<i128b>(read<i128b>(%51), read<i128b>(%2));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%50)), read<i128b>(%52));
+// DEFAULT-NEXT:         let %53: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(37));
+// DEFAULT-NEXT:         let %54: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%53)));
+// DEFAULT-NEXT:         let %55: i128b [synthetic] = xor<i128b>(read<i128b>(%54), widen<i128b, reason=usual_arith>(read<i125b>(%1)));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%53)), read<i128b>(%55));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(38))), reinterpret<i128b, reason=assign, fits=unknown>(widen<u128b, reason=assign>(const<u64>(16))));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(39))), conditional<i128b>(ne<i128b>(read<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(39)))), const<i128b>(0)), widen<i128b, reason=usual_arith>(read<i125b>(%1)), read<i128b>(%2)));
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(read<ptr<i128b>>(%4), const<i32>(40))), widen<i128b, reason=assign>(const<i107b>(80694244678005661015504159217732)));
@@ -268,26 +269,26 @@ main() {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %11 const<i125b>(313298472398574896574578475487548):
 // DEFAULT-NEXT:                     if ne<i128b>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i61b>(813298738947385454)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<i125b>(-18198347584784758927893783748374):
 // DEFAULT-NEXT:                     if ne<i128b>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i45b>(9439847384738)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<i125b>(261243875485748189278344574857484):
 // DEFAULT-NEXT:                     if ne<i128b>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i45b>(12549857489574)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<i125b>(-80694244678005661015504159217733):
 // DEFAULT-NEXT:                     if ne<i128b>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i20b>(468071)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<i125b>(-193984372895748547584754854):
 // DEFAULT-NEXT:                     if ne<i128b>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i45b>(15549857489574)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 default %11:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -310,24 +311,24 @@ main() {
 // DEFAULT-NEXT:         write<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(array_decay<ptr<i128b>, length=Some(41)>(%8), const<i32>(39))), widen<i128b, reason=assign>(const<i30b>(394857584)));
 // DEFAULT-NEXT:         call<void, signature=fn(i125b, i128b, ptr<i125b>, ptr<i128b>, f32) -> void>(%0, widen<i125b, reason=arg>(neg<i107b, overflow=ub>(const<i107b>(80694244678005661015504159217733))), widen<i128b, reason=arg>(const<i20b>(468071)), addr_of<ptr<i125b>>(%7), array_decay<ptr<i128b>, length=Some(41)>(%8), neg<f32>(const<f32>(42.0)));
 // DEFAULT-NEXT:         if ne<i125b>(read<i125b>(%7), widen<i125b, reason=usual_arith>(const<i20b>(468071)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         let %55: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(array_decay<ptr<i128b>, length=Some(41)>(%8), const<i32>(38));
-// DEFAULT-NEXT:         let %56: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%55)));
-// DEFAULT-NEXT:         let %57: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%56), reinterpret<i128b, reason=usual_arith, fits=unknown>(widen<u128b, reason=usual_arith>(sub<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
-// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%55)), read<i128b>(%57));
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:         let %56: ptr<i128b> [synthetic] = ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(array_decay<ptr<i128b>, length=Some(41)>(%8), const<i32>(38));
+// DEFAULT-NEXT:         let %57: i128b [synthetic] = read<i128b>(deref(read<ptr<i128b>>(%56)));
+// DEFAULT-NEXT:         let %58: i128b [synthetic] = sub<i128b, overflow=ub>(read<i128b>(%57), reinterpret<i128b, reason=usual_arith, fits=unknown>(widen<u128b, reason=usual_arith>(sub<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:         write<i128b>(deref(read<ptr<i128b>>(%56)), read<i128b>(%58));
+// DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %10 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(41))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %58: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %59: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%58), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%59));
+// DEFAULT-NEXT:                 let %59: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %60: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%59), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%60));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i128b>(read<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(array_decay<ptr<i128b>, length=Some(41)>(%8), read<i32>(%10)))), read<i128b>(deref(ptr_offset<ptr<i128b>, subtract=false, element=i128b, overflow=ub>(array_decay<ptr<i128b>, length=Some(41)>(%9), read<i32>(%10)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

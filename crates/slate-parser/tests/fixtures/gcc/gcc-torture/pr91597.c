@@ -84,31 +84,33 @@ int main() {
 // DEFAULT-NEXT:             return int_to_enum<@type0, reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @bar(%8 o: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17: bool [synthetic];
+// DEFAULT-NEXT:         let %21: bool [synthetic];
 // DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%17, eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%17));
+// DEFAULT-NEXT:             write<bool>(%21, eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%21));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @baz(%10 o: ptr<@type1>, %11 d: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(__builtin_expect, from_bool<i64, reason=arg>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type1>) -> i32>(%7, read<ptr<@type1>>(%10)), const<i32>(0)))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%18, from_bool<i64, reason=arg>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type1>) -> i32>(%7, read<ptr<@type1>>(%10)), const<i32>(0)))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%11), const<i32>(2))
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%10), add<i32, overflow=ub>(read<i32>(%11), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @qux(%13 o: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %16 enum_to_int<u32, reason=promotion>(read<@type0>(field0(deref(read<ptr<@type1>>(%13)))))
+// DEFAULT-NEXT:         switch %20 enum_to_int<u32, reason=promotion>(read<@type0>(field0(deref(read<ptr<@type1>>(%13)))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %16 const<u32>(0):
+// DEFAULT-NEXT:                 case %20 const<u32>(0):
 // DEFAULT-NEXT:                     return;
-// DEFAULT-NEXT:                 case %16 const<u32>(1):
+// DEFAULT-NEXT:                 case %20 const<u32>(1):
 // DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%13), const<i32>(0));
-// DEFAULT-NEXT:                 break %16;
-// DEFAULT-NEXT:                 case %16 const<u32>(2):
+// DEFAULT-NEXT:                 break %20;
+// DEFAULT-NEXT:                 case %20 const<u32>(2):
 // DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%13), const<i32>(0));
-// DEFAULT-NEXT:                 break %16;
+// DEFAULT-NEXT:                 break %20;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

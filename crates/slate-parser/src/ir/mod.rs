@@ -47,7 +47,6 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum Callee {
     Direct(BindingId),
-    Builtin(String),
     Indirect(Box<Value>),
 }
 
@@ -466,7 +465,6 @@ impl Value {
                 f.write_str(">(")?;
                 match callee {
                     Callee::Direct(id) => write!(f, "%{}", id.0)?,
-                    Callee::Builtin(name) => f.write_str(name)?,
                     Callee::Indirect(value) => write!(
                         f,
                         "{}",

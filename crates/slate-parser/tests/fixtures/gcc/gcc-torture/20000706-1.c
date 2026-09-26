@@ -58,11 +58,11 @@ int main() {
 // DEFAULT-NEXT:         field3 d: i32;
 // DEFAULT-NEXT:         field4 e: i32;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @bar(%4 x: ptr<@type0>, %5 f: i32, %6 g: i32, %7 h: i32, %8 i: i32, %9 j: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%4)))), const<i32>(1)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%4)))), const<i32>(2))), ne<i32>(read<i32>(field2(deref(read<ptr<@type0>>(%4)))), const<i32>(3))), ne<i32>(read<i32>(field3(deref(read<ptr<@type0>>(%4)))), const<i32>(4))), ne<i32>(read<i32>(field4(deref(read<ptr<@type0>>(%4)))), const<i32>(5))), ne<i32>(read<i32>(%5), const<i32>(6))), ne<i32>(read<i32>(%6), const<i32>(7))), ne<i32>(read<i32>(%7), const<i32>(8))), ne<i32>(read<i32>(%8), const<i32>(9))), ne<i32>(read<i32>(%9), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @foo(%11 x: @type0, %12 y: ptr<ptr<i8>>) -> void [linkage=external] [abi=sysv64(byval<align=4>, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32, i32, i32, i32, i32) -> void>(%3, addr_of<ptr<@type0>>(%11), const<i32>(6), const<i32>(7), const<i32>(8), const<i32>(9), const<i32>(10));
@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field3(%14), const<i32>(4));
 // DEFAULT-NEXT:         write<i32>(field4(%14), const<i32>(5));
 // DEFAULT-NEXT:         call<void, signature=fn(@type0, ptr<ptr<i8>>) -> void, abi=sysv64(byval<align=4>, scalar) -> void>(%10, copy<@type0, reason=arg>(read<@type0>(%14)), null<ptr<ptr<i8>>>);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

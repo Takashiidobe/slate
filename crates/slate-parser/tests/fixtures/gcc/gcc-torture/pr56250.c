@@ -36,12 +36,12 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2));
 // DEFAULT-NEXT:         let %3 y: u32 [storage=automatic] = div<u32, by_zero=ub>(sub<u32, overflow=wrap>(const<u32>(0), div<u32, by_zero=ub>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         if ne<u32>(div<u32, by_zero=ub>(neg<u32, overflow=wrap>(const<u32>(1)), read<u32>(%2)), read<u32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -51,6 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %1 e: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 d: array<@type0, 6> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -58,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(6)>(%3), read<i32>(%2)))), const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(6)>(%3), const<i32>(0))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

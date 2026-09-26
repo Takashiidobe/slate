@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @h(%3 x: i32, %4 ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         switch %16 read<i32>(%3)
 // DEFAULT-NEXT:             {
@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%17, ne<i32>(va_arg<i32>(%4), const<i32>(4)));
 // DEFAULT-NEXT:                     if read<bool>(%17)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:                 case %16 const<i32>(5):
 // DEFAULT-NEXT:                     let %18: bool [synthetic];
@@ -91,10 +91,10 @@ int main() {
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%18, ne<i32>(va_arg<i32>(%4), const<i32>(10)));
 // DEFAULT-NEXT:                     if read<bool>(%18)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:                 default %16:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @f1(%6 i: i32, %7 j: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -102,7 +102,7 @@ int main() {
 // DEFAULT-NEXT:         va_start(%8);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%2, read<i32>(%6), read<va_list>(%8));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%6), const<i32>(1)), ne<i64>(read<i64>(%7), widen<i64, reason=usual_arith>(const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @f2(%10 i: i32, %11 j: i32, %12 k: i32, %13 l: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:         va_start(%14);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%2, read<i32>(%10), read<va_list>(%14));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%10), const<i32>(5)), ne<i32>(read<i32>(%11), const<i32>(6))), ne<i32>(read<i32>(%12), const<i32>(7))), ne<i64>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%14);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -50,11 +50,12 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @foo(%3 d: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i32>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..3, bits=0..24>(%3))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8, volatile>(%1))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 d: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1193046)));
 // DEFAULT-NEXT:         write<u8, volatile>(%1, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(117))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type0) -> i32, abi=sysv64(coerce<i32>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5))), and<i32>(const<i32>(86), const<i32>(117)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

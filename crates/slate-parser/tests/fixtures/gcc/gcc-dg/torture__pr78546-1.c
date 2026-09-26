@@ -48,18 +48,19 @@ main() {
 // DEFAULT-NEXT:     type @type0 u128 = u128;
 // DEFAULT-NEXT:     global %1 b: u128 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 p1: u128) -> u128 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6: u128 [synthetic] = read<u128>(%3);
-// DEFAULT-NEXT:         let %7: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%6), not<u128>(read<u128>(%1)));
-// DEFAULT-NEXT:         write<u128>(%3, read<u128>(%7));
+// DEFAULT-NEXT:         let %7: u128 [synthetic] = read<u128>(%3);
+// DEFAULT-NEXT:         let %8: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%7), not<u128>(read<u128>(%1)));
+// DEFAULT-NEXT:         write<u128>(%3, read<u128>(%8));
 // DEFAULT-NEXT:         return neg<u128, overflow=wrap>(read<u128>(%3));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %5 x: u128 [storage=automatic] = call<u128, signature=fn(u128) -> u128>(%2, reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(not<i64>(const<i64>(9223372036854775807)))));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%5), widen<u128, reason=usual_arith>(const<u64>(9223372036854775809)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

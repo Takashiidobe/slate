@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     fn %1 @memset(%9 __s: ptr<void>, %10 __c: i32, %11 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 BM_tab: ptr<i32>, %5 j: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 BM_tab_base: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%6, read<ptr<i32>>(%4));
@@ -82,10 +82,10 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 BM_tab: array<i32, 256> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(256)>(%8)), const<i32>(0), const<u64>(1024));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(256)>(%8)), const<i32>(0), const<u64>(1024));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%3, array_decay<ptr<i32>, length=Some(256)>(%8), const<i32>(6));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(256)>(%8), const<i32>(0)))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -95,12 +95,13 @@ int main() {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%7)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 a: @type5 [storage=automatic];
 // DEFAULT-NEXT:         let %15 x: @type4 [storage=automatic];
 // DEFAULT-NEXT:         let %16 y: @type4 [storage=automatic];
 // DEFAULT-NEXT:         if ne<ptr<@type4>>(addr_of<ptr<@type4>>(%16), pointer_cast<ptr<@type4>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<void>, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type5>>(%14)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type5>>(%14)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type4>>(%15)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type4>>(%16)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:     global %3 g: @type0 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %4 h: @type0 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %5 i: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @foo() -> i8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%5));
 // DEFAULT-NEXT:     }
@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> sret<align=4>>(%7));
 // DEFAULT-NEXT:         write<i32>(field1(%2), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

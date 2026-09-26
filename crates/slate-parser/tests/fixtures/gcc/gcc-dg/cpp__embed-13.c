@@ -74,9 +74,9 @@ int main() {
 // DEFAULT-NEXT:                 let %4 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(128))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%10));
+// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%11));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -88,13 +88,14 @@ int main() {
 // DEFAULT-NEXT:         va_end(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(...) -> i32>(%2, const<i32>(47), const<i32>(42), const<i32>(32), const<i32>(123), const<i32>(32), const<i32>(100), const<i32>(103), const<i32>(45), const<i32>(100), const<i32>(111), const<i32>(32), const<i32>(114), const<i32>(117), const<i32>(110), const<i32>(32), const<i32>(125), const<i32>(32), const<i32>(42), const<i32>(47), const<i32>(10), const<i32>(47), const<i32>(42), const<i32>(32), const<i32>(123), const<i32>(32), const<i32>(100), const<i32>(103), const<i32>(45), const<i32>(111), const<i32>(112), const<i32>(116), const<i32>(105), const<i32>(111), const<i32>(110), const<i32>(115), const<i32>(32), const<i32>(34), const<i32>(45), const<i32>(115), const<i32>(116), const<i32>(100), const<i32>(61), const<i32>(99), const<i32>(50), const<i32>(51), const<i32>(32), const<i32>(45), const<i32>(87), const<i32>(117), const<i32>(110), const<i32>(117), const<i32>(115), const<i32>(101), const<i32>(100), const<i32>(45), const<i32>(118), const<i32>(97), const<i32>(108), const<i32>(117), const<i32>(101), const<i32>(34), const<i32>(32), const<i32>(125), const<i32>(32), const<i32>(42), const<i32>(47), const<i32>(10), const<i32>(10), const<i32>(35), const<i32>(105), const<i32>(110), const<i32>(99), const<i32>(108), const<i32>(117), const<i32>(100), const<i32>(101), const<i32>(32), const<i32>(60), const<i32>(115), const<i32>(116), const<i32>(100), const<i32>(97), const<i32>(114), const<i32>(103), const<i32>(46), const<i32>(104), const<i32>(62), const<i32>(10), const<i32>(10), const<i32>(99), const<i32>(111), const<i32>(110), const<i32>(115), const<i32>(116), const<i32>(32), const<i32>(117), const<i32>(110), const<i32>(115), const<i32>(105), const<i32>(103), const<i32>(110), const<i32>(101), const<i32>(100), const<i32>(32), const<i32>(99), const<i32>(104), const<i32>(97), const<i32>(114), const<i32>(32), const<i32>(97), const<i32>(91), const<i32>(93), const<i32>(32), const<i32>(61), const<i32>(32), const<i32>(123), const<i32>(10), const<i32>(35), const<i32>(101), const<i32>(109), const<i32>(98), const<i32>(101), const<i32>(100), const<i32>(32), const<i32>(95), const<i32>(95), const<i32>(70), const<i32>(73)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         write<i32>(%6, mul<i32, overflow=ub>(const<i32>(2), const<i32>(47)));
 // DEFAULT-NEXT:         write<i32>(%5, add<i32, overflow=ub>(const<i32>(73), const<i32>(6)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%5), add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(128)>(%1), const<i32>(127)))))), const<i32>(6))), ne<i32>(read<i32>(%6), mul<i32, overflow=ub>(const<i32>(2), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(128)>(%1), const<i32>(0)))))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

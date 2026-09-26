@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @set(%2 l: ptr<u64>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%2)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(31))));
 // DEFAULT-NEXT:     }
@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%5, reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%4))));
 // DEFAULT-NEXT:         write<u64>(%4, widen<u64, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(2), read<i32>(%5))));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

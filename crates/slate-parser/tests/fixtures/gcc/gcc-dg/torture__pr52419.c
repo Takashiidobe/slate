@@ -67,7 +67,7 @@ main() {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 s: @type1;
 // DEFAULT-NEXT:     } [size=17, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @foo(%6 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(lane(field0(deref(read<ptr<@type1>>(%6))), const<i32>(1)), widen<i64, reason=assign>(const<i32>(5)));
 // DEFAULT-NEXT:     }
@@ -77,7 +77,7 @@ main() {
 // DEFAULT-NEXT:         write<vector<i64, 2>>(field0(field1(%9)), read<vector<i64, 2>>(%8));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%5, addr_of<ptr<@type1>>(field1(%9)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(lane(field0(field1(%9)), const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(3))), ne<i64>(read<i64>(lane(field0(field1(%9)), const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

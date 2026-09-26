@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %12 z3: vector<i16, 4> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %13 z4: vector<i16, 4> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %14 dummy: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %15 @func0() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32, volatile>(%14, const<i32>(1));
 // DEFAULT-NEXT:     }
@@ -116,16 +116,17 @@ int main(void) {
 // DEFAULT-NEXT:         write<vector<i16, 4>>(%12, read<vector<i16, 4>>(%20));
 // DEFAULT-NEXT:         write<vector<i16, 4>>(%13, read<vector<i16, 4>>(%21));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %26 @__builtin_memcmp(%23 <unnamed>: ptr<const void>, %24 <unnamed>: ptr<const void>, %25 <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %22 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%19);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%6)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%8)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%7)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%9)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%12)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%13)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%6)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%8)), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%7)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%9)), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%12)), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%13)), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

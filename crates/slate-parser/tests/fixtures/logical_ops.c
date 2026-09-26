@@ -84,14 +84,14 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(0), const<i32>(1)), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(0), const<i32>(1)), read<i32>(%1));
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(2), const<i32>(3)), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(2), const<i32>(3)), read<i32>(%1));
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%14)), call<i32, signature=fn(i32, i32) -> i32>(%7, const<i32>(5), const<i32>(0)), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%14)), call<i32, signature=fn(i32, i32) -> i32>(%7, const<i32>(5), const<i32>(0)), read<i32>(%1));
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%15)), call<i32, signature=fn(i32, i32) -> i32>(%7, const<i32>(0), const<i32>(7)), read<i32>(%1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%16)), from_bool<i32, reason=vararg>(not<bool>(ne<i32>(const<i32>(0), const<i32>(0)))), from_bool<i32, reason=vararg>(not<bool>(ne<i32>(const<i32>(4), const<i32>(0)))), from_bool<i32, reason=vararg>(not<bool>(not<bool>(ne<i32>(const<i32>(9), const<i32>(0))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%15)), call<i32, signature=fn(i32, i32) -> i32>(%7, const<i32>(0), const<i32>(7)), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%16)), from_bool<i32, reason=vararg>(not<bool>(ne<i32>(const<i32>(0), const<i32>(0)))), from_bool<i32, reason=vararg>(not<bool>(ne<i32>(const<i32>(4), const<i32>(0)))), from_bool<i32, reason=vararg>(not<bool>(not<bool>(ne<i32>(const<i32>(9), const<i32>(0))))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

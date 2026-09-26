@@ -84,7 +84,7 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 a: array<i32, 1024> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 v: volatile i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 i: i32, %5 j: i32) -> i32 [linkage=external] [used] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %7 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%4), const<i32>(4));
@@ -107,7 +107,7 @@ main(void) {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%1), const<i32>(7))), const<i32>(112));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%1), add<i32, overflow=ub>(const<i32>(7), const<i32>(6)))), const<i32>(142));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%3, read<i32>(%11), const<i32>(7)), const<i32>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%11), const<i32>(7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

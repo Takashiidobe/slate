@@ -68,12 +68,12 @@ int main(void) {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%9));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32) -> bool>(%1, const<i32>(0))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32) -> bool>(%1, const<i32>(42))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32, i32) -> bool>(%4, const<i32>(2), const<i32>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%15)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32, i32) -> bool>(%4, const<i32>(9), const<i32>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%16)), call<i32, signature=fn(bool) -> i32>(%8, ne<i32, reason=arg>(const<i32>(2), const<i32>(0))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%17)), call<i32, signature=fn(bool) -> i32>(%8, ne<i32, reason=arg>(const<i32>(0), const<i32>(0))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32) -> bool>(%1, const<i32>(0))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32) -> bool>(%1, const<i32>(42))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32, i32) -> bool>(%4, const<i32>(2), const<i32>(5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%15)), from_bool<i32, reason=vararg>(call<bool, signature=fn(i32, i32) -> bool>(%4, const<i32>(9), const<i32>(5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%16)), call<i32, signature=fn(bool) -> i32>(%8, ne<i32, reason=arg>(const<i32>(2), const<i32>(0))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%17)), call<i32, signature=fn(bool) -> i32>(%8, ne<i32, reason=arg>(const<i32>(0), const<i32>(0))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

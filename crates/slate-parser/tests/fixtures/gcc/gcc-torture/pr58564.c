@@ -41,12 +41,12 @@ int main() {
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 c: ptr<i16> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 d: ptr<ptr<i16>> [storage=static] = addr_of<ptr<ptr<i16>>>(%3) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(%2, reinterpret<i32, reason=assign, fits=unknown>(or<u32>(reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(gt<i32>(const<i32>(0), and<i32>(from_bool<i32, reason=promotion>(eq<ptr<ptr<i16>>>(addr_of<ptr<ptr<i16>>>(%3), read<ptr<ptr<i16>>>(%4))), from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i32>(xor<i32>(read<i32>(%1), const<i32>(1)), const<i32>(0)))))))), const<u32>(0))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

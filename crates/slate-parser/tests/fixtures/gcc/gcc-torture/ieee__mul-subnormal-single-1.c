@@ -115,8 +115,8 @@ int main() {
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     global %9 ok: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %17 expected: array<@type1, 3> [storage=static] [align=16] = aggregate<array<@type1, 3>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(4095)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1065354240)), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(4095))), index1 = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(15)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1070106760)), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(23))), index2 = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(15)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1065632836)), field2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(15)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%20 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%20 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @u2f(%4 v: u32) -> f32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 u: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(field0(%5), read<u32>(%4));
@@ -151,8 +151,8 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, u32, u32) -> void>(%10, read<u32>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))), read<u32>(field0(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))), read<u32>(field2(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%9), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         field0 a: @type0;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 p: ptr<@type1>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field0(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<@type1>>(%4)))), const<i32>(1));
 // DEFAULT-NEXT:     }
@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%3, pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<@type0>>(%6)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%6)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -49,12 +49,13 @@ int         main() {
 // DEFAULT-NEXT:         field0 p: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %0 i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_malloc(%8 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @my_alloc() -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_malloc, const<u64>(8)));
+// DEFAULT-NEXT:         let %3 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%9, const<u64>(8)));
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%3))), addr_of<ptr<i32>>(%0));
 // DEFAULT-NEXT:         return read<ptr<@type0>>(%3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %7 q: ptr<@type0> [storage=automatic];
@@ -65,7 +66,7 @@ int         main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%7))))), const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%6)))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

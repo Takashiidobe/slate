@@ -66,7 +66,7 @@ int         main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<u32>(deref(pointer_cast<ptr<u32>, reason=explicit>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(array_decay<ptr<u32>, length=Some(624)>(%0)), mul<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%2)), const<u64>(4))))), mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)), read<u32>(deref(pointer_cast<ptr<u32>, reason=explicit>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(array_decay<ptr<u32>, length=Some(624)>(%0)), mul<u64, overflow=wrap>(add<u64, overflow=wrap>(widen<u64, reason=explicit>(read<u32>(%2)), div<u64, by_zero=ub>(neg<u64, overflow=wrap>(const<u64>(4)), const<u64>(4))), const<u64>(4))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 j: u32 [storage=automatic];
@@ -97,7 +97,7 @@ int         main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(624)>(%0), read<u32>(%5)))), read<u32>(%6))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:                     write<u32>(%6, mul<u32, overflow=wrap>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

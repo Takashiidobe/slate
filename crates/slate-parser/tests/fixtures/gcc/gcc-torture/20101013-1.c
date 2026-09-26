@@ -57,14 +57,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @get_addr_base_and_unit_offset(%2 base: ptr<void>, %3 i: ptr<i64>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%3)), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         return read<ptr<void>>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @build_int_cst(%5 base: ptr<void>, %6 offset: i64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return read<ptr<void>>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @build_ref_for_offset(%8 base: ptr<void>, %9 offset: i64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 ret: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, i64) -> ptr<void>>(%7, null<ptr<void>>, widen<i64, reason=arg>(const<i32>(32)));
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%12), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

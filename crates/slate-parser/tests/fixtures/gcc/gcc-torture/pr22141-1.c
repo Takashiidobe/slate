@@ -129,11 +129,12 @@ int main(void) {
 // DEFAULT-NEXT:         field0 s: array<@type0, 4>;
 // DEFAULT-NEXT:     } [size=16, align=1, offsets=[0]];
 // DEFAULT-NEXT:     global %3 u: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %27 @__builtin_memset(%24 <unnamed>: ptr<void>, %25 <unnamed>: i32, %26 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @c1(%6 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type1>>(%6))))), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(deref(read<ptr<@type1>>(%6))))), const<i32>(2))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(deref(read<ptr<@type1>>(%6))))), const<i32>(3))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(deref(read<ptr<@type1>>(%6))))), const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%6)), const<i32>(170), const<u64>(4));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%27, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%6)), const<i32>(170), const<u64>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @c2(%8 p: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%5, addr_of<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%8)))));
@@ -142,7 +143,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%7, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type2>>(%10)))), const<i32>(2)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @f1() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(compound_literal %24 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field1 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), field2 = truncate<i8, reason=assign, fits=always>(const<i32>(3)), field3 = truncate<i8, reason=assign, fits=always>(const<i32>(4)))))));
+// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(compound_literal %28 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), field1 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), field2 = truncate<i8, reason=assign, fits=always>(const<i32>(3)), field3 = truncate<i8, reason=assign, fits=always>(const<i32>(4)))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @f2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i8>(field0(field0(%3)), truncate<i8, reason=assign, fits=always>(const<i32>(1)));

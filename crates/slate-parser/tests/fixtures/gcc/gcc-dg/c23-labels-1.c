@@ -65,9 +65,9 @@ int main(void) {
 // DEFAULT-NEXT:         label %3 b:
 // DEFAULT-NEXT:             goto %1;
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %11: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:             let %12: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%11), const<i32>(3));
-// DEFAULT-NEXT:             write<i32>(%7, read<i32>(%12));
+// DEFAULT-NEXT:             let %12: i32 [synthetic] = read<i32>(%7);
+// DEFAULT-NEXT:             let %13: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%12), const<i32>(3));
+// DEFAULT-NEXT:             write<i32>(%7, read<i32>(%13));
 // DEFAULT-NEXT:             label %4 c:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         }
@@ -75,9 +75,10 @@ int main(void) {
 // DEFAULT-NEXT:         label %5 d:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

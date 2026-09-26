@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     global %5 x01: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 y00: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 y01: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main(%9 argc: i32, %10 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %12 b: @type0 [storage=automatic];
@@ -176,11 +176,11 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<u32>(%7, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%13)), const<i32>(1)))));
 // DEFAULT-NEXT:         write<@type0>(%14, copy<@type0, reason=assign>(read<@type0>(%13)));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..6, bits=1..2>(field0(%14)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield16<unit=0, bytes=0..6, bits=16..17>(field0(%14)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(2)>(field1(%14)), const<i32>(1)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(22)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -83,6 +83,7 @@ int                             main(void) {
 // DEFAULT-NEXT:     fn %13 @retme(%14 val: ptr<ptr<i32>>) -> ptr<ptr<i32>> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<ptr<ptr<i32>>>(%14);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %20 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%1, null<ptr<@type0>>);
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%3), addr_of<ptr<i32>>(%15));
@@ -91,7 +92,7 @@ int                             main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>) -> void>(%9, read<ptr<ptr<i32>>>(%18));
 // DEFAULT-NEXT:         write<@type1>(%17, copy<@type1, reason=assign>(read<@type1>(%3)));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field0(%17)), addr_of<ptr<i32>>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%20);
 // DEFAULT-NEXT:         write<ptr<@type2>>(%5, null<ptr<@type2>>);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -51,11 +51,12 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 T = u128;
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: ptr<u128>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8: ptr<u128> [synthetic] = read<ptr<u128>>(%2);
-// DEFAULT-NEXT:         let %9: u128 [synthetic] = read<u128>(deref(read<ptr<u128>>(%8)));
-// DEFAULT-NEXT:         let %10: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%9), shl<u128, overflow=wrap, amount_out_of_range=ub>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(const<i32>(1))), add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(16), const<i32>(8)), const<i32>(2)), const<i32>(1))));
-// DEFAULT-NEXT:         write<u128>(deref(read<ptr<u128>>(%8)), read<u128>(%10));
+// DEFAULT-NEXT:         let %9: ptr<u128> [synthetic] = read<ptr<u128>>(%2);
+// DEFAULT-NEXT:         let %10: u128 [synthetic] = read<u128>(deref(read<ptr<u128>>(%9)));
+// DEFAULT-NEXT:         let %11: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%10), shl<u128, overflow=wrap, amount_out_of_range=ub>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(const<i32>(1))), add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(16), const<i32>(8)), const<i32>(2)), const<i32>(1))));
+// DEFAULT-NEXT:         write<u128>(deref(read<ptr<u128>>(%9)), read<u128>(%11));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 a: u128 [storage=automatic] = shl<u128, overflow=wrap, amount_out_of_range=ub>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(const<i32>(1))), add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(16), const<i32>(8)), const<i32>(2)), const<i32>(1)));
 // DEFAULT-NEXT:         let %5 b: u128 [storage=automatic] = read<u128>(%4);
@@ -63,11 +64,11 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u128>) -> void>(%1, addr_of<ptr<u128>>(%5));
 // DEFAULT-NEXT:         write<u128>(%6, read<u128>(%5));
 // DEFAULT-NEXT:         while %7 ge<u128>(read<u128>(%6), read<u128>(%4))
-// DEFAULT-NEXT:             let %11: u128 [synthetic] = read<u128>(%6);
-// DEFAULT-NEXT:             let %12: u128 [synthetic] = sub<u128, overflow=wrap>(read<u128>(%11), read<u128>(%4));
-// DEFAULT-NEXT:             write<u128>(%6, read<u128>(%12));
+// DEFAULT-NEXT:             let %12: u128 [synthetic] = read<u128>(%6);
+// DEFAULT-NEXT:             let %13: u128 [synthetic] = sub<u128, overflow=wrap>(read<u128>(%12), read<u128>(%4));
+// DEFAULT-NEXT:             write<u128>(%6, read<u128>(%13));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%6), div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=ub>(const<i32>(16), const<i32>(8)), const<i32>(2))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

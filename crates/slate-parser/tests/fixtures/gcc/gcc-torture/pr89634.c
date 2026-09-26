@@ -73,9 +73,9 @@ int main() {
 // DEFAULT-NEXT:                 write<u64>(%6, sub<u64, overflow=wrap>(read<u64>(deref(read<ptr<u64>>(%3))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:             condition: gt<u64>(read<u64>(%6), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %15: u64 [synthetic] = read<u64>(%6);
-// DEFAULT-NEXT:                 let %16: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%6, read<u64>(%16));
+// DEFAULT-NEXT:                 let %16: u64 [synthetic] = read<u64>(%6);
+// DEFAULT-NEXT:                 let %17: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<u64>(%6, read<u64>(%17));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -87,9 +87,9 @@ int main() {
 // DEFAULT-NEXT:                             write<u64>(%10, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
 // DEFAULT-NEXT:                         condition: lt<u64>(read<u64>(%10), read<u64>(%6))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %17: u64 [synthetic] = read<u64>(%10);
-// DEFAULT-NEXT:                             let %18: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%17), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                             write<u64>(%10, read<u64>(%18));
+// DEFAULT-NEXT:                             let %18: u64 [synthetic] = read<u64>(%10);
+// DEFAULT-NEXT:                             let %19: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%18), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                             write<u64>(%10, read<u64>(%19));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
@@ -97,26 +97,27 @@ int main() {
 // DEFAULT-NEXT:                             call<ptr<u64>, signature=fn(ptr<u64>) -> ptr<u64>>(%0, read<ptr<u64>>(%7));
 // DEFAULT-NEXT:                     write<u64>(%4, read<u64>(deref(read<ptr<u64>>(%7))));
 // DEFAULT-NEXT:                     if eq<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))
-// DEFAULT-NEXT:                         let %19: u64 [synthetic] = read<u64>(%5);
-// DEFAULT-NEXT:                         let %20: u64 [synthetic] = mul<u64, overflow=wrap>(read<u64>(%19), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
-// DEFAULT-NEXT:                         write<u64>(%5, read<u64>(%20));
+// DEFAULT-NEXT:                         let %20: u64 [synthetic] = read<u64>(%5);
+// DEFAULT-NEXT:                         let %21: u64 [synthetic] = mul<u64, overflow=wrap>(read<u64>(%20), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
+// DEFAULT-NEXT:                         write<u64>(%5, read<u64>(%21));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<u64>(%10, sub<u64, overflow=wrap>(div<u64, by_zero=ub>(sub<u64, overflow=wrap>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:                             write<u64>(%8, add<u64, overflow=wrap>(mul<u64, overflow=wrap>(add<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), read<u64>(%10)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), add<u64, overflow=wrap>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), read<u64>(%5)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
 // DEFAULT-NEXT:                             if gt<u64>(read<u64>(%8), read<u64>(%9))
 // DEFAULT-NEXT:                                 write<u64>(%9, read<u64>(%8));
-// DEFAULT-NEXT:                             let %21: u64 [synthetic] = read<u64>(%5);
-// DEFAULT-NEXT:                             let %22: u64 [synthetic] = mul<u64, overflow=wrap>(read<u64>(%21), read<u64>(%4));
-// DEFAULT-NEXT:                             write<u64>(%5, read<u64>(%22));
+// DEFAULT-NEXT:                             let %22: u64 [synthetic] = read<u64>(%5);
+// DEFAULT-NEXT:                             let %23: u64 [synthetic] = mul<u64, overflow=wrap>(read<u64>(%22), read<u64>(%4));
+// DEFAULT-NEXT:                             write<u64>(%5, read<u64>(%23));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<u64>(%9);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 a: array<u64, 18> [storage=automatic] [align=16] = aggregate<array<u64, 18>, zero_fill=false>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))), index1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))), index2 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(200)))), index3 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(200))), index4 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))), index5 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(400)))), index6 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(400))), index7 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(3))), index8 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(600)))), index9 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index10 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(600))), index11 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))), index12 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(100)))), index13 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(66)))), index14 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), index15 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(66))), index16 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(100))), index17 = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(div<i64, by_zero=ub, min_by_neg_one=ub>(const<i64>(9223372036854775807), widen<i64, reason=usual_arith>(const<i32>(8))), widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(ptr<u64>) -> u64>(%2, array_decay<ptr<u64>, length=Some(18)>(%12)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(17))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

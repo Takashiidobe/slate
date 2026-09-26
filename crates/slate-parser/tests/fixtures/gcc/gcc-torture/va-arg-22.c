@@ -208,18 +208,18 @@ int main(void) {
 // DEFAULT-NEXT:     type @type42 A72 = @type41;
 // DEFAULT-NEXT:     global %6 lastn: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=internal];
 // DEFAULT-NEXT:     global %7 lastc: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%98 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%98 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @bar(%4 n: i32, %5 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), read<i32>(%4))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%7), read<i32>(%6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 write<i32>(%7, const<i32>(0));
 // DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%4));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(xor<i32>(read<i32>(%7), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%4), const<i32>(3))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         let %141: i32 [synthetic] = read<i32>(%7);
 // DEFAULT-NEXT:         let %142: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%141), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%7, read<i32>(%142));
@@ -249,7 +249,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %73 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %74 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%51), const<i32>(21))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_start(%73);
 // DEFAULT-NEXT:         write<@type1>(%52, copy<@type1, reason=assign>(va_arg<@type1>(%73)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%73));
@@ -823,7 +823,7 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(72)>(field0(%96)), read<i32>(%97))), truncate<i8, reason=assign, fits=unknown>(xor<i32>(read<i32>(%97), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(72), const<i32>(3)))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c) -> void>(%50, const<i32>(21), copy<@type1, reason=vararg>(read<@type1>(%76)), copy<@type3, reason=vararg>(read<@type3>(%77)), copy<@type5, reason=vararg>(read<@type5>(%78)), copy<@type7, reason=vararg>(read<@type7>(%79)), copy<@type9, reason=vararg>(read<@type9>(%80)), copy<@type11, reason=vararg>(read<@type11>(%81)), copy<@type13, reason=vararg>(read<@type13>(%82)), copy<@type15, reason=vararg>(read<@type15>(%83)), copy<@type17, reason=vararg>(read<@type17>(%84)), copy<@type19, reason=vararg>(read<@type19>(%85)), copy<@type21, reason=vararg>(read<@type21>(%86)), copy<@type23, reason=vararg>(read<@type23>(%87)), copy<@type25, reason=vararg>(read<@type25>(%88)), copy<@type27, reason=vararg>(read<@type27>(%89)), copy<@type29, reason=vararg>(read<@type29>(%90)), copy<@type31, reason=vararg>(read<@type31>(%91)), copy<@type33, reason=vararg>(read<@type33>(%92)), copy<@type35, reason=vararg>(read<@type35>(%93)), copy<@type37, reason=vararg>(read<@type37>(%94)), copy<@type39, reason=vararg>(read<@type39>(%95)), copy<@type41, reason=vararg>(read<@type41>(%96)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

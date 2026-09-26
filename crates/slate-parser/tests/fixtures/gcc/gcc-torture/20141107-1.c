@@ -55,12 +55,14 @@ int main(void) {
 // DEFAULT-NEXT:             write<bool>(%2, not<bool>(read<bool>(%2)));
 // DEFAULT-NEXT:         return read<bool>(%2);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_memcpy(%11 <unnamed>: ptr<void>, %12 <unnamed>: ptr<const void>, %13 <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @checkf(%4 a: i32, %5 b: bool) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 c: bool [storage=automatic] = call<bool, signature=fn(i32, bool) -> bool>(%0, read<i32>(%4), read<bool>(%5));
 // DEFAULT-NEXT:         let %7 d: i8 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(%7)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<bool>>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%14, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(%7)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<bool>>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(ne<i32>(widen<i32, reason=promotion>(read<i8>(%7)), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%4), const<i32>(0))))), from_bool<i32, reason=promotion>(read<bool>(%5))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, bool) -> void>(%3, const<i32>(0), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));

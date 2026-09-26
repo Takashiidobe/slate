@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:         field0 s: i32 : 30;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 4)], field_units=[Some(0)]];
 // DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5: i32 [synthetic] = read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%2));
 // DEFAULT-NEXT:         let %6: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%5), const<i32>(2));
@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%2), const<i32>(24));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%2)), const<i32>(48))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

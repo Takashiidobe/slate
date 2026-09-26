@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=0, align=16, offsets=[]];
 // DEFAULT-NEXT:     global %3 s2848: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 fails: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @check2848va(%6 z: i32, ...) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 arg: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %8 ap: va_list [storage=automatic];
@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<i32>>(field1(%3), add<complex<i32>, complex=true, overflow=ub>(const<i32>(723419448), mul<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(218144346)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1)))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%5, const<i32>(1), copy<@type0, reason=vararg>(read<@type0>(%3)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -858,7 +858,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%77))))), widen<i32, reason=promotion>(float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%46);
 // DEFAULT-NEXT:         for %243
 // DEFAULT-NEXT:             init:
@@ -872,7 +872,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%77))))), widen<i32, reason=promotion>(float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%77)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %244
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%77, const<i32>(0));
@@ -915,7 +915,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%77))))), widen<i32, reason=promotion>(float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%46);
 // DEFAULT-NEXT:         for %246
 // DEFAULT-NEXT:             init:
@@ -929,7 +929,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%77))))), widen<i32, reason=promotion>(float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%77)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %87 @inttoflttestsc() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %88 i: i32 [storage=automatic];
@@ -971,7 +971,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%89, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%88)))), read<f32, volatile>(%89))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%44);
 // DEFAULT-NEXT:         for %249
@@ -988,7 +988,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%90, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%88)))), read<f64, volatile>(%90))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %250
 // DEFAULT-NEXT:             init:
@@ -1025,7 +1025,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%89, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%88)))), read<f32, volatile>(%89))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%44);
 // DEFAULT-NEXT:         for %252
@@ -1042,7 +1042,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%90, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%88)))), read<f64, volatile>(%90))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %92 @flttointtestss() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -1180,7 +1180,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%93))))), widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%50);
 // DEFAULT-NEXT:         for %259
 // DEFAULT-NEXT:             init:
@@ -1194,7 +1194,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%93))))), widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%93)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %260
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%93, const<i32>(0));
@@ -1237,7 +1237,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%93))))), widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%50);
 // DEFAULT-NEXT:         for %262
 // DEFAULT-NEXT:             init:
@@ -1251,7 +1251,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%93))))), widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%93)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %103 @inttoflttestss() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %104 i: i32 [storage=automatic];
@@ -1293,7 +1293,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%105, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%104)))), read<f32, volatile>(%105))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%48);
 // DEFAULT-NEXT:         for %265
@@ -1310,7 +1310,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%106, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%104)))), read<f64, volatile>(%106))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %266
 // DEFAULT-NEXT:             init:
@@ -1347,7 +1347,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%105, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%104)))), read<f32, volatile>(%105))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%48);
 // DEFAULT-NEXT:         for %268
@@ -1364,7 +1364,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%106, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%104)))), read<f64, volatile>(%106))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %108 @flttointtestsi() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -1502,7 +1502,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%109)))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%54);
 // DEFAULT-NEXT:         for %275
 // DEFAULT-NEXT:             init:
@@ -1516,7 +1516,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%109)))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%109))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %276
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%109, const<i32>(0));
@@ -1559,7 +1559,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%109)))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%54);
 // DEFAULT-NEXT:         for %278
 // DEFAULT-NEXT:             init:
@@ -1573,7 +1573,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%109)))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%109))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %119 @inttoflttestsi() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %120 i: i32 [storage=automatic];
@@ -1615,7 +1615,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%121, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%120)))), read<f32, volatile>(%121))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%52);
 // DEFAULT-NEXT:         for %281
@@ -1632,7 +1632,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%122, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%120)))), read<f64, volatile>(%122))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %282
 // DEFAULT-NEXT:             init:
@@ -1669,7 +1669,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%121, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%120)))), read<f32, volatile>(%121))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%52);
 // DEFAULT-NEXT:         for %284
@@ -1686,7 +1686,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%122, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%120)))), read<f64, volatile>(%122))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %124 @flttointtestsl() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -1824,7 +1824,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%125)))), float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         for %291
 // DEFAULT-NEXT:             init:
@@ -1838,7 +1838,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%125)))), float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%125))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %292
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%125, const<i32>(0));
@@ -1881,7 +1881,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%125)))), float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         for %294
 // DEFAULT-NEXT:             init:
@@ -1895,7 +1895,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%125)))), float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%125))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %135 @inttoflttestsl() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %136 i: i32 [storage=automatic];
@@ -1937,7 +1937,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%137, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%136)))), read<f32, volatile>(%137))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%56);
 // DEFAULT-NEXT:         for %297
@@ -1954,7 +1954,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%138, int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%136)))), read<f64, volatile>(%138))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %298
 // DEFAULT-NEXT:             init:
@@ -1991,7 +1991,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%137, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%136)))), read<f32, volatile>(%137))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%56);
 // DEFAULT-NEXT:         for %300
@@ -2008,7 +2008,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%138, int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%136)))), read<f64, volatile>(%138))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %140 @flttointtestuc() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -2146,7 +2146,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%141)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%62);
 // DEFAULT-NEXT:         for %307
 // DEFAULT-NEXT:             init:
@@ -2160,7 +2160,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%141)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%141))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %308
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%141, const<i32>(0));
@@ -2203,7 +2203,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%141)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%62);
 // DEFAULT-NEXT:         for %310
 // DEFAULT-NEXT:             init:
@@ -2217,7 +2217,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%141)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%141))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %151 @inttoflttestuc() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %152 i: i32 [storage=automatic];
@@ -2259,7 +2259,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%153, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%152)))), read<f32, volatile>(%153))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%60);
 // DEFAULT-NEXT:         for %313
@@ -2276,7 +2276,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%154, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%152)))), read<f64, volatile>(%154))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %314
 // DEFAULT-NEXT:             init:
@@ -2313,7 +2313,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%153, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%152)))), read<f32, volatile>(%153))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%60);
 // DEFAULT-NEXT:         for %316
@@ -2330,7 +2330,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%154, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%152)))), read<f64, volatile>(%154))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %156 @flttointtestus() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -2468,7 +2468,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%157)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%66);
 // DEFAULT-NEXT:         for %323
 // DEFAULT-NEXT:             init:
@@ -2482,7 +2482,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%157)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%157))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %324
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%157, const<i32>(0));
@@ -2525,7 +2525,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%157)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%66);
 // DEFAULT-NEXT:         for %326
 // DEFAULT-NEXT:             init:
@@ -2539,7 +2539,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%157)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%157))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %167 @inttoflttestus() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %168 i: i32 [storage=automatic];
@@ -2581,7 +2581,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%169, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%168)))), read<f32, volatile>(%169))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%64);
 // DEFAULT-NEXT:         for %329
@@ -2598,7 +2598,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%170, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%168)))), read<f64, volatile>(%170))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %330
 // DEFAULT-NEXT:             init:
@@ -2635,7 +2635,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%169, int_to_float<f32, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%168)))), read<f32, volatile>(%169))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%64);
 // DEFAULT-NEXT:         for %332
@@ -2652,7 +2652,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%170, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%168)))), read<f64, volatile>(%170))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %172 @flttointtestui() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -2790,7 +2790,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%173)))), float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%70);
 // DEFAULT-NEXT:         for %339
 // DEFAULT-NEXT:             init:
@@ -2804,7 +2804,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%173)))), float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%173))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %340
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%173, const<i32>(0));
@@ -2847,7 +2847,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%173)))), float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%70);
 // DEFAULT-NEXT:         for %342
 // DEFAULT-NEXT:             init:
@@ -2861,7 +2861,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%173)))), float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%173))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %183 @inttoflttestui() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %184 i: i32 [storage=automatic];
@@ -2903,7 +2903,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%185, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%184)))), read<f32, volatile>(%185))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%68);
 // DEFAULT-NEXT:         for %345
@@ -2920,7 +2920,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%186, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%184)))), read<f64, volatile>(%186))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %346
 // DEFAULT-NEXT:             init:
@@ -2957,7 +2957,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%185, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%184)))), read<f32, volatile>(%185))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%68);
 // DEFAULT-NEXT:         for %348
@@ -2974,7 +2974,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%186, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%184)))), read<f64, volatile>(%186))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %188 @flttointtestul() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -3112,7 +3112,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%189)))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%74);
 // DEFAULT-NEXT:         for %355
 // DEFAULT-NEXT:             init:
@@ -3126,7 +3126,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%189)))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%189))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         for %356
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%189, const<i32>(0));
@@ -3169,7 +3169,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%189)))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%74);
 // DEFAULT-NEXT:         for %358
 // DEFAULT-NEXT:             init:
@@ -3183,7 +3183,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%189)))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%189))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %199 @inttoflttestul() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %200 i: i32 [storage=automatic];
@@ -3225,7 +3225,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%201, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%200)))), read<f32, volatile>(%201))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%72);
 // DEFAULT-NEXT:         for %361
@@ -3242,7 +3242,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%202, int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%200)))), read<f64, volatile>(%202))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %362
 // DEFAULT-NEXT:             init:
@@ -3279,7 +3279,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f32, volatile>(%201, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%200)))), read<f32, volatile>(%201))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%72);
 // DEFAULT-NEXT:         for %364
@@ -3296,7 +3296,7 @@ main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f64, volatile>(%202, int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))))));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(1024)>(%11), read<i32>(%200)))), read<f64, volatile>(%202))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %204 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

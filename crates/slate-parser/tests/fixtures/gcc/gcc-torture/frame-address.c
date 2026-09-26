@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @check_fa_work(%5 c: ptr<const i8>, %6 f: ptr<const i8>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 d: i8 [storage=automatic] [const] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         if ge<ptr<const i8>>(read<ptr<const i8>>(%5), addr_of<ptr<const i8>>(%7))
@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:             return from_bool<i32, reason=return>(logical_and<bool>(le<ptr<const i8>>(read<ptr<const i8>>(%5), read<ptr<const i8>>(%6)), le<ptr<const i8>>(read<ptr<const i8>>(%6), addr_of<ptr<const i8>>(%7))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @check_fa_mid(%8 c: ptr<const i8>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 f: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_frame_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %9 f: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%19, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%8), read<ptr<const i8>>(%9)), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @check_fa(%10 unused: ptr<i8>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -84,10 +84,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @how_much() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(8);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %19 @__builtin_frame_address(%18 <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %21 @__builtin_alloca(%20 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 unused: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(call<i32, signature=fn() -> i32>(%4)))));
+// DEFAULT-NEXT:         let %13 unused: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(call<i32, signature=fn() -> i32>(%4)))));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i8>) -> i32>(%3, read<ptr<i8>>(%13)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

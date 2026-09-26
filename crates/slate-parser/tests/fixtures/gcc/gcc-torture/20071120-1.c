@@ -123,39 +123,39 @@ int main() {
 // DEFAULT-NEXT:     global %17 deferred_access_stack: ptr<@type7> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %18 deferred_access_no_check: u32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %19 gt_pch_rs_gt_cp_semantics_h: array<@type0, 1> [storage=static] [const] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<u32>>(%18)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @vec_assert_fail() -> void [linkage=external] [inline=never] [definition=emitted] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @VEC_deferred_access_base_last(%10 vec_: ptr<@type5>) -> ptr<@type3> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %24: i32 [synthetic];
+// DEFAULT-NEXT:         let %26: i32 [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(ne<ptr<@type5>>(read<ptr<@type5>>(%10), null<ptr<@type5>>), ne<u32>(read<u32>(field0(deref(read<ptr<@type5>>(%10)))), const<u32>(0)))
-// DEFAULT-NEXT:             write<i32>(%24, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%26, const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:             write<i32>(%24, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%26, const<i32>(0));
 // DEFAULT-NEXT:         return addr_of<ptr<@type3>>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(1)>(field1(deref(read<ptr<@type5>>(%10)))), sub<u32, overflow=wrap>(read<u32>(field0(deref(read<ptr<@type5>>(%10)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @VEC_deferred_access_base_pop(%12 vec_: ptr<@type5>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %25: i32 [synthetic];
+// DEFAULT-NEXT:         let %27: i32 [synthetic];
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(deref(read<ptr<@type5>>(%12)))), const<u32>(0))
-// DEFAULT-NEXT:             write<i32>(%25, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%27, const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:             write<i32>(%25, const<i32>(0));
-// DEFAULT-NEXT:         let %26: ptr<@type5> [synthetic] = read<ptr<@type5>>(%12);
-// DEFAULT-NEXT:         let %27: u32 [synthetic] = read<u32>(field0(deref(read<ptr<@type5>>(%26))));
-// DEFAULT-NEXT:         let %28: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%27), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type5>>(%26))), read<u32>(%28));
+// DEFAULT-NEXT:             write<i32>(%27, const<i32>(0));
+// DEFAULT-NEXT:         let %28: ptr<@type5> [synthetic] = read<ptr<@type5>>(%12);
+// DEFAULT-NEXT:         let %29: u32 [synthetic] = read<u32>(field0(deref(read<ptr<@type5>>(%28))));
+// DEFAULT-NEXT:         let %30: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%29), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type5>>(%28))), read<u32>(%30));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @perform_access_checks(%14 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @pop_to_parent_deferring_access_checks() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%18), const<u32>(0))
-// DEFAULT-NEXT:             let %29: u32 [synthetic] = read<u32>(%18);
-// DEFAULT-NEXT:             let %30: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%29), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u32>(%18, read<u32>(%30));
+// DEFAULT-NEXT:             let %31: u32 [synthetic] = read<u32>(%18);
+// DEFAULT-NEXT:             let %32: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%31), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:             write<u32>(%18, read<u32>(%32));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %21 checks: ptr<@type1> [storage=automatic];
@@ -169,9 +169,10 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>) -> void>(%13, read<ptr<@type1>>(%21));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %25 @__builtin_malloc(%24 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<@type7>>(%17, pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_malloc, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_malloc, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))));
+// DEFAULT-NEXT:         write<ptr<@type7>>(%17, pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%25, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%25, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))));
 // DEFAULT-NEXT:         write<u32>(field0(field0(deref(read<ptr<@type7>>(%17)))), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(1)>(field1(field0(deref(read<ptr<@type7>>(%17))))), const<i32>(0)))), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%20);

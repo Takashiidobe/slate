@@ -74,7 +74,7 @@ int main(void) {
 // DEFAULT-NEXT:         return pointer_cast<ptr<u8>, reason=explicit>(array_decay<ptr<i8>, length=Some(6)>(%12));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%1, const<i32>(0)), call<ptr<const i8>, signature=fn(i32) -> ptr<const i8>>(%3, const<i32>(0)), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<u8>, signature=fn() -> ptr<u8>>(%5)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%1, const<i32>(0)), call<ptr<const i8>, signature=fn(i32) -> ptr<const i8>>(%3, const<i32>(0)), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<u8>, signature=fn() -> ptr<u8>>(%5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

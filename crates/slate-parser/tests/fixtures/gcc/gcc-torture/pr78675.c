@@ -64,30 +64,31 @@ int main() {
 // DEFAULT-NEXT:         while %5 lt<i64>(read<i64>(%0), widen<i64, reason=usual_arith>(const<i32>(1)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i64>(%3, from_bool<i64, reason=assign>(logical_and<bool>(ne<i64>(read<i64>(%0), const<i64>(0)), ne<i64>(read<i64>(%2), const<i64>(0)))));
-// DEFAULT-NEXT:                 let %6: i64 [synthetic] = read<i64>(%0);
-// DEFAULT-NEXT:                 let %7: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(%0, read<i64>(%7));
+// DEFAULT-NEXT:                 let %7: i64 [synthetic] = read<i64>(%0);
+// DEFAULT-NEXT:                 let %8: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%7), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(%0, read<i64>(%8));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i64>(%3);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         write<i64>(%0, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         write<i64>(%0, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(25))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         write<i64>(%0, widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(64))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(0))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         write<i64>(%0, widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(64))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         write<i64>(%0, widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(64))));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, widen<i64, reason=arg>(const<i32>(25))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

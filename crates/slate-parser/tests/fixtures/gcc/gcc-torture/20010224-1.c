@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %5 masktab: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5))) [linkage=external];
 // DEFAULT-NEXT:     global %6 psd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(50)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(40)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(30)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(20)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(10))) [linkage=external];
 // DEFAULT-NEXT:     global %7 bndpsd: array<i16, 6> [storage=static] = aggregate<array<i16, 6>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)), index2 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index3 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index4 = truncate<i16, reason=assign, fits=always>(const<i32>(5))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @logadd(%13 a: ptr<i16>, %14 b: ptr<i16>) -> i16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%13)))), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%14))))));
 // DEFAULT-NEXT:     }
@@ -107,7 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %16 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%4, truncate<i16, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%7), const<i32>(1))))), const<i32>(140))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

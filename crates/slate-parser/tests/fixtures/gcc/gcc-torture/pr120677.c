@@ -64,28 +64,29 @@ int main() {
 // DEFAULT-NEXT:                     return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %7
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%1, const<i32>(8));
 // DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%1), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%9));
+// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%1);
+// DEFAULT-NEXT:                 let %10: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%10));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(and<u32>(read<u32>(%0), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))
 // DEFAULT-NEXT:                     write<u32>(%0, xor<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%0), const<i32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(20000000))));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     let %10: u32 [synthetic] = read<u32>(%0);
-// DEFAULT-NEXT:                     let %11: u32 [synthetic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                     write<u32>(%0, read<u32>(%11));
+// DEFAULT-NEXT:                     let %11: u32 [synthetic] = read<u32>(%0);
+// DEFAULT-NEXT:                     let %12: u32 [synthetic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%11), const<i32>(1));
+// DEFAULT-NEXT:                     write<u32>(%0, read<u32>(%12));
 // DEFAULT-NEXT:         write<i32>(%2, call<i32, signature=fn(i32) -> i32>(%3, const<i32>(0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%3, const<i32>(0));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%2), const<i32>(0)), ne<u32>(read<u32>(%0), const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -43,6 +43,7 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 u128 = u128;
 // DEFAULT-NEXT:     global %1 b: u128 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             clobbers: memory;
@@ -50,7 +51,7 @@ main() {
 // DEFAULT-NEXT:         let %3 x: u128 [storage=automatic] = sub<u128, overflow=wrap>(reinterpret<u128, reason=explicit, fits=unknown>(widen<i128, reason=explicit>(not<i64>(const<i64>(9223372036854775807)))), read<u128>(%1));
 // DEFAULT-NEXT:         let %4 y: u128 [storage=automatic] = sub<u128, overflow=wrap>(reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(1))), read<u128>(%3));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%4), widen<u128, reason=usual_arith>(const<u64>(9223372036854775809)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

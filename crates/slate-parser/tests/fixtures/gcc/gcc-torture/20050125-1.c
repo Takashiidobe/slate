@@ -96,7 +96,7 @@ int main(int    argc __attribute__((unused)),
 // DEFAULT-NEXT:         write<i32>(field2(%10), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, addr_of<ptr<@type0>>(%10));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field2(%10)), const<i32>(7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

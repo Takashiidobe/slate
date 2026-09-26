@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:     global %7 f: volatile i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 h: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 i: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %14
 // DEFAULT-NEXT:             init:
@@ -102,7 +102,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%8, widen<i64, reason=assign>(conditional<i32>(eq<i32>(read<i32>(%2), const<i32>(0)), const<i32>(0), widen<i32, reason=promotion>(read<i16>(%9)))));
 // DEFAULT-NEXT:         write<i32>(%1, truncate<i32, reason=assign, fits=unknown>(read<i64>(%8)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

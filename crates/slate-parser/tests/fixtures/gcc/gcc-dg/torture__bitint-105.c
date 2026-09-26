@@ -48,25 +48,26 @@ main() {
 // DEFAULT-NEXT:     fn %3 @bar(%4 n: u4b) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<u32>(and<u32>(reinterpret<u32, reason=explicit, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<u4b>(%4))), shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(1), const<i32>(20))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %7
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %6 i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: u32 [synthetic] = read<u32>(%6);
-// DEFAULT-NEXT:                 let %9: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%6, read<u32>(%9));
+// DEFAULT-NEXT:                 let %9: u32 [synthetic] = read<u32>(%6);
+// DEFAULT-NEXT:                 let %10: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%9), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%6, read<u32>(%10));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %10: bool [synthetic];
+// DEFAULT-NEXT:                 let %11: bool [synthetic];
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(u4b) -> i32>(%1, truncate<u4b, reason=arg, fits=unknown>(read<u32>(%6))), const<i32>(0))
-// DEFAULT-NEXT:                     write<bool>(%10, const<bool>(true));
+// DEFAULT-NEXT:                     write<bool>(%11, const<bool>(true));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%10, ne<i32>(call<i32, signature=fn(u4b) -> i32>(%3, truncate<u4b, reason=arg, fits=unknown>(read<u32>(%6))), const<i32>(0)));
-// DEFAULT-NEXT:                 if read<bool>(%10)
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     write<bool>(%11, ne<i32>(call<i32, signature=fn(u4b) -> i32>(%3, truncate<u4b, reason=arg, fits=unknown>(read<u32>(%6))), const<i32>(0)));
+// DEFAULT-NEXT:                 if read<bool>(%11)
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

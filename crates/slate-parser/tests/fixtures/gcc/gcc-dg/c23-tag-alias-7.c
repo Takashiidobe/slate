@@ -75,10 +75,11 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type0>>(%7))), const<i32>(2));
 // DEFAULT-NEXT:         return read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type0>>(%3))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 y: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%2, addr_of<ptr<@type0>>(%9), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%9))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

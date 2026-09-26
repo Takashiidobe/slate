@@ -124,13 +124,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @sprintf(%40 __s: ptr<i8> [restrict], %41 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @strcpy(%42 __dest: ptr<i8> [restrict], %43 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @strcmp(%44 __s1: ptr<const i8>, %45 __s2: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @exit(%46 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %4 @exit(%46 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %29 @f(%30 a: @type0, %31 b: i8, %32 c: f64, %33 d: @type0) -> @type2 [linkage=external] [abi=sysv64(native_c, scalar, scalar, native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %35 r: @type2 [storage=automatic];
 // DEFAULT-NEXT:         write<@type2>(%35, copy<@type2, reason=assign>(read<@type2>(%34)));
 // DEFAULT-NEXT:         write<i8>(field1(%35), read<i8>(%31));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(sprintf, array_decay<ptr<i8>, length=Some(100)>(%5), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(63)>(%47)), read<f64>(field0(%30)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(2)))), widen<i32, reason=vararg>(read<i8>(%31)), read<f64>(%32), read<f64>(field0(%33)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(2)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%0, array_decay<ptr<i8>, length=Some(100)>(%5), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(63)>(%47)), read<f64>(field0(%30)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%30)), const<i32>(2)))), widen<i32, reason=vararg>(read<i8>(%31)), read<f64>(%32), read<f64>(field0(%33)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%33)), const<i32>(2)))));
 // DEFAULT-NEXT:         return copy<@type2, reason=return>(read<@type2>(%35));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %37 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -138,14 +138,14 @@ int main(void) {
 // DEFAULT-NEXT:         let %39 tmp: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         write<@type2>(%38, copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(%29, copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25)))));
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(%29, copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25))));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(strcpy, array_decay<ptr<i8>, length=Some(100)>(%39), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%5)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%1, array_decay<ptr<i8>, length=Some(100)>(%39), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%5)));
 // DEFAULT-NEXT:         write<i8>(field1(%38), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(33)>(field0(%38)), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type2>(%38, copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(read<ptr<fn(@type0, i8, f64, @type0) -> @type2>>(%36), copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25)))));
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(@type0, i8, f64, @type0) -> @type2, abi=sysv64(native_c, scalar, scalar, native_c) -> native_c>(read<ptr<fn(@type0, i8, f64, @type0) -> @type2>>(%36), copy<@type0, reason=arg>(read<@type0>(%24)), read<i8>(%11), read<f64>(%17), copy<@type0, reason=arg>(read<@type0>(%25))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%39)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%5))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%39)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%5))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

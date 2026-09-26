@@ -53,14 +53,14 @@ int     main(void) {
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     global %4 p: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 q: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 x: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(const<i32>(-2147483648));
 // DEFAULT-NEXT:         write<ptr<@type0>>(%5, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         if gt<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(deref(conditional<ptr<@type0>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type0>>(%5), pointer_cast<ptr<@type0>, reason=usual_arith>(read<ptr<i32>>(%4)))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -72,20 +72,20 @@ int main(void) {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<complex<f64>>(%9, div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7)));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%13)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(creal, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(cimag, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(creal, read<complex<f64>>(%9)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(cimag, read<complex<f64>>(%9)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%13)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%9)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%9)));
 // DEFAULT-NEXT:         let %14: bool [synthetic];
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(creal, read<complex<f64>>(%8)), const<f64>(0.3125))
-// DEFAULT-NEXT:             write<bool>(%14, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(cimag, read<complex<f64>>(%8)), const<f64>(0.0)));
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%8)), const<f64>(0.3125))
+// DEFAULT-NEXT:             write<bool>(%14, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%8)), const<f64>(0.0)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%14, const<bool>(false));
 // DEFAULT-NEXT:         let %15: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%14)
-// DEFAULT-NEXT:             write<bool>(%15, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(creal, read<complex<f64>>(%9)), const<f64>(0.6)));
+// DEFAULT-NEXT:             write<bool>(%15, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%9)), const<f64>(0.6)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%15, const<bool>(false));
 // DEFAULT-NEXT:         let %16: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             write<bool>(%16, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(cimag, read<complex<f64>>(%9)), neg<f64>(const<f64>(0.8))));
+// DEFAULT-NEXT:             write<bool>(%16, eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%9)), neg<f64>(const<f64>(0.8))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%16, const<bool>(false));
 // DEFAULT-NEXT:         return conditional<i32>(read<bool>(%16), const<i32>(0), const<i32>(1));

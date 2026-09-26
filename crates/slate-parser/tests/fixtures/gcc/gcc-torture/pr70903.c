@@ -49,10 +49,11 @@ int main() {
 // DEFAULT-NEXT:         let %5 y: vector<u64, 4> [storage=automatic] = vector_bit_cast<vector<u64, 4>, reason=explicit>(read<vector<u8, 32>>(compound_literal %9 [storage=automatic] = aggregate<vector<u8, 32>, zero_fill=true>(index0 = lane<u8>(vector_bit_cast<vector<u8, 32>, reason=explicit>(read<vector<u64, 4>>(compound_literal %8 [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(65535))), index1 = read<u64>(lane(%4, const<i32>(0)))))), const<i32>(1)))));
 // DEFAULT-NEXT:         return read<vector<u32, 8>>(compound_literal %10 [storage=automatic] = aggregate<vector<u32, 8>, zero_fill=true>(index0 = truncate<u32, reason=assign, fits=unknown>(read<u64>(lane(%5, const<i32>(0)))), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 x: vector<u32, 8> [storage=automatic] = call<vector<u32, 8>, signature=fn(vector<u64, 4>) -> vector<u32, 8>, abi=sysv64(byval<align=32>) -> direct>(%3, read<vector<u64, 4>>(compound_literal %11 [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>()));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(lane(%7, const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

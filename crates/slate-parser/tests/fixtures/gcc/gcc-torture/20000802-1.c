@@ -47,8 +47,9 @@ void bar(void)
 // DEFAULT-NEXT:     global %1 bs: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 y: array<i8, 3> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_memcpy(%5 <unnamed>: ptr<void>, %6 <unnamed>: ptr<const void>, %7 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %4 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(field0(%1))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%3)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%8, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(field0(%1))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%3)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(field0(%1)), const<i32>(1))), truncate<i8, reason=assign, fits=unknown>(sub<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(conditional<ptr<i8>>(ne<i32>(read<i32>(%2), const<i32>(0)), addr_of<ptr<i8>>(field1(%1)), addr_of<ptr<i8>>(field2(%1))), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%1))), widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

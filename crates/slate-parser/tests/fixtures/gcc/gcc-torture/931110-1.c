@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 s: array<@type0, 10>;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %4 x: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %8
@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i16>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(10)>(field1(%4)), read<i32>(%6)))), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

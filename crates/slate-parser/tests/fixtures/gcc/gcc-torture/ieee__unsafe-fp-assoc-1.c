@@ -75,7 +75,8 @@ int main() {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type2 hexdouble = @type0;
 // DEFAULT-NEXT:     global %4 twoTo52: f64 [storage=static] [const] = const<f64>(4503599627370496.0) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %14 @__builtin_expect(%12 <unnamed>: i64, %13 <unnamed>: i64) -> i64 [linkage=external];
 // DEFAULT-NEXT:     fn %5 @func(%6 x: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 argument: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %8 y: f64 [storage=automatic];
@@ -83,15 +84,15 @@ int main() {
 // DEFAULT-NEXT:         let %10 xHead: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field1(%7), read<f64>(%6));
 // DEFAULT-NEXT:         write<u32>(%10, and<u32>(read<u32>(field0(field0(%7))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647))));
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(__builtin_expect, from_bool<i64, reason=arg>(not<bool>(not<bool>(lt<u32>(read<u32>(%10), const<u32>(1127219200))))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%14, from_bool<i64, reason=arg>(not<bool>(not<bool>(lt<u32>(read<u32>(%10), const<u32>(1127219200))))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(%8, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%4)), read<f64>(%4)));
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(%8), read<f64>(%6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 write<f64>(%9, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), const<f64>(0.5)));
 // DEFAULT-NEXT:                 write<f64>(%8, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%9), read<f64>(%4)), read<f64>(%4)));
 // DEFAULT-NEXT:                 if eq<f64, exceptions=ignore>(read<f64>(%8), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%4)), read<f64>(%4)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }

@@ -74,13 +74,14 @@ main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<u64>(%5, reinterpret<u64, reason=assign, fits=unknown>(and<i64>(const<i64>(4081116982543369), read<i64>(%0))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(2818598057803777)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

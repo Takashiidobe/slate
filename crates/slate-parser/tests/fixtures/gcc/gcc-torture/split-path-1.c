@@ -98,10 +98,10 @@ int main() {
 // DEFAULT-NEXT:         let %13 xk: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %14 ReadPtr: ptr<u8> [storage=automatic];
 // DEFAULT-NEXT:         let %15 EritePtr: ptr<u8> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<u8>>(%14, pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
-// DEFAULT-NEXT:         write<ptr<u8>>(%15, pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
+// DEFAULT-NEXT:         write<ptr<u8>>(%14, pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
+// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
+// DEFAULT-NEXT:         write<ptr<u8>>(%15, pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
+// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
 // DEFAULT-NEXT:         for %18
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
@@ -181,7 +181,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn() -> u8>(%3))), const<i32>(196))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

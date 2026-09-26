@@ -48,21 +48,22 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @f(%1 a: ptr<i16>, %2 b: i32, %3 d: ptr<i32>) -> ptr<i16> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 c: i16 [storage=automatic] = read<i16>(deref(read<ptr<i16>>(%1)));
-// DEFAULT-NEXT:         let %11: ptr<i16> [synthetic] = read<ptr<i16>>(%1);
-// DEFAULT-NEXT:         let %12: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i16>>(%1, read<ptr<i16>>(%12));
+// DEFAULT-NEXT:         let %12: ptr<i16> [synthetic] = read<ptr<i16>>(%1);
+// DEFAULT-NEXT:         let %13: ptr<i16> [synthetic] = ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%12), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i16>>(%1, read<ptr<i16>>(%13));
 // DEFAULT-NEXT:         write<i16>(%4, truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%2), widen<i32, reason=promotion>(read<i16>(%4)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%3)), widen<i32, reason=assign>(read<i16>(%4)));
 // DEFAULT-NEXT:         return read<ptr<i16>>(%1);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 d: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %7 a: array<i16, 2> [storage=automatic];
 // DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(2)>(%7), const<i32>(0))), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<ptr<i16>>(call<ptr<i16>, signature=fn(ptr<i16>, i32, ptr<i32>) -> ptr<i16>>(%0, array_decay<ptr<i16>, length=Some(2)>(%7), const<i32>(1), addr_of<ptr<i32>>(%6)), addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(2)>(%7), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

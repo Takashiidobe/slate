@@ -68,6 +68,7 @@ int main() {
 // DEFAULT-NEXT:     fn %14 @baz(%15 x: i32, %16 y: i32, %17 z: i32, %18 w: i32, %19 u: i64, %20 v: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ge<i32>(read<i32>(%15), const<i32>(0)), lt<i64>(read<i64>(%19), widen<i64, reason=usual_arith>(const<i32>(0)))), ge<i32>(read<i32>(%16), const<i32>(0))), lt<i64>(read<i64>(%20), widen<i64, reason=usual_arith>(const<i32>(0)))), ge<i32>(read<i32>(%17), const<i32>(0))), ge<i32>(read<i32>(%18), const<i32>(0))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %27 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %22 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %26
@@ -75,9 +76,9 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%22, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%22), const<i32>(64))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %27: i32 [synthetic] = read<i32>(%22);
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%28));
+// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%22);
+// DEFAULT-NEXT:                 let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%29));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -86,7 +87,7 @@ int main() {
 // DEFAULT-NEXT:                     let %24 b: i32 [storage=automatic] = call<i32, signature=fn(i32, i32, i32, i32, i64, i64) -> i32>(%7, conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(1)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(2)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(4)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(8)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), widen<i64, reason=arg>(conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(16)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456))), widen<i64, reason=arg>(conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(32)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456))));
 // DEFAULT-NEXT:                     let %25 c: i32 [storage=automatic] = call<i32, signature=fn(i32, i32, i32, i32, i64, i64) -> i32>(%14, conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(1)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(2)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(4)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(8)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456)), widen<i64, reason=arg>(conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(16)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456))), widen<i64, reason=arg>(conditional<i32>(ne<i32>(and<i32>(read<i32>(%22), const<i32>(32)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(123)), const<i32>(456))));
 // DEFAULT-NEXT:                     if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%23), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%22), const<i32>(52)))), ne<i32>(read<i32>(%24), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%22), const<i32>(32))))), ne<i32>(read<i32>(%25), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%22), const<i32>(15)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%27);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

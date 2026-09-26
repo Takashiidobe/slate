@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:         field0 x: @type0;
 // DEFAULT-NEXT:         field1 y: @type1;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f(%5 a: ptr<@type0>, %6 b: ptr<@type1>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<f64>(field0(deref(read<ptr<@type0>>(%5))), const<f64>(1.0));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(field0(deref(read<ptr<@type1>>(%6)))), const<f64>(1.0));
@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:         let %8 a: @type2 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field0(field0(%8)), const<f64>(0.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<@type0>, ptr<@type1>) -> f64>(%4, addr_of<ptr<@type0>>(field0(%8)), addr_of<ptr<@type1>>(field1(%8))), const<f64>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

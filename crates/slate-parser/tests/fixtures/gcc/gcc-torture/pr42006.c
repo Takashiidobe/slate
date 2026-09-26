@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @my_add(%2 si1: u32, %3 si2: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<u32>(gt<u32>(read<u32>(%2), sub<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(50)), read<u32>(%3))), read<u32>(%2), add<u32, overflow=wrap>(read<u32>(%2), read<u32>(%3)));
 // DEFAULT-NEXT:     }
@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%9, read<i32>(%13));
 // DEFAULT-NEXT:                     if gt<i32>(read<i32>(%12), const<i32>(1))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(u32, u32) -> u32>(%4, read<u32>(%8), read<u32>(%8)), const<u32>(0))
 // DEFAULT-NEXT:                         return const<i32>(0);
 // DEFAULT-NEXT:                 }

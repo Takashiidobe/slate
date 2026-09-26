@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         field6 bit6: u32 : 1;
 // DEFAULT-NEXT:         field7 bit7: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0, 0, 0, 0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 b: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %4 sdata: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:                     break %5;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

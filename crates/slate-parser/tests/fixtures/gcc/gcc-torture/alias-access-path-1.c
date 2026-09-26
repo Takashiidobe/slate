@@ -61,12 +61,13 @@ int main(void) {
 // DEFAULT-NEXT:     global %2 a2: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 val: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 cptr: ptr<@type2> [storage=static] = pointer_cast<ptr<@type2>, reason=assign>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%4))) [linkage=external];
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<@type0>(field0(field0(deref(read<ptr<@type2>>(%6)))), copy<@type0, reason=assign>(read<@type0>(%1)));
 // DEFAULT-NEXT:         write<i32>(%4, const<i32>(2));
 // DEFAULT-NEXT:         write<@type0>(%2, copy<@type0, reason=assign>(read<@type0>(field0(field0(deref(read<ptr<@type2>>(%6)))))));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(field0(%2)), read<i32>(field0(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

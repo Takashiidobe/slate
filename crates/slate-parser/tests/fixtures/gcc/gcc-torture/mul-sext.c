@@ -46,11 +46,12 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @f(%3 a: i64, %4 b: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i64, overflow=ub>(widen<i64, reason=explicit>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%3))), widen<i64, reason=explicit>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%4))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 a: i64 [storage=automatic] = const<i64>(1244422862270365697);
 // DEFAULT-NEXT:         let %7 b: i64 [storage=automatic] = const<i64>(1808618562365947905);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%2, read<i64>(%6), read<i64>(%7)), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

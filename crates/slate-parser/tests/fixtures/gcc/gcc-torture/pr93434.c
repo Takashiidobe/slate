@@ -66,6 +66,7 @@ int main() {
 // DEFAULT-NEXT:         field1 im: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type1 creal_T = @type0;
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 k: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
@@ -78,9 +79,9 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(16))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%12));
+// DEFAULT-NEXT:                 let %12: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%13));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -93,9 +94,9 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(16), const<i32>(4)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%14));
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%15));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -114,14 +115,14 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%16));
+// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%17));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(16)>(%6), read<i32>(%4))))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))))), ne<f64, exceptions=ignore>(read<f64>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(16)>(%6), read<i32>(%4))))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

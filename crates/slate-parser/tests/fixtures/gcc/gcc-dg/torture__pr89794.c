@@ -55,15 +55,17 @@ int main(void) {
 // DEFAULT-NEXT:     global %4 b: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %5 c: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 d: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %17 @__builtin_bswap64(%16 <unnamed>: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %21 @__builtin_memset(%18 <unnamed>: ptr<void>, %19 <unnamed>: i32, %20 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %7 @foo(%8 f: u32, %9 g: u32, %10 g2: u32, %11 g3: u32, %12 h: u16, %13 i: u16) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         read<u32>(%9);
 // DEFAULT-NEXT:         read<u32>(%10);
 // DEFAULT-NEXT:         read<u32>(%11);
 // DEFAULT-NEXT:         read<u16>(%12);
-// DEFAULT-NEXT:         write<u32>(%6, truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(__builtin_bswap64, widen<u64, reason=arg>(read<u16>(%13)))));
-// DEFAULT-NEXT:         truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(__builtin_bswap64, widen<u64, reason=arg>(read<u16>(%13))));
+// DEFAULT-NEXT:         write<u32>(%6, truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%17, widen<u64, reason=arg>(read<u16>(%13)))));
+// DEFAULT-NEXT:         truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%17, widen<u64, reason=arg>(read<u16>(%13))));
 // DEFAULT-NEXT:         overflow_sub<bool>(const<i32>(0), read<u32>(%6), deref(addr_of<ptr<u32>>(%4)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%13)), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%5)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%21, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%13)), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%5)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:         write<u32>(%3, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(%4), read<u32>(%8)), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%13))))), read<u32>(%5));
 // DEFAULT-NEXT:     }

@@ -50,17 +50,18 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 V = u128;
 // DEFAULT-NEXT:     type @type1 H = u64;
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo(%3 b: u128, %4 c: u128) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 a: u128 [storage=automatic];
-// DEFAULT-NEXT:         let %7: u128 [synthetic] = read<u128>(%3);
-// DEFAULT-NEXT:         let %8: u128 [synthetic] = and<u128>(read<u128>(%7), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         write<u128>(%3, read<u128>(%8));
-// DEFAULT-NEXT:         let %9: u128 [synthetic] = read<u128>(%4);
-// DEFAULT-NEXT:         let %10: u128 [synthetic] = and<u128>(read<u128>(%9), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%10));
+// DEFAULT-NEXT:         let %8: u128 [synthetic] = read<u128>(%3);
+// DEFAULT-NEXT:         let %9: u128 [synthetic] = and<u128>(read<u128>(%8), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
+// DEFAULT-NEXT:         write<u128>(%3, read<u128>(%9));
+// DEFAULT-NEXT:         let %10: u128 [synthetic] = read<u128>(%4);
+// DEFAULT-NEXT:         let %11: u128 [synthetic] = and<u128>(read<u128>(%10), widen<u128, reason=usual_arith>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))));
+// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%11));
 // DEFAULT-NEXT:         write<u128>(%5, mul<u128, overflow=wrap>(read<u128>(%3), read<u128>(%4)));
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%5), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u128, u128) -> void>(%2, reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))), reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(const<i32>(1))));

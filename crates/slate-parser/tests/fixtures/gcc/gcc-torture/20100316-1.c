@@ -57,13 +57,13 @@ int main() {
 // DEFAULT-NEXT:         let %4 q: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(%3);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..6, bits=0..10>(deref(read<ptr<@type0>>(%4)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field0(%1), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..6, bits=0..10>(%1), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=4..6, bits=10..13>(%1), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>) -> i32>(%2, addr_of<ptr<@type0>>(%1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -92,18 +92,18 @@ loop:
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48]];
 // DEFAULT-NEXT:     type @type2 T = @type0;
 // DEFAULT-NEXT:     global %7 i: i32 [storage=static] = const<i32>(11) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%17 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%17 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @test(%6 t: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %20: i32 [synthetic] = read<i32>(%7);
 // DEFAULT-NEXT:         let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%7, read<i32>(%21));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(field0(deref(read<ptr<@type0>>(%6))))), read<i32>(%20))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field1(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0)), ne<i32>(read<i32>(field2(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i32>(read<i32>(field3(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i32>(read<i32>(field4(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i32>(read<i32>(field5(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i32>(read<i32>(field6(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i32>(read<i32>(field7(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0))), ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type0>>(%6))))), const<i64>(0))), ne<i64>(read<i64>(field9(field0(deref(read<ptr<@type0>>(%6))))), const<i64>(0))), ne<i32>(read<i32>(field10(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%7), const<i32>(20))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @foo(%10 i: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %11 t: @type0 [storage=automatic];
@@ -129,7 +129,7 @@ loop:
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%16), const<i32>(3))
 // DEFAULT-NEXT:             goto %13;
 // DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%14), read<ptr<@type0>>(%15)), ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type0>>(%14))))), widen<i64, reason=usual_arith>(const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%8, const<i32>(10));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

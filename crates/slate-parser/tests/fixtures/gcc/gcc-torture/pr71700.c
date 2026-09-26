@@ -48,11 +48,12 @@ int main() {
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 c: array<@type0, 2> [storage=static] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))), index1 = aggregate<@type0, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))) [linkage=internal];
 // DEFAULT-NEXT:     global %3 d: @type0 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 e: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(%2), const<i32>(0)))));
 // DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(%5)));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..3, bits=16..17>(%3))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

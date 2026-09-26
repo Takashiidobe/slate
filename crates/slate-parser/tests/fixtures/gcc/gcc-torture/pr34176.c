@@ -103,13 +103,13 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%6)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @foo(%9 n: u64) -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %20: i32 [synthetic] = read<i32>(%10);
 // DEFAULT-NEXT:         let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%10, read<i32>(%21));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%20), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return null<ptr<@type3>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

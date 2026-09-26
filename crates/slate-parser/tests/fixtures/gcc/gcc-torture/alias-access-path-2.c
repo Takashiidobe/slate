@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @main(%1 argc: i32, %2 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 c: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %4 out: array<array<u8, 1>, 3> [storage=automatic] = aggregate<array<array<u8, 1>, 3>, zero_fill=false>(index0 = aggregate<array<u8, 1>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(71)))), index1 = aggregate<array<u8, 1>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(71)))), index2 = aggregate<array<u8, 1>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(71)))));
@@ -42,14 +43,14 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                 let %5 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(3))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%8));
+// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%9));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if not<bool>(ne<u8>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1)>(deref(ptr_offset<ptr<array<u8, 1>>, subtract=false, element=array<u8, 1>, overflow=ub>(array_decay<ptr<array<u8, 1>>, length=Some(3)>(%4), read<i32>(%5)))), const<i32>(0)))), const<u8>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -55,6 +55,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @bar(%2 x: i32, %3 ap: ptr<va_list>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<ptr<va_list>>(read<ptr<va_list>>(%3), null<ptr<va_list>>)
 // DEFAULT-NEXT:             {
@@ -64,16 +65,16 @@ int main() {
 // DEFAULT-NEXT:                         write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%4), const<i32>(10))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %11: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%4, read<i32>(%12));
+// DEFAULT-NEXT:                         let %12: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%4, read<i32>(%13));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         if ne<i32>(read<i32>(%4), va_arg<i32>(deref(read<ptr<va_list>>(%3))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(va_arg<f64>(deref(read<ptr<va_list>>(%3))), const<f64>(0.5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @foo(%6 x: i32, ...) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {

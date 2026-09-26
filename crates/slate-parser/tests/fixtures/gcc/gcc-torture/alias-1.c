@@ -46,11 +46,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @typepun() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%2)), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%1)), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%1))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

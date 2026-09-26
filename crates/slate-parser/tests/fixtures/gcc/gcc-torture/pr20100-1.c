@@ -118,8 +118,8 @@ int  main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<u16>(%12);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %15 @exit(%18 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %14 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %15 @exit(%18 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u8>(%2, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))));
 // DEFAULT-NEXT:         let %21: bool [synthetic];
@@ -128,8 +128,8 @@ int  main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%21, ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn() -> u16>(%11))), const<i32>(1)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(read<bool>(%21), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%0))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%1))), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%15, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

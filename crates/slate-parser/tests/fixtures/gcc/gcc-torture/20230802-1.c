@@ -103,25 +103,26 @@ int main() {
 // DEFAULT-NEXT:         write<i32, volatile>(%17, not<i32>(read<i32, volatile>(%17)));
 // DEFAULT-NEXT:         return xor<i64>(widen<i64, reason=usual_arith>(read<i32, volatile>(%17)), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32, volatile>(%16))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %21 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %20
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %19 t: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:             condition: le<i32>(read<i32>(%19), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %21: i32 [synthetic] = read<i32>(%19);
-// DEFAULT-NEXT:                 let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%22));
+// DEFAULT-NEXT:                 let %22: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %23: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%23));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i64>(call<i64, signature=fn(u32) -> i64>(%0, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))), call<i64, signature=fn(u32) -> i64>(%3, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%21);
 // DEFAULT-NEXT:                     if ne<i64>(call<i64, signature=fn(u32) -> i64>(%6, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))), call<i64, signature=fn(u32) -> i64>(%9, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%21);
 // DEFAULT-NEXT:                     if ne<i64>(call<i64, signature=fn(u32) -> i64>(%12, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))), call<i64, signature=fn(u32) -> i64>(%15, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%21);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

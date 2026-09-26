@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:         field1 y: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @CCID(%3 x: @type0) -> @type0 [linkage=internal] [abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(%4), read<i64>(field0(%3)));
@@ -117,7 +117,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field0(%14), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(7))));
 // DEFAULT-NEXT:         write<i64>(field1(%14), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(7))));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(@type0) -> i32, abi=sysv64(coerce<i64, i64>) -> scalar>(%9, copy<@type0, reason=arg>(read<@type0>(%14))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

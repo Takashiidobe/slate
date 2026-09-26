@@ -1,4 +1,6 @@
-use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass};
+use super::builtins::{
+    BuiltinAttribute, ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass,
+};
 use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
@@ -23,6 +25,7 @@ pub(super) struct Lowerer {
     pub module: Module,
     pub names: NameResolution,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
+    pub builtin_declarations: HashMap<&'static str, BindingId>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
@@ -103,7 +106,7 @@ impl Lowerer {
         &mut self,
         callee: &Expr,
         arguments: &[Expr],
-    ) -> Option<&'static ClangBuiltin> {
+    ) -> Option<(&'static ClangBuiltin, Option<BindingId>)> {
         if specially_lowered(callee, arguments) {
             return None;
         }
@@ -112,24 +115,101 @@ impl Lowerer {
         };
         let builtin = super::builtins::clang_builtin(name)?;
         let Some(&binding) = self.types.references.get(&callee.id) else {
-            return Some(builtin);
+            return Some((builtin, None));
         };
         if self
             .names
             .references
             .iter()
             .any(|reference| reference.id == callee.id && reference.kind == BindingKind::Function)
-            && matches!(
-                self.types.entities.linkage(binding),
-                Some(Linkage::External)
-            )
-            && let Some(declared) = self.types.entities.ty(&binding)
-            && let Some(signature) = self.types.builtin_signature(builtin)
-            && self.types.ctypes.compatible(declared, signature)
+            && self.declares_builtin(binding, builtin)
         {
-            return Some(builtin);
+            return Some((builtin, Some(binding)));
         }
         None
+    }
+
+    pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
+        if matches!(
+            self.types.entities.linkage(binding),
+            Some(Linkage::External)
+        ) && let Some(declared) = self.types.entities.ty(&binding)
+            && let Some(signature) = self.types.builtin_signature(builtin)
+        {
+            return self.types.ctypes.compatible(declared, signature);
+        }
+        false
+    }
+
+    fn builtin_declaration(
+        &mut self,
+        e: &Expr,
+        builtin: &'static ClangBuiltin,
+        signature: QualType,
+    ) -> Result<BindingId, ResolveError> {
+        if let Some(&id) = self.builtin_declarations.get(builtin.name) {
+            return Ok(id);
+        }
+        let declared = self.types.builtin_signature(builtin).unwrap_or(signature);
+        let ty = self.types.ir_type(declared);
+        let Type::Function {
+            return_type,
+            parameters,
+            variadic,
+            prototyped,
+        } = &ty
+        else {
+            return Err(ResolveError::Unsupported("non-function builtin"));
+        };
+        let fixed = parameters
+            .iter()
+            .map(|ty| {
+                Span::new(
+                    Parameter {
+                        id: self.fresh(),
+                        name: None,
+                        ty: ty.clone(),
+                        restrict: false,
+                        is_const: false,
+                        access: Access::default(),
+                        array: None,
+                    },
+                    e.spelling,
+                    e.expansion,
+                )
+                .with_provenance(e.provenance)
+            })
+            .collect();
+        let parameters = if *prototyped {
+            Parameters::Prototype {
+                fixed,
+                variadic: *variadic,
+            }
+        } else {
+            Parameters::Unprototyped
+        };
+        let id = self.fresh();
+        let function = Function {
+            id,
+            name: builtin.name.into(),
+            parameters,
+            return_type: return_type.as_deref().cloned(),
+            abi: self.abi_signature(&ty, None)?,
+            linkage: Linkage::External,
+            symbol: SymbolAttributes::default(),
+            semantics: FunctionSemantics {
+                noreturn: builtin.has(BuiltinAttribute::NoReturn),
+                ..FunctionSemantics::default()
+            },
+            body: None,
+            fallthrough: None,
+        };
+        let function = Span::new(function, e.spelling, e.expansion).with_provenance(e.provenance);
+        self.module
+            .annotate(&function, [("c_builtin".into(), builtin.name.into())]);
+        self.module.functions.push(function);
+        self.builtin_declarations.insert(builtin.name, id);
+        Ok(id)
     }
 
     fn function_like_builtin(
@@ -138,7 +218,7 @@ impl Lowerer {
         callee: &Expr,
         arguments: &[Expr],
     ) -> Result<Option<Operand>, ResolveError> {
-        let Some(builtin) = self.builtin_callee(callee, arguments) else {
+        let Some((builtin, declaration)) = self.builtin_callee(callee, arguments) else {
             return Ok(None);
         };
         let name = builtin.name.to_owned();
@@ -156,10 +236,16 @@ impl Lowerer {
         let Some(signature) = signature else {
             return Ok(None);
         };
-        let value = self.call(e, Callee::Builtin(name.clone()), signature, arguments)?;
-        self.module
-            .annotate(&value.value.node, [("c_builtin".into(), name)]);
-        Ok(Some(value))
+        let id = match declaration {
+            Some(id) => id,
+            None => self.builtin_declaration(e, builtin, signature)?,
+        };
+        Ok(Some(self.call(
+            e,
+            Callee::Direct(id),
+            signature,
+            arguments,
+        )?))
     }
 
     fn custom_builtin(
@@ -1619,13 +1705,12 @@ impl Lowerer {
     fn unevaluated(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         let next_id = self.next_id;
         let globals = self.module.globals.len();
+        let functions = self.module.functions.len();
         let result = match self.place(e) {
             Ok(place) => Ok(self.types.ctypes.lvalue_conversion(place.c)),
             Err(_) => self.expr(e).map(|value| value.c),
         };
-        self.next_id = next_id;
-        self.module.globals.truncate(globals);
-        self.types.entities.discard_after(next_id);
+        self.discard_after(globals, functions, next_id);
         result
     }
 
@@ -1812,6 +1897,7 @@ impl Lowerer {
             return Ok((self.types.string_type(lit), None));
         }
         let globals = self.module.globals.len();
+        let functions = self.module.functions.len();
         let next_id = self.next_id;
         let result = match self.place(operand) {
             Ok(Lvalue {
@@ -1845,10 +1931,16 @@ impl Lowerer {
         if evaluated {
             return result.map(|(c, value)| (c, Some(value)));
         }
-        self.module.globals.truncate(globals);
-        self.next_id = next_id;
-        self.types.entities.discard_after(next_id);
+        self.discard_after(globals, functions, next_id);
         result.map(|(c, _)| (c, None))
+    }
+
+    fn discard_after(&mut self, globals: usize, functions: usize, next_id: u32) {
+        self.next_id = next_id;
+        self.module.globals.truncate(globals);
+        self.module.functions.truncate(functions);
+        self.builtin_declarations.retain(|_, id| id.0 < next_id);
+        self.types.entities.discard_after(next_id);
     }
 
     fn type_name_extents(
@@ -1933,7 +2025,7 @@ impl Lowerer {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);
             }
-            if let Some(builtin) = self.builtin_callee(callee, arguments) {
+            if let Some((builtin, _)) = self.builtin_callee(callee, arguments) {
                 return Err(ResolveError::UnsupportedBuiltin(builtin.name.to_owned()));
             }
         }

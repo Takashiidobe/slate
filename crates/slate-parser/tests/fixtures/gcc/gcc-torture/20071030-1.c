@@ -128,7 +128,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=2056, align=8, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type9 client_t = @type8;
 // DEFAULT-NEXT:     fn %0 @memset(%25 <unnamed>: ptr<void>, %26 <unnamed>: i32, %27 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %17 @CalcPing(%18 cl: ptr<@type8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %19 ping: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %20 count: i32 [storage=automatic];
@@ -173,10 +173,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 cl: @type8 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type8>>(%24)), const<i32>(0), const<u64>(2056));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type8>>(%24)), const<i32>(0), const<u64>(2056));
 // DEFAULT-NEXT:         write<f32>(field1(deref(ptr_offset<ptr<@type4>, subtract=false, element=@type4, overflow=ub>(array_decay<ptr<@type4>, length=Some(64)>(field2(%24)), const<i32>(0)))), const<f32>(1.0));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type8>) -> i32>(%17, addr_of<ptr<@type8>>(%24)), const<i32>(1000))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -35,12 +35,14 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @__builtin_infl() -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 ld: f80) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f80, exceptions=ignore>(read<f80>(%1), call<f80, signature=fn() -> f80>(__builtin_infl)));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f80, exceptions=ignore>(read<f80>(%1), call<f80, signature=fn() -> f80>(%3)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%0, const<f80>(1.18973149535723176502E+4932)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

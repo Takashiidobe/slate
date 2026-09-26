@@ -160,8 +160,8 @@ int main() {
 // DEFAULT-NEXT:     global %24 precision: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(64)) [linkage=external];
 // DEFAULT-NEXT:     global %25 n: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(16)) [linkage=external];
 // DEFAULT-NEXT:     global %26 num: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3)), field2 = const<i32>(0), field3 = const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%29 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%29 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @num_positive(%6 num: @type1, %7 precision: u32) -> i32 [linkage=internal] [abi=sysv64(coerce<i64, i64>, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if gt<u64>(widen<u64, reason=usual_arith>(read<u32>(%7)), mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             {
@@ -276,12 +276,12 @@ int main() {
 // DEFAULT-NEXT:     fn %27 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %28 res: @type1 [storage=automatic] = copy<@type1, reason=assign>(call<@type1, signature=fn(@type1, u32, u32) -> @type1, abi=sysv64(coerce<i64, i64>, scalar, scalar) -> coerce<i64, i64>>(%17, copy<@type1, reason=arg>(read<@type1>(%26)), reinterpret<u32, reason=arg, fits=always>(const<i32>(64)), read<u32>(%25)));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%28)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(196608)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%28)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field3(%28)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

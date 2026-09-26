@@ -44,9 +44,10 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: u64, %2 y: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return widen<u64, reason=return>(or<u32>(and<u32>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%1)), const<u32>(4294836224)), and<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(131071)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u32) -> u64>(%0, const<u64>(16045690984502311614), const<u32>(3736076013)), const<u64>(3404988141))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -73,10 +73,11 @@ int main() {
 // DEFAULT-NEXT:         call<i16, signature=fn(i16, i32) -> i16>(%9, truncate<i16, reason=arg, fits=unknown>(or<i32>(widen<i32, reason=promotion>(read<i16>(%3)), const<i32>(9766))), const<i32>(11));
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%5)), widen<i64, reason=assign>(read<i16>(%4)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

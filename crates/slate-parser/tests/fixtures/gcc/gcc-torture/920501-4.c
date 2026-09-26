@@ -51,8 +51,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %7 j: array<ptr<const void>, 3> [storage=static] [align=16] = aggregate<array<ptr<const void>, 3>, zero_fill=false>(index0 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%3)), index1 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%4)), index2 = pointer_cast<ptr<const void>, reason=assign>(label_addr<ptr<void>>(%5))) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @x(%6 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         goto *read<ptr<const void>>(deref(ptr_offset<ptr<ptr<const void>>, subtract=false, element=ptr<const void>, overflow=ub>(array_decay<ptr<ptr<const void>>, length=Some(3)>(%7), read<i32>(%6))));
 // DEFAULT-NEXT:         label %3 x:
@@ -74,8 +74,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(2)), const<i32>(5)));
 // DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

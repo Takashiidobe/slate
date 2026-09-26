@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:         field1 y: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 a: i32, %5 b: i32, %6 c: i32, %7 d: i32, %8 e: i32, %9 f: @type1, %10 g: i32, ...) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %11 args: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %12 h: i32 [storage=automatic];
@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%12, va_arg<i32>(%11));
 // DEFAULT-NEXT:         va_arg<i32>(%11);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%10), const<i32>(1)), ne<i32>(read<i32>(%12), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 t: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));

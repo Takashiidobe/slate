@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:     global %7 h: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 j: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 e: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %15
@@ -94,7 +94,7 @@ int main() {
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

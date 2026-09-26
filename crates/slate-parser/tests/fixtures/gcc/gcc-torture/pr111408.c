@@ -57,14 +57,15 @@ int main() {
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %8
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<i32>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %10: i16 [synthetic] = read<i16>(%4);
-// DEFAULT-NEXT:                 let %11: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i16>(%4, read<i16>(%11));
+// DEFAULT-NEXT:                 let %11: i16 [synthetic] = read<i16>(%4);
+// DEFAULT-NEXT:                 let %12: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%11)), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i16>(%4, read<i16>(%12));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -77,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:                         condition: omitted
 // DEFAULT-NEXT:                         increment: omitted
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

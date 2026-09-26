@@ -89,7 +89,7 @@ int main() {
 // DEFAULT-NEXT:     global %11 i: array<i16, 5> [storage=static] = aggregate<array<i16, 5>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(3))) [linkage=external];
 // DEFAULT-NEXT:     global %12 j: i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %13 k: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%7) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %14 @fn1(%15 p1: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(neg<u32, overflow=wrap>(read<u32>(%15)));
 // DEFAULT-NEXT:     }
@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%21)), truncate<i16, reason=assign, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%16, reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(field0(%2)), const<i32>(15)))));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%6), const<i32>(255)), const<i32>(255))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

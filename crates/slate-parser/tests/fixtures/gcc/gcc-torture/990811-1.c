@@ -70,8 +70,8 @@ int main() {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: i32, %5 y: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         switch %12 read<i32>(%4)
 // DEFAULT-NEXT:             {
@@ -82,7 +82,7 @@ int main() {
 // DEFAULT-NEXT:                 case %12 const<i32>(2):
 // DEFAULT-NEXT:                     return widen<i32, reason=return>(read<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%5)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 s: @type0 [storage=automatic];
@@ -107,12 +107,12 @@ int main() {
 // DEFAULT-NEXT:                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%9), read<i32>(%10))), truncate<i8, reason=assign, fits=unknown>(read<i32>(%10)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(0), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%7))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(1), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%9), const<i32>(3)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(2), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(10)>(%8), const<i32>(3)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

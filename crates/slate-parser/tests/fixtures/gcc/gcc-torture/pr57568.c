@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:     global %1 a: array<array<i32, 9>, 6> [storage=static] [align=16] = aggregate<array<array<i32, 9>, 6>, zero_fill=true>() [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %3 c: ptr<i32> [storage=static] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(9)>(deref(ptr_offset<ptr<array<i32, 9>>, subtract=false, element=array<i32, 9>, overflow=ub>(array_decay<ptr<array<i32, 9>>, length=Some(6)>(%1), const<i32>(3)))), const<i32>(5)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
@@ -47,7 +47,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%5, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%5)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -127,67 +127,67 @@ int main() {
 // DEFAULT-NEXT:     global %3 max: i64 [storage=static] = widen<i64, reason=assign>(not<i32>(const<i32>(0))) [linkage=external];
 // DEFAULT-NEXT:     global %4 desired: i64 [storage=static] = widen<i64, reason=assign>(not<i32>(const<i32>(0))) [linkage=external];
 // DEFAULT-NEXT:     global %5 zero: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=relaxed, failure=relaxed>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(%3));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %8: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=acquire, failure=relaxed>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%8)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %9: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=release, failure=acquire>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %10: bool [synthetic] = compare_exchange<i64, form=write_back, weak=true, success=acq_rel, failure=acquire>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(%4));
 // DEFAULT-NEXT:         if read<bool>(%10)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %11: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(%4));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<i64>(%1, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %12: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=relaxed, failure=relaxed>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(deref(addr_of<ptr<i64>>(%3))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %13: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=acquire, failure=relaxed>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(deref(addr_of<ptr<i64>>(%5))));
 // DEFAULT-NEXT:         if read<bool>(%13)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %14: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=release, failure=acquire>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(deref(addr_of<ptr<i64>>(%5))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%14))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %15: bool [synthetic] = compare_exchange<i64, form=write_back, weak=true, success=acq_rel, failure=acquire>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(deref(addr_of<ptr<i64>>(%4))));
 // DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %16: bool [synthetic] = compare_exchange<i64, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i64>>(%1)), addr_of<ptr<i64>>(%2), read<i64>(deref(addr_of<ptr<i64>>(%4))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%16))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), read<i64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

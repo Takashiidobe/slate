@@ -89,15 +89,16 @@ int main() {
 // DEFAULT-NEXT:     fn %25 @waldo(%26 a: u1b, %27 b: u1b) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<i32>(xor<i32>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(and<u1b>(read<u1b>(%26), read<u1b>(%27)))), from_bool<i32, reason=promotion>(eq<u1b>(read<u1b>(%26), read<u1b>(%27)))), const<i32>(1)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %34 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %28 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %33
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %29 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%29), const<i32>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %34: i32 [synthetic] = read<i32>(%29);
-// DEFAULT-NEXT:                 let %35: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%34), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%29, read<i32>(%35));
+// DEFAULT-NEXT:                 let %35: i32 [synthetic] = read<i32>(%29);
+// DEFAULT-NEXT:                 let %36: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%35), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%29, read<i32>(%36));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -105,43 +106,43 @@ int main() {
 // DEFAULT-NEXT:                     let %30 a: i32 [storage=automatic] = and<i32>(read<i32>(%29), const<i32>(1));
 // DEFAULT-NEXT:                     let %31 b: i32 [storage=automatic] = shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%29), const<i32>(1));
 // DEFAULT-NEXT:                     let %32 c: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%13, read<i32>(%30), read<i32>(%31));
-// DEFAULT-NEXT:                     let %36: bool [synthetic];
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%1, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), add<i32, overflow=ub>(read<i32>(%32), const<i32>(1)))
-// DEFAULT-NEXT:                         write<bool>(%36, const<bool>(true));
-// DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%36, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%4, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%32), const<i32>(0)))));
 // DEFAULT-NEXT:                     let %37: bool [synthetic];
-// DEFAULT-NEXT:                     if read<bool>(%36)
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%1, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), add<i32, overflow=ub>(read<i32>(%32), const<i32>(1)))
 // DEFAULT-NEXT:                         write<bool>(%37, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%37, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%7, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%32), const<i32>(0)))));
+// DEFAULT-NEXT:                         write<bool>(%37, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%4, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%32), const<i32>(0)))));
 // DEFAULT-NEXT:                     let %38: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%37)
 // DEFAULT-NEXT:                         write<bool>(%38, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%38, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%10, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%32), const<i32>(1)))));
+// DEFAULT-NEXT:                         write<bool>(%38, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%7, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%32), const<i32>(0)))));
 // DEFAULT-NEXT:                     let %39: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%38)
 // DEFAULT-NEXT:                         write<bool>(%39, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%39, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%16, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), add<i32, overflow=ub>(read<i32>(%32), const<i32>(1))));
+// DEFAULT-NEXT:                         write<bool>(%39, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%10, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%32), const<i32>(1)))));
 // DEFAULT-NEXT:                     let %40: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%39)
 // DEFAULT-NEXT:                         write<bool>(%40, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%40, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%19, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%32), const<i32>(0)))));
+// DEFAULT-NEXT:                         write<bool>(%40, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%16, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), add<i32, overflow=ub>(read<i32>(%32), const<i32>(1))));
 // DEFAULT-NEXT:                     let %41: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%40)
 // DEFAULT-NEXT:                         write<bool>(%41, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%41, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%22, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%32), const<i32>(0)))));
+// DEFAULT-NEXT:                         write<bool>(%41, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%19, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%32), const<i32>(0)))));
 // DEFAULT-NEXT:                     let %42: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%41)
 // DEFAULT-NEXT:                         write<bool>(%42, const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%42, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%25, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%32), const<i32>(1)))));
+// DEFAULT-NEXT:                         write<bool>(%42, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%22, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%32), const<i32>(0)))));
+// DEFAULT-NEXT:                     let %43: bool [synthetic];
 // DEFAULT-NEXT:                     if read<bool>(%42)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         write<bool>(%43, const<bool>(true));
+// DEFAULT-NEXT:                     else
+// DEFAULT-NEXT:                         write<bool>(%43, ne<i32>(call<i32, signature=fn(u1b, u1b) -> i32>(%25, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%30))), reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(read<i32>(%31)))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%32), const<i32>(1)))));
+// DEFAULT-NEXT:                     if read<bool>(%43)
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%34);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

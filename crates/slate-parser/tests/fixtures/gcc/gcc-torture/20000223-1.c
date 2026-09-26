@@ -116,11 +116,11 @@ int main() {
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([118, 111, 105, 100, 32, 42, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([118, 111, 105, 100, 32, 40, 42, 41, 40, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %21 .str21: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([115, 116, 114, 117, 99, 116, 32, 65, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @check(%2 type: ptr<const i8>, %3 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%3), neg<i32, overflow=ub>(read<i32>(%3))), read<i32>(%3))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

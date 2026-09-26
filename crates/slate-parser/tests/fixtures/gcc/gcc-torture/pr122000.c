@@ -40,12 +40,13 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 c: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %1 ll: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 x: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %4: u64 [synthetic] = update<u64, result=new, atomic=seq_cst>(deref(addr_of<ptr<u64>>(%1)), add<u64, overflow=wrap>(old<u64>, add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%0)))), const<u64>(18364758544493064720))));
-// DEFAULT-NEXT:         write<u64>(%3, read<u64>(%4));
+// DEFAULT-NEXT:         let %5: u64 [synthetic] = update<u64, result=new, atomic=seq_cst>(deref(addr_of<ptr<u64>>(%1)), add<u64, overflow=wrap>(old<u64>, add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%0)))), const<u64>(18364758544493064720))));
+// DEFAULT-NEXT:         write<u64>(%3, read<u64>(%5));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%3), const<u64>(18364758544493064721))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

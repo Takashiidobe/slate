@@ -40,11 +40,12 @@ int        main(void) {
 // DEFAULT-NEXT:     global %0 a: array<i32, 10> [storage=static] [align=16] = aggregate<array<i32, 10>, zero_fill=true>() [linkage=external];
 // DEFAULT-NEXT:     global %1 b: array<i32, 10> [storage=static] [align=16] [linkage=external] [alias="a"];
 // DEFAULT-NEXT:     global %2 off: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%1), read<i32>(%2))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%0), read<i32>(%2))), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%1), read<i32>(%2)))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

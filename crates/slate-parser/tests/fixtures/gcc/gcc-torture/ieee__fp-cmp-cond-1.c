@@ -100,7 +100,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 v4si = vector<i32, 1>;
 // DEFAULT-NEXT:     type @type1 v4sf = vector<f32, 1>;
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %30 .str30: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @f(%1 a: i32, %2 b: i32, %3 fa: f32, %4 fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4));
 // DEFAULT-NEXT:         let %6 c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4));
@@ -116,35 +116,37 @@ int main(void) {
 // DEFAULT-NEXT:         let %22 c1: vector<i32, 1> [storage=automatic] [const] = ge<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%19), read<vector<f32, 1>>(%20));
 // DEFAULT-NEXT:         return or<vector<i32, 1>, elementwise=true>(and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%21), read<vector<i32, 1>>(%17)), and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%22), read<vector<i32, 1>>(%18)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %29 @__builtin_nan(%28 <unnamed>: ptr<const i8>) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %31 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %24 a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(__builtin_nan, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%28))));
+// DEFAULT-NEXT:         let %24 a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%30))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%24), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%24), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), read<f32>(%24), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), read<f32>(%24), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         let %25 b: vector<i32, 1> [storage=automatic] = aggregate<vector<i32, 1>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         let %26 c: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = read<f32>(%24));
 // DEFAULT-NEXT:         let %27 d: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)));
 // DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%26), read<vector<f32, 1>>(%26)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%26), read<vector<f32, 1>>(%27)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%27), read<vector<f32, 1>>(%26)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%27), read<vector<f32, 1>>(%27)), const<i32>(0)), read<i32>(lane(%25, const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

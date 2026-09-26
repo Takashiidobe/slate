@@ -75,22 +75,24 @@ main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %3 nan_cst: volatile f16 [storage=static] = call<f16, signature=fn(ptr<const i8>) -> f16>(__builtin_nanf16, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%9))) [linkage=external];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %4 nans_cst: volatile f16 [storage=static] = call<f16, signature=fn(ptr<const i8>) -> f16>(__builtin_nansf16, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%10))) [linkage=external];
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %3 nan_cst: volatile f16 [storage=static] = call<f16, signature=fn(ptr<const i8>) -> f16>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%11))) [linkage=external];
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %4 nans_cst: volatile f16 [storage=static] = call<f16, signature=fn(ptr<const i8>) -> f16>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%14))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @fetestexcept(%7 __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %10 @__builtin_nanf16(%9 <unnamed>: ptr<const i8>) -> f16 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_nansf16(%12 <unnamed>: ptr<const i8>) -> f16 [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 r: volatile f16 [storage=automatic];
 // DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%3)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

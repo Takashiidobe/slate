@@ -161,7 +161,7 @@ image_render_color (struct s4 *penum, unsigned char *buffer,
 // DEFAULT-NEXT:         let %24 psrc: ptr<u8> [storage=automatic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%11), mul<i32, overflow=ub>(read<i32>(%12), read<i32>(%23)));
 // DEFAULT-NEXT:         let %25 v: array<u8, 6> [storage=automatic];
 // DEFAULT-NEXT:         write<@type3>(%16, copy<@type3, reason=assign>(read<@type3>(field1(field5(deref(read<ptr<@type5>>(%10)))))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<u8, 6>>>(%25)), const<i32>(0), const<u64>(6));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%35, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<u8, 6>>>(%25)), const<i32>(0), const<u64>(6));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<void>) -> void>(read<ptr<fn(ptr<void>, ptr<void>) -> void>>(field0(deref(read<ptr<@type0>>(%17)))), null<ptr<void>>, null<ptr<void>>);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%23), const<i32>(4))
 // DEFAULT-NEXT:             {
@@ -173,5 +173,6 @@ image_render_color (struct s4 *penum, unsigned char *buffer,
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %35 @__builtin_memset(%32 <unnamed>: ptr<void>, %33 <unnamed>: i32, %34 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

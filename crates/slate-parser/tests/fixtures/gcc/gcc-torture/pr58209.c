@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 T = i64;
 // DEFAULT-NEXT:     global %2 buf: array<i64, 1024> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 n: i64) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             return array_decay<ptr<i64>, length=Some(1024)>(%2);
@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     write<bool>(%13, ne<ptr<i64>>(call<ptr<i64>, signature=fn(i64) -> ptr<i64>>(%6, widen<i64, reason=arg>(read<i32>(%9))), ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%2), read<i32>(%9))));
 // DEFAULT-NEXT:                 if read<bool>(%13)
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

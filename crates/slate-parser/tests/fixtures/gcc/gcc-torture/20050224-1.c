@@ -61,10 +61,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %4 d: u64 [storage=static] = widen<u64, reason=assign>(const<u32>(3223732224)) [linkage=external];
 // DEFAULT-NEXT:     global %5 e: u64 [storage=static] = widen<u64, reason=assign>(const<u32>(3223879680)) [linkage=external];
 // DEFAULT-NEXT:     global %6 f: u64 [storage=static] = widen<u64, reason=assign>(const<u32>(3224191864)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @foo(%8 x: i32, %9 y: i32, %10 z: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%8), const<i32>(245)), ne<i32>(read<i32>(%9), const<i32>(36))), ne<i32>(read<i32>(%10), const<i32>(444)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 g: u64 [storage=automatic];

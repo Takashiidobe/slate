@@ -44,10 +44,11 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %7 @__builtin_fabsf(%6 <unnamed>: f32) -> f32 [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: f32, %2 y: f32) -> f32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 u: f32 [storage=automatic] = call<f32, signature=fn(f32) -> f32>(__builtin_fabsf, read<f32>(%1));
-// DEFAULT-NEXT:         let %4 v: f32 [storage=automatic] = call<f32, signature=fn(f32) -> f32>(__builtin_fabsf, read<f32>(%2));
+// DEFAULT-NEXT:         let %3 u: f32 [storage=automatic] = call<f32, signature=fn(f32) -> f32>(%7, read<f32>(%1));
+// DEFAULT-NEXT:         let %4 v: f32 [storage=automatic] = call<f32, signature=fn(f32) -> f32>(%7, read<f32>(%2));
 // DEFAULT-NEXT:         if not<bool>(ge<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if float_class<bool, test=infinite>(read<f32>(%4))
@@ -57,9 +58,12 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<f32>(42.0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_inff() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_nanf(%9 <unnamed>: ptr<const i8>) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(call<f32, signature=fn(f32, f32) -> f32>(%0, call<f32, signature=fn() -> f32>(__builtin_inff), call<f32, signature=fn(ptr<const i8>) -> f32>(__builtin_nanf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%6))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(call<f32, signature=fn(f32, f32) -> f32>(%0, call<f32, signature=fn() -> f32>(%8), call<f32, signature=fn(ptr<const i8>) -> f32>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%11))))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

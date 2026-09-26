@@ -67,20 +67,21 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @f(%9 a: u16b) -> u17b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<u17b>(lt<i32>(widen<i32, reason=usual_arith>(reinterpret<i16b, reason=explicit, fits=unknown>(read<u16b>(%9))), const<i32>(0)), widen<u17b, reason=explicit>(read<u16b>(%9)), widen<u17b, reason=explicit>(truncate<u16b, reason=explicit, fits=unknown>(neg<u32, overflow=wrap>(const<u32>(1)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %12 i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<u64>(widen<u64, reason=usual_arith>(read<u32>(%12)), div<u64, by_zero=ub>(const<u64>(10), const<u64>(2)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: u32 [synthetic] = read<u32>(%12);
-// DEFAULT-NEXT:                 let %15: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%14), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%12, read<u32>(%15));
+// DEFAULT-NEXT:                 let %15: u32 [synthetic] = read<u32>(%12);
+// DEFAULT-NEXT:                 let %16: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%15), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%12, read<u32>(%16));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u17b>(call<u17b, signature=fn(u16b) -> u17b>(%8, read<u16b>(deref(ptr_offset<ptr<const u16b>, subtract=false, element=u16b, overflow=ub>(array_decay<ptr<const u16b>, length=Some(5)>(%11), read<u32>(%12))))), call<u17b, signature=fn(u16b) -> u17b>(%6, read<u16b>(deref(ptr_offset<ptr<const u16b>, subtract=false, element=u16b, overflow=ub>(array_decay<ptr<const u16b>, length=Some(5)>(%11), read<u32>(%12))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%14);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

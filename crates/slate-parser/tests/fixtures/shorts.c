@@ -55,9 +55,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 s: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(30000));
 // DEFAULT-NEXT:         let %7 us: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(60000)));
 // DEFAULT-NEXT:         let %8 neg: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(12345)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), widen<i32, reason=vararg>(call<i16, signature=fn(i16, i16) -> i16>(%1, read<i16>(%6), truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(30000))))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%7))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), widen<i32, reason=vararg>(read<i16>(%8)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), widen<i32, reason=vararg>(call<i16, signature=fn(i16, i16) -> i16>(%1, read<i16>(%6), truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(30000))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%7))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), widen<i32, reason=vararg>(read<i16>(%8)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -87,6 +87,7 @@ int main() {
 // DEFAULT-NEXT:         write<u8>(field3(field0(%8)), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         return read<u32>(field1(%8));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 a: @type1 [storage=automatic];
 // DEFAULT-NEXT:         let %13 b: @type1 [storage=automatic];
@@ -98,7 +99,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(field1(%14), call<u32, signature=fn(ptr<@type1>, ptr<@type1>) -> u32>(%5, addr_of<ptr<@type1>>(%12), addr_of<ptr<@type1>>(%13)));
 // DEFAULT-NEXT:         call<u32, signature=fn(ptr<@type1>, ptr<@type1>) -> u32>(%5, addr_of<ptr<@type1>>(%12), addr_of<ptr<@type1>>(%13));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(field0(%14))))), const<i32>(255)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(field0(%14))))), const<i32>(255))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(field0(%14))))), const<i32>(255))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field3(field0(%14))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

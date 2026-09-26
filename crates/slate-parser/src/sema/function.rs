@@ -1,3 +1,4 @@
+use super::builtins::BuiltinAttribute;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClass};
@@ -108,6 +109,28 @@ impl Lowerer {
     }
 
     pub(super) fn finish_functions(&mut self, mode: InlineSemantics) -> Result<(), ResolveError> {
+        let named_builtins: Vec<_> = self
+            .module
+            .functions
+            .iter()
+            .filter_map(|function| {
+                let builtin = super::builtins::clang_builtin(&function.name)?;
+                Some((function.id, function.value.id, builtin))
+            })
+            .collect();
+        for (node, id, builtin) in named_builtins {
+            if !self.declares_builtin(id, builtin) {
+                continue;
+            }
+            self.module
+                .metadata
+                .entry(node)
+                .or_default()
+                .push(("c_builtin".into(), builtin.name.into()));
+            if builtin.has(BuiltinAttribute::NoReturn) {
+                self.function_declarations.entry(id).or_default().noreturn = true;
+            }
+        }
         let retained_attributes: Vec<_> = self
             .function_declarations
             .iter()

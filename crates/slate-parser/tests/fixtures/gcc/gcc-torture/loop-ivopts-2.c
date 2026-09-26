@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @check(%2 l: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %7
@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%2), read<i32>(%3)))), reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(7), from_bool<i32, reason=promotion>(logical_or<bool>(lt<i32>(read<i32>(%3), const<i32>(256)), ge<i32>(read<i32>(%3), const<i32>(280))))), from_bool<i32, reason=promotion>(logical_and<bool>(ge<i32>(read<i32>(%3), const<i32>(144)), lt<i32>(read<i32>(%3), const<i32>(256)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];

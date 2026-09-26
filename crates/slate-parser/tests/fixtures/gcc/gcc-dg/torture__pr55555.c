@@ -57,6 +57,7 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 s: array<f64, 4> [storage=static] [align=16] = aggregate<array<f64, 4>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0), index2 = const<f64>(3.0), index3 = const<f64>(4.0)) [linkage=external];
 // DEFAULT-NEXT:     global %1 pol_x: array<f64, 2> [storage=static] [align=16] = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(5.0), index1 = const<f64>(6.0)) [linkage=external];
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 coef_x: array<f64, 8> [storage=automatic] [align=16] = aggregate<array<f64, 8>, zero_fill=false>(index0 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index2 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index3 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index4 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index5 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index6 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), index7 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:         let %4 lxp: i32 [storage=automatic] = const<i32>(0);
@@ -71,19 +72,19 @@ main() {
 // DEFAULT-NEXT:                             write<i64>(%6, widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:                         condition: le<i64>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(4)))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %12: i64 [synthetic] = read<i64>(%6);
-// DEFAULT-NEXT:                             let %13: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%12), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                             write<i64>(%6, read<i64>(%13));
+// DEFAULT-NEXT:                             let %13: i64 [synthetic] = read<i64>(%6);
+// DEFAULT-NEXT:                             let %14: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                             write<i64>(%6, read<i64>(%14));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7)))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7))))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(4)>(%0), sub<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<f64>(%5))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%15));
-// DEFAULT-NEXT:                 yield ne<i32>(read<i32>(%14), const<i32>(1));
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%16));
+// DEFAULT-NEXT:                 yield ne<i32>(read<i32>(%15), const<i32>(1));
 // DEFAULT-NEXT:             };
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             in 0 "r" array_decay<ptr<f64>, length=Some(8)>(%3);
@@ -94,14 +95,14 @@ main() {
 // DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(8))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%17));
+// DEFAULT-NEXT:                 let %17: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%18));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), read<i32>(%4)))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(and<i32>(read<i32>(%4), const<i32>(3)), const<i32>(1))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(5.0), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(from_bool<i32, reason=promotion>(ge<i32>(read<i32>(%4), const<i32>(4)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -109,7 +110,7 @@ main() {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

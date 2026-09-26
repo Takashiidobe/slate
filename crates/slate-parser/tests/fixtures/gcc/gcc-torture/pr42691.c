@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:         field0 rep: array<u16, 4>;
 // DEFAULT-NEXT:         field1 val: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @add(%3 key: ptr<f64>, %4 table: ptr<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         let %6 deletedEntry: ptr<f64> [storage=automatic] = null<ptr<f64>>;
@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:                     break %15;
 // DEFAULT-NEXT:                 let %8 _D_inf: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<u16, 4>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index2 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index3 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(32752)))));
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(deref(read<ptr<f64>>(%7))), read<f64>(field1(%8)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 let %9 _D_inf2: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<u16, 4>, zero_fill=false>(index0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index2 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))), index3 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(32752)))));
 // DEFAULT-NEXT:                 if not<bool>(ne<f64, exceptions=ignore>(read<f64>(field1(%9)), const<f64>(0.0)))
 // DEFAULT-NEXT:                     write<ptr<f64>>(%6, read<ptr<f64>>(%7));

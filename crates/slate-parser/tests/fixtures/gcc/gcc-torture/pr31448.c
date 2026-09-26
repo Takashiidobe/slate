@@ -82,14 +82,15 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..3, bits=0..24>(deref(read<ptr<@type0>>(%2))), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(1)>(%9), read<i32>(%8)))));
 // DEFAULT-NEXT:         write<i32>(bitfield1<unit=1, bytes=4..7, bits=0..24>(deref(read<ptr<@type0>>(%2))), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(1)>(%9), read<i32>(%8)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type0>>(%2, addr_of<ptr<@type0>>(%11));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..24>(deref(read<ptr<@type0>>(%2))))), const<u32>(4294901502))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(bitfield1<unit=1, bytes=4..7, bits=0..24>(deref(read<ptr<@type0>>(%2))))), const<u32>(4294901502))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

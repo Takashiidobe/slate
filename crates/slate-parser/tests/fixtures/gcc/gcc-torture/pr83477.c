@@ -47,10 +47,11 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 zx: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(conditional<u32>(eq<i32>(read<i32>(%2), const<i32>(0)), read<u32>(%4), div<u32, by_zero=ub>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%2)))));
 // DEFAULT-NEXT:         write<i32>(%0, conditional<i32>(ne<i32>(mul<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%3), const<i32>(2))), read<i32>(%5)), const<i32>(0)), read<i32>(%3), const<i32>(0)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%1, const<i32>(1), from_bool<i32, reason=arg>(not<bool>(ne<i32>(read<i32>(%0), const<i32>(0)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -53,8 +53,8 @@ int main(void) {
 // DEFAULT-NEXT:         field3 d: u32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
 // DEFAULT-NEXT:     type @type1 t1 = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @f(%5 ps: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type0>>(%5))), reinterpret<u32, reason=assign, fits=always>(const<i32>(10000)));
 // DEFAULT-NEXT:         write<u32>(field1(deref(read<ptr<@type0>>(%5))), div<u32, by_zero=ub>(read<u32>(field0(deref(read<ptr<@type0>>(%5)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))));
@@ -65,8 +65,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 s: @type0 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%4, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(%7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10000))), ne<u32>(read<u32>(field1(%7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3333)))), ne<u32>(read<u32>(field2(%7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10000)))), ne<u32>(read<u32>(field3(%7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3333))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

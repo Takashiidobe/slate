@@ -49,12 +49,12 @@ int main() {
 // DEFAULT-NEXT:     global %0 d: f64 [storage=static] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1024.0), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(32768.0))) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @floor(%7 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @floorf(%8 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 df: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(floor, read<f64>(%0));
-// DEFAULT-NEXT:         let %6 f1: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(floor, read<f64>(%0)));
+// DEFAULT-NEXT:         let %5 df: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%0));
+// DEFAULT-NEXT:         let %6 f1: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%0)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%5)), const<i32>(1023)), ne<i32>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%6)), const<i32>(1023)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

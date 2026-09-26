@@ -46,16 +46,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%4 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%4 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%2, neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         switch %5 widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(read<i32>(%2)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %5 const<i32>(255):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 default %5:
-// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

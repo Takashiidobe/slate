@@ -100,10 +100,17 @@ Statements support declarations, writes, and numeric operations.
 Pointer nulls, address-of values, byte-array constants, array decay,
 function decay, and calls are represented explicitly. A call names its callee
 as a binding ID (`call<T>(%3, ...)`) when the designator resolves to a known
-function, as a builtin spelling (`call<T>(__builtin_memcpy, ...)`) for a
-compiler-provided function-like builtin, or as a pointer value
-(`call<T>(read<ptr<fn(..)>>(%7), ...)`) for an indirect call. Builtin callees
-carry `c_builtin` metadata and have no fabricated source declaration or binding.
+function or a function-like builtin, or as a pointer value
+(`call<T>(read<ptr<fn(..)>>(%7), ...)`) for an indirect call. Builtins look
+like functions, as clang's lazily created builtin `FunctionDecl`s do: a builtin
+used without a declaration gets one implicit `fn` per spelling
+(`fn %9 @__builtin_abort() -> void [linkage=external] [noreturn]`) with unnamed
+parameters and the registry prototype, and every function that is a builtin
+carries `c_builtin` metadata. The builtin's `NoReturn` attribute becomes the
+function's `[noreturn]`; `Const`, `Pure` and `NoThrow` are dropped, since they
+only license optimizations and change nothing a C program can observe
+(`tests/fixtures/sema/ir_builtin_noreturn.c`). A builtin used only inside an
+unevaluated `sizeof`/`_Generic` operand leaves no declaration.
 Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
 and unprototyped distinction even when a later redeclaration of the same
@@ -126,8 +133,9 @@ target's canonical types, not to any typedef the translation unit declares.
 An ordinary declaration of a builtin's name keeps builtin status when, as in
 clang, it is a function with external linkage whose type is compatible with
 the builtin's signature (an unprototyped `int abs();`, a `const` parameter, or
-a missing `noreturn` still match); the call then lowers exactly like the
-undeclared builtin. An incompatible or `static` declaration shadows the
+a missing `noreturn` still match); calls then go to that declaration with the
+builtin's signature, and the declaration picks up the builtin's `noreturn` and
+`c_builtin`. An incompatible or `static` declaration shadows the
 builtin and its calls go to the declared function
 (`tests/fixtures/sema/ir_redeclared_builtins.c`). Header provenance plays no
 part: it decides libc identity for the Rust handoff, not builtin semantics.

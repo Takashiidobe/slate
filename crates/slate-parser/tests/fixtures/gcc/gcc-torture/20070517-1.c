@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @get_kind(%2 v: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 k: volatile i32 [storage=automatic] = read<i32>(%2);
 // DEFAULT-NEXT:         return read<i32, volatile>(%3);
@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:                         if logical_or<bool>(eq<i32>(read<i32>(%8), const<i32>(9)), eq<i32>(read<i32>(%8), const<i32>(10)))
 // DEFAULT-NEXT:                             write<i32>(%7, read<i32>(%6));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

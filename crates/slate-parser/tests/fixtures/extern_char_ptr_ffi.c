@@ -45,9 +45,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @strlen(%9 __s: ptr<const i8>) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 msg: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(6)>(%10));
-// DEFAULT-NEXT:         let %6 n: u64 [storage=automatic] = call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%5));
+// DEFAULT-NEXT:         let %6 n: u64 [storage=automatic] = call<u64, signature=fn(ptr<const i8>) -> u64>(%3, read<ptr<const i8>>(%5));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%2, read<ptr<const i8>>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%11)), read<u64>(%6));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%11)), read<u64>(%6));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

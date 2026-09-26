@@ -47,13 +47,14 @@ int main() {
 // DEFAULT-NEXT:         let %3 t: u32 [storage=automatic] = widen<u32, reason=assign>(read<u8>(%1));
 // DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%3), read<u32>(%2)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%3), and<u32>(neg<u32, overflow=wrap>(read<u32>(%2)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7))))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(const<i32>(8), const<i32>(8)), ne<i32>(const<i32>(4), const<i32>(4)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %5 x: volatile u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(152)));
 // DEFAULT-NEXT:         let %6 y: volatile u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(19));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(u8, u32) -> u8>(%0, read<u8, volatile>(%5), read<u32, volatile>(%6)))), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

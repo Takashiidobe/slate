@@ -54,16 +54,17 @@ int main() {
 // DEFAULT-NEXT:     global %2 c: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(5), field1 = const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %3 d: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 b: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @foo(%6 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         while %9 {
-// DEFAULT-NEXT:             let %10: i16 [synthetic] = read<i16>(%4);
-// DEFAULT-NEXT:             let %11: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%4, read<i16>(%11));
-// DEFAULT-NEXT:             yield le<i32>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(0));
+// DEFAULT-NEXT:         while %10 {
+// DEFAULT-NEXT:             let %11: i16 [synthetic] = read<i16>(%4);
+// DEFAULT-NEXT:             let %12: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%11)), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%4, read<i16>(%12));
+// DEFAULT-NEXT:             yield le<i32>(widen<i32, reason=promotion>(read<i16>(%11)), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %8 e: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1));

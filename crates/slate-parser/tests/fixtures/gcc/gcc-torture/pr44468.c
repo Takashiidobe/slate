@@ -106,22 +106,22 @@ int         main() {
 // DEFAULT-NEXT:         write<i32>(field0(deref(pointer_cast<ptr<@type0>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%11)), const<u64>(4))))), const<i32>(3));
 // DEFAULT-NEXT:         return read<i32>(field0(field1(%3)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %12 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(4), const<u64>(4)), ne<u64>(const<u64>(4), const<u64>(4))), ne<u64>(const<u64>(4), const<u64>(4)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%4, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%7, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%10, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

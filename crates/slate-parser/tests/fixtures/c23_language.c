@@ -268,7 +268,7 @@ int main(void) {
 // DEFAULT-NEXT:         return const<i32>(47);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @c23_never_return() -> void [linkage=internal] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(99));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(99));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @c23_unnamed_parameter(%67 <unnamed>: i32, %22 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%22);
@@ -356,7 +356,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%27);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%69)), read<i32>(%59), read<i32>(%60), read<i32>(%61), read<i32>(%62), read<i32>(%63), read<i32>(%64));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%69)), read<i32>(%59), read<i32>(%60), read<i32>(%61), read<i32>(%62), read<i32>(%63), read<i32>(%64));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

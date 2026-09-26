@@ -112,7 +112,7 @@ int main() {
 // DEFAULT-NEXT:     type @type0 PgHdr = struct incomplete;
 // DEFAULT-NEXT:     type @type1 PgHdr = @type0;
 // DEFAULT-NEXT:     type @type2 u8 = u8;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @merge_pagelist(%5 pA: ptr<@type0>, %6 pB: ptr<@type0>) -> ptr<@type0> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 result: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %8 pTail: ptr<@type0> [storage=automatic];
@@ -147,24 +147,25 @@ int main() {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return read<ptr<@type0>>(field8(%7));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %21 @__builtin_memset(%18 <unnamed>: ptr<void>, %19 <unnamed>: i32, %20 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %9 @sort_pagelist(%10 pIn: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 a: array<ptr<@type0>, 25> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %12 p: ptr<@type0> [storage=automatic];
 // DEFAULT-NEXT:         let %13 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11)), const<i32>(0), const<u64>(200));
-// DEFAULT-NEXT:         while %18 ne<ptr<@type0>>(read<ptr<@type0>>(%10), null<ptr<@type0>>)
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%21, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11)), const<i32>(0), const<u64>(200));
+// DEFAULT-NEXT:         while %22 ne<ptr<@type0>>(read<ptr<@type0>>(%10), null<ptr<@type0>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type0>>(%12, read<ptr<@type0>>(%10));
 // DEFAULT-NEXT:                 write<ptr<@type0>>(%10, read<ptr<@type0>>(field8(deref(read<ptr<@type0>>(%12)))));
 // DEFAULT-NEXT:                 write<ptr<@type0>>(field8(deref(read<ptr<@type0>>(%12))), null<ptr<@type0>>);
-// DEFAULT-NEXT:                 for %19
+// DEFAULT-NEXT:                 for %23
 // DEFAULT-NEXT:                     init:
 // DEFAULT-NEXT:                         write<i32>(%13, const<i32>(0));
 // DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%13), sub<i32, overflow=ub>(const<i32>(25), const<i32>(1)))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %21: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:                         let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%13, read<i32>(%22));
+// DEFAULT-NEXT:                         let %25: i32 [synthetic] = read<i32>(%13);
+// DEFAULT-NEXT:                         let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%13, read<i32>(%26));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
@@ -172,7 +173,7 @@ int main() {
 // DEFAULT-NEXT:                             if eq<ptr<@type0>>(read<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11), read<i32>(%13)))), null<ptr<@type0>>)
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     write<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11), read<i32>(%13))), read<ptr<@type0>>(%12));
-// DEFAULT-NEXT:                                     break %19;
+// DEFAULT-NEXT:                                     break %23;
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 {
@@ -188,14 +189,14 @@ int main() {
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<ptr<@type0>>(%12, read<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(25)>(%11), const<i32>(0)))));
-// DEFAULT-NEXT:         for %20
+// DEFAULT-NEXT:         for %24
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%13, const<i32>(1));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%13), const<i32>(25))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %23: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:                 let %24: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%23), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%13, read<i32>(%24));
+// DEFAULT-NEXT:                 let %27: i32 [synthetic] = read<i32>(%13);
+// DEFAULT-NEXT:                 let %28: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%13, read<i32>(%28));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -219,7 +220,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%16, call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%9, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%15), const<i32>(0))))));
 // DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%9, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%15), const<i32>(0)))));
 // DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(field8(deref(read<ptr<@type0>>(%16)))), read<ptr<@type0>>(%16))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

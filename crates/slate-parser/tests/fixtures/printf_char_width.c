@@ -35,7 +35,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %3 .str3: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 51, 99, 124, 37, 45, 51, 99, 124, 37, 99, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%2 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%3)), const<i32>(97), const<i32>(98), const<i32>(99));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%3)), const<i32>(97), const<i32>(98), const<i32>(99));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -92,10 +92,11 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(bitfield6<unit=0, bytes=20..28, bits=15..32>(%4), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield7<unit=0, bytes=20..28, bits=32..34>(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

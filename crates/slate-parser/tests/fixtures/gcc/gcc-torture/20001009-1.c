@@ -39,7 +39,7 @@ int  main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 c: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(2));
 // DEFAULT-NEXT:         let %5 d: i32 [storage=automatic] = const<i32>(254);
@@ -48,7 +48,7 @@ int  main(void) {
 // DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(or<i32>(read<i32>(%4), and<i32>(read<i32>(%6), read<i32>(%7))))), widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(read<i32>(%5))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

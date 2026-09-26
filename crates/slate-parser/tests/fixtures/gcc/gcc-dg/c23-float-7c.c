@@ -57,20 +57,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %2 ld: volatile f80 [storage=static] = call<f80, signature=fn(ptr<const i8>) -> f80>(__builtin_nansl, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%8))) [linkage=external];
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %2 ld: volatile f80 [storage=static] = call<f80, signature=fn(ptr<const i8>) -> f80>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%10))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @feclearexcept(%6 __excepts: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @fetestexcept(%7 __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %9 @__builtin_nansl(%8 <unnamed>: ptr<const i8>) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %4 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, or<i32>(or<i32>(or<i32>(or<i32>(const<i32>(32), const<i32>(4)), const<i32>(16)), const<i32>(8)), const<i32>(1)));
-// DEFAULT-NEXT:         let %10: f80 [synthetic] = read<f80, volatile>(%2);
-// DEFAULT-NEXT:         let %11: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%10), read<f80, volatile>(%2));
-// DEFAULT-NEXT:         write<f80, volatile>(%2, read<f80>(%11));
+// DEFAULT-NEXT:         let %12: f80 [synthetic] = read<f80, volatile>(%2);
+// DEFAULT-NEXT:         let %13: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%12), read<f80, volatile>(%2));
+// DEFAULT-NEXT:         write<f80, volatile>(%2, read<f80>(%13));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

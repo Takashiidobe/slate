@@ -73,43 +73,43 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
 // DEFAULT-NEXT:     global %3 global: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%9 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @vat(%5 param: va_list, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 local: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%6);
 // DEFAULT-NEXT:         va_copy(%3, %6);
 // DEFAULT-NEXT:         va_copy(%5, %6);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%6);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%3);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%5), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%5);
 // DEFAULT-NEXT:         va_start(%5);
 // DEFAULT-NEXT:         va_start(%3);
 // DEFAULT-NEXT:         va_copy(%6, %5);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%6);
 // DEFAULT-NEXT:         va_copy(%6, %3);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%6);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%3);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%5), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         va_end(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 t: va_list [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(va_list, ...) -> void>(%4, read<va_list>(%8), const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

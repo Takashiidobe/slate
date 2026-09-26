@@ -100,8 +100,8 @@ df(f_le, t_le) df(f_be, t_be)
 // DEFAULT-NEXT:         field1 h: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type7 t_le = @type5;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%34 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%34 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @f_le(%11 afh: @type5, %12 bfh: @type5) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %13 hh: @type5 [storage=automatic];
 // DEFAULT-NEXT:         let %14 hp: @type5 [storage=automatic];
@@ -166,15 +166,15 @@ df(f_le, t_le) df(f_be, t_be)
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%39, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%39)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %40: bool [synthetic];
 // DEFAULT-NEXT:         if eq<u64>(read<u64>(field0(%33)), const<u64>(16140901064764293120))
 // DEFAULT-NEXT:             write<bool>(%40, ne<i32>(call<i32, signature=fn(@type5, @type5) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%10, copy<@type5, reason=arg>(aggregate<@type5, zero_fill=false>(field0 = const<u64>(4294967296))), copy<@type5, reason=arg>(aggregate<@type5, zero_fill=false>(field0 = const<u64>(4294967296)))), neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%40, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%40)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

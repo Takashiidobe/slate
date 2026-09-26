@@ -69,9 +69,9 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24, 28, 29, 30, 31, 32], bit_offsets=[None, None, None, None, None, Some(232), None, None, None], bit_units=[(29, 1)], field_units=[None, None, None, None, None, Some(0), None, None, None]];
 // DEFAULT-NEXT:     global %3 reg_stat: ptr<@type0> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @memset(%7 <unnamed>: ptr<void>, %8 <unnamed>: i32, %9 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @init_reg_last() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%3)), const<i32>(0), const<u64>(31));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%3)), const<i32>(0), const<u64>(31));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 r: @type0 [storage=automatic];
@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field8(%6), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(field8(%6)), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 sub: @type0;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %3 global: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @bla(%5 xa: ptr<@type0>, %6 xb: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field0(field1(deref(read<ptr<@type1>>(%6)))), const<i32>(1));
@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 pom: @type1 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, ptr<@type1>) -> i32>(%4, addr_of<ptr<@type0>>(field1(%8)), addr_of<ptr<@type1>>(%8)), const<i32>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

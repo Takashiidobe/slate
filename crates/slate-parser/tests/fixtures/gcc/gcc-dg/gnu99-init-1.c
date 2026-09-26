@@ -157,14 +157,14 @@ int main(void) {
 // DEFAULT-NEXT:     global %17 q: array<array<i32, 3>, 3> [storage=static] [align=16] = aggregate<array<array<i32, 3>, 3>, zero_fill=true>(index0 = aggregate<array<i32, 3>, zero_fill=true>(index1..=2 = const<i32>(23)), index1 = aggregate<array<i32, 3>, zero_fill=true>(index1 = const<i32>(23), index2 = const<i32>(24))) [linkage=external];
 // DEFAULT-NEXT:     global %18 r: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(27)) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @memcmp(%23 <unnamed>: ptr<const void>, %24 <unnamed>: ptr<const void>, %25 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @exit(%26 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @exit(%26 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %20 x: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %21 y: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %22 z: i32 [storage=automatic];
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%4), const<i32>(2)))), const<i32>(0)))), const<i32>(0)))), const<i32>(2)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%4), const<i32>(2)))), const<i32>(0)))), const<i32>(2)))), const<i32>(3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%4), const<i32>(2)))), const<i32>(0)))), const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%4), const<i32>(2)))), const<i32>(0)))), const<i32>(2))), const<i32>(1));
 // DEFAULT-NEXT:         for %27
@@ -201,9 +201,9 @@ int main(void) {
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                             body:
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%4), read<i32>(%20)))), read<i32>(%21)))), read<i32>(%22)))), from_bool<i32, reason=promotion>(logical_and<bool>(ge<i32>(read<i32>(%20), const<i32>(2)), ge<i32>(read<i32>(%22), const<i32>(2)))))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(0)), ne<i32>(read<i32>(field0(%10)), const<i32>(0))), ne<i32>(read<i32>(field0(%11)), const<i32>(0))), ne<i32>(read<i32>(field2(%9)), const<i32>(1))), ne<i32>(read<i32>(field2(%10)), const<i32>(2))), ne<i32>(read<i32>(field2(%11)), const<i32>(3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         for %30
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%20, const<i32>(0));
@@ -217,7 +217,7 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), const<i32>(0)), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), const<i32>(0))))), const<i32>(0))), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), const<i32>(0))))), const<i32>(0)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                     for %31
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                             write<i32>(%21, const<i32>(0));
@@ -230,7 +230,7 @@ int main(void) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), const<i32>(0))))), read<i32>(%21)))), const<i32>(0))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                     for %32
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                             write<i32>(%21, const<i32>(1));
@@ -244,32 +244,32 @@ int main(void) {
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), read<i32>(%21))))), const<i32>(0))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), read<i32>(%21))))), const<i32>(0)))), const<i32>(4))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), read<i32>(%21))))), const<i32>(1)))), const<i32>(4))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                 if logical_and<bool>(logical_or<bool>(lt<i32>(read<i32>(%20), const<i32>(5)), lt<i32>(read<i32>(%21), const<i32>(2))), logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), read<i32>(%21))))), const<i32>(2)))), const<i32>(0)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), read<i32>(%21))))), const<i32>(0))))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                     if logical_and<bool>(lt<i32>(read<i32>(%20), const<i32>(5)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), read<i32>(%20))))), const<i32>(0)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), const<i32>(5))))), const<i32>(2))))), const<i32>(2)))), const<i32>(5)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(array_decay<ptr<@type5>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), const<i32>(5))))), const<i32>(2))))), const<i32>(6))), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type6>, subtract=false, element=@type6, overflow=ub>(array_decay<ptr<@type6>, length=Some(6)>(%14), const<i32>(5))))), const<i32>(7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%14)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%15)), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%14)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%16)), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%1, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%14)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%15)), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%1, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%14)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type6>, length=Some(6)>(%16)), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(0)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(0)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(0)))), const<i32>(2)))), const<i32>(23)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(1)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(1)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(1)))), const<i32>(2)))), const<i32>(24)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(2)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(2)))), const<i32>(1)))), const<i32>(0))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%17), const<i32>(2)))), const<i32>(2)))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%18), const<i32>(0)))), const<i32>(27))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

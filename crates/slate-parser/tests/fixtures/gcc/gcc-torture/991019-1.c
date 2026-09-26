@@ -57,8 +57,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 epsilon: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 material_type = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo(%5 x: f64) -> @type0 [linkage=external] [abi=sysv64(scalar) -> coerce<f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 m: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field0(%6), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), read<f64>(%5)));
@@ -82,9 +82,9 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type0>(%9, copy<@type0, reason=assign>(call<@type0, signature=fn(f64) -> @type0, abi=sysv64(scalar) -> coerce<f64>>(%4, const<f64>(1.0))));
 // DEFAULT-NEXT:                     copy<@type0, reason=assign>(call<@type0, signature=fn(f64) -> @type0, abi=sysv64(scalar) -> coerce<f64>>(%4, const<f64>(1.0)));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(field0(%9)), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(1.0)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

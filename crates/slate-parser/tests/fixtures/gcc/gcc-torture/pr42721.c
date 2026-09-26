@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %4 a: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %5 b: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: u64, %3 y: u64) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<u64, by_zero=ub>(read<u64>(%2), read<u64>(%3));
 // DEFAULT-NEXT:     }
@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %10: i32 [synthetic] = xor<i32>(read<i32>(%8), from_bool<i32, reason=promotion>(read<bool>(%9)));
 // DEFAULT-NEXT:         write<i32>(%5, read<i32>(%10));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

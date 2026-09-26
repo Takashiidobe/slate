@@ -167,54 +167,55 @@ main() {
 // DEFAULT-NEXT:     global %11 l: u513b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %12 m: u513b [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %13 n: u513b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %36 @__builtin_memcpy(%33 <unnamed>: ptr<void>, %34 <unnamed>: ptr<const void>, %35 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %14 @do_copy(%15 p: ptr<void>, %16 q: ptr<const void>, %17 r: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, read<ptr<void>>(%15), read<ptr<const void>>(%16), read<u64>(%17));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%36, read<ptr<void>>(%15), read<ptr<const void>>(%16), read<u64>(%17));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %18 @f1(%19 q: i513b, %20 r: i513b, %21 s: i513b, %22 t: u513b, %23 u: u513b, %24 v: u513b) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i513b>(%0, mul<i513b, overflow=ub>(read<i513b>(%19), read<i513b>(%20)));
-// DEFAULT-NEXT:         do %33
+// DEFAULT-NEXT:         do %37
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<i513b>(%1, mul<i513b, overflow=ub>(read<i513b>(%20), read<i513b>(%21)));
-// DEFAULT-NEXT:         do %34
+// DEFAULT-NEXT:         do %38
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<i513b>(%2, div<i513b, by_zero=ub, min_by_neg_one=ub>(read<i513b>(%19), read<i513b>(%20)));
-// DEFAULT-NEXT:         do %35
+// DEFAULT-NEXT:         do %39
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%2);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<i513b>(%3, div<i513b, by_zero=ub, min_by_neg_one=ub>(read<i513b>(%19), read<i513b>(%21)));
-// DEFAULT-NEXT:         do %36
+// DEFAULT-NEXT:         do %40
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%3);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%4, mul<u513b, overflow=wrap>(read<u513b>(%22), read<u513b>(%23)));
-// DEFAULT-NEXT:         do %37
+// DEFAULT-NEXT:         do %41
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%4);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%5, mul<u513b, overflow=wrap>(read<u513b>(%23), read<u513b>(%24)));
-// DEFAULT-NEXT:         do %38
+// DEFAULT-NEXT:         do %42
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%5);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%6, div<u513b, by_zero=ub>(read<u513b>(%22), read<u513b>(%23)));
-// DEFAULT-NEXT:         do %39
+// DEFAULT-NEXT:         do %43
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%6);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%7, div<u513b, by_zero=ub>(read<u513b>(%22), read<u513b>(%24)));
-// DEFAULT-NEXT:         do %40
+// DEFAULT-NEXT:         do %44
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%7);
 // DEFAULT-NEXT:             }
@@ -222,58 +223,59 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %25 @f2(%26 q: f32, %27 r: f64, %28 s: f80, %29 t: f32, %30 u: f64, %31 v: f80) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i513b>(%8, float_to_int<i513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(%26)));
-// DEFAULT-NEXT:         do %41
+// DEFAULT-NEXT:         do %45
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%8);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<i513b>(%9, float_to_int<i513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f64>(%27)));
-// DEFAULT-NEXT:         do %42
+// DEFAULT-NEXT:         do %46
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%9);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<i513b>(%10, float_to_int<i513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f80>(%28)));
-// DEFAULT-NEXT:         do %43
+// DEFAULT-NEXT:         do %47
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<i513b>(%10);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%11, float_to_int<u513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(%29)));
-// DEFAULT-NEXT:         do %44
+// DEFAULT-NEXT:         do %48
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%11);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%12, float_to_int<u513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f64>(%30)));
-// DEFAULT-NEXT:         do %45
+// DEFAULT-NEXT:         do %49
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%12);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<u513b>(%13, float_to_int<u513b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f80>(%31)));
-// DEFAULT-NEXT:         do %46
+// DEFAULT-NEXT:         do %50
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 read<u513b>(%13);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %54 @__builtin_memset(%51 <unnamed>: ptr<void>, %52 <unnamed>: i32, %53 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %32 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%0)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%1)), const<i32>(170), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%2)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%3)), const<i32>(170), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%4)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%5)), const<i32>(170), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%6)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%7)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%0)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%1)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%2)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%3)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%4)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%5)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%6)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%7)), const<i32>(170), const<u64>(72));
 // DEFAULT-NEXT:         call<void, signature=fn(i513b, i513b, i513b, u513b, u513b, u513b) -> void>(%18, widen<i513b, reason=arg>(neg<i256b, overflow=ub>(const<i256b>(53323980256963787505256507743137477556434962931963225515943461794698643113423))), widen<i513b, reason=arg>(neg<i254b, overflow=ub>(const<i254b>(10076482373458251489901780456236592759327822657780415144730546867053397315531))), widen<i513b, reason=arg>(const<i254b>(9430367348600775477158545473775377451258484445522540280907903691748059121081)), const<u513b>(15046745594550617619205422464231805109110883864578289024439083517871820578179553927615539526791313634437787081814763432804808038115388367331529035246240655), widen<u513b, reason=arg>(const<u503b>(20633637828717837096174917874088391607464281656818868213468970773994599068609617673436080725569780340050358299419252926775025136778754971701553110169281)), widen<u513b, reason=arg>(const<u481b>(5136122090451895036220764749952166060863831396714271041799786889820341177646647112770727950839029515643589984981094121423221389337601736282556974)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%8)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%9)), const<i32>(170), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%10)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%11)), const<i32>(170), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%12)), const<i32>(85), const<u64>(72));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%13)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%8)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%9)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i513b>>(%10)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%11)), const<i32>(170), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%12)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%54, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u513b>>(%13)), const<i32>(170), const<u64>(72));
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f64, f80, f32, f64, f80) -> void>(%25, const<f32>(12345678.0), neg<f64>(const<f64>(234567891234567.13)), const<f80>(123465987893275.532448), const<f32>(12345678.0), const<f64>(234567891234567.13), const<f80>(123465987893275.532448));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

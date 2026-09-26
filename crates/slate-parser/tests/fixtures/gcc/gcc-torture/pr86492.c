@@ -69,6 +69,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..4, bits=12..16>(field1(%4)), reinterpret<u32, reason=assign, fits=always>(const<i32>(14)));
 // DEFAULT-NEXT:         return read<u32>(field0(%4));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 u: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(4)), const<i32>(32)), ne<u64>(const<u64>(4), const<u64>(4)))
@@ -76,7 +77,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(field0(%6), call<u32, signature=fn(u32) -> u32>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(114))));
 // DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(114)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(field1(%6)))), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..16>(field1(%6)))), const<i32>(14))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=16..32>(field1(%6)))), const<i32>(114)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

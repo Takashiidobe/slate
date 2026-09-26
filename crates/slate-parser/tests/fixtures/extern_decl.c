@@ -44,7 +44,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @tolower(%7 c: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @abs(%8 n: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%9)), call<i32, signature=fn(i32) -> i32>(toupper, const<i32>(97)), call<i32, signature=fn(i32) -> i32>(tolower, const<i32>(90)), call<i32, signature=fn(i32) -> i32>(abs, neg<i32, overflow=ub>(const<i32>(42))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%9)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(90)), call<i32, signature=fn(i32) -> i32>(%3, neg<i32, overflow=ub>(const<i32>(42))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

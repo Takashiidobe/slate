@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 y: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%4 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%4 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(%2, read<i32>(%1));
@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%2, mul<i32, overflow=ub>(const<i32>(2), read<i32>(%2)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while not<bool>(ge<i32>(sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%1)), const<i32>(20)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

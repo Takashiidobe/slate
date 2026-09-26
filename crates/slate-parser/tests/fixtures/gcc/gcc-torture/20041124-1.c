@@ -44,15 +44,15 @@ int main() {
 // DEFAULT-NEXT:         field0 x: complex<u16>;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0]];
 // DEFAULT-NEXT:     global %3 gs: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = complex_convert<complex<u16>, reason=assign, fits=unknown>(add<complex<i32>, complex=true, overflow=ub>(const<i32>(100), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(200))))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo() -> @type0 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<complex<i32>>(complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(temporary %7 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%4)))), complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(%3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

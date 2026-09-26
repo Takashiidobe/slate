@@ -67,8 +67,8 @@ void bar(void) {}
 // DEFAULT-NEXT:     global %2 ptr1: ptr<void> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %3 ptr2: ptr<void> [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %4 i: i32 [storage=static] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @doit(%7 pptr: ptr<ptr<void>>, %8 cond: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -88,7 +88,7 @@ void bar(void) {}
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%9, read<i32>(%4));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%11, read<i32>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

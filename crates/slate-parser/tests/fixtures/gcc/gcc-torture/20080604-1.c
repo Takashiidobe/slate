@@ -60,10 +60,10 @@ int main() {
 // DEFAULT-NEXT:     global %1 x: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%1)), null<ptr<const i8>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @baz(%5 b: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %6 bar: @type0 [storage=automatic];
@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<const i8>>(field0(%1), null<ptr<const i8>>);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%1)), null<ptr<const i8>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

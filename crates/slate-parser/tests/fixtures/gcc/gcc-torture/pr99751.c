@@ -47,11 +47,12 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%1)), call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%2, read<ptr<i32>>(%5)));
 // DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%2, read<ptr<i32>>(%5));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 f: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%4, addr_of<ptr<i32>>(%7));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%0), addr_of<ptr<i32>>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -48,9 +48,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %3 mask: u32 [storage=automatic] = const<u32>(255);
 // DEFAULT-NEXT:         let %4 wide: u64 [storage=automatic] = const<u64>(4095);
 // DEFAULT-NEXT:         let %5 zero: u32 [storage=automatic] = const<u32>(0);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%7)), read<u32>(%2), read<u32>(%3), read<u32>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%8)), read<u32>(%3), read<u32>(%3), read<u64>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%9)), read<u32>(%5), read<u32>(%5), read<u32>(%5), read<u32>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%7)), read<u32>(%2), read<u32>(%3), read<u32>(%3));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%8)), read<u32>(%3), read<u32>(%3), read<u64>(%4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%9)), read<u32>(%5), read<u32>(%5), read<u32>(%5), read<u32>(%5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

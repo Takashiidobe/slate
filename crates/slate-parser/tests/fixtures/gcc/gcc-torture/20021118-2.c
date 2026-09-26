@@ -68,8 +68,8 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @t1(%3 f: ptr<f32>, %4 i: i32, %5 f1: ptr<fn(f64) -> void>, %6 f2: ptr<fn(f32, f32) -> void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(read<ptr<fn(f64) -> void>>(%5), const<f64>(3.0));
 // DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), read<i32>(%4))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), add<i32, overflow=ub>(read<i32>(%4), const<i32>(1))))));
@@ -83,23 +83,23 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @f1(%14 d: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%14), const<f64>(3.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @f2(%16 f1: f32, %17 f2: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f32, exceptions=ignore>(read<f32>(%16), const<f32>(2.5)), ne<f32, exceptions=ignore>(read<f32>(%17), const<f32>(3.5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %18 @f3(%19 f: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%19), const<f32>(6.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %21 f: array<f32, 3> [storage=automatic] = aggregate<array<f32, 3>, zero_fill=false>(index0 = const<f32>(2.0), index1 = const<f32>(3.0), index2 = const<f32>(4.0));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>) -> i32>(%2, array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(0), function_decay<ptr<fn(f64) -> void>>(%13), function_decay<ptr<fn(f32, f32) -> void>>(%15));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>, ptr<fn(f32) -> void>) -> i32>(%7, array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(1), function_decay<ptr<fn(f64) -> void>>(%13), function_decay<ptr<fn(f32, f32) -> void>>(%15), function_decay<ptr<fn(f32) -> void>>(%18));
 // DEFAULT-NEXT:         if logical_and<bool>(ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(0)))), const<f32>(3.0)), ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(1)))), const<f32>(4.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

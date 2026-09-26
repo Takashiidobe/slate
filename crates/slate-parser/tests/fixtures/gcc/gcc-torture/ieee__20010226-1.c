@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:     global %2 m1: f80 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 m2: f80 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 mant_long: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(const<f80>(1.08420217248550443401E-19), const<f80>(4.65661287307739257813E-10))
 // DEFAULT-NEXT:             return const<i32>(0);
@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<u64>(read<u64>(%4), widen<u64, reason=usual_arith>(const<u32>(2362232012)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

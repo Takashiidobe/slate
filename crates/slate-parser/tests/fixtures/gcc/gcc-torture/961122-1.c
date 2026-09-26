@@ -45,8 +45,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %2 acc: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @addhi(%4 a: i16) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %10: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%9), shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(read<i16>(%4)), const<i32>(32)));
@@ -61,11 +61,11 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(%2, const<i64>(281470681743360));
 // DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%3, truncate<i16, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), const<i64>(281474976710656))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%5, truncate<i16, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), const<i64>(281470681743360))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

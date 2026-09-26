@@ -67,13 +67,14 @@ int main() {
 // DEFAULT-NEXT:     fn %8 @qux(%9 x: i129b, %10 y: i129b) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i129b>(read<i129b>(%9), read<i129b>(%10)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u400b>(call<u400b, signature=fn(i257b) -> u400b>(%0, widen<i257b, reason=arg>(neg<i2b, overflow=ub>(const<i2b>(1)))), widen<u400b, reason=usual_arith>(const<u1b>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if ne<u300b>(call<u300b, signature=fn(i7b, u17b) -> u300b>(%2, widen<i7b, reason=arg>(const<i2b>(1)), widen<u17b, reason=arg>(const<u2b>(3))), reinterpret<u300b, reason=explicit, fits=unknown>(widen<i300b, reason=explicit>(neg<i4b, overflow=ub>(const<i4b>(4)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i129b, i129b) -> i32>(%8, call<i129b, signature=fn(i129b) -> i129b>(%6, widen<i129b, reason=arg>(const<i32>(100))), widen<i129b, reason=arg>(const<i32>(76))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

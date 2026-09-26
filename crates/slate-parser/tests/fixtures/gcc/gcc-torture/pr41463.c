@@ -104,9 +104,9 @@ int main() {
 // DEFAULT-NEXT:         return read<ptr<@type1>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%9))))), read<i32>(%10))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(96)));
+// DEFAULT-NEXT:         let %13 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, const<u64>(96)));
 // DEFAULT-NEXT:         if ne<ptr<@type1>>(call<ptr<@type1>, signature=fn(ptr<@type1>, i32) -> ptr<@type1>>(%8, read<ptr<@type1>>(%13), const<i32>(1)), addr_of<ptr<@type1>>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field0 i: i32 : 7;
 // DEFAULT-NEXT:         field1 u: u32 : 7;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(7)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @main(%2 argc: i32, %3 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 bit: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %6 u: u32 [storage=automatic];
@@ -96,17 +96,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..2, bits=0..7>(%5), neg<i32, overflow=ub>(const<i32>(13)));
 // DEFAULT-NEXT:         write<i32>(%7, neg<i32, overflow=ub>(const<i32>(13)));
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%7)), read<u32>(%6)), read<u32>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%7)), read<u32>(%6)), read<u32>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%7), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=7..14>(%5)))), read<i32>(%9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(bitfield0<unit=0, bytes=0..2, bits=0..7>(%5)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=7..14>(%5)))), read<i32>(%9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%7)), reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=7..14>(%5))))), read<u32>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..2, bits=0..7>(%5))), reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=7..14>(%5))))), read<u32>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

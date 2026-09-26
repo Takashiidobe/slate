@@ -88,6 +88,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 va_list = va_list;
+// DEFAULT-NEXT:     fn %58 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @test1(%2 a: i32, %3 b: i32, %4 c: i32, %5 d: i32, %6 e: i32, %7 f: i32, %8 g: i32, %9 h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %11 ap: va_list [storage=automatic];
@@ -95,7 +96,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%10, va_arg<i32>(%11));
 // DEFAULT-NEXT:         va_arg<i32>(%11);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%10), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         va_end(%11);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @test2(%13 a: i32, %14 b: i32, %15 c: i32, %16 d: i32, %17 e: i32, %18 f: i32, %19 g: i32, %20 h: f80, %21 i: i32, %22 j: f80, %23 k: i32, %24 l: f80, %25 m: i32, %26 n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -105,7 +106,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%27, va_arg<i32>(%28));
 // DEFAULT-NEXT:         va_arg<i32>(%28);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%27), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         va_end(%28);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @test3(%30 a: f64, %31 b: f64, %32 c: f64, %33 d: f64, %34 e: f64, %35 f: f64, %36 g: f64, %37 h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -115,7 +116,7 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(%38, va_arg<f64>(%39));
 // DEFAULT-NEXT:         va_arg<f64>(%39);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%38), const<f64>(1234.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         va_end(%39);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %40 @test4(%41 a: f64, %42 b: f64, %43 c: f64, %44 d: f64, %45 e: f64, %46 f: f64, %47 g: f64, %48 h: f80, %49 i: f64, %50 j: f80, %51 k: f64, %52 l: f80, %53 m: f64, %54 n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -125,7 +126,7 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(%55, va_arg<f64>(%56));
 // DEFAULT-NEXT:         va_arg<f64>(%56);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%55), const<f64>(1234.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
 // DEFAULT-NEXT:         va_end(%56);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %57 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -67,8 +67,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %3 pars: u64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 b: array<u64, 32> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %5 r: ptr<u64> [storage=static] = array_decay<ptr<u64>, length=Some(32)>(%4) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @alpha_ep_extbl_i_eq_0() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 rb: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %8 ra: u32 [storage=automatic];
@@ -90,9 +90,9 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(%3, widen<u64, reason=assign>(const<u32>(2281701442)));
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%4), const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(77))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

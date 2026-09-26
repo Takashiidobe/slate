@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:     global %8 i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 j: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 e: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @foo(%12 p: i8) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %13 k: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %16
@@ -93,7 +93,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%6)), call<i32, signature=fn(i8) -> i32>(%11, truncate<i8, reason=arg, fits=unknown>(read<i16>(%1))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i8) -> i32>(%11, truncate<i8, reason=arg, fits=unknown>(read<i16>(%1)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

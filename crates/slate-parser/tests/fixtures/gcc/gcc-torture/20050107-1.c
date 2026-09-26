@@ -55,10 +55,10 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: u8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @foo(%7 x: ptr<@type2>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type2>>(%7)))))), const<i32>(1)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type2>>(%7)))))), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 s: @type2 [storage=automatic];

@@ -55,8 +55,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([58, 97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @begfield(%3 tab: i32, %4 ptr: ptr<i8>, %5 lim: ptr<i8>, %6 sword: i32, %7 schar: i32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
 // DEFAULT-NEXT:             {
@@ -97,8 +97,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 s: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(4)>(%15);
 // DEFAULT-NEXT:         let %10 lim: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(3));
 // DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(i32, ptr<i8>, ptr<i8>, i32, i32) -> ptr<i8>>(%2, const<i32>(58), read<ptr<i8>>(%9), read<ptr<i8>>(%10), const<i32>(1), const<i32>(1)), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

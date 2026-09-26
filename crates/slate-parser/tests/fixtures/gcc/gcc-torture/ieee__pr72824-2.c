@@ -51,19 +51,21 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%10));
+// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%14));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<vector<f32, 4>>(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(read<ptr<vector<f32, 4>>>(%2), read<i32>(%4))), read<vector<f32, 4>>(%3));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @__builtin_copysignf(%9 <unnamed>: f32, %10 <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 x: array<vector<f32, 4>, 32> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<f32, 4>>, vector<f32, 4>) -> void, abi=sysv64(scalar, direct) -> void>(%1, array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%6), read<vector<f32, 4>>(compound_literal %8 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)), index2 = const<f32>(0.0), index3 = neg<f32>(const<f32>(0.0)))));
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(__builtin_copysignf, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(lane(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%6), const<i32>(3))), const<i32>(1)))), neg<f32>(const<f32>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%11, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(lane(deref(ptr_offset<ptr<vector<f32, 4>>, subtract=false, element=vector<f32, 4>, overflow=ub>(array_decay<ptr<vector<f32, 4>>, length=Some(32)>(%6), const<i32>(3))), const<i32>(1)))), neg<f32>(const<f32>(1.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

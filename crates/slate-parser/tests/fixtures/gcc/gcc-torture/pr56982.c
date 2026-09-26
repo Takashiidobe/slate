@@ -76,8 +76,8 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     global %9 env: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     fn %5 @_setjmp(%21 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @longjmp(%22 __env: ptr<@type3> [array=1], %23 __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @exit(%24 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @exit(%24 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @baz() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" {
 // DEFAULT-NEXT:             clobbers: memory;
@@ -101,9 +101,9 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         let %15 x: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type3>) -> i32>(%5, array_decay<ptr<@type3>, length=Some(1)>(%9));
 // DEFAULT-NEXT:         let %16 n: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%11, read<i32>(%15));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%16), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%8, const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%15), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type3>, i32) -> void>(%6, array_decay<ptr<@type3>, length=Some(1)>(%9), const<i32>(42));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @main(%18 argc: i32, %19 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {

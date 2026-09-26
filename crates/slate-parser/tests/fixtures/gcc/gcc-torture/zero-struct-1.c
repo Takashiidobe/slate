@@ -69,13 +69,13 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<i8>>(%3, read<ptr<i8>>(%16));
 // DEFAULT-NEXT:         write<@type0>(%5, copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%15))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%2), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(2)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%3), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(2)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

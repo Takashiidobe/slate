@@ -45,14 +45,15 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 c = vla<i32, %8>;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @__builtin_memcpy(%9 <unnamed>: ptr<void>, %10 <unnamed>: ptr<const void>, %11 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %1 @sub1(%2 i: i32, %3 j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(read<i32>(%2), const<i32>(2))));
 // DEFAULT-NEXT:         let %5 x: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %6 y: array<i32, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), const<i32>(2))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(__builtin_memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%5)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%6)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))), const<u64>(4)));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%12, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%5)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%6)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))), const<u64>(4)));
 // DEFAULT-NEXT:                 return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%8), const<u64>(4))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
@@ -60,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(20), const<i32>(3)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(66))), const<u64>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

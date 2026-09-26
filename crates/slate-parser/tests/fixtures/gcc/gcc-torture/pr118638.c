@@ -45,18 +45,19 @@ int main() {
 // DEFAULT-NEXT:         let %2 a: i32 [storage=automatic] = from_bool<i32, reason=assign>(ne<i32>(read<i32>(%1), neg<i32, overflow=ub>(const<i32>(3))));
 // DEFAULT-NEXT:         let %3 b: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %4 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%6), const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%7));
+// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:         let %8: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%7), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%8));
 // DEFAULT-NEXT:         write<i32>(%3, sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(2), read<i32>(%1)), const<i32>(9)));
 // DEFAULT-NEXT:         write<i32>(%2, add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3)));
 // DEFAULT-NEXT:         write<i32>(%2, not<i32>(read<i32>(%2)));
 // DEFAULT-NEXT:         write<i32>(%4, and<i32>(read<i32>(%2), const<i32>(1)));
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(read<i32>(%4));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

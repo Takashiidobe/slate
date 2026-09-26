@@ -62,9 +62,10 @@ int main() {
 // DEFAULT-NEXT:             write<i1024b>(%3, widen<i1024b, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i1024b>(deref(read<ptr<i1024b>>(%4)), read<i1024b>(%3));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @bar(%6 y: i1024b) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i1024b>(read<i1024b>(%6), read<i1024b>(%0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 x: i1024b [storage=automatic];

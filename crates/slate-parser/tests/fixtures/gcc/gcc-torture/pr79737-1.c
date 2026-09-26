@@ -81,9 +81,9 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(6))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%13));
+// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%14));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -92,9 +92,9 @@ int main() {
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(3))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%15));
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%16));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -106,10 +106,11 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%6), const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield3<unit=0, bytes=0..9, bits=43..58>(%6)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

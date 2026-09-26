@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @inttostr(%2 i: i64, %3 buf: ptr<i8> [array=128]) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 ui: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(read<i64>(%2));
 // DEFAULT-NEXT:         let %5 p: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%3), const<i32>(127));
@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<i8>>(%8, call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7)));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%8)))), const<i32>(45))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

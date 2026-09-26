@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %3 d: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %4 b: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @foo(%6 p1: i32, %7 p2: i16) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), widen<i32, reason=promotion>(read<i16>(%7)));
 // DEFAULT-NEXT:     }
@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(%9, truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%3), const<i32>(14))));
 // DEFAULT-NEXT:         write<i32, volatile>(%4, from_bool<i32, reason=assign>(logical_and<bool>(ne<i8>(read<i8>(%9), const<i8>(0)), ne<i32>(read<i32>(%2), const<i32>(0)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

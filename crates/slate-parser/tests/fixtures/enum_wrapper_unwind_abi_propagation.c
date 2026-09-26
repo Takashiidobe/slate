@@ -130,7 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type3>, i32) -> void>(%6, array_decay<ptr<@type3>, length=Some(1)>(%14), const<i32>(1));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%31)), read<i32>(%20));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%31)), read<i32>(%20));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @content_like(%22 x: i32) -> @type5 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(%16), read<i32>(%22));
@@ -157,7 +157,7 @@ int main(void) {
 // DEFAULT-NEXT:                             let %39: i32 [synthetic] = read<i32>(%15);
 // DEFAULT-NEXT:                             let %40: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%39), const<i32>(1));
 // DEFAULT-NEXT:                             write<i32>(%15, read<i32>(%40));
-// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%33)), read<i32>(%25));
+// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%33)), read<i32>(%25));
 // DEFAULT-NEXT:                             continue %32;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     call<@type5, signature=fn(i32) -> @type5>(read<ptr<fn(i32) -> @type5>>(field0(%24)), read<i32>(%25));
@@ -180,12 +180,12 @@ int main(void) {
 // DEFAULT-NEXT:                             let %43: i32 [synthetic] = read<i32>(%15);
 // DEFAULT-NEXT:                             let %44: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%43), const<i32>(1));
 // DEFAULT-NEXT:                             write<i32>(%15, read<i32>(%44));
-// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%35)), read<i32>(%26));
+// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%35)), read<i32>(%26));
 // DEFAULT-NEXT:                             continue %34;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     call<@type5, signature=fn(i32) -> @type5>(read<ptr<fn(i32) -> @type5>>(field0(%24)), read<i32>(%26));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%36)), read<i32>(%15));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%36)), read<i32>(%15));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

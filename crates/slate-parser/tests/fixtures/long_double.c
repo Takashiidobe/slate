@@ -327,38 +327,38 @@ int main(void) {
 // DEFAULT-NEXT:     global %250 .str250: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([102, 114, 101, 120, 112, 95, 101, 120, 112, 61, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %251 .str251: array<i8, 61> [storage=static] = code_units<array<i8, 61>>([105, 115, 110, 97, 110, 61, 37, 100, 32, 105, 115, 105, 110, 102, 61, 37, 100, 32, 115, 105, 103, 110, 98, 105, 116, 95, 110, 101, 103, 61, 37, 100, 32, 115, 105, 103, 110, 98, 105, 116, 95, 112, 111, 115, 61, 37, 100, 32, 105, 115, 102, 105, 110, 105, 116, 101, 61, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %252 .str252: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %253 .str253: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([101, 112, 115, 105, 108, 111, 110, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %254 .str254: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([109, 111, 100, 102, 95, 105, 112, 97, 114, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %255 .str255: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 111, 100, 102, 95, 102, 114, 97, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %256 .str256: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([114, 101, 109, 97, 105, 110, 100, 101, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %257 .str257: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([114, 101, 109, 113, 117, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %258 .str258: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([114, 101, 109, 113, 117, 111, 95, 113, 117, 111, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %259 .str259: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([115, 99, 97, 108, 98, 110, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %260 .str260: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([115, 99, 97, 108, 98, 108, 110, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %261 .str261: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([110, 101, 120, 116, 97, 102, 116, 101, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %262 .str262: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 120, 116, 116, 111, 119, 97, 114, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %263 .str263: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([102, 100, 105, 109, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %264 .str264: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([114, 105, 110, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %265 .str265: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([110, 101, 97, 114, 98, 121, 105, 110, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %266 .str266: array<i8, 47> [storage=static] = code_units<array<i8, 47>>([108, 114, 105, 110, 116, 61, 37, 108, 100, 32, 108, 108, 114, 105, 110, 116, 61, 37, 108, 108, 100, 32, 108, 114, 111, 117, 110, 100, 61, 37, 108, 100, 32, 108, 108, 114, 111, 117, 110, 100, 61, 37, 108, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %267 .str267: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([105, 108, 111, 103, 98, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %268 .str268: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([108, 111, 103, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %269 .str269: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([101, 114, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %270 .str270: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([101, 114, 102, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %271 .str271: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([116, 103, 97, 109, 109, 97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %272 .str272: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([108, 103, 97, 109, 109, 97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %273 .str273: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %274 .str274: array<i8, 86> [storage=static] = code_units<array<i8, 86>>([105, 115, 110, 97, 110, 95, 118, 61, 37, 100, 32, 105, 115, 105, 110, 102, 95, 118, 61, 37, 100, 32, 105, 115, 102, 105, 110, 105, 116, 101, 95, 118, 61, 37, 100, 32, 105, 115, 110, 111, 114, 109, 97, 108, 95, 118, 61, 37, 100, 32, 105, 115, 117, 110, 111, 114, 100, 101, 114, 101, 100, 95, 118, 61, 37, 100, 32, 105, 115, 117, 110, 111, 114, 100, 101, 114, 101, 100, 95, 111, 107, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %275 .str275: array<i8, 23> [storage=static] = code_units<array<i8, 23>>([115, 117, 98, 110, 111, 114, 109, 97, 108, 95, 105, 115, 110, 111, 114, 109, 97, 108, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %276 .str276: array<i8, 62> [storage=static] = code_units<array<i8, 62>>([105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 108, 116, 61, 37, 100, 32, 105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 101, 113, 61, 37, 100, 32, 105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 110, 97, 110, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %277 .str277: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([99, 97, 110, 111, 110, 105, 99, 97, 108, 105, 122, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %278 .str278: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([99, 97, 110, 111, 110, 105, 99, 97, 108, 105, 122, 101, 95, 114, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %279 .str279: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([108, 100, 98, 108, 95, 109, 105, 110, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %280 .str280: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([108, 100, 98, 108, 95, 116, 114, 117, 101, 95, 109, 105, 110, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %281 .str281: array<i8, 100> [storage=static] = code_units<array<i8, 100>>([108, 100, 98, 108, 95, 109, 97, 110, 116, 95, 100, 105, 103, 61, 37, 100, 32, 108, 100, 98, 108, 95, 100, 105, 103, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 105, 110, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 97, 120, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 105, 110, 95, 49, 48, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 97, 120, 95, 49, 48, 95, 101, 120, 112, 61, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %282 .str282: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %254 .str254: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([101, 112, 115, 105, 108, 111, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %255 .str255: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([109, 111, 100, 102, 95, 105, 112, 97, 114, 116, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %256 .str256: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 111, 100, 102, 95, 102, 114, 97, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %257 .str257: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([114, 101, 109, 97, 105, 110, 100, 101, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %258 .str258: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([114, 101, 109, 113, 117, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %259 .str259: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([114, 101, 109, 113, 117, 111, 95, 113, 117, 111, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %260 .str260: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([115, 99, 97, 108, 98, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %261 .str261: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([115, 99, 97, 108, 98, 108, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %262 .str262: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([110, 101, 120, 116, 97, 102, 116, 101, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %263 .str263: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 120, 116, 116, 111, 119, 97, 114, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %264 .str264: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([102, 100, 105, 109, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %265 .str265: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([114, 105, 110, 116, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %266 .str266: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([110, 101, 97, 114, 98, 121, 105, 110, 116, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %267 .str267: array<i8, 47> [storage=static] = code_units<array<i8, 47>>([108, 114, 105, 110, 116, 61, 37, 108, 100, 32, 108, 108, 114, 105, 110, 116, 61, 37, 108, 108, 100, 32, 108, 114, 111, 117, 110, 100, 61, 37, 108, 100, 32, 108, 108, 114, 111, 117, 110, 100, 61, 37, 108, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %268 .str268: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([105, 108, 111, 103, 98, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %269 .str269: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([108, 111, 103, 98, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %270 .str270: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([101, 114, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %271 .str271: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([101, 114, 102, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %272 .str272: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([116, 103, 97, 109, 109, 97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %273 .str273: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([108, 103, 97, 109, 109, 97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %274 .str274: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %275 .str275: array<i8, 86> [storage=static] = code_units<array<i8, 86>>([105, 115, 110, 97, 110, 95, 118, 61, 37, 100, 32, 105, 115, 105, 110, 102, 95, 118, 61, 37, 100, 32, 105, 115, 102, 105, 110, 105, 116, 101, 95, 118, 61, 37, 100, 32, 105, 115, 110, 111, 114, 109, 97, 108, 95, 118, 61, 37, 100, 32, 105, 115, 117, 110, 111, 114, 100, 101, 114, 101, 100, 95, 118, 61, 37, 100, 32, 105, 115, 117, 110, 111, 114, 100, 101, 114, 101, 100, 95, 111, 107, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %276 .str276: array<i8, 23> [storage=static] = code_units<array<i8, 23>>([115, 117, 98, 110, 111, 114, 109, 97, 108, 95, 105, 115, 110, 111, 114, 109, 97, 108, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %277 .str277: array<i8, 62> [storage=static] = code_units<array<i8, 62>>([105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 108, 116, 61, 37, 100, 32, 105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 101, 113, 61, 37, 100, 32, 105, 115, 108, 101, 115, 115, 103, 114, 101, 97, 116, 101, 114, 95, 110, 97, 110, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %278 .str278: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([99, 97, 110, 111, 110, 105, 99, 97, 108, 105, 122, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %279 .str279: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([99, 97, 110, 111, 110, 105, 99, 97, 108, 105, 122, 101, 95, 114, 61, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %280 .str280: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([108, 100, 98, 108, 95, 109, 105, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %281 .str281: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([108, 100, 98, 108, 95, 116, 114, 117, 101, 95, 109, 105, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %282 .str282: array<i8, 100> [storage=static] = code_units<array<i8, 100>>([108, 100, 98, 108, 95, 109, 97, 110, 116, 95, 100, 105, 103, 61, 37, 100, 32, 108, 100, 98, 108, 95, 100, 105, 103, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 105, 110, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 97, 120, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 105, 110, 95, 49, 48, 95, 101, 120, 112, 61, 37, 100, 32, 108, 100, 98, 108, 95, 109, 97, 120, 95, 49, 48, 95, 101, 120, 112, 61, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %283 .str283: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %284 .str284: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %285 .str285: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @exp(%139 __x: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @acosl(%140 __x: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @asinl(%141 __x: f80) -> f80 [linkage=external];
@@ -414,7 +414,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %52 @fmal(%209 __x: f80, %210 __y: f80, %211 __z: f80) -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %53 @canonicalizel(%212 __cx: ptr<f80>, %213 __x: ptr<const f80>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %70 @printf(%214 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %71 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %71 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %72 @mix_long_double(%73 a: f80, %74 b: f80) -> f80 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %75 c: f80 [storage=automatic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%73), read<f80>(%74)), const<f80>(2));
 // DEFAULT-NEXT:         return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%75), const<f80>(3));
@@ -423,223 +423,224 @@ int main(void) {
 // DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(%77));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %78 @print_ld(%79 name: ptr<const i8>, %80 v: f80) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%215)), read<ptr<const i8>>(%79), read<f80>(%80));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%215)), read<ptr<const i8>>(%79), read<f80>(%80));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %81 @check_int_casts() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %82 i8: i8 [storage=automatic] = float_to_int<i8, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(100)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i8>(%82)), neg<f80>(const<f80>(100)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %83 u8: u8 [storage=automatic] = float_to_int<u8, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(200));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u8>(%83)), const<f80>(200))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %84 i16: i16 [storage=automatic] = float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(12345)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i16>(%84)), neg<f80>(const<f80>(12345)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %85 u16: u16 [storage=automatic] = float_to_int<u16, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(54321));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u16>(%85)), const<f80>(54321))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %86 i32: i32 [storage=automatic] = float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(1234567890)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%86)), neg<f80>(const<f80>(1234567890)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %87 u32: u32 [storage=automatic] = float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(3456789012));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u32>(%87)), const<f80>(3456789012))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %88 i64: i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(123456789012345));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i64>(%88)), neg<f80>(const<f80>(123456789012345)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %89 u64: u64 [storage=automatic] = float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(12345678901234567890));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u64>(%89)), const<f80>(12345678901234567890))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(59)>(%216)), widen<i32, reason=vararg>(read<i8>(%82)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%83))), widen<i32, reason=vararg>(read<i16>(%84)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%85))), read<i32>(%86), read<u32>(%87), read<i64>(%88), read<u64>(%89));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(59)>(%216)), widen<i32, reason=vararg>(read<i8>(%82)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%83))), widen<i32, reason=vararg>(read<i16>(%84)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%85))), read<i32>(%86), read<u32>(%87), read<i64>(%88), read<u64>(%89));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %90 @check_i128_casts() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %91 i128: i128 [storage=automatic] = float_to_int<i128, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(9223372036854775807)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i128>(%91)), neg<f80>(const<f80>(9223372036854775807)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %92 u128: u128 [storage=automatic] = float_to_int<u128, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(18446744073709551615));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u128>(%92)), const<f80>(18446744073709551615))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%217)), truncate<i64, reason=explicit, fits=unknown>(read<i128>(%91)), truncate<u64, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%92), const<i32>(64))), truncate<u64, reason=explicit, fits=unknown>(and<u128>(read<u128>(%92), widen<u128, reason=usual_arith>(const<u64>(18446744073709551615)))));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%217)), truncate<i64, reason=explicit, fits=unknown>(read<i128>(%91)), truncate<u64, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%92), const<i32>(64))), truncate<u64, reason=explicit, fits=unknown>(and<u128>(read<u128>(%92), widen<u128, reason=usual_arith>(const<u64>(18446744073709551615)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %93 @check_bitint_casts() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %94 b9: i9b [storage=automatic] = float_to_int<i9b, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(100)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i9b>(%94)), neg<f80>(const<f80>(100)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %95 ub9: u9b [storage=automatic] = float_to_int<u9b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(200));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u9b>(%95)), const<f80>(200))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %96 b40: i40b [storage=automatic] = float_to_int<i40b, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(123456789)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i40b>(%96)), neg<f80>(const<f80>(123456789)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %97 ub40: u40b [storage=automatic] = float_to_int<u40b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(987654321));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<u40b>(%97)), const<f80>(987654321))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %98 b101: i101b [storage=automatic] = float_to_int<i101b, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f80>(const<f80>(123456789012345)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i101b>(%98)), neg<f80>(const<f80>(123456789012345)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         if ne<i101b>(float_to_int<i101b, reason=explicit, out_of_range=ub, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i101b>(%98))), read<i101b>(%98))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %99 ub150: u150b [storage=automatic] = float_to_int<u150b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(987654321098765));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u150b>(%99)), const<f80>(987654321098765))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         if ne<u150b>(float_to_int<u150b, reason=explicit, out_of_range=ub, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u150b>(%99))), read<u150b>(%99))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %100 b256: i256b [storage=automatic] = float_to_int<i256b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(9999999999));
 // DEFAULT-NEXT:         if ne<i256b>(read<i256b>(%100), widen<i256b, reason=usual_arith>(const<i64>(9999999999)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i256b>(%100)), const<f80>(9999999999))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %101 ub300: u300b [storage=automatic] = float_to_int<u300b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(4.2E+9));
 // DEFAULT-NEXT:         if ne<u300b>(read<u300b>(%101), widen<u300b, reason=usual_arith>(const<u32>(4200000000)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u300b>(%101)), const<f80>(4.2E+9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         let %102 b129: i129b [storage=automatic] = float_to_int<i129b, reason=explicit, out_of_range=ub, exceptions=ignore>(const<f80>(123));
 // DEFAULT-NEXT:         if ne<i32>(truncate<i32, reason=explicit, fits=unknown>(read<i129b>(%102)), const<i32>(123))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(int_to_float<f80, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i129b, reason=explicit>(const<i32>(123))), const<f80>(123))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(77)>(%218)), truncate<i64, reason=explicit, fits=unknown>(read<i101b>(%98)), truncate<u64, reason=explicit, fits=unknown>(read<u150b>(%99)), truncate<i64, reason=explicit, fits=unknown>(read<i256b>(%100)), truncate<u64, reason=explicit, fits=unknown>(read<u300b>(%101)));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%71);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(77)>(%218)), truncate<i64, reason=explicit, fits=unknown>(read<i101b>(%98)), truncate<u64, reason=explicit, fits=unknown>(read<u150b>(%99)), truncate<i64, reason=explicit, fits=unknown>(read<i256b>(%100)), truncate<u64, reason=explicit, fits=unknown>(read<u300b>(%101)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %253 @__builtin_huge_vall() -> f80 [linkage=external];
 // DEFAULT-NEXT:     fn %103 @check_math_functions() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%219)), call<f80, signature=fn(f80) -> f80>(sqrtl, const<f80>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%220)), call<f80, signature=fn(f80) -> f80>(cbrtl, const<f80>(27)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%221)), call<f80, signature=fn(f80) -> f80>(sinl, const<f80>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%222)), call<f80, signature=fn(f80) -> f80>(cosl, const<f80>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%223)), call<f80, signature=fn(f80) -> f80>(tanl, const<f80>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%224)), call<f80, signature=fn(f80) -> f80>(asinl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%225)), call<f80, signature=fn(f80) -> f80>(acosl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%226)), call<f80, signature=fn(f80) -> f80>(atanl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%227)), call<f80, signature=fn(f80, f80) -> f80>(atan2l, const<f80>(1), const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%228)), call<f80, signature=fn(f80) -> f80>(sinhl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%229)), call<f80, signature=fn(f80) -> f80>(coshl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%230)), call<f80, signature=fn(f80) -> f80>(tanhl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%231)), call<f80, signature=fn(f80) -> f80>(expl, const<f80>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%232)), call<f80, signature=fn(f80) -> f80>(exp2l, const<f80>(10)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%233)), call<f80, signature=fn(f80) -> f80>(logl, call<f80, signature=fn(f80) -> f80>(expl, const<f80>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%234)), call<f80, signature=fn(f80) -> f80>(log2l, const<f80>(8)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%235)), call<f80, signature=fn(f80) -> f80>(log10l, const<f80>(1000)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%236)), call<f80, signature=fn(f80, f80) -> f80>(powl, const<f80>(2), const<f80>(10)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%237)), call<f80, signature=fn(f80) -> f80>(floorl, const<f80>(2.70000000000000000004)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%238)), call<f80, signature=fn(f80) -> f80>(ceill, const<f80>(2.09999999999999999991)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%239)), call<f80, signature=fn(f80) -> f80>(roundl, const<f80>(2.5)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%240)), call<f80, signature=fn(f80) -> f80>(truncl, neg<f80>(const<f80>(2.70000000000000000004))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%241)), call<f80, signature=fn(f80) -> f80>(fabsl, neg<f80>(const<f80>(3.5))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%242)), call<f80, signature=fn(f80, f80) -> f80>(fmodl, const<f80>(10), const<f80>(3)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%243)), call<f80, signature=fn(f80, f80) -> f80>(hypotl, const<f80>(3), const<f80>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%244)), call<f80, signature=fn(f80, f80) -> f80>(copysignl, const<f80>(3), neg<f80>(const<f80>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%245)), call<f80, signature=fn(f80, f80) -> f80>(fmaxl, const<f80>(1), const<f80>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%246)), call<f80, signature=fn(f80, f80) -> f80>(fminl, const<f80>(1), const<f80>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%247)), call<f80, signature=fn(f80, f80, f80) -> f80>(fmal, const<f80>(2), const<f80>(3), const<f80>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%248)), call<f80, signature=fn(f80, i32) -> f80>(ldexpl, const<f80>(1), const<i32>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%219)), call<f80, signature=fn(f80) -> f80>(%21, const<f80>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%220)), call<f80, signature=fn(f80) -> f80>(%23, const<f80>(27)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%221)), call<f80, signature=fn(f80) -> f80>(%6, const<f80>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%222)), call<f80, signature=fn(f80) -> f80>(%5, const<f80>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%223)), call<f80, signature=fn(f80) -> f80>(%7, const<f80>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%224)), call<f80, signature=fn(f80) -> f80>(%2, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%225)), call<f80, signature=fn(f80) -> f80>(%1, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%226)), call<f80, signature=fn(f80) -> f80>(%3, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%227)), call<f80, signature=fn(f80, f80) -> f80>(%4, const<f80>(1), const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%228)), call<f80, signature=fn(f80) -> f80>(%9, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%229)), call<f80, signature=fn(f80) -> f80>(%8, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%230)), call<f80, signature=fn(f80) -> f80>(%10, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%231)), call<f80, signature=fn(f80) -> f80>(%11, const<f80>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%232)), call<f80, signature=fn(f80) -> f80>(%18, const<f80>(10)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%233)), call<f80, signature=fn(f80) -> f80>(%14, call<f80, signature=fn(f80) -> f80>(%11, const<f80>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%234)), call<f80, signature=fn(f80) -> f80>(%19, const<f80>(8)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%235)), call<f80, signature=fn(f80) -> f80>(%15, const<f80>(1000)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%236)), call<f80, signature=fn(f80, f80) -> f80>(%20, const<f80>(2), const<f80>(10)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%237)), call<f80, signature=fn(f80) -> f80>(%26, const<f80>(2.70000000000000000004)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%238)), call<f80, signature=fn(f80) -> f80>(%24, const<f80>(2.09999999999999999991)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%239)), call<f80, signature=fn(f80) -> f80>(%42, const<f80>(2.5)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%240)), call<f80, signature=fn(f80) -> f80>(%43, neg<f80>(const<f80>(2.70000000000000000004))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%241)), call<f80, signature=fn(f80) -> f80>(%25, neg<f80>(const<f80>(3.5))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%242)), call<f80, signature=fn(f80, f80) -> f80>(%27, const<f80>(10), const<f80>(3)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%243)), call<f80, signature=fn(f80, f80) -> f80>(%22, const<f80>(3), const<f80>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%244)), call<f80, signature=fn(f80, f80) -> f80>(%28, const<f80>(3), neg<f80>(const<f80>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%245)), call<f80, signature=fn(f80, f80) -> f80>(%50, const<f80>(1), const<f80>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%246)), call<f80, signature=fn(f80, f80) -> f80>(%51, const<f80>(1), const<f80>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%247)), call<f80, signature=fn(f80, f80, f80) -> f80>(%52, const<f80>(2), const<f80>(3), const<f80>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%248)), call<f80, signature=fn(f80, i32) -> f80>(%13, const<f80>(1), const<i32>(4)));
 // DEFAULT-NEXT:         let %104 exp: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%249)), call<f80, signature=fn(f80, ptr<i32>) -> f80>(frexpl, const<f80>(100), addr_of<ptr<i32>>(%104)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%250)), read<i32>(%104));
-// DEFAULT-NEXT:         let %285: i32 [synthetic];
-// DEFAULT-NEXT:         if float_class<bool, test=infinite>(call<f80, signature=fn() -> f80>(__builtin_huge_vall))
-// DEFAULT-NEXT:             write<i32>(%285, conditional<i32>(float_class<bool, test=sign_bit>(call<f80, signature=fn() -> f80>(__builtin_huge_vall)), const<i32>(-1), const<i32>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%249)), call<f80, signature=fn(f80, ptr<i32>) -> f80>(%12, const<f80>(100), addr_of<ptr<i32>>(%104)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%250)), read<i32>(%104));
+// DEFAULT-NEXT:         let %286: i32 [synthetic];
+// DEFAULT-NEXT:         if float_class<bool, test=infinite>(call<f80, signature=fn() -> f80>(%253))
+// DEFAULT-NEXT:             write<i32>(%286, conditional<i32>(float_class<bool, test=sign_bit>(call<f80, signature=fn() -> f80>(%253)), const<i32>(-1), const<i32>(1)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%285, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(61)>(%251)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(call<f80, signature=fn(ptr<const i8>) -> f80>(nanl, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%252))))), read<i32>(%285), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(neg<f80>(const<f80>(1)))), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(const<f80>(1))), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(const<f80>(1.18973149535723176502E+4932))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%253)), const<f80>(1.08420217248550443401E-19));
+// DEFAULT-NEXT:             write<i32>(%286, const<i32>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(61)>(%251)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(call<f80, signature=fn(ptr<const i8>) -> f80>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%252))))), read<i32>(%286), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(neg<f80>(const<f80>(1)))), from_bool<i32, reason=vararg>(float_class<bool, test=sign_bit>(const<f80>(1))), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(const<f80>(1.18973149535723176502E+4932))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%254)), const<f80>(1.08420217248550443401E-19));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %105 @check_remaining_math_functions() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %106 ten: volatile f80 [storage=automatic] = const<f80>(10);
 // DEFAULT-NEXT:         let %107 three: volatile f80 [storage=automatic] = const<f80>(3);
 // DEFAULT-NEXT:         let %108 ipart: f80 [storage=automatic] = const<f80>(0);
-// DEFAULT-NEXT:         let %109 frac: f80 [storage=automatic] = call<f80, signature=fn(f80, ptr<f80>) -> f80>(modfl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107)), addr_of<ptr<f80>>(%108));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%254)), read<f80>(%108));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%255)), read<f80>(%109));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%256)), call<f80, signature=fn(f80, f80) -> f80>(remainderl, read<f80, volatile>(%106), read<f80, volatile>(%107)));
+// DEFAULT-NEXT:         let %109 frac: f80 [storage=automatic] = call<f80, signature=fn(f80, ptr<f80>) -> f80>(%16, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107)), addr_of<ptr<f80>>(%108));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%255)), read<f80>(%108));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%256)), read<f80>(%109));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%257)), call<f80, signature=fn(f80, f80) -> f80>(%37, read<f80, volatile>(%106), read<f80, volatile>(%107)));
 // DEFAULT-NEXT:         let %110 quo: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%257)), call<f80, signature=fn(f80, f80, ptr<i32>) -> f80>(remquol, read<f80, volatile>(%106), read<f80, volatile>(%107), addr_of<ptr<i32>>(%110)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%258)), read<i32>(%110));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%259)), call<f80, signature=fn(f80, i32) -> f80>(scalbnl, read<f80, volatile>(%106), const<i32>(3)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%260)), call<f80, signature=fn(f80, i64) -> f80>(scalblnl, read<f80, volatile>(%106), const<i64>(3)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%261)), call<f80, signature=fn(f80, f80) -> f80>(nextafterl, read<f80, volatile>(%106), read<f80, volatile>(%107)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%262)), call<f80, signature=fn(f80, f80) -> f80>(nexttowardl, read<f80, volatile>(%106), read<f80, volatile>(%107)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%263)), call<f80, signature=fn(f80, f80) -> f80>(fdiml, read<f80, volatile>(%106), read<f80, volatile>(%107)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%264)), call<f80, signature=fn(f80) -> f80>(rintl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%265)), call<f80, signature=fn(f80) -> f80>(nearbyintl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(47)>(%266)), call<i64, signature=fn(f80) -> i64>(lrintl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(llrintl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(lroundl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(llroundl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%267)), call<i32, signature=fn(f80) -> i32>(ilogbl, read<f80, volatile>(%106)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%268)), call<f80, signature=fn(f80) -> f80>(logbl, read<f80, volatile>(%106)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%269)), call<f80, signature=fn(f80) -> f80>(erfl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%270)), call<f80, signature=fn(f80) -> f80>(erfcl, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%271)), call<f80, signature=fn(f80) -> f80>(tgammal, read<f80, volatile>(%107)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%272)), call<f80, signature=fn(f80) -> f80>(lgammal, read<f80, volatile>(%106)));
-// DEFAULT-NEXT:         let %111 vnan: volatile f80 [storage=automatic] = call<f80, signature=fn(ptr<const i8>) -> f80>(nanl, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%273)));
-// DEFAULT-NEXT:         let %112 vinf: volatile f80 [storage=automatic] = call<f80, signature=fn() -> f80>(__builtin_huge_vall);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%258)), call<f80, signature=fn(f80, f80, ptr<i32>) -> f80>(%44, read<f80, volatile>(%106), read<f80, volatile>(%107), addr_of<ptr<i32>>(%110)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%259)), read<i32>(%110));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%260)), call<f80, signature=fn(f80, i32) -> f80>(%38, read<f80, volatile>(%106), const<i32>(3)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%261)), call<f80, signature=fn(f80, i64) -> f80>(%40, read<f80, volatile>(%106), const<i64>(3)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%262)), call<f80, signature=fn(f80, f80) -> f80>(%35, read<f80, volatile>(%106), read<f80, volatile>(%107)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%263)), call<f80, signature=fn(f80, f80) -> f80>(%36, read<f80, volatile>(%106), read<f80, volatile>(%107)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%264)), call<f80, signature=fn(f80, f80) -> f80>(%49, read<f80, volatile>(%106), read<f80, volatile>(%107)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%265)), call<f80, signature=fn(f80) -> f80>(%34, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%266)), call<f80, signature=fn(f80) -> f80>(%41, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(47)>(%267)), call<i64, signature=fn(f80) -> i64>(%45, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(%46, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(%47, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))), call<i64, signature=fn(f80) -> i64>(%48, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%268)), call<i32, signature=fn(f80) -> i32>(%39, read<f80, volatile>(%106)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%269)), call<f80, signature=fn(f80) -> f80>(%17, read<f80, volatile>(%106)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%270)), call<f80, signature=fn(f80) -> f80>(%30, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%271)), call<f80, signature=fn(f80) -> f80>(%31, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80, volatile>(%106), read<f80, volatile>(%107))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%272)), call<f80, signature=fn(f80) -> f80>(%33, read<f80, volatile>(%107)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%273)), call<f80, signature=fn(f80) -> f80>(%32, read<f80, volatile>(%106)));
+// DEFAULT-NEXT:         let %111 vnan: volatile f80 [storage=automatic] = call<f80, signature=fn(ptr<const i8>) -> f80>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%274)));
+// DEFAULT-NEXT:         let %112 vinf: volatile f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%253);
 // DEFAULT-NEXT:         let %113 vzero: volatile f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %114 vone: volatile f80 [storage=automatic] = const<f80>(1);
 // DEFAULT-NEXT:         let %115 vsub: volatile f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
-// DEFAULT-NEXT:         let %286: bool [synthetic];
+// DEFAULT-NEXT:         let %287: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %116 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%111);
 // DEFAULT-NEXT:             let %117 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             write<bool>(%286, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%117)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%116)), ne<f80, exceptions=ignore>(read<f80, volatile>(%117), read<f80, volatile>(%117)))));
+// DEFAULT-NEXT:             write<bool>(%287, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%117)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%116), read<f80, volatile>(%116)), ne<f80, exceptions=ignore>(read<f80, volatile>(%117), read<f80, volatile>(%117)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %287: bool [synthetic];
+// DEFAULT-NEXT:         let %288: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %118 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %119 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%113);
-// DEFAULT-NEXT:             write<bool>(%287, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%119)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%118)), ne<f80, exceptions=ignore>(read<f80, volatile>(%119), read<f80, volatile>(%119)))));
+// DEFAULT-NEXT:             write<bool>(%288, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%119)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%118), read<f80, volatile>(%118)), ne<f80, exceptions=ignore>(read<f80, volatile>(%119), read<f80, volatile>(%119)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(86)>(%274)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(read<f80, volatile>(%111))), conditional<i32>(float_class<bool, test=infinite>(read<f80, volatile>(%112)), conditional<i32>(float_class<bool, test=sign_bit>(read<f80, volatile>(%112)), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(read<bool>(%286)), from_bool<i32, reason=vararg>(read<bool>(%287)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%275)), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%115))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(86)>(%275)), from_bool<i32, reason=vararg>(float_class<bool, test=nan>(read<f80, volatile>(%111))), conditional<i32>(float_class<bool, test=infinite>(read<f80, volatile>(%112)), conditional<i32>(float_class<bool, test=sign_bit>(read<f80, volatile>(%112)), const<i32>(-1), const<i32>(1)), const<i32>(0)), from_bool<i32, reason=vararg>(float_class<bool, test=finite>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%114))), from_bool<i32, reason=vararg>(read<bool>(%287)), from_bool<i32, reason=vararg>(read<bool>(%288)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(23)>(%276)), from_bool<i32, reason=vararg>(float_class<bool, test=normal>(read<f80, volatile>(%115))));
 // DEFAULT-NEXT:         let %120 vtwo: volatile f80 [storage=automatic] = const<f80>(2);
-// DEFAULT-NEXT:         let %288: bool [synthetic];
+// DEFAULT-NEXT:         let %289: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %121 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %122 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%120);
-// DEFAULT-NEXT:             let %289: bool [synthetic];
+// DEFAULT-NEXT:             let %290: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %123 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%121);
 // DEFAULT-NEXT:                 let %124 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%122);
-// DEFAULT-NEXT:                 write<bool>(%289, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%124)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%123)), ne<f80, exceptions=ignore>(read<f80, volatile>(%124), read<f80, volatile>(%124)))));
+// DEFAULT-NEXT:                 write<bool>(%290, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%124)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%123), read<f80, volatile>(%123)), ne<f80, exceptions=ignore>(read<f80, volatile>(%124), read<f80, volatile>(%124)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%288, logical_and<bool>(not<bool>(read<bool>(%289)), ne<f80, exceptions=ignore>(read<f80, volatile>(%121), read<f80, volatile>(%122))));
+// DEFAULT-NEXT:             write<bool>(%289, logical_and<bool>(not<bool>(read<bool>(%290)), ne<f80, exceptions=ignore>(read<f80, volatile>(%121), read<f80, volatile>(%122))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %290: bool [synthetic];
+// DEFAULT-NEXT:         let %291: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %125 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
 // DEFAULT-NEXT:             let %126 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             let %291: bool [synthetic];
+// DEFAULT-NEXT:             let %292: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %127 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%125);
 // DEFAULT-NEXT:                 let %128 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%126);
-// DEFAULT-NEXT:                 write<bool>(%291, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%128)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%127)), ne<f80, exceptions=ignore>(read<f80, volatile>(%128), read<f80, volatile>(%128)))));
+// DEFAULT-NEXT:                 write<bool>(%292, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%128)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%127), read<f80, volatile>(%127)), ne<f80, exceptions=ignore>(read<f80, volatile>(%128), read<f80, volatile>(%128)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%290, logical_and<bool>(not<bool>(read<bool>(%291)), ne<f80, exceptions=ignore>(read<f80, volatile>(%125), read<f80, volatile>(%126))));
+// DEFAULT-NEXT:             write<bool>(%291, logical_and<bool>(not<bool>(read<bool>(%292)), ne<f80, exceptions=ignore>(read<f80, volatile>(%125), read<f80, volatile>(%126))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %292: bool [synthetic];
+// DEFAULT-NEXT:         let %293: bool [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %129 __x: volatile f80 [storage=automatic] = read<f80, volatile>(%111);
 // DEFAULT-NEXT:             let %130 __y: volatile f80 [storage=automatic] = read<f80, volatile>(%114);
-// DEFAULT-NEXT:             let %293: bool [synthetic];
+// DEFAULT-NEXT:             let %294: bool [synthetic];
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %131 __u: volatile f80 [storage=automatic] = read<f80, volatile>(%129);
 // DEFAULT-NEXT:                 let %132 __v: volatile f80 [storage=automatic] = read<f80, volatile>(%130);
-// DEFAULT-NEXT:                 write<bool>(%293, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%132)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%131)), ne<f80, exceptions=ignore>(read<f80, volatile>(%132), read<f80, volatile>(%132)))));
+// DEFAULT-NEXT:                 write<bool>(%294, logical_and<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%132)), logical_or<bool>(ne<f80, exceptions=ignore>(read<f80, volatile>(%131), read<f80, volatile>(%131)), ne<f80, exceptions=ignore>(read<f80, volatile>(%132), read<f80, volatile>(%132)))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%292, logical_and<bool>(not<bool>(read<bool>(%293)), ne<f80, exceptions=ignore>(read<f80, volatile>(%129), read<f80, volatile>(%130))));
+// DEFAULT-NEXT:             write<bool>(%293, logical_and<bool>(not<bool>(read<bool>(%294)), ne<f80, exceptions=ignore>(read<f80, volatile>(%129), read<f80, volatile>(%130))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(62)>(%276)), from_bool<i32, reason=vararg>(read<bool>(%288)), from_bool<i32, reason=vararg>(read<bool>(%290)), from_bool<i32, reason=vararg>(read<bool>(%292)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(62)>(%277)), from_bool<i32, reason=vararg>(read<bool>(%289)), from_bool<i32, reason=vararg>(read<bool>(%291)), from_bool<i32, reason=vararg>(read<bool>(%293)));
 // DEFAULT-NEXT:         let %133 ten_plain: f80 [storage=automatic] = read<f80, volatile>(%106);
 // DEFAULT-NEXT:         let %134 canon: f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %135 canon_r: i32 [storage=automatic] = call<i32, signature=fn(ptr<f80>, ptr<const f80>) -> i32>(%53, addr_of<ptr<f80>>(%134), pointer_cast<ptr<const f80>, reason=arg>(addr_of<ptr<f80>>(%133)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%277)), read<f80>(%134));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%278)), read<i32>(%135));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%279)), const<f80>(3.36210314311209350626E-4932));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%280)), const<f80>(3.64519953188247460253E-4951));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%281)), const<i32>(64), const<i32>(18), neg<i32, overflow=ub>(const<i32>(16381)), const<i32>(16384), neg<i32, overflow=ub>(const<i32>(4931)), const<i32>(4932));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%278)), read<f80>(%134));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%279)), read<i32>(%135));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%280)), const<f80>(3.36210314311209350626E-4932));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, f80) -> void>(%78, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%281)), const<f80>(3.64519953188247460253E-4951));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%282)), const<i32>(64), const<i32>(18), neg<i32, overflow=ub>(const<i32>(16381)), const<i32>(16384), neg<i32, overflow=ub>(const<i32>(4931)), const<i32>(4932));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %136 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %137 x: f80 [storage=automatic] = const<f80>(1.5);
 // DEFAULT-NEXT:         let %138 y: f80 [storage=automatic] = const<f80>(4.5);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%282)), call<i32, signature=fn(f80) -> i32>(%76, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%137), read<f80>(%138))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%283)), call<i32, signature=fn(f80) -> i32>(%76, call<f80, signature=fn(f80, f80) -> f80>(%72, const<f80>(3), const<f80>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%284)), call<i32, signature=fn(f80) -> i32>(%76, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(7)), const<f80>(2))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%283)), call<i32, signature=fn(f80) -> i32>(%76, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%137), read<f80>(%138))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%284)), call<i32, signature=fn(f80) -> i32>(%76, call<f80, signature=fn(f80, f80) -> f80>(%72, const<f80>(3), const<f80>(5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%70, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%285)), call<i32, signature=fn(f80) -> i32>(%76, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(7)), const<f80>(2))));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%81);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%90);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%93);

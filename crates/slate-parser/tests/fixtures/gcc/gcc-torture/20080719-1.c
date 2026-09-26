@@ -103,11 +103,12 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<ptr<const u32>>(%9);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 a: ptr<const u32> [storage=automatic] = call<ptr<const u32>, signature=fn(i32) -> ptr<const u32>>(%7, const<i32>(8));
 // DEFAULT-NEXT:         let %12 b: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%11), const<i32>(0)))));
 // DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%12)), read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=Some(16)>(%2), const<i32>(0)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

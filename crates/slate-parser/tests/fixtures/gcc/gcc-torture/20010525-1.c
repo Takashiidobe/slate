@@ -30,9 +30,10 @@ static int kind_varread(char *str)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 .str2: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 95, 35, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 95, 35, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %5 @__builtin_memcmp(%2 <unnamed>: ptr<const void>, %3 <unnamed>: ptr<const void>, %4 <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %0 @kind_varread(%1 str: ptr<i8>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(const<i32>(0), call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%2)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%1)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))))
+// DEFAULT-NEXT:         if eq<i32>(const<i32>(0), call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%5, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%1)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))))
 // DEFAULT-NEXT:             return const<i32>(2);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

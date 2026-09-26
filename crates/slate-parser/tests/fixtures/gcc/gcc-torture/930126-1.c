@@ -51,8 +51,8 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: u64 : 32;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 5)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     global %6 i: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f(%4 x: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%4), widen<u64, reason=assign>(const<u32>(3454997044)));
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
@@ -62,8 +62,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type0>(%6, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%6)))));
 // DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%6))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%6)))), const<i32>(12)), ne<u64>(read<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%6)), widen<u64, reason=usual_arith>(const<u32>(3454997044))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

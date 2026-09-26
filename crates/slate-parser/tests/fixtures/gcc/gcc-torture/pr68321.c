@@ -89,14 +89,15 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(%1, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%13), const<i32>(0)))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %18
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ge<i32>(read<i32>(%0), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:                 let %20: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%0, read<i32>(%20));
+// DEFAULT-NEXT:                 let %20: i32 [synthetic] = read<i32>(%0);
+// DEFAULT-NEXT:                 let %21: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%0, read<i32>(%21));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -107,7 +108,7 @@ int main() {
 // DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%11, widen<i32, reason=arg>(read<i8>(%15)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%6), read<i32>(%2)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

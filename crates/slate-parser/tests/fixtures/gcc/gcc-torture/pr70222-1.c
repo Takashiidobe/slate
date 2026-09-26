@@ -57,9 +57,10 @@ int main() {
 // DEFAULT-NEXT:         let %5 e: i32 [storage=automatic] = from_bool<i32, reason=assign>(gt<i32>(from_bool<i32, reason=promotion>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(ge<i32>(read<i32>(%2), read<i32>(%2))))), read<u32>(%1))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(neg<u64, overflow=wrap>(const<u64>(1)), mul<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%0), read<i32>(%0)), const<i32>(15)))))));
 // DEFAULT-NEXT:         write<i32>(%3, neg<i32, overflow=ub>(read<i32>(%5)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @bar(%7 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);

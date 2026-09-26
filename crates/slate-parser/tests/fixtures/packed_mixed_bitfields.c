@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%3), neg<i32, overflow=ub>(const<i32>(17)));
 // DEFAULT-NEXT:         write<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%3), const<u64>(30370190968));
 // DEFAULT-NEXT:         write<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%3), reinterpret<u32, reason=assign, fits=always>(const<i32>(109517)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%5)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field0(%3)))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%3))), read<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%3)), read<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%3)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%3))), const<u64>(11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%5)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field0(%3)))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%3))), read<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%3)), read<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%3)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%3))), const<u64>(11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

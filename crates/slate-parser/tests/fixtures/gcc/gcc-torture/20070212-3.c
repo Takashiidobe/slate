@@ -77,13 +77,13 @@ int main() {
 // DEFAULT-NEXT:             write<ptr<i32>>(%7, addr_of<ptr<i32>>(%3));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%8), read<i32>(deref(read<ptr<i32>>(%7))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %9 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 k: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field1(%11), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32, i32, i32) -> i32>(%1, addr_of<ptr<@type0>>(%11), const<i32>(1), const<i32>(1), const<i32>(1)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

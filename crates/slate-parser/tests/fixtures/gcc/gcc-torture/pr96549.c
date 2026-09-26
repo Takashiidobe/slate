@@ -37,14 +37,15 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 c: i64 [storage=static] = neg<i64, overflow=ub>(const<i64>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i64 [storage=static] = const<i64>(0) [linkage=external];
+// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3: i64 [synthetic] = read<i64>(%0);
+// DEFAULT-NEXT:         let %4: i64 [synthetic] = read<i64>(%0);
 // DEFAULT-NEXT:         write<i64>(%1, const<i64>(1));
-// DEFAULT-NEXT:         let %4: i64 [synthetic] = xor<i64>(read<i64>(%3), const<i64>(1));
-// DEFAULT-NEXT:         write<i64>(%0, read<i64>(%4));
-// DEFAULT-NEXT:         if gt<i64>(const<i64>(3), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(mul<i64, overflow=ub>(read<i64>(%4), const<i64>(3))))))
+// DEFAULT-NEXT:         let %5: i64 [synthetic] = xor<i64>(read<i64>(%4), const<i64>(1));
+// DEFAULT-NEXT:         write<i64>(%0, read<i64>(%5));
+// DEFAULT-NEXT:         if gt<i64>(const<i64>(3), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(mul<i64, overflow=ub>(read<i64>(%5), const<i64>(3))))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

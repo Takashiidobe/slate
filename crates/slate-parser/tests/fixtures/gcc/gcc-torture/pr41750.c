@@ -96,7 +96,7 @@ int main() {
 // DEFAULT-NEXT:     global %16 link_info: @type2 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %17 hash: @type1 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %18 abfd: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo_create_got_section(%5 abfd: ptr<i32>, %6 info: ptr<@type2>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<i32>>(field2(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type2>>(%6)))))), read<ptr<i32>>(%5));
 // DEFAULT-NEXT:         return const<i32>(1);
@@ -123,7 +123,7 @@ int main() {
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type1>>(field0(%16), addr_of<ptr<@type1>>(%17));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type2>) -> ptr<i32>>(%13, addr_of<ptr<i32>>(%18), addr_of<ptr<@type2>>(%16)), addr_of<ptr<i32>>(%18))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

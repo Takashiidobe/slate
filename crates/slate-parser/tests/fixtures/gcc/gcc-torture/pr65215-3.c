@@ -64,23 +64,24 @@ int main() {
 // DEFAULT-NEXT:         let %6 x2: u64 [storage=automatic] = widen<u64, reason=assign>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=32..64>(deref(read<ptr<@type0>>(%4)))))));
 // DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%6), const<i32>(32)), read<u64>(%5));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(8), const<i32>(8)), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %8 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = widen<u64, reason=assign>(const<u32>(14593470)), field1 = widen<u64, reason=assign>(const<u32>(239)), field2 = widen<u64, reason=assign>(const<u32>(4276993704)));
 // DEFAULT-NEXT:         let %9 l: u64 [storage=automatic] = call<u64, signature=fn(ptr<@type0>) -> u64>(%3, addr_of<ptr<@type0>>(%8));
-// DEFAULT-NEXT:         let %10: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%9), const<i32>(32))))), read<u64>(bitfield2<unit=0, bytes=0..8, bits=32..64>(%8)))
-// DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%10, ne<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(%9))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..24>(%8)))))));
 // DEFAULT-NEXT:         let %11: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%10)
+// DEFAULT-NEXT:         if ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%9), const<i32>(32))))), read<u64>(bitfield2<unit=0, bytes=0..8, bits=32..64>(%8)))
 // DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, ne<u32>(and<u32>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(%9))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=24..32>(%8)))))));
+// DEFAULT-NEXT:             write<bool>(%11, ne<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(%9))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..24>(%8)))))));
+// DEFAULT-NEXT:         let %12: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%12, const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%12, ne<u32>(and<u32>(call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(%9))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=24..32>(%8)))))));
+// DEFAULT-NEXT:         if read<bool>(%12)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

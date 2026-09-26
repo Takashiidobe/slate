@@ -107,8 +107,8 @@ int main(void) {
 // DEFAULT-NEXT:     global %5 u1: @type1 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %6 u2: @type1 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @memcpy(%15 __dest: ptr<void> [restrict], %16 __src: ptr<const void> [restrict], %17 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @exit(%18 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @exit(%18 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 off1: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %9 off2: i32 [storage=automatic];
@@ -172,10 +172,10 @@ int main(void) {
 // DEFAULT-NEXT:                                                     write<i8>(%14, truncate<i8, reason=assign, fits=always>(const<i32>(65)));
 // DEFAULT-NEXT:                                                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%6)), read<i32>(%11))), read<i8>(%14));
 // DEFAULT-NEXT:                                             }
-// DEFAULT-NEXT:                                     write<ptr<i8>>(%12, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%5)), read<i32>(%8))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%6)), read<i32>(%9))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10))))));
-// DEFAULT-NEXT:                                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%5)), read<i32>(%8))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%6)), read<i32>(%9))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))));
+// DEFAULT-NEXT:                                     write<ptr<i8>>(%12, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%5)), read<i32>(%8))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%6)), read<i32>(%9))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10))))));
+// DEFAULT-NEXT:                                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%5)), read<i32>(%8))), pointer_cast<ptr<const void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%6)), read<i32>(%9))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))));
 // DEFAULT-NEXT:                                     if ne<ptr<i8>>(read<ptr<i8>>(%12), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(96)>(field0(%5)), read<i32>(%8)))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                     write<ptr<i8>>(%13, array_decay<ptr<i8>, length=Some(96)>(field0(%5)));
 // DEFAULT-NEXT:                                     for %23
 // DEFAULT-NEXT:                                         init:
@@ -192,7 +192,7 @@ int main(void) {
 // DEFAULT-NEXT:                                         }
 // DEFAULT-NEXT:                                         body:
 // DEFAULT-NEXT:                                             if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), const<i32>(97))
-// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                     for %24
 // DEFAULT-NEXT:                                         init:
 // DEFAULT-NEXT:                                             write<i32>(%11, const<i32>(0));
@@ -215,7 +215,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%14)), add<i32, overflow=ub>(const<i32>(65), const<i32>(31)))
 // DEFAULT-NEXT:                                                     write<i8>(%14, truncate<i8, reason=assign, fits=always>(const<i32>(65)));
 // DEFAULT-NEXT:                                                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), widen<i32, reason=promotion>(read<i8>(%14)))
-// DEFAULT-NEXT:                                                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                                     call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                             }
 // DEFAULT-NEXT:                                     for %25
 // DEFAULT-NEXT:                                         init:
@@ -232,9 +232,9 @@ int main(void) {
 // DEFAULT-NEXT:                                         }
 // DEFAULT-NEXT:                                         body:
 // DEFAULT-NEXT:                                             if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), const<i32>(97))
-// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -68,6 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 field2: u64 : 31;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 3, 4], bit_offsets=[Some(0), Some(29), Some(33)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type1 struct1 = @type0;
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 value1: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %4 value2: i32 [storage=automatic] = const<i32>(0);
@@ -87,11 +88,11 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<i32>(%5, conditional<i32>(ne<u32>(read<u32>(%6), const<u32>(0)), const<i32>(10), const<i32>(20)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

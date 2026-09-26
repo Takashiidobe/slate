@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @scale(%2 alpha: ptr<i64>, %3 x: ptr<i64>, %4 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %6 ix: i32 [storage=automatic];
@@ -104,7 +104,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(10)>(%11), read<i32>(%10))), widen<i64, reason=assign>(read<i32>(%10)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>, i32) -> void>(%1, addr_of<ptr<i64>>(%12), array_decay<ptr<i64>, length=Some(10)>(%11), const<i32>(5));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(10)>(%11), const<i32>(9)))), widen<i64, reason=usual_arith>(const<i32>(18)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

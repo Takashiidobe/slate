@@ -50,6 +50,7 @@ int main() {
 // DEFAULT-NEXT:             return widen<i64, reason=return>(const<i32>(6));
 // DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%1), read<i64>(%2));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
 // DEFAULT-NEXT:             return const<i32>(0);
@@ -58,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         let %6 y: i64 [storage=automatic] = shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(5), read<i32>(%4)), read<i32>(%4));
 // DEFAULT-NEXT:         let %7 z: i64 [storage=automatic] = call<i64, signature=fn(i64, i64) -> i64>(%0, read<i64>(%5), read<i64>(%6));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%7), shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(8), read<i32>(%4)), read<i32>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

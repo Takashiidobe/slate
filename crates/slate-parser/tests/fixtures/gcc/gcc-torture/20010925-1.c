@@ -49,19 +49,19 @@ int foo(void *a, void *b, unsigned int c) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %4 src: array<i32, 10> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %5 dst: array<i32, 10> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%10 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @memcpy(%11 <unnamed>: ptr<void>, %12 <unnamed>: ptr<const void>, %13 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo(%7 a: ptr<void>, %8 b: ptr<void>, %9 c: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%9), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, read<ptr<void>>(%7), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%8)), widen<u64, reason=arg>(read<u32>(%9)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%2, read<ptr<void>>(%7), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%8)), widen<u64, reason=arg>(read<u32>(%9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>, ptr<void>, u32) -> i32>(%3, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%5)), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%4)), reinterpret<u32, reason=arg, fits=always>(const<i32>(10))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %8 s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([83, 0]);
 // DEFAULT-NEXT:         write<ptr<i8>>(field0(field1(field1(%6))), array_decay<ptr<i8>, length=Some(2)>(%7));
 // DEFAULT-NEXT:         write<ptr<i8>>(field1(field1(field1(%6))), array_decay<ptr<i8>, length=Some(2)>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%10)), read<i32>(field0(%6)), read<ptr<i8>>(field0(field1(field1(%6)))), read<ptr<i8>>(field1(field1(field1(%6)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%10)), read<i32>(field0(%6)), read<ptr<i8>>(field0(field1(field1(%6)))), read<ptr<i8>>(field1(field1(field1(%6)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

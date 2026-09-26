@@ -68,11 +68,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @myfunc2(%5 a: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @set_f2(%7 user: ptr<@type0>, %8 f2: i32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type0>>(%7))))), read<i32>(%8))
 // DEFAULT-NEXT:             call<void, signature=fn(i32, ptr<void>) -> void>(%1, call<i32, signature=fn(ptr<void>) -> i32>(%4, null<ptr<void>>), null<ptr<void>>);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @foo(%10 data: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %11 user: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(read<ptr<void>>(%10));

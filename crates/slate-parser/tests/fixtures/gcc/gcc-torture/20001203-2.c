@@ -162,16 +162,16 @@ int main(void) {
 // DEFAULT-NEXT:         field1 physaddr: u64;
 // DEFAULT-NEXT:         field2 physname: ptr<i8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%31 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%31 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @alloc_type() -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @xmalloc(%23 z: u32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @_obstack_newchunk(%24 o: ptr<@type0>, %25 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @get_discrete_bounds(%26 lowp: ptr<i64>, %27 highp: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%26)), widen<i64, reason=assign>(const<i32>(0)));
@@ -230,13 +230,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %28 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %29 element_type: @type3 [storage=automatic];
 // DEFAULT-NEXT:         let %30 result_type: @type3 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%29)), const<i32>(0), const<u64>(32));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%30)), const<i32>(0), const<u64>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%12, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%29)), const<i32>(0), const<u64>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%12, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%30)), const<i32>(0), const<u64>(32));
 // DEFAULT-NEXT:         write<u32>(field0(%29), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         call<ptr<@type3>, signature=fn(ptr<@type3>, ptr<@type3>) -> ptr<@type3>>(%13, addr_of<ptr<@type3>>(%30), addr_of<ptr<@type3>>(%29));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%30)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

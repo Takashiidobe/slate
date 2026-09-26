@@ -63,15 +63,16 @@ int main() {
 // DEFAULT-NEXT:     global %9 c: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 q: i16 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %11 t: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %20 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 g: i8 [storage=automatic];
 // DEFAULT-NEXT:         for %15
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%2), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %20: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %21: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%21));
+// DEFAULT-NEXT:                 let %21: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                 let %22: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%22));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -102,15 +103,15 @@ int main() {
 // DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i16>(%11)), const<i32>(1))
 // DEFAULT-NEXT:                         write<i8>(%13, truncate<i8, reason=assign, fits=unknown>(read<i32>(%7)));
 // DEFAULT-NEXT:                     write<i32>(%4, widen<i32, reason=assign>(read<i8>(%13)));
-// DEFAULT-NEXT:                     let %22: bool [synthetic];
+// DEFAULT-NEXT:                     let %23: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<i8>(read<i8>(%13), const<i8>(0))
 // DEFAULT-NEXT:                         write<i16>(%10, truncate<i16, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                         write<bool>(%22, ne<i16>(truncate<i16, reason=assign, fits=always>(const<i32>(1)), const<i16>(0)));
+// DEFAULT-NEXT:                         write<bool>(%23, ne<i16>(truncate<i16, reason=assign, fits=always>(const<i32>(1)), const<i16>(0)));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%22, const<bool>(false));
+// DEFAULT-NEXT:                         write<bool>(%23, const<bool>(false));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%20);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

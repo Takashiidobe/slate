@@ -54,6 +54,7 @@ int main() {
 // DEFAULT-NEXT:     fn %7 @foo(%8 i: i32, %9 j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(ne<i32>(read<i32>(%8), const<i32>(0)), ne<i32>(read<i32>(%9), const<i32>(0))), const<i32>(0), add<i32, overflow=ub>(read<i32>(%8), read<i32>(%9)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %12
 // DEFAULT-NEXT:             init:
@@ -70,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:                         write<i16>(%3, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%3)), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

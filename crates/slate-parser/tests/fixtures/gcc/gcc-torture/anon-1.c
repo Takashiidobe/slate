@@ -63,12 +63,12 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %4 foo: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @main(%6 argc: i32, %7 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field0(field1(field1(%4))), const<i32>(6));
 // DEFAULT-NEXT:         write<i32>(field0(field1(%4)), const<i32>(5));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(field1(field1(%4)))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

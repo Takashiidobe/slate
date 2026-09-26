@@ -52,7 +52,7 @@ main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 x: f64 [storage=automatic] = const<f64>(1.0);
-// DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(finite, read<f64>(%4));
+// DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(%0, read<f64>(%4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(%8, call<u32, signature=fn(u64) -> u32>(%5, const<u64>(12094370573988097329)));
 // DEFAULT-NEXT:         call<u32, signature=fn(u64) -> u32>(%5, const<u64>(12094370573988097329));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%8), not<u32>(const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

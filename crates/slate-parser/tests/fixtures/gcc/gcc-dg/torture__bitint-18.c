@@ -116,9 +116,10 @@ main() {
 // DEFAULT-NEXT:     fn %0 @foo_251(%1 x: i251b, %2 y: i251b, %3 z: i251b) -> i251b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i251b, overflow=ub>(mul<i251b, overflow=ub>(read<i251b>(%1), widen<i251b, reason=usual_arith>(const<i32>(42))), mul<i251b, overflow=ub>(add<i251b, overflow=ub>(read<i251b>(%2), read<i251b>(%3)), widen<i251b, reason=usual_arith>(neg<i85b, overflow=ub>(const<i85b>(13295847598437589437584395)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %31 @__builtin_unreachable() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @bar_251(%5 x: i251b, %6 y: u211b, %7 z: i251b) -> i251b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(ge<i251b>(read<i251b>(%5), widen<i251b, reason=usual_arith>(const<i39b>(139845735984))), le<i251b>(read<i251b>(%5), widen<i251b, reason=usual_arith>(neg<i39b, overflow=ub>(const<i39b>(139845735984)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_unreachable);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         return add<i251b, overflow=ub>(mul<i251b, overflow=ub>(read<i251b>(%5), widen<i251b, reason=usual_arith>(const<i32>(42))), mul<i251b, overflow=ub>(reinterpret<i251b, reason=usual_arith, fits=unknown>(widen<u251b, reason=usual_arith>(read<u211b>(%6))), read<i251b>(%7)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @foo_574(%9 x: i574b, %10 y: i128, %11 z: i32) -> i574b [linkage=external] [fallthrough=ub_if_used] {
@@ -132,34 +133,35 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @baz_574(%21 x: u271b, %22 y: i574b) -> u271b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(ge<i574b>(read<i574b>(%22), widen<i574b, reason=usual_arith>(const<i39b>(139845735984))), le<i574b>(read<i574b>(%22), widen<i574b, reason=usual_arith>(neg<i39b, overflow=ub>(const<i39b>(139845735984)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_unreachable);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
 // DEFAULT-NEXT:         return mul<u271b, overflow=wrap>(read<u271b>(%21), reinterpret<u271b, reason=explicit, fits=unknown>(truncate<i271b, reason=explicit, fits=unknown>(read<i574b>(%22))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %32 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %25 a251: i251b [storage=automatic] = call<i251b, signature=fn(i251b, i251b, i251b) -> i251b>(%0, read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(0)))), read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(1)))), read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(2)))));
 // DEFAULT-NEXT:         if ne<i251b>(read<i251b>(%25), const<i251b>(1217350477377202249120031439408588187131962868502518732097281406269161025871))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%32);
 // DEFAULT-NEXT:         let %26 b251: i251b [storage=automatic] = call<i251b, signature=fn(i251b, u211b, i251b) -> i251b>(%4, read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(3)))), reinterpret<u211b, reason=arg, fits=unknown>(truncate<i211b, reason=arg, fits=unknown>(read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(4)))))), read<i251b>(deref(ptr_offset<ptr<i251b>, subtract=false, element=i251b, overflow=ub>(array_decay<ptr<i251b>, length=Some(6)>(%24), const<i32>(5)))));
 // DEFAULT-NEXT:         if ne<i251b>(read<i251b>(%26), widen<i251b, reason=usual_arith>(const<i249b>(352977151880095667263614472150365012179801988966714554955131068402918618788)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%32);
 // DEFAULT-NEXT:         let %28 a574: i574b [storage=automatic] = call<i574b, signature=fn(i574b, i128, i32) -> i574b>(%8, read<i574b>(%27), widen<i128, reason=arg>(const<i127b>(82625523151678902953603407887262843433)), neg<i32, overflow=ub>(const<i32>(1845137725)));
 // DEFAULT-NEXT:         if ne<i574b>(read<i574b>(%28), neg<i574b, overflow=ub>(const<i574b>(18124414897185514989959611747585480593042904176332662608326479231051632926435887114574980277665683285141927551496724599123576825185653577703648854819279658769883513402160348)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         for %31
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%32);
+// DEFAULT-NEXT:         for %33
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %30 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%30), const<i32>(6))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %32: i32 [synthetic] = read<i32>(%30);
-// DEFAULT-NEXT:                 let %33: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%32), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%30, read<i32>(%33));
+// DEFAULT-NEXT:                 let %34: i32 [synthetic] = read<i32>(%30);
+// DEFAULT-NEXT:                 let %35: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%34), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%30, read<i32>(%35));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u574b>(call<u574b, signature=fn(u574b, i231b, u231b, u574b) -> u574b>(%12, read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), mul<i32, overflow=ub>(const<i32>(4), read<i32>(%30))))), reinterpret<i231b, reason=arg, fits=unknown>(truncate<u231b, reason=arg, fits=unknown>(read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), read<i32>(%30)), const<i32>(1))))))), truncate<u231b, reason=arg, fits=unknown>(read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), read<i32>(%30)), const<i32>(2)))))), read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(4), read<i32>(%30)), const<i32>(3)))))), read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), add<i32, overflow=ub>(read<i32>(%30), const<i32>(24))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%32);
 // DEFAULT-NEXT:         if ne<u271b>(call<u271b, signature=fn(u271b, i574b) -> u271b>(%20, truncate<u271b, reason=arg, fits=unknown>(read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), const<i32>(30))))), reinterpret<i574b, reason=arg, fits=unknown>(read<u574b>(deref(ptr_offset<ptr<u574b>, subtract=false, element=u574b, overflow=ub>(array_decay<ptr<u574b>, length=Some(32)>(%29), const<i32>(31)))))), widen<u271b, reason=usual_arith>(const<u270b>(1212103790378493380735221770817318414499452864884443699768488049528961780122040714)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%32);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -48,16 +48,17 @@ int main() {
 // DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%2));
-// DEFAULT-NEXT:         let %5: i16 [synthetic] = read<i16>(%0);
-// DEFAULT-NEXT:         let %6: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(and<i32>(widen<i32, reason=promotion>(read<i16>(%5)), const<i32>(7)));
-// DEFAULT-NEXT:         write<i16>(%0, read<i16>(%6));
+// DEFAULT-NEXT:         let %6: i16 [synthetic] = read<i16>(%0);
+// DEFAULT-NEXT:         let %7: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(and<i32>(widen<i32, reason=promotion>(read<i16>(%6)), const<i32>(7)));
+// DEFAULT-NEXT:         write<i16>(%0, read<i16>(%7));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%2, const<i32>(27));
 // DEFAULT-NEXT:         write<i16>(%0, truncate<i16, reason=assign, fits=always>(const<i32>(14)));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%1), const<i32>(27)), ne<i32>(widen<i32, reason=promotion>(read<i16>(%0)), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

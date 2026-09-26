@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%3), addr_of<ptr<i32>>(%2))), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(deref(read<ptr<i32>>(%3))), const<i32>(37))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), call<i32, signature=fn() -> i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), call<i32, signature=fn() -> i32>(%1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

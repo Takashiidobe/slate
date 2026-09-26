@@ -67,10 +67,11 @@ int main() {
 // DEFAULT-NEXT:         write<@type1>(deref(read<ptr<@type1>>(%9)), int_to_enum<@type1, reason=assign>(enum_to_int<i64, reason=promotion>(const<@type0>(3))));
 // DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(enum_to_int<i64, reason=promotion>(read<@type0>(deref(read<ptr<@type0>>(%4)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 z: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i64>(enum_to_int<i64, reason=promotion>(const<@type0>(3)), widen<i64, reason=usual_arith>(call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%3, addr_of<ptr<@type0>>(%11), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%11)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

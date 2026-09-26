@@ -46,6 +46,7 @@ int main() {
 // DEFAULT-NEXT:     type @type0 uint32_t = u32;
 // DEFAULT-NEXT:     global %1 a: u32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 c: u32 [storage=automatic];
 // DEFAULT-NEXT:         for %6
@@ -53,9 +54,9 @@ int main() {
 // DEFAULT-NEXT:                 write<u32>(%1, reinterpret<u32, reason=assign, fits=always>(const<i32>(7)));
 // DEFAULT-NEXT:             condition: le<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: u32 [synthetic] = read<u32>(%1);
-// DEFAULT-NEXT:                 let %8: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%1, read<u32>(%8));
+// DEFAULT-NEXT:                 let %8: u32 [synthetic] = read<u32>(%1);
+// DEFAULT-NEXT:                 let %9: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%1, read<u32>(%9));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -65,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i32>(%2, from_bool<i32, reason=assign>(eq<u32>(read<u32>(%1), read<u32>(%4))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

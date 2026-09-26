@@ -100,13 +100,14 @@ int main() {
 // DEFAULT-NEXT:         write<@type3>(deref(read<ptr<@type3>>(%15)), int_to_enum<@type3, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3))));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type2>(deref(read<ptr<@type2>>(%10)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %17 y: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%1, addr_of<ptr<@type0>>(%17), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%17))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
 // DEFAULT-NEXT:         let %18 z: @type2 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(3), call<i32, signature=fn(ptr<@type2>, ptr<void>) -> i32>(%9, addr_of<ptr<@type2>>(%18), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type2>>(%18))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

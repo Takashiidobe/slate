@@ -55,10 +55,11 @@ int main() {
 // DEFAULT-NEXT:         write<u64>(field1(%3), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%2), const<u64>(11111111111)), const<u64>(111111111111)));
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(u64) -> @type0, abi=sysv64(scalar) -> coerce<i32, i64>>(%1, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(field0(%5)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), ne<u64>(read<u64>(field1(%5)), const<u64>(122222222222)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

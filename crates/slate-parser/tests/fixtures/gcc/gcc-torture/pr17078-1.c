@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @test(%3 ptr: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         goto %2;
@@ -62,7 +62,7 @@ int main() {
 // DEFAULT-NEXT:         let %6 i: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%1, addr_of<ptr<i32>>(%6));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

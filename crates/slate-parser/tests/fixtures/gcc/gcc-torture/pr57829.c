@@ -52,29 +52,30 @@ int main() {
 // DEFAULT-NEXT:         return or<i64>(const<i64>(2), shr<i64, amount_out_of_range=ub, fill=sign_extend>(sub<i64, overflow=ub>(read<i64>(%3), const<i64>(1)), sub<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(8))), const<i32>(8)), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @f3(%5 k: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = and<i32>(read<i32>(%7), const<i32>(63));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%8));
+// DEFAULT-NEXT:         let %8: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:         let %9: i32 [synthetic] = and<i32>(read<i32>(%8), const<i32>(63));
+// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%9));
 // DEFAULT-NEXT:         return or<i32>(const<i32>(4), shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(read<i32>(%5), const<i32>(2)), const<i32>(5)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(2))
-// DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%9, ne<i64>(call<i64, signature=fn(i64) -> i64>(%2, const<i64>(1)), const<i64>(2)));
 // DEFAULT-NEXT:         let %10: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%9)
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(2))
 // DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%10, ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(63)), const<i32>(6)));
+// DEFAULT-NEXT:             write<bool>(%10, ne<i64>(call<i64, signature=fn(i64) -> i64>(%2, const<i64>(1)), const<i64>(2)));
 // DEFAULT-NEXT:         let %11: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%10)
 // DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1)), const<i32>(4)));
+// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(63)), const<i32>(6)));
+// DEFAULT-NEXT:         let %12: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%12, const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%12, ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1)), const<i32>(4)));
+// DEFAULT-NEXT:         if read<bool>(%12)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

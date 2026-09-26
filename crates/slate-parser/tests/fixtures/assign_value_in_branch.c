@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         let %5 x: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(10)));
 // DEFAULT-NEXT:         let %6 a: u64 [storage=automatic] = call<u64, signature=fn(ptr<u64>, i32) -> u64>(%1, addr_of<ptr<u64>>(%5), const<i32>(1));
 // DEFAULT-NEXT:         let %7 b: u64 [storage=automatic] = call<u64, signature=fn(ptr<u64>, i32) -> u64>(%1, addr_of<ptr<u64>>(%5), const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)), read<u64>(%6), read<u64>(%7), read<u64>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)), read<u64>(%6), read<u64>(%7), read<u64>(%5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

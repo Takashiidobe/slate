@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 b: f32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %3 X: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @foo(%5 b: @type1, %6 q: ptr<@type0>, %7 h: ptr<f32>) -> i32 [linkage=external] [abi=sysv64(coerce<i64, f32>, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11: f32 [synthetic] = read<f32>(%3);
 // DEFAULT-NEXT:         let %12: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%11), read<f32>(deref(read<ptr<f32>>(%7))));
@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %10 b: @type1 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%10), addr_of<ptr<i32>>(field0(%9)));
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(@type1, ptr<@type0>, ptr<f32>) -> i32, abi=sysv64(coerce<i64, f32>, scalar, scalar) -> scalar>(%4, copy<@type1, reason=arg>(read<@type1>(%10)), addr_of<ptr<@type0>>(%9), addr_of<ptr<f32>>(%3)), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

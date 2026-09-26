@@ -59,7 +59,7 @@ int main() { n(); }
 // DEFAULT-NEXT:     global %27 .str27: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%26 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %5 @a(%6 l: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%27)), read<i32>(%6));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%27)), read<i32>(%6));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @c(%8 l: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(conditional<i32>(logical_or<bool>(ne<i8>(read<i8>(%8), const<i8>(0)), logical_and<bool>(ne<i8>(read<i8>(%1), const<i8>(0)), eq<i32>(widen<i32, reason=promotion>(read<i8>(%8)), const<i32>(1)))), widen<i32, reason=promotion>(read<i8>(%1)), rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%1)), widen<i32, reason=promotion>(read<i8>(%8)))));

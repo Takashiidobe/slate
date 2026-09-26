@@ -43,16 +43,17 @@ int  main() {
 // DEFAULT-NEXT:     global %1 b: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 c: ptr<i32> [storage=static] = pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<@type0>>(%1)) [linkage=external];
 // DEFAULT-NEXT:     global %3 d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5: bool [synthetic];
+// DEFAULT-NEXT:         let %6: bool [synthetic];
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%2), null<ptr<i32>>)
 // DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%1), xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%3), const<i32>(0))), const<i32>(3)));
-// DEFAULT-NEXT:             write<bool>(%5, ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%3), const<i32>(0))), const<i32>(3)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%6, ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%3), const<i32>(0))), const<i32>(3)), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%5, const<bool>(false));
-// DEFAULT-NEXT:         write<i32>(%3, from_bool<i32, reason=assign>(read<bool>(%5)));
+// DEFAULT-NEXT:             write<bool>(%6, const<bool>(false));
+// DEFAULT-NEXT:         write<i32>(%3, from_bool<i32, reason=assign>(read<bool>(%6)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

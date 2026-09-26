@@ -51,14 +51,15 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 114, 51, 54, 51, 50, 49, 46, 120, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %7 argp: volatile ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(10)>(%12) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 114, 51, 54, 51, 50, 49, 46, 120, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %7 argp: volatile ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(10)>(%14) [linkage=internal];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @strlen(%11 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @__builtin_alloca(%12 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 str: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 len2: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%3)))));
-// DEFAULT-NEXT:         let %5 a: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         let %6 b: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(read<i32>(%4), const<i32>(3))))));
+// DEFAULT-NEXT:         let %4 len2: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%3)))));
+// DEFAULT-NEXT:         let %5 a: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%13, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         let %6 b: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%13, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(read<i32>(%4), const<i32>(3))))));
 // DEFAULT-NEXT:         if lt<i32>(truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%5), read<ptr<i8>>(%6))), mul<i32, overflow=ub>(read<i32>(%4), const<i32>(3)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return;

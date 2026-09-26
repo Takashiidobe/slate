@@ -72,8 +72,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 field: i64 : 52;
 // DEFAULT-NEXT:         field1 pad: i64 : 12;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 6], bit_offsets=[Some(0), Some(52)], bit_units=[(0, 8)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @sub(%5 tmp: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12: i64 [synthetic] = read<i64>(bitfield1<unit=0, bytes=0..8, bits=12..64>(%5));
 // DEFAULT-NEXT:         let %13: i64 [synthetic] = or<i64>(read<i64>(%12), const<i64>(2381903268435576));
@@ -94,10 +94,10 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type1>(%10, copy<@type1, reason=assign>(call<@type1, signature=fn(@type1) -> @type1, abi=sysv64(native_c) -> native_c>(%6, copy<@type1, reason=arg>(read<@type1>(%10)))));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(@type1) -> @type1, abi=sysv64(native_c) -> native_c>(%6, copy<@type1, reason=arg>(read<@type1>(%10))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%9))), const<i32>(291)), ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..8, bits=12..64>(%9))), const<u64>(18446743335512004223)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..8, bits=52..64>(%10))), const<i32>(291)), ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(%10))), const<u64>(18446743335512004223)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

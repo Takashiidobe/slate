@@ -30,8 +30,9 @@ float g(float f)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %3 @fabs(%2 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %0 @g(%1 f: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_narrow<f32, reason=return, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(fabs, float_widen<f64, reason=arg>(read<f32>(%1))));
+// DEFAULT-NEXT:         return float_narrow<f32, reason=return, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%3, float_widen<f64, reason=arg>(read<f32>(%1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

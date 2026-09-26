@@ -102,28 +102,28 @@ int main(void) {
 // DEFAULT-NEXT:     fn %17 @handle_exit(%18 status: i32, %19 arg: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %20 captured: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%19));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%20)), read<i32>(%18));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%41)), read<i32>(%18));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%41)), read<i32>(%18));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %22 captured: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32, ptr<void>) -> void>, ptr<void>) -> i32>(%16, function_decay<ptr<fn(i32, ptr<void>) -> void>>(%17), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%22)));
 // DEFAULT-NEXT:         let %23 mcheck_enabled: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<fn(@type0) -> void>) -> i32>(%10, null<ptr<fn(@type0) -> void>>), const<i32>(0)));
-// DEFAULT-NEXT:         let %24 block: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))));
+// DEFAULT-NEXT:         let %24 block: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))));
 // DEFAULT-NEXT:         let %25 probe: @type0 [storage=automatic] = call<@type0, signature=fn(ptr<void>) -> @type0>(%11, read<ptr<void>>(%24));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%42)), read<i32>(%23), from_bool<i32, reason=vararg>(eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%25)), const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(free, read<ptr<void>>(%24));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%42)), read<i32>(%23), from_bool<i32, reason=vararg>(eq<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%25)), const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%15, read<ptr<void>>(%24));
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, ...) -> void>(%0, const<i32>(0), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%43)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, ...) -> void>(%0, const<i32>(0), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%44)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%45)), read<u32>(%2));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%45)), read<u32>(%2));
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, u32, ptr<const i8>, ...) -> void>(%1, const<i32>(0), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%46)), reinterpret<u32, reason=arg, fits=always>(const<i32>(42)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%47)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, u32, ptr<const i8>, ...) -> void>(%1, const<i32>(0), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%48)), reinterpret<u32, reason=arg, fits=always>(const<i32>(42)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%49)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%50)), read<u32>(%2));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%50)), read<u32>(%2));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, u32, ptr<const i8>, ...) -> void>(%1, const<i32>(0), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%51)), reinterpret<u32, reason=arg, fits=always>(const<i32>(43)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%52)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%53)), read<u32>(%2));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%53)), read<u32>(%2));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, ptr<const i8>, ...) -> void>(%0, const<i32>(5), const<i32>(0), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%54)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%55)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%55)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

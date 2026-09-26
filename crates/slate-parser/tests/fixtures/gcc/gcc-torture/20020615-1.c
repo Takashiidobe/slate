@@ -98,8 +98,8 @@ int main() {
 // DEFAULT-NEXT:     type @type3 gs_fixed_point = @type2;
 // DEFAULT-NEXT:     global %20 fh: array<@type0, 3> [storage=static] [align=16] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(1), field2 = const<i32>(0)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(1)), index2 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0))) [linkage=internal];
 // DEFAULT-NEXT:     global %21 gsf: array<@type2, 4> [storage=static] [align=16] = aggregate<array<@type2, 4>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(196608)), field1 = widen<i64, reason=assign>(const<i32>(80216))), index1 = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(196608)), field1 = widen<i64, reason=assign>(const<i32>(98697))), index2 = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(80216)), field1 = widen<i64, reason=assign>(const<i32>(196608))), index3 = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(98697)), field1 = widen<i64, reason=assign>(const<i32>(196608)))) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @line_hints(%7 fh: ptr<const @type0>, %8 p0: ptr<const @type2>, %9 p1: ptr<const @type2>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 dx: i64 [storage=automatic] = sub<i64, overflow=ub>(read<i64>(field0(deref(read<ptr<const @type2>>(%9)))), read<i64>(field0(deref(read<ptr<const @type2>>(%8)))));
 // DEFAULT-NEXT:         let %11 dy: i64 [storage=automatic] = sub<i64, overflow=ub>(read<i64>(field1(deref(read<ptr<const @type2>>(%9)))), read<i64>(field1(deref(read<ptr<const @type2>>(%8)))));
@@ -156,8 +156,8 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%28, ne<i32>(call<i32, signature=fn(ptr<const @type0>, ptr<const @type2>, ptr<const @type2>) -> i32>(%6, pointer_cast<ptr<const @type0>, reason=arg>(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(3)>(%20), const<i32>(2))), pointer_cast<ptr<const @type2>, reason=arg>(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(4)>(%21), const<i32>(2))), pointer_cast<ptr<const @type2>, reason=arg>(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(4)>(%21), const<i32>(3)))), const<i32>(4)));
 // DEFAULT-NEXT:         if read<bool>(%28)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

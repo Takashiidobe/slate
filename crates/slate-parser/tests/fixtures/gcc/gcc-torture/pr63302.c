@@ -78,91 +78,92 @@ int main() {
 // DEFAULT-NEXT:         let %5 v: i64 [storage=automatic] = and<i64>(read<i64>(%4), or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(2047))));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(eq<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(const<i32>(0))), eq<i64>(read<i64>(%5), shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(31)))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(0))), const<i32>(1))
-// DEFAULT-NEXT:             write<bool>(%7, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%7, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(1))), const<i32>(0)));
 // DEFAULT-NEXT:         let %8: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%7)
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(0))), const<i32>(1))
 // DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%8, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(2048))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%8, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(1))), const<i32>(0)));
 // DEFAULT-NEXT:         let %9: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%8)
 // DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%9, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(2049))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%9, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(2048))), const<i32>(1)));
 // DEFAULT-NEXT:         let %10: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%9)
 // DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%10, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(const<i32>(1)), const<i32>(63))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%10, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, widen<i128, reason=arg>(const<i32>(2049))), const<i32>(0)));
 // DEFAULT-NEXT:         let %11: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%10)
 // DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(const<i32>(1)), const<i32>(63))), const<i32>(0)));
 // DEFAULT-NEXT:         let %12: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%11)
 // DEFAULT-NEXT:             write<bool>(%12, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%12, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(1)))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%12, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63))), const<i32>(1)));
 // DEFAULT-NEXT:         let %13: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%12)
 // DEFAULT-NEXT:             write<bool>(%13, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%13, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(2048)))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%13, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(1)))), const<i32>(0)));
 // DEFAULT-NEXT:         let %14: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%13)
 // DEFAULT-NEXT:             write<bool>(%14, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%14, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(2049)))), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%14)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%14, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(2048)))), const<i32>(1)));
 // DEFAULT-NEXT:         let %15: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(0))), const<i32>(1))
+// DEFAULT-NEXT:         if read<bool>(%14)
 // DEFAULT-NEXT:             write<bool>(%15, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%15, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(1))), const<i32>(0)));
-// DEFAULT-NEXT:         let %16: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%15, ne<i32>(call<i32, signature=fn(i128) -> i32>(%0, or<i128>(shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))), const<i32>(63)), widen<i128, reason=usual_arith>(const<i32>(2049)))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%15)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:         let %16: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(0))), const<i32>(1))
 // DEFAULT-NEXT:             write<bool>(%16, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(2048))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%16, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(1))), const<i32>(0)));
 // DEFAULT-NEXT:         let %17: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%16)
 // DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%17, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(2049))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%17, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(2048))), const<i32>(1)));
 // DEFAULT-NEXT:         let %18: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%17)
 // DEFAULT-NEXT:             write<bool>(%18, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(1), const<i32>(31))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%18, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, widen<i64, reason=arg>(const<i32>(2049))), const<i32>(0)));
 // DEFAULT-NEXT:         let %19: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%18)
 // DEFAULT-NEXT:             write<bool>(%19, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%19, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%19, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(1), const<i32>(31))), const<i32>(0)));
 // DEFAULT-NEXT:         let %20: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%19)
 // DEFAULT-NEXT:             write<bool>(%20, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%20, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(1)))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%20, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31))), const<i32>(1)));
 // DEFAULT-NEXT:         let %21: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%20)
 // DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(2048)))), const<i32>(1)));
+// DEFAULT-NEXT:             write<bool>(%21, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(1)))), const<i32>(0)));
 // DEFAULT-NEXT:         let %22: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%21)
 // DEFAULT-NEXT:             write<bool>(%22, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%22, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(2049)))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%22, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(2048)))), const<i32>(1)));
+// DEFAULT-NEXT:         let %23: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%22)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%23, const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%23, ne<i32>(call<i32, signature=fn(i64) -> i32>(%3, or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i64, overflow=ub>(const<i64>(1)), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(2049)))), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%23)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

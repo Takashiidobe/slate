@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 unevaluated: u64 [storage=automatic] = const<u64>(8);
 // DEFAULT-NEXT:         let %8 values: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(7), index1 = const<i32>(8), index2 = const<i32>(9));
 // DEFAULT-NEXT:         let %9 parameter: i32 [storage=automatic] = call<i32, signature=fn(i32, ptr<i32>) -> i32>(%1, const<i32>(3), array_decay<ptr<i32>, length=Some(3)>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%14)), read<u64>(%6), read<u64>(%7), read<i32>(%5), read<i32>(%9));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%14)), read<u64>(%6), read<u64>(%7), read<i32>(%5), read<i32>(%9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

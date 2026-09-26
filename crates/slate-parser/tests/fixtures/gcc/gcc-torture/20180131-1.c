@@ -55,14 +55,14 @@ int main(void) {
 // DEFAULT-NEXT:         field2 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
 // DEFAULT-NEXT:     type @type1 U = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f(%4 x: i32, %5 y: i32, %6 z: i32, %7 a: i32, %8 u: @type0) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, scalar, scalar, scalar, coerce<i32>) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(le<i32>(widen<i32, reason=promotion>(read<i16>(field0(%8))), const<i32>(0))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(%8)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 u: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32, @type0) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, coerce<i32>) -> scalar>(%3, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type0, reason=arg>(read<@type0>(%10))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

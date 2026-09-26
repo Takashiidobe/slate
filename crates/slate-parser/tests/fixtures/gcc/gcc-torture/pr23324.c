@@ -226,44 +226,44 @@ int main() {
 // DEFAULT-NEXT:     global %30 bbv7: @type9 [storage=static] = aggregate<@type9, zero_fill=false>(field0 = const<f64>(47875.491954)) [linkage=internal];
 // DEFAULT-NEXT:     global %31 bcv7: array<i64, 1> [storage=static] = aggregate<array<i64, 1>, zero_fill=false>(index0 = const<i64>(1732133482)) [linkage=internal];
 // DEFAULT-NEXT:     global %32 bdv7: i64 [storage=static] = const<i64>(381678602) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @callee_af6(%12 ap6: @type1, %13 bp6: f64, %14 cp6: i64, %15 dp6: i32) -> @type0 [linkage=internal] [abi=sysv64(native_c, scalar, scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..6>(field0(%7))), read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..6>(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield1<unit=0, bytes=0..3, bits=6..13>(field0(%7))), read<i32>(bitfield1<unit=0, bytes=0..3, bits=6..13>(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=0..3, bits=13..19>(field0(%7))), read<i32>(bitfield2<unit=0, bytes=0..3, bits=13..19>(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield3<unit=0, bytes=0..3, bits=19..24>(field0(%7))), read<i32>(bitfield3<unit=0, bytes=0..3, bits=19..24>(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field4(field0(%7))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field4(field0(%12)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<u32>(read<u32>(field5(field0(%7))), read<u32>(field5(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i64>(read<i64>(field6(field0(%7))), read<i64>(field6(field0(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<u64>(read<u64>(field1(%7)), read<u64>(field1(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=24..28, bits=0..12>(%7)), read<i32>(bitfield2<unit=0, bytes=24..28, bits=0..12>(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield3<unit=0, bytes=24..28, bits=12..15>(%7)), read<i32>(bitfield3<unit=0, bytes=24..28, bits=12..15>(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield4<unit=0, bytes=24..28, bits=15..17>(%7)), read<i32>(bitfield4<unit=0, bytes=24..28, bits=15..17>(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield5<unit=0, bytes=24..28, bits=17..27>(%7)), read<i32>(bitfield5<unit=0, bytes=24..28, bits=17..27>(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i64>(read<i64>(field0(field6(%7))), read<i64>(field0(field6(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(field7(%7)), read<ptr<i32>>(field7(%12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f64, exceptions=ignore>(read<f64>(field0(field8(%7))), read<f64>(field0(field8(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f64, exceptions=ignore>(read<f64>(%8), read<f64>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i64>(read<i64>(%9), read<i64>(%14)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(%10), read<i32>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @caller_bf6() -> void [linkage=internal] [fallthrough=ret_void] {
@@ -273,31 +273,31 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %33 @callee_af7(%34 ap7: f32, %35 bp7: f64, %36 cp7: @type5, %37 dp7: @type6, %38 ep7: @type8, %39 fp7: i32, %40 gp7: @type9, %41 hp7: ptr<i64> [array=1], %42 ip7: i64) -> u8 [linkage=internal] [abi=sysv64(scalar, scalar, native_c, native_c, coerce<i64>, scalar, coerce<f64>, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=ignore>(read<f32>(%19), read<f32>(%34)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f64, exceptions=ignore>(read<f64>(%20), read<f64>(%35)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=ignore>(read<f32>(field0(field0(%25))), read<f32>(field0(field0(%37)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(field0(%25))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(field0(%37)))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(bitfield2<unit=0, bytes=8..10, bits=0..9>(%25)), read<i32>(bitfield2<unit=0, bytes=8..10, bits=0..9>(%37))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(widen<i32, reason=promotion>(read<i16>(field3(%25))), widen<i32, reason=promotion>(read<i16>(field3(%37)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f64, exceptions=ignore>(read<f64>(field4(%25)), read<f64>(field4(%37))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=ignore>(read<f32>(field5(%25)), read<f32>(field5(%37))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=ignore>(read<f32>(field0(%27)), read<f32>(field0(%38))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(read<i32>(%28), read<i32>(%39)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<f64, exceptions=ignore>(read<f64>(field0(%30)), read<f64>(field0(%40))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1)>(%31), const<i32>(0)))), read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(read<ptr<i64>>(%41), const<i32>(0))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if not<bool>(eq<i64>(read<i64>(%32), read<i64>(%42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return read<u8>(%18);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %43 @caller_bf7() -> void [linkage=internal] [fallthrough=ret_void] {
@@ -305,7 +305,7 @@ int main() {
 // DEFAULT-NEXT:         write<u8>(%44, call<u8, signature=fn(f32, f64, @type5, @type6, @type8, i32, @type9, ptr<i64>, i64) -> u8, abi=sysv64(scalar, scalar, native_c, native_c, coerce<i64>, scalar, coerce<f64>, scalar, scalar) -> scalar>(%33, read<f32>(%19), read<f64>(%20), copy<@type5, reason=arg>(read<@type5>(%22)), copy<@type6, reason=arg>(read<@type6>(%25)), copy<@type8, reason=arg>(read<@type8>(%27)), read<i32>(%28), copy<@type9, reason=arg>(read<@type9>(%30)), array_decay<ptr<i64>, length=Some(1)>(%31), read<i64>(%32)));
 // DEFAULT-NEXT:         call<u8, signature=fn(f32, f64, @type5, @type6, @type8, i32, @type9, ptr<i64>, i64) -> u8, abi=sysv64(scalar, scalar, native_c, native_c, coerce<i64>, scalar, coerce<f64>, scalar, scalar) -> scalar>(%33, read<f32>(%19), read<f64>(%20), copy<@type5, reason=arg>(read<@type5>(%22)), copy<@type6, reason=arg>(read<@type6>(%25)), copy<@type8, reason=arg>(read<@type8>(%27)), read<i32>(%28), copy<@type9, reason=arg>(read<@type9>(%30)), array_decay<ptr<i64>, length=Some(1)>(%31), read<i64>(%32));
 // DEFAULT-NEXT:         if not<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%18))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%44)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %45 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%16);

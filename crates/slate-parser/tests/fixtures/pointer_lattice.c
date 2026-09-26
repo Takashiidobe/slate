@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @use_and_free(%9 y: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%9)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%9))), const<i32>(1)));
 // DEFAULT-NEXT:         let %10 v: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%9)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(free, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%9)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%9)));
 // DEFAULT-NEXT:         return read<i32>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -78,10 +78,10 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%4, addr_of<ptr<i32>>(%12));
 // DEFAULT-NEXT:         let %13 b: i32 [storage=automatic] = const<i32>(10);
 // DEFAULT-NEXT:         let %14 peeked: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%6, addr_of<ptr<i32>>(%13));
-// DEFAULT-NEXT:         let %15 c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(4)));
+// DEFAULT-NEXT:         let %15 c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%15)), const<i32>(100));
 // DEFAULT-NEXT:         let %16 v: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%8, read<ptr<i32>>(%15));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%20)), read<i32>(%12), read<i32>(%14), read<i32>(%16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%20)), read<i32>(%12), read<i32>(%14), read<i32>(%16));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%12), read<i32>(%14)), read<i32>(%16));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

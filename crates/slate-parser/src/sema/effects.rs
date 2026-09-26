@@ -531,7 +531,6 @@ impl Hoister {
                 let (callee, lowered) = self.grouped(conflict, |this| {
                     let callee = match callee {
                         Callee::Direct(id) => Callee::Direct(id),
-                        Callee::Builtin(name) => Callee::Builtin(name),
                         Callee::Indirect(value) => {
                             Callee::Indirect(Box::new(this.value(*value, out)?))
                         }

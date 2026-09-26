@@ -52,20 +52,20 @@ int main(void) {
 // DEFAULT-NEXT:         field0 half: u32 : 16;
 // DEFAULT-NEXT:         field1 whole: u64 : 32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 2], bit_offsets=[Some(0), Some(16)], bit_units=[(0, 6)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f(%4 q: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..6, bits=0..16>(deref(read<ptr<@type0>>(%4))))), const<i32>(4660))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(bitfield1<unit=0, bytes=0..6, bits=16..48>(deref(read<ptr<@type0>>(%4)))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(1450744508)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 bar: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..6, bits=0..16>(%6), reinterpret<u32, reason=assign, fits=always>(const<i32>(4660)));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..6, bits=16..48>(%6), reinterpret<u64, reason=assign, fits=always>(const<i64>(1450744508)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%3, addr_of<ptr<@type0>>(%6));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

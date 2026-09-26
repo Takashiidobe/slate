@@ -51,9 +51,10 @@ int main() {
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 16]];
 // DEFAULT-NEXT:     type @type1 Scf10 = @type0;
 // DEFAULT-NEXT:     global %2 g1s: @type0 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @check(%4 x: @type0, %5 y: complex<f64>) -> void [linkage=external] [abi=sysv64(native_c, coerce<f64, f64>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(field0(%4)), read<complex<f64>>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @init(%7 p: ptr<@type0>, %8 y: complex<f64>) -> void [linkage=external] [abi=sysv64(scalar, coerce<f64, f64>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<complex<f64>>(field0(deref(read<ptr<@type0>>(%7))), read<complex<f64>>(%8));

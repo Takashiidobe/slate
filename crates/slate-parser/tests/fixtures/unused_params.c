@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 indirect: ptr<fn(i32, i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32) -> i32>>(%11);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%17)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(5), const<i32>(10)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(1), const<i32>(2)), call<i32, signature=fn(i32, i32, i32) -> i32>(%7, const<i32>(3), const<i32>(4), const<i32>(5)), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%15), const<i32>(8), const<i32>(9)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%17)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(5), const<i32>(10)), call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(1), const<i32>(2)), call<i32, signature=fn(i32, i32, i32) -> i32>(%7, const<i32>(3), const<i32>(4), const<i32>(5)), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%15), const<i32>(8), const<i32>(9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

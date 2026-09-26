@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @bar() -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(32768));
 // DEFAULT-NEXT:     }
@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:             let %5: u32 [synthetic] = or<u32>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(65536)));
 // DEFAULT-NEXT:             write<u32>(%3, read<u32>(%5));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=unknown>(or<i32>(const<i32>(32768), const<i32>(65536))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

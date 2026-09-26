@@ -64,11 +64,11 @@ int         main() {
 // DEFAULT-NEXT:         write<@type1>(field0(%4), copy<@type1, reason=assign>(read<@type1>(compound_literal %10 [storage=automatic] = aggregate<@type1, zero_fill=true>())));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type3>>(%6)))), read<i32>(%7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field0(field0(field0(field0(%4)))), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type3>) -> i32>(%5, addr_of<ptr<@type3>>(field0(field0(field0(%4))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -52,20 +52,21 @@ int main(void) { return 0; }
 // DEFAULT-NEXT:     fn %0 @vararg(%1 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         read<i32>(%1);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %12 @__builtin_return_address(%11 <unnamed>: u32) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %4 @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 a: i32 [storage=automatic] = truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         let %5 a: i32 [storage=automatic] = truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%0, const<i32>(0), read<i32>(%5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%2), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%2), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
+// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @test3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%3, truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         write<i32>(%3, truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
+// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @test4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 a: volatile i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %9 a: volatile i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%2), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(read<i64, volatile>(%9)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

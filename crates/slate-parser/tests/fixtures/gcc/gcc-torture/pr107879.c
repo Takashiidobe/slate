@@ -59,10 +59,11 @@ int main() {
 // DEFAULT-NEXT:         let %7 omww: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), read<f64>(%6));
 // DEFAULT-NEXT:         return conditional<f64>(gt<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.0)), read<f64>(%7), const<f64>(0.0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 y: f64 [storage=automatic] = const<f64>(42.0);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<f64>) -> f64>(%0, addr_of<ptr<f64>>(%9)), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%6), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(1)));
 // DEFAULT-NEXT:         let %7 d: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%7), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%10)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(field0(%6)))), read<i32>(deref(read<ptr<i32>>(field0(%7))))), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field0(%7)), read<ptr<i32>>(field0(%6))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%10)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(field0(%6)))), read<i32>(deref(read<ptr<i32>>(field0(%7))))), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field0(%7)), read<ptr<i32>>(field0(%6))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

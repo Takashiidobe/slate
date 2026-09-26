@@ -89,8 +89,8 @@ int main() {
 // DEFAULT-NEXT:     type @type0 T0 = i32;
 // DEFAULT-NEXT:     type @type1 T1 = i64;
 // DEFAULT-NEXT:     type @type2 T2 = i64;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%16 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%16 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @doit(%6 sel: i32, %7 n: i32, %8 p: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %9 p0: ptr<i32> [storage=automatic] [const] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<void>>(%8));
 // DEFAULT-NEXT:         let %10 p1: ptr<i64> [storage=automatic] [const] = pointer_cast<ptr<i64>, reason=assign>(read<ptr<void>>(%8));
@@ -137,7 +137,7 @@ int main() {
 // DEFAULT-NEXT:                     };
 // DEFAULT-NEXT:                 return from_bool<i32, reason=return>(eq<i64>(read<i64>(deref(read<ptr<i64>>(%11))), widen<i64, reason=usual_arith>(const<i32>(0))));
 // DEFAULT-NEXT:                 default %17:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -151,12 +151,12 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%15, widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<void>) -> i32>(%5, const<i32>(2), const<i32>(5), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(%15)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%13), const<i32>(32))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%14), widen<i64, reason=usual_arith>(const<i32>(32)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%15), widen<i64, reason=usual_arith>(const<i32>(32)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

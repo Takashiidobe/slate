@@ -65,20 +65,21 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%6, read<u64>(%9));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %13: u128 [synthetic] = read<u128>(%4);
-// DEFAULT-NEXT:         let %14: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%13), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(read<i32>(%1))));
-// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%14));
+// DEFAULT-NEXT:         let %14: u128 [synthetic] = read<u128>(%4);
+// DEFAULT-NEXT:         let %15: u128 [synthetic] = add<u128, overflow=wrap>(read<u128>(%14), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(read<i32>(%1))));
+// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%15));
 // DEFAULT-NEXT:         write<i32>(%2, from_bool<i32, reason=assign>(ne<i32>(read<i32>(%3), const<i32>(84347))));
-// DEFAULT-NEXT:         let %15: u128 [synthetic] = read<u128>(%4);
-// DEFAULT-NEXT:         let %16: u128 [synthetic] = div<u128, by_zero=ub>(read<u128>(%15), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(read<i32>(%2))));
-// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%16));
+// DEFAULT-NEXT:         let %16: u128 [synthetic] = read<u128>(%4);
+// DEFAULT-NEXT:         let %17: u128 [synthetic] = div<u128, by_zero=ub>(read<u128>(%16), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(read<i32>(%2))));
+// DEFAULT-NEXT:         write<u128>(%4, read<u128>(%17));
 // DEFAULT-NEXT:         let %11 x: u128 [storage=automatic] = read<u128>(%4);
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u64) -> void>(%7, truncate<u64, reason=arg, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%11), const<i32>(0))), truncate<u64, reason=arg, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%11), const<i32>(64))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))), ne<u64>(read<u64>(%6), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

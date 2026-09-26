@@ -52,7 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: ptr<@type0>;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @__builtin_alloca(%7 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 s: ptr<@type0> [storage=automatic] = null<ptr<@type0>>;
 // DEFAULT-NEXT:         let %4 p: ptr<ptr<@type0>> [storage=automatic];
@@ -67,13 +68,13 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, const<u64>(16)));
+// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%8, const<u64>(16))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%8, const<u64>(16)));
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%5))), read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type0>>(%5))), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)), read<ptr<@type0>>(%5));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%3), null<ptr<@type0>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

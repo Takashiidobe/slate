@@ -69,14 +69,15 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%7, const<i32>(1));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%7), sub<i32, overflow=ub>(read<i32>(%6), const<i32>(1)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%18));
+// DEFAULT-NEXT:                 let %18: i32 [synthetic] = read<i32>(%7);
+// DEFAULT-NEXT:                 let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%19));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%1), read<i32>(%7))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%2), read<i32>(%7)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%3), read<i32>(%7))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%1), sub<i32, overflow=ub>(read<i32>(%7), const<i32>(1)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%1), add<i32, overflow=ub>(read<i32>(%7), const<i32>(1))))))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%5), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%1), read<i32>(%7)))))));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %11 a: array<f64, 32> [storage=automatic] [align=16];
@@ -89,9 +90,9 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%20));
+// DEFAULT-NEXT:                 let %20: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%21));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -106,14 +107,14 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %21: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%22));
+// DEFAULT-NEXT:                 let %22: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %23: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%23));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(32)>(%11), read<i32>(%10)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(32)>(%8), read<i32>(%10)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%17);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

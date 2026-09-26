@@ -53,9 +53,10 @@ int main() {
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(22));
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32) -> i32>(%1, add<i32, overflow=ub>(read<i32>(%0), const<i32>(21)), add<i32, overflow=ub>(read<i32>(%0), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%0), const<i32>(34)), add<i32, overflow=ub>(read<i32>(%0), const<i32>(26))), neg<i32, overflow=ub>(const<i32>(22)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

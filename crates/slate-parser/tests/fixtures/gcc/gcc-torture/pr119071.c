@@ -40,6 +40,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 c: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(read<i32>(%0), const<i32>(2)), const<i32>(0))
@@ -47,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:         let %4 d: i32 [storage=automatic] = sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), read<i32>(%3)), const<i32>(2)), read<i32>(%3)), const<i32>(1))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%1, add<i32, overflow=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(add<i32, overflow=ub>(read<i32>(%4), const<i32>(1)), read<i32>(%4)), read<i32>(%4)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

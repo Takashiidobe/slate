@@ -139,21 +139,22 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=72, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     global %35 .str35: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %13 v: @type3 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @exit(%34 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @exit(%34 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @dummy1(%7 x: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(array_decay<ptr<i8>, length=Some(1)>(%35));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @dummy2(%9 x: ptr<void>, %10 y: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %39 @__builtin_memset(%36 <unnamed>: ptr<void>, %37 <unnamed>: i32, %38 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %11 @baz(%12 x: u32) -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%13)), const<i32>(85), const<u64>(72));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%39, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%13)), const<i32>(85), const<u64>(72));
 // DEFAULT-NEXT:         return addr_of<ptr<@type3>>(%13);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @check(%15 x: ptr<void>, %16 y: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(deref(read<ptr<@type1>>(%16)))), const<u32>(0)), ne<u32>(read<u32>(field0(field1(deref(read<ptr<@type1>>(%16))))), const<u32>(0))), ne<u32>(read<u32>(field1(field1(deref(read<ptr<@type1>>(%16))))), const<u32>(0))), ne<ptr<u32>>(read<ptr<u32>>(field2(field1(deref(read<ptr<@type1>>(%16))))), null<ptr<u32>>)), ne<u8>(read<u8>(field3(field1(deref(read<ptr<@type1>>(%16))))), const<u8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @bar(%18 x: u32, %19 y: ptr<void>) -> ptr<@type3> [linkage=internal] [fallthrough=ub_if_used] {
@@ -171,12 +172,12 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type0>(field1(field0(field1(deref(read<ptr<@type3>>(%21))))), copy<@type0, reason=assign>(read<@type0>(%20)));
 // DEFAULT-NEXT:         write<u32>(field0(field1(field1(deref(read<ptr<@type3>>(%21))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type0>(field1(field1(field1(deref(read<ptr<@type3>>(%21))))), copy<@type0, reason=assign>(read<@type0>(%20)));
-// DEFAULT-NEXT:         let %38: bool [synthetic];
+// DEFAULT-NEXT:         let %42: bool [synthetic];
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<void>, ptr<@type1>) -> i32>(%14, read<ptr<void>>(%22), addr_of<ptr<@type1>>(field0(field1(deref(read<ptr<@type3>>(%21)))))), const<i32>(0)))
-// DEFAULT-NEXT:             write<bool>(%38, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%42, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%38, not<bool>(ne<i32>(call<i32, signature=fn(ptr<void>, ptr<@type1>) -> i32>(%14, read<ptr<void>>(%22), addr_of<ptr<@type1>>(field1(field1(deref(read<ptr<@type3>>(%21)))))), const<i32>(0))));
-// DEFAULT-NEXT:         if read<bool>(%38)
+// DEFAULT-NEXT:             write<bool>(%42, not<bool>(ne<i32>(call<i32, signature=fn(ptr<void>, ptr<@type1>) -> i32>(%14, read<ptr<void>>(%22), addr_of<ptr<@type1>>(field1(field1(deref(read<ptr<@type3>>(%21)))))), const<i32>(0))));
+// DEFAULT-NEXT:         if read<bool>(%42)
 // DEFAULT-NEXT:             return null<ptr<@type3>>;
 // DEFAULT-NEXT:         return read<ptr<@type3>>(%21);
 // DEFAULT-NEXT:     }
@@ -186,29 +187,29 @@ int main(void) {
 // DEFAULT-NEXT:         let %29 j: u32 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%27, null<ptr<void>>);
 // DEFAULT-NEXT:         write<ptr<void>>(deref(read<ptr<ptr<void>>>(%26)), null<ptr<void>>);
-// DEFAULT-NEXT:         for %36
+// DEFAULT-NEXT:         for %40
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<u32>(%28, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%28), read<u32>(%25))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %39: u32 [synthetic] = read<u32>(%28);
-// DEFAULT-NEXT:                 let %40: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%39), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%28, read<u32>(%40));
+// DEFAULT-NEXT:                 let %43: u32 [synthetic] = read<u32>(%28);
+// DEFAULT-NEXT:                 let %44: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%43), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%28, read<u32>(%44));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %30 c: ptr<@type3> [storage=automatic];
 // DEFAULT-NEXT:                     write<u32>(%29, read<u32>(deref(read<ptr<u32>>(%24))));
-// DEFAULT-NEXT:                     switch %37 read<u32>(%29)
+// DEFAULT-NEXT:                     switch %41 read<u32>(%29)
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %37 const<u32>(1):
+// DEFAULT-NEXT:                             case %41 const<u32>(1):
 // DEFAULT-NEXT:                                 write<ptr<@type3>>(%30, call<ptr<@type3>, signature=fn(u32, ptr<void>) -> ptr<@type3>>(%17, read<u32>(%29), pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(%24))));
 // DEFAULT-NEXT:                                 call<ptr<@type3>, signature=fn(u32, ptr<void>) -> ptr<@type3>>(%17, read<u32>(%29), pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(%24)));
-// DEFAULT-NEXT:                             break %37;
-// DEFAULT-NEXT:                             default %37:
+// DEFAULT-NEXT:                             break %41;
+// DEFAULT-NEXT:                             default %41:
 // DEFAULT-NEXT:                                 write<ptr<@type3>>(%30, null<ptr<@type3>>);
-// DEFAULT-NEXT:                             break %37;
+// DEFAULT-NEXT:                             break %41;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     if ne<ptr<@type3>>(read<ptr<@type3>>(%30), null<ptr<@type3>>)
 // DEFAULT-NEXT:                         write<ptr<void>>(%27, call<ptr<void>, signature=fn(ptr<void>, ptr<void>) -> ptr<void>>(%8, read<ptr<void>>(%27), pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%30))));
@@ -223,7 +224,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %32 one: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:         let %33 p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u32>, u32, ptr<ptr<void>>) -> i32>(%23, addr_of<ptr<u32>>(%32), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), addr_of<ptr<ptr<void>>>(%33));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

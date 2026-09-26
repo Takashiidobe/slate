@@ -38,7 +38,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %1 g_3: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 l_2: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %4
@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %6: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(or<i32>(widen<i32, reason=promotion>(read<i16>(%5)), read<i32>(%3)));
 // DEFAULT-NEXT:                 write<i16>(%1, read<i16>(%6));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

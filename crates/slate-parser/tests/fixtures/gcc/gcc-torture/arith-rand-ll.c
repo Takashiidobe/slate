@@ -150,8 +150,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %3 seed: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(47114711))) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exit(%47 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%47 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @simple_rand() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 this: u64 [storage=automatic] = add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1103515245)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12345))));
 // DEFAULT-NEXT:         write<u64>(%3, read<u64>(%4));
@@ -223,7 +223,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<u64>(%17, div<u64, by_zero=ub>(read<u64>(%15), read<u64>(%16)));
 // DEFAULT-NEXT:                         write<u64>(%18, rem<u64, by_zero=ub>(read<u64>(%15), read<u64>(%16)));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<u64>(read<u64>(%18), read<u64>(%16)), ne<u64>(add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%17), read<u64>(%16)), read<u64>(%18)), read<u64>(%15)))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %19 xx: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(read<u64>(%13));
@@ -235,7 +235,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i64>(%21, div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%19), read<i64>(%20)));
 // DEFAULT-NEXT:                         write<i64>(%22, rem<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%19), read<i64>(%20)));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(conditional<i64>(ge<i64>(read<i64>(%22), widen<i64, reason=usual_arith>(const<i32>(0))), read<i64>(%22), neg<i64, overflow=ub>(read<i64>(%22)))), reinterpret<u64, reason=explicit, fits=unknown>(conditional<i64>(ge<i64>(read<i64>(%20), widen<i64, reason=usual_arith>(const<i32>(0))), read<i64>(%20), neg<i64, overflow=ub>(read<i64>(%20))))), ne<i64>(add<i64, overflow=ub>(mul<i64, overflow=ub>(read<i64>(%21), read<i64>(%20)), read<i64>(%22)), read<i64>(%19)))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     label %11 save_time:
 // DEFAULT-NEXT:                         {
@@ -248,7 +248,7 @@ int main(void) {
 // DEFAULT-NEXT:                             write<u32>(%25, div<u32, by_zero=ub>(read<u32>(%23), read<u32>(%24)));
 // DEFAULT-NEXT:                             write<u32>(%26, rem<u32, by_zero=ub>(read<u32>(%23), read<u32>(%24)));
 // DEFAULT-NEXT:                             if logical_or<bool>(ge<u32>(read<u32>(%26), read<u32>(%24)), ne<u32>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(read<u32>(%25), read<u32>(%24)), read<u32>(%26)), read<u32>(%23)))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %27 xx: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(read<u64>(%13)));
@@ -260,7 +260,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i32>(%29, div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%27), read<i32>(%28)));
 // DEFAULT-NEXT:                         write<i32>(%30, rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%27), read<i32>(%28)));
 // DEFAULT-NEXT:                         if logical_or<bool>(logical_or<bool>(ge<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(ge<i32>(read<i32>(%30), const<i32>(0)), read<i32>(%30), neg<i32, overflow=ub>(read<i32>(%30)))), reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(read<i32>(%28), const<i32>(0)), read<i32>(%28), neg<i32, overflow=ub>(read<i32>(%28))))), ne<i32>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%29), read<i32>(%28)), read<i32>(%30)), read<i32>(%27))), logical_and<bool>(ne<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%27), const<i32>(0))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%30), const<i32>(0)))), ne<i32>(read<i32>(%30), const<i32>(0))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %31 xx: u16 [storage=automatic] = truncate<u16, reason=assign, fits=unknown>(read<u64>(%13));
@@ -272,7 +272,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<u16>(%33, reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%31))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%32)))))));
 // DEFAULT-NEXT:                         write<u16>(%34, reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%31))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%32)))))));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%34))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%32)))), ne<i32>(add<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%33))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%32)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%34)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%31)))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %35 xx: i16 [storage=automatic] = reinterpret<i16, reason=assign, fits=unknown>(truncate<u16, reason=assign, fits=unknown>(read<u64>(%13)));
@@ -282,7 +282,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i16>(%37, truncate<i16, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i16>(%35)), widen<i32, reason=promotion>(read<i16>(%36)))));
 // DEFAULT-NEXT:                         write<i16>(%38, truncate<i16, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i16>(%35)), widen<i32, reason=promotion>(read<i16>(%36)))));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%38)), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%38)), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%38)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%36)), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%36)), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%36))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%37)), widen<i32, reason=promotion>(read<i16>(%36))), widen<i32, reason=promotion>(read<i16>(%38))))), widen<i32, reason=promotion>(read<i16>(%35))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %39 xx: u8 [storage=automatic] = truncate<u8, reason=assign, fits=unknown>(read<u64>(%13));
@@ -294,7 +294,7 @@ int main(void) {
 // DEFAULT-NEXT:                         write<u8>(%41, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%39))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%40)))))));
 // DEFAULT-NEXT:                         write<u8>(%42, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%39))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%40)))))));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%42))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%40)))), ne<i32>(add<i32, overflow=ub>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%41))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%40)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%42)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%39)))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %43 xx: i8 [storage=automatic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u64>(%13)));
@@ -304,10 +304,10 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i8>(%45, truncate<i8, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%43)), widen<i32, reason=promotion>(read<i8>(%44)))));
 // DEFAULT-NEXT:                         write<i8>(%46, truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%43)), widen<i32, reason=promotion>(read<i8>(%44)))));
 // DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%46)), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%46)), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%46)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%44)), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%44)), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%44))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%45)), widen<i32, reason=promotion>(read<i8>(%44))), widen<i32, reason=promotion>(read<i8>(%46))))), widen<i32, reason=promotion>(read<i8>(%43))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

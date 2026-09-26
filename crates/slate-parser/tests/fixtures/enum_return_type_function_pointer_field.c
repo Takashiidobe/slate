@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<fn(i32) -> @type0>>(field0(%12), function_decay<ptr<fn(i32) -> @type0>>(%9));
 // DEFAULT-NEXT:         call<@type0, signature=fn(i32) -> @type0>(read<ptr<fn(i32) -> @type0>>(field0(%12)), const<i32>(2));
 // DEFAULT-NEXT:         let %14 b: i32 [storage=automatic] = read<i32>(%6);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(%13), read<i32>(%14));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(%13), read<i32>(%14));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

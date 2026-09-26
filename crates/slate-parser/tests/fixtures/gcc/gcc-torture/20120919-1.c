@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %1 vi: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1234567890), index1 = const<i32>(0)) [linkage=external];
 // DEFAULT-NEXT:     global %2 pd: ptr<f64> [storage=static] = array_decay<ptr<f64>, length=Some(2)>(%0) [linkage=external];
 // DEFAULT-NEXT:     global %3 pi: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(2)>(%1) [linkage=external];
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @init(%6 n: ptr<i32>, %7 dummy: ptr<i32>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<ptr<i32>>(null<ptr<i32>>, read<ptr<i32>>(%6))
 // DEFAULT-NEXT:             write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0))), const<i32>(0));
@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%19));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(1234567890))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

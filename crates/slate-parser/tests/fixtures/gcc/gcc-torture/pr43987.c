@@ -51,13 +51,13 @@ int         main() {
 // DEFAULT-NEXT:     fn %4 @add_input_file(%5 file: ptr<ptr<void>>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(read<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%0))))), const<i32>(0))), pointer_cast<ptr<void>, reason=assign>(read<ptr<ptr<void>>>(%5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 x: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%0)))), addr_of<ptr<ptr<void>>>(%8));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>) -> void>(%4, pointer_cast<ptr<ptr<void>>, reason=arg>(int_to_ptr<ptr<void>, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(read<ptr<ptr<void>>>(field1(deref(pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<array<i8, 2048>>>(%0))))), const<i32>(0)))), int_to_ptr<ptr<void>, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

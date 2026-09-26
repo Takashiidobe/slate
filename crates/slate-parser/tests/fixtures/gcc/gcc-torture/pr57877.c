@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:     global %6 g: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 h: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 d: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @foo(%10 p1: u64, %11 p2: ptr<i32>) -> u8 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         for %15
 // DEFAULT-NEXT:             init:
@@ -80,7 +80,7 @@ int main() {
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<u8, signature=fn(u64, ptr<i32>) -> u8>(%9, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%5))), addr_of<ptr<i32>>(%1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

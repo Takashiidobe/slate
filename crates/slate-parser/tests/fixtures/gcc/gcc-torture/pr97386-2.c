@@ -45,14 +45,15 @@ int main() {
 // DEFAULT-NEXT:         let %3 b: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(read<u64>(%2));
 // DEFAULT-NEXT:         return or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%3), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%3), const<i32>(8)));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5: bool [synthetic];
+// DEFAULT-NEXT:         let %6: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(4), const<i32>(4))), eq<i32>(const<i32>(8), const<i32>(8)))
-// DEFAULT-NEXT:             write<bool>(%5, ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(1)), const<u32>(2566914457)));
+// DEFAULT-NEXT:             write<bool>(%6, ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(1)), const<u32>(2566914457)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%5, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%5)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:             write<bool>(%6, const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%6)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

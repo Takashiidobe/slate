@@ -115,7 +115,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type0>(field1(%16), copy<@type0, reason=assign>(read<@type0>(%15)));
 // DEFAULT-NEXT:         let %17 s: @type4 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type2>>(field0(%17), addr_of<ptr<@type2>>(%16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%19)), call<i32, signature=fn(ptr<const @type4>, i32) -> i32>(%7, pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%17)), const<i32>(0)), call<i32, signature=fn(ptr<const @type4>, i32) -> i32>(%7, pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%17)), const<i32>(1)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%19)), call<i32, signature=fn(ptr<const @type4>, i32) -> i32>(%7, pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%17)), const<i32>(0)), call<i32, signature=fn(ptr<const @type4>, i32) -> i32>(%7, pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%17)), const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

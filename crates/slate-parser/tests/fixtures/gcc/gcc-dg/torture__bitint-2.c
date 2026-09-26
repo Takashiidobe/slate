@@ -142,16 +142,17 @@ main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %9 qe: array<u27b, 41> [storage=static] [align=16] = aggregate<array<u27b, 41>, zero_fill=false>(index0 = widen<u27b, reason=assign>(const<u25b>(24320389)), index1 = const<u27b>(124983685), index2 = const<u27b>(134216069), index3 = widen<u27b, reason=assign>(const<u6b>(42)), index4 = widen<u27b, reason=assign>(const<u25b>(24320407)), index5 = widen<u27b, reason=assign>(const<u25b>(24446286)), index6 = widen<u27b, reason=assign>(const<u25b>(24194492)), index7 = const<u27b>(89202797), index8 = widen<u27b, reason=assign>(const<u8b>(193)), index9 = widen<u27b, reason=assign>(const<u15b>(22268)), index10 = widen<u27b, reason=assign>(const<u21b>(2014352)), index11 = widen<u27b, reason=assign>(const<u20b>(1030781)), index12 = widen<u27b, reason=assign>(const<u4b>(8)), index13 = widen<u27b, reason=assign>(const<u4b>(10)), index14 = widen<u27b, reason=assign>(const<u4b>(10)), index15 = widen<u27b, reason=assign>(const<u4b>(12)), index16 = widen<u27b, reason=assign>(const<u1b>(0)), index17 = widen<u27b, reason=assign>(const<u1b>(1)), index18 = widen<u27b, reason=assign>(const<u1b>(1)), index19 = widen<u27b, reason=assign>(const<u1b>(0)), index20 = widen<u27b, reason=assign>(const<u1b>(1)), index21 = widen<u27b, reason=assign>(const<u1b>(0)), index22 = widen<u27b, reason=assign>(const<u1b>(1)), index23 = widen<u27b, reason=assign>(const<u1b>(1)), index24 = widen<u27b, reason=assign>(const<u1b>(0)), index25 = widen<u27b, reason=assign>(const<u17b>(67969)), index26 = widen<u27b, reason=assign>(const<u25b>(24378317)), index27 = widen<u27b, reason=assign>(const<u25b>(24310348)), index28 = widen<u27b, reason=assign>(const<u24b>(9234042)), index29 = const<u27b>(109897346), index30 = widen<u27b, reason=assign>(const<u17b>(125897)), index31 = widen<u27b, reason=assign>(const<u1b>(0)), index32 = widen<u27b, reason=assign>(const<u6b>(52)), index33 = widen<u27b, reason=assign>(const<u6b>(40)), index34 = widen<u27b, reason=assign>(const<u10b>(771)), index35 = widen<u27b, reason=assign>(const<u3b>(5)), index36 = widen<u27b, reason=assign>(const<u17b>(125917)), index37 = widen<u27b, reason=assign>(const<u25b>(24320384)), index38 = widen<u27b, reason=assign>(const<u1b>(1)), index39 = widen<u27b, reason=assign>(const<u25b>(24320389)), index40 = widen<u27b, reason=assign>(const<u25b>(24196214))) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: u25b, %2 b: u27b, %3 p: ptr<u25b>, %4 q: ptr<u27b>, %5 c: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u25b>(deref(ptr_offset<ptr<u25b>, subtract=false, element=u25b, overflow=ub>(read<ptr<u25b>>(%3), const<i32>(0))), truncate<u25b, reason=assign, fits=unknown>(read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(0))), widen<u27b, reason=assign>(read<u25b>(%1)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(1))), reinterpret<u27b, reason=assign, fits=unknown>(widen<i27b, reason=assign>(reinterpret<i25b, reason=explicit, fits=unknown>(read<u25b>(%1)))));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(2))), reinterpret<u27b, reason=assign, fits=unknown>(widen<i27b, reason=assign>(reinterpret<i12b, reason=explicit, fits=unknown>(truncate<u12b, reason=explicit, fits=unknown>(read<u25b>(%1))))));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(3))), float_to_int<u27b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(%5)));
-// DEFAULT-NEXT:         let %13: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(4));
-// DEFAULT-NEXT:         let %14: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%13)));
-// DEFAULT-NEXT:         let %15: u27b [synthetic] = add<u27b, overflow=wrap>(read<u27b>(%14), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%13)), read<u27b>(%15));
+// DEFAULT-NEXT:         let %14: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(4));
+// DEFAULT-NEXT:         let %15: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%14)));
+// DEFAULT-NEXT:         let %16: u27b [synthetic] = add<u27b, overflow=wrap>(read<u27b>(%15), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%14)), read<u27b>(%16));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(5))), add<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(6))), sub<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(7))), mul<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
@@ -159,22 +160,22 @@ main() {
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(9))), rem<u27b, by_zero=ub>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(10))), shl<u27b, overflow=wrap, amount_out_of_range=ub>(read<u27b>(%2), sub<u25b, overflow=wrap>(const<u25b>(24320393), read<u25b>(%1))));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(11))), shr<u27b, amount_out_of_range=ub, fill=zero_extend>(mul<u27b, overflow=wrap>(read<u27b>(%2), widen<u27b, reason=usual_arith>(const<u8b>(131))), sub<u25b, overflow=wrap>(const<u25b>(24320393), read<u25b>(%1))));
-// DEFAULT-NEXT:         let %16: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(12));
-// DEFAULT-NEXT:         let %17: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%16)));
-// DEFAULT-NEXT:         let %18: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%17))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%16)), read<u27b>(%18));
-// DEFAULT-NEXT:         let %19: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(13));
-// DEFAULT-NEXT:         let %20: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%19)));
-// DEFAULT-NEXT:         let %21: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%20))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%19)), read<u27b>(%21));
-// DEFAULT-NEXT:         let %22: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(14));
-// DEFAULT-NEXT:         let %23: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%22)));
-// DEFAULT-NEXT:         let %24: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%23))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%22)), read<u27b>(%24));
-// DEFAULT-NEXT:         let %25: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(15));
-// DEFAULT-NEXT:         let %26: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%25)));
-// DEFAULT-NEXT:         let %27: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%26))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%25)), read<u27b>(%27));
+// DEFAULT-NEXT:         let %17: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(12));
+// DEFAULT-NEXT:         let %18: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%17)));
+// DEFAULT-NEXT:         let %19: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%18))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%17)), read<u27b>(%19));
+// DEFAULT-NEXT:         let %20: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(13));
+// DEFAULT-NEXT:         let %21: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%20)));
+// DEFAULT-NEXT:         let %22: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%21))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%20)), read<u27b>(%22));
+// DEFAULT-NEXT:         let %23: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(14));
+// DEFAULT-NEXT:         let %24: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%23)));
+// DEFAULT-NEXT:         let %25: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%24))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%23)), read<u27b>(%25));
+// DEFAULT-NEXT:         let %26: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(15));
+// DEFAULT-NEXT:         let %27: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%26)));
+// DEFAULT-NEXT:         let %28: u27b [synthetic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u27b>(%27))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%26)), read<u27b>(%28));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(16))), from_bool<u27b, reason=assign>(eq<u27b>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2))));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(17))), from_bool<u27b, reason=assign>(ne<u27b>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2))));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(18))), from_bool<u27b, reason=assign>(gt<u27b>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2))));
@@ -188,42 +189,42 @@ main() {
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(26))), or<u27b>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(27))), xor<u27b>(widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(28))), widen<u27b, reason=assign>(not<u25b>(read<u25b>(%1))));
-// DEFAULT-NEXT:         let %28: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(29));
-// DEFAULT-NEXT:         let %29: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%28)));
-// DEFAULT-NEXT:         let %30: u27b [synthetic] = sub<u27b, overflow=wrap>(read<u27b>(%29), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%28)), read<u27b>(%30));
-// DEFAULT-NEXT:         let %31: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(30));
-// DEFAULT-NEXT:         let %32: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%31)));
-// DEFAULT-NEXT:         let %33: u27b [synthetic] = mul<u27b, overflow=wrap>(read<u27b>(%32), read<u27b>(%2));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%31)), read<u27b>(%33));
-// DEFAULT-NEXT:         let %34: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(31));
-// DEFAULT-NEXT:         let %35: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%34)));
-// DEFAULT-NEXT:         let %36: u27b [synthetic] = div<u27b, by_zero=ub>(read<u27b>(%35), read<u27b>(%2));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%34)), read<u27b>(%36));
-// DEFAULT-NEXT:         let %37: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(32));
-// DEFAULT-NEXT:         let %38: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%37)));
-// DEFAULT-NEXT:         let %39: u27b [synthetic] = rem<u27b, by_zero=ub>(read<u27b>(%38), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%37)), read<u27b>(%39));
-// DEFAULT-NEXT:         let %40: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(33));
-// DEFAULT-NEXT:         let %41: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%40)));
-// DEFAULT-NEXT:         let %42: u27b [synthetic] = shl<u27b, overflow=wrap, amount_out_of_range=ub>(read<u27b>(%41), sub<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(const<u17b>(125900)), read<u27b>(%2)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%40)), read<u27b>(%42));
-// DEFAULT-NEXT:         let %43: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(34));
-// DEFAULT-NEXT:         let %44: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%43)));
-// DEFAULT-NEXT:         let %45: u27b [synthetic] = shr<u27b, amount_out_of_range=ub, fill=zero_extend>(read<u27b>(%44), sub<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(const<u17b>(125901)), read<u27b>(%2)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%43)), read<u27b>(%45));
-// DEFAULT-NEXT:         let %46: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(35));
-// DEFAULT-NEXT:         let %47: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%46)));
-// DEFAULT-NEXT:         let %48: u27b [synthetic] = and<u27b>(read<u27b>(%47), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%46)), read<u27b>(%48));
-// DEFAULT-NEXT:         let %49: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(36));
-// DEFAULT-NEXT:         let %50: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%49)));
-// DEFAULT-NEXT:         let %51: u27b [synthetic] = or<u27b>(read<u27b>(%50), read<u27b>(%2));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%49)), read<u27b>(%51));
-// DEFAULT-NEXT:         let %52: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(37));
-// DEFAULT-NEXT:         let %53: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%52)));
-// DEFAULT-NEXT:         let %54: u27b [synthetic] = xor<u27b>(read<u27b>(%53), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%52)), read<u27b>(%54));
+// DEFAULT-NEXT:         let %29: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(29));
+// DEFAULT-NEXT:         let %30: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%29)));
+// DEFAULT-NEXT:         let %31: u27b [synthetic] = sub<u27b, overflow=wrap>(read<u27b>(%30), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%29)), read<u27b>(%31));
+// DEFAULT-NEXT:         let %32: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(30));
+// DEFAULT-NEXT:         let %33: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%32)));
+// DEFAULT-NEXT:         let %34: u27b [synthetic] = mul<u27b, overflow=wrap>(read<u27b>(%33), read<u27b>(%2));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%32)), read<u27b>(%34));
+// DEFAULT-NEXT:         let %35: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(31));
+// DEFAULT-NEXT:         let %36: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%35)));
+// DEFAULT-NEXT:         let %37: u27b [synthetic] = div<u27b, by_zero=ub>(read<u27b>(%36), read<u27b>(%2));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%35)), read<u27b>(%37));
+// DEFAULT-NEXT:         let %38: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(32));
+// DEFAULT-NEXT:         let %39: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%38)));
+// DEFAULT-NEXT:         let %40: u27b [synthetic] = rem<u27b, by_zero=ub>(read<u27b>(%39), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%38)), read<u27b>(%40));
+// DEFAULT-NEXT:         let %41: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(33));
+// DEFAULT-NEXT:         let %42: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%41)));
+// DEFAULT-NEXT:         let %43: u27b [synthetic] = shl<u27b, overflow=wrap, amount_out_of_range=ub>(read<u27b>(%42), sub<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(const<u17b>(125900)), read<u27b>(%2)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%41)), read<u27b>(%43));
+// DEFAULT-NEXT:         let %44: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(34));
+// DEFAULT-NEXT:         let %45: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%44)));
+// DEFAULT-NEXT:         let %46: u27b [synthetic] = shr<u27b, amount_out_of_range=ub, fill=zero_extend>(read<u27b>(%45), sub<u27b, overflow=wrap>(widen<u27b, reason=usual_arith>(const<u17b>(125901)), read<u27b>(%2)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%44)), read<u27b>(%46));
+// DEFAULT-NEXT:         let %47: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(35));
+// DEFAULT-NEXT:         let %48: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%47)));
+// DEFAULT-NEXT:         let %49: u27b [synthetic] = and<u27b>(read<u27b>(%48), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%47)), read<u27b>(%49));
+// DEFAULT-NEXT:         let %50: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(36));
+// DEFAULT-NEXT:         let %51: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%50)));
+// DEFAULT-NEXT:         let %52: u27b [synthetic] = or<u27b>(read<u27b>(%51), read<u27b>(%2));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%50)), read<u27b>(%52));
+// DEFAULT-NEXT:         let %53: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(37));
+// DEFAULT-NEXT:         let %54: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%53)));
+// DEFAULT-NEXT:         let %55: u27b [synthetic] = xor<u27b>(read<u27b>(%54), widen<u27b, reason=usual_arith>(read<u25b>(%1)));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%53)), read<u27b>(%55));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(38))), truncate<u27b, reason=assign, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(39))), conditional<u27b>(ne<u27b>(read<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(39)))), const<u27b>(0)), widen<u27b, reason=usual_arith>(read<u25b>(%1)), read<u27b>(%2)));
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(read<ptr<u27b>>(%4), const<i32>(40))), widen<u27b, reason=assign>(const<u25b>(24196214)));
@@ -231,26 +232,26 @@ main() {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %11 const<u25b>(12345641):
 // DEFAULT-NEXT:                     if ne<u27b>(read<u27b>(%2), reinterpret<u27b, reason=usual_arith, fits=unknown>(widen<i27b, reason=usual_arith>(const<i12b>(1244))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<u25b>(11821400):
 // DEFAULT-NEXT:                     if ne<u27b>(read<u27b>(%2), widen<u27b, reason=usual_arith>(const<u18b>(133445)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<u25b>(12145):
 // DEFAULT-NEXT:                     if ne<u27b>(read<u27b>(%2), widen<u27b, reason=usual_arith>(const<u11b>(1212)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<u25b>(24320389):
 // DEFAULT-NEXT:                     if ne<u27b>(read<u27b>(%2), widen<u27b, reason=usual_arith>(const<u17b>(125897)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 case %11 const<u25b>(7128412):
 // DEFAULT-NEXT:                     if ne<u27b>(read<u27b>(%2), widen<u27b, reason=usual_arith>(const<u8b>(150)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:                 break %11;
 // DEFAULT-NEXT:                 default %11:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
@@ -273,24 +274,24 @@ main() {
 // DEFAULT-NEXT:         write<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(array_decay<ptr<u27b>, length=Some(41)>(%8), const<i32>(39))), widen<u27b, reason=assign>(const<u2b>(2)));
 // DEFAULT-NEXT:         call<void, signature=fn(u25b, u27b, ptr<u25b>, ptr<u27b>, f32) -> void>(%0, const<u25b>(24320389), widen<u27b, reason=arg>(const<u17b>(125897)), addr_of<ptr<u25b>>(%7), array_decay<ptr<u27b>, length=Some(41)>(%8), const<f32>(42.0));
 // DEFAULT-NEXT:         if ne<u25b>(read<u25b>(%7), widen<u25b, reason=usual_arith>(const<u17b>(125897)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:         let %55: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(array_decay<ptr<u27b>, length=Some(41)>(%8), const<i32>(38));
-// DEFAULT-NEXT:         let %56: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%55)));
-// DEFAULT-NEXT:         let %57: u27b [synthetic] = truncate<u27b, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u27b>(%56)), sub<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
-// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%55)), read<u27b>(%57));
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:         let %56: ptr<u27b> [synthetic] = ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(array_decay<ptr<u27b>, length=Some(41)>(%8), const<i32>(38));
+// DEFAULT-NEXT:         let %57: u27b [synthetic] = read<u27b>(deref(read<ptr<u27b>>(%56)));
+// DEFAULT-NEXT:         let %58: u27b [synthetic] = truncate<u27b, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(widen<u64, reason=usual_arith>(read<u27b>(%57)), sub<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
+// DEFAULT-NEXT:         write<u27b>(deref(read<ptr<u27b>>(%56)), read<u27b>(%58));
+// DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %10 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(41))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %58: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %59: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%58), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%59));
+// DEFAULT-NEXT:                 let %59: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %60: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%59), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%60));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u27b>(read<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(array_decay<ptr<u27b>, length=Some(41)>(%8), read<i32>(%10)))), read<u27b>(deref(ptr_offset<ptr<u27b>, subtract=false, element=u27b, overflow=ub>(array_decay<ptr<u27b>, length=Some(41)>(%9), read<i32>(%10)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%12);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

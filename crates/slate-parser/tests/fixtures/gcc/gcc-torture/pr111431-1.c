@@ -80,15 +80,16 @@ funcs(funcdefs)
 // DEFAULT-NEXT:         let %20 b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%19), const<i32>(5)));
 // DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%19), read<i32, volatile>(%20)), const<i32>(0));
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %25 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         for %23
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %22 a: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
 // DEFAULT-NEXT:             condition: le<i32>(read<i32>(%22), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %27: i32 [synthetic] = read<i32>(%22);
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%28));
+// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%22);
+// DEFAULT-NEXT:                 let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%29));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -96,19 +97,19 @@ funcs(funcdefs)
 // DEFAULT-NEXT:                     do %24
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%3, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%6, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(__builtin_abort);
-// DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                     do %25
-// DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%9, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%12, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                     do %26
 // DEFAULT-NEXT:                         {
+// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%9, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%12, read<i32>(%22))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:                     do %27
+// DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%15, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%18, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(__builtin_abort);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 }

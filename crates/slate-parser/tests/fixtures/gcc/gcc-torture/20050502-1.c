@@ -92,7 +92,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %31 .str31: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 64, 103, 104, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %32 .str32: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([103, 104, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %33 .str33: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @strcmp(%16 <unnamed>: ptr<const i8>, %17 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @bar(%3 x: ptr<ptr<const i8>>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %34: ptr<ptr<const i8>> [synthetic] = read<ptr<ptr<const i8>>>(%3);
@@ -135,48 +135,48 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(10)>(%19)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
 // DEFAULT-NEXT:         let %40: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%40, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%40, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%21))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%40, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%21))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%40)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(11)>(%22)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:         let %41: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%23))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%23))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%41, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%41, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%24))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%41, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%24))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%41)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(11)>(%25)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:         let %42: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%26))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%26))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%42, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%42, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%27))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%42, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%27))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%42)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(12)>(%28)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:         let %43: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%29))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%29))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%43, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%43, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%30))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%43, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%30))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%43)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<ptr<const i8>>(%15, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(10)>(%31)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<const i8>>, ptr<i8>, bool, bool) -> void>(%6, addr_of<ptr<ptr<const i8>>>(%15), array_decay<ptr<i8>, length=Some(64)>(%14), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
 // DEFAULT-NEXT:         let %44: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%32))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%15), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%32))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%44, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%44, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%33))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%44, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(%14)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%33))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%44)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
