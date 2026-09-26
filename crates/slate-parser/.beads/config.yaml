@@ -66,5 +66,3 @@
 # - github.token    → use GITHUB_TOKEN env var instead
 
 export.auto: true
-sync:
-    remote: "git+https://github.com/Takashiidobe/slate-parser"

@@ -1187,6 +1187,20 @@ impl Lowerer {
         result
     }
 
+    /// C99 6.8.4p3/6.8.5p5: a selection or iteration statement is a block,
+    /// so a tag or enumerator declared in its controlling expression ends
+    /// with the statement. C89 has no such block.
+    fn control_scoped<T>(
+        &mut self,
+        lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
+    ) -> Result<T, ResolveError> {
+        if self.types.features.control_statement_scopes {
+            self.scoped(lower)
+        } else {
+            lower(self)
+        }
+    }
+
     pub(super) fn compound<T>(
         &mut self,
         lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
@@ -1270,44 +1284,44 @@ impl Lowerer {
                     condition,
                     then_branch,
                     else_branch,
-                } => {
-                    let value = self.expr(condition)?;
-                    Statement::If {
-                        condition: self.condition(value.value, None)?,
-                        then_body: self.scoped(|lower| {
+                } => self.control_scoped(|lower| {
+                    let value = lower.expr(condition)?;
+                    Ok(Statement::If {
+                        condition: lower.condition(value.value, None)?,
+                        then_body: lower.scoped(|lower| {
                             lower.statements(std::slice::from_ref(then_branch), return_type)
                         })?,
                         else_body: else_branch
                             .as_ref()
                             .map(|body| {
-                                self.scoped(|lower| {
+                                lower.scoped(|lower| {
                                     lower.statements(std::slice::from_ref(body), return_type)
                                 })
                             })
                             .transpose()?,
-                    }
-                }
-                StmtKind::While { condition, body } => {
-                    let id = self.fresh();
-                    let value = self.expr(condition)?;
-                    let condition = self.condition(value.value, None)?;
-                    let body = self.loop_body(id, body, return_type)?;
-                    Statement::While {
+                    })
+                })?,
+                StmtKind::While { condition, body } => self.control_scoped(|lower| {
+                    let id = lower.fresh();
+                    let value = lower.expr(condition)?;
+                    let condition = lower.condition(value.value, None)?;
+                    let body = lower.loop_body(id, body, return_type)?;
+                    Ok(Statement::While {
                         id,
                         condition: condition.into(),
                         body,
-                    }
-                }
-                StmtKind::DoWhile { body, condition } => {
-                    let id = self.fresh();
-                    let body = self.loop_body(id, body, return_type)?;
-                    let value = self.expr(condition)?;
-                    Statement::DoWhile {
+                    })
+                })?,
+                StmtKind::DoWhile { body, condition } => self.control_scoped(|lower| {
+                    let id = lower.fresh();
+                    let body = lower.loop_body(id, body, return_type)?;
+                    let value = lower.expr(condition)?;
+                    Ok(Statement::DoWhile {
                         id,
                         body,
-                        condition: self.condition(value.value, None)?.into(),
-                    }
-                }
+                        condition: lower.condition(value.value, None)?.into(),
+                    })
+                })?,
                 StmtKind::For {
                     init,
                     condition,
@@ -1351,25 +1365,25 @@ impl Lowerer {
                         .last()
                         .ok_or(ResolveError::Unsupported("continue outside loop"))?,
                 ),
-                StmtKind::Switch { discriminant, body } => {
-                    let value = self.expr(discriminant)?;
-                    let discriminant = self.promote(value)?;
+                StmtKind::Switch { discriminant, body } => self.control_scoped(|lower| {
+                    let value = lower.expr(discriminant)?;
+                    let discriminant = lower.promote(value)?;
                     if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                         return Err(ResolveError::Unsupported("noninteger switch discriminant"));
                     }
-                    let id = self.fresh();
-                    self.break_targets.push(id);
-                    self.switches.push((id, discriminant.c));
-                    let body = self
+                    let id = lower.fresh();
+                    lower.break_targets.push(id);
+                    lower.switches.push((id, discriminant.c));
+                    let body = lower
                         .scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
-                    self.switches.pop();
-                    self.break_targets.pop();
-                    Statement::Switch {
+                    lower.switches.pop();
+                    lower.break_targets.pop();
+                    Ok(Statement::Switch {
                         id,
                         discriminant: discriminant.value,
                         body: body?,
-                    }
-                }
+                    })
+                })?,
                 StmtKind::SwitchLabel { label, body } => {
                     let (switch, ty) = self
                         .switches

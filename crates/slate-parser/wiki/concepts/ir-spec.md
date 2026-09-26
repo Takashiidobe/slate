@@ -1530,7 +1530,11 @@ Fixture: `sema/variable_length_array_type_names.c`.
 Lowering pushes a `TypeResolver` scope for each function body, compound
 statement, selection/iteration statement and its substatements (C11 6.8.4p3,
 6.8.5p5), and statement expression, so an inner typedef shadows and then
-releases an outer one. `typedef int T[n];` captures `n` once at the typedef,
+releases an outer one. The selection/iteration statement's own scope (around
+its controlling expression) is gated by `control_statement_scopes`: under
+C89/GNU89 an `enum { T = 1 }` in an `if`/`while`/`switch` condition stays
+visible after the statement and hides a file-scope `typedef ... T`; under C99+
+it ends with the statement. Fixture: `sema/control_body_scopes.c`. `typedef int T[n];` captures `n` once at the typedef,
 like an object declarator, and every later `T` (objects, `sizeof(T)`) shares
 that extent even if `n` changes. Aliases stay in the module's flat type table
 (`type @typeN T = vla<i32, %e>;`), so a block-scope alias there can name a
