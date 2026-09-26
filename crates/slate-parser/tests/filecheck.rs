@@ -517,6 +517,10 @@ fn run_ir_error_fixture(
     );
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each param is an independent fixture config knob"
+)]
 fn run_expected_failure_fixture(
     fixture: &Path,
     prefix: &str,
@@ -1160,107 +1164,108 @@ fn collect_c_fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
         let path = entry.expect("read fixture entry").path();
         if path.is_dir() {
             collect_c_fixtures(&path, out);
-        } else if path.extension().and_then(|extension| extension.to_str()) == Some("c") {
+        } else if path.extension().and_then(|extension| extension.to_str()) == Some("c")
+            && !path.file_name().unwrap().to_string_lossy().starts_with('.')
+        {
             out.push(path);
         }
     }
 }
 
-#[test]
-fn fixtures_are_filechecked() {
-    let mut fixtures = Vec::new();
-    collect_c_fixtures(&fixtures_dir(), &mut fixtures);
-    fixtures.sort();
-    assert!(!fixtures.is_empty(), "no C fixtures found");
-
-    let mut jobs = Vec::new();
-    for fixture in fixtures {
-        let source = decode_source_bytes(&std::fs::read(&fixture).expect("read fixture"));
-        let configs = configurations(&source);
-        let errors = error_configurations(&source);
-        let ir_errors = ir_error_configurations(&source);
-        let warnings = warning_configurations(&source);
-        let flavor = flavor(&source);
-        let isystem = isystem_paths(&source);
-        let config_names = configs
+fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
+    let source = decode_source_bytes(&std::fs::read(fixture).expect("read fixture"));
+    let configs = configurations(&source);
+    let errors = error_configurations(&source);
+    let ir_errors = ir_error_configurations(&source);
+    let warnings = warning_configurations(&source);
+    let flavor = flavor(&source);
+    let isystem = isystem_paths(&source);
+    let config_names = configs
+        .iter()
+        .map(|(prefix, _)| prefix.as_str())
+        .collect::<std::collections::HashSet<_>>();
+    if !errors.is_empty()
+        && errors
             .iter()
-            .map(|(prefix, _)| prefix.as_str())
-            .collect::<std::collections::HashSet<_>>();
-        if !errors.is_empty()
-            && errors
+            .any(|prefix| !config_names.contains(prefix.as_str()))
+    {
+        for prefix in &errors {
+            let defines = configs
                 .iter()
-                .any(|prefix| !config_names.contains(prefix.as_str()))
-        {
-            for prefix in &errors {
-                let defines = configs
-                    .iter()
-                    .find(|(name, _)| name == prefix)
-                    .map_or(&[][..], |(_, defines)| defines.as_slice());
-                jobs.push(FixtureJob {
-                    fixture: fixture.clone(),
-                    prefix: prefix.clone(),
-                    defines: defines.to_vec(),
-                    isystem: isystem.clone(),
-                    flavor: flavor.clone(),
-                    standard: std_for_prefix(&source, prefix),
-                    show_ids: show_ids_for_prefix(&source, prefix),
-                    error: true,
-                    ir_error: false,
-                    warnings: false,
-                });
-            }
-            continue;
-        }
-        assert!(
-            !configs.is_empty(),
-            "fixture has no FileCheck configurations: {}",
-            fixture.display()
-        );
-        for (prefix, defines) in &configs {
+                .find(|(name, _)| name == prefix)
+                .map_or(&[][..], |(_, defines)| defines.as_slice());
             jobs.push(FixtureJob {
-                fixture: fixture.clone(),
+                fixture: fixture.to_path_buf(),
                 prefix: prefix.clone(),
-                defines: defines.clone(),
+                defines: defines.to_vec(),
                 isystem: isystem.clone(),
                 flavor: flavor.clone(),
                 standard: std_for_prefix(&source, prefix),
                 show_ids: show_ids_for_prefix(&source, prefix),
-                error: errors.contains(prefix),
-                ir_error: ir_errors.contains(prefix),
-                warnings: warnings.contains(prefix),
+                error: true,
+                ir_error: false,
+                warnings: false,
             });
         }
+        return;
+    }
+    assert!(
+        !configs.is_empty(),
+        "fixture has no FileCheck configurations: {}",
+        fixture.display()
+    );
+    for (prefix, defines) in &configs {
+        jobs.push(FixtureJob {
+            fixture: fixture.to_path_buf(),
+            prefix: prefix.clone(),
+            defines: defines.clone(),
+            isystem: isystem.clone(),
+            flavor: flavor.clone(),
+            standard: std_for_prefix(&source, prefix),
+            show_ids: show_ids_for_prefix(&source, prefix),
+            error: errors.contains(prefix),
+            ir_error: ir_errors.contains(prefix),
+            warnings: warnings.contains(prefix),
+        });
+    }
+}
+
+fn main() {
+    let arguments = libtest_mimic::Arguments::from_args();
+    let fixtures_root = fixtures_dir();
+    let fixtures = match arguments.filter.as_deref() {
+        Some(name) if arguments.exact => name
+            .rsplit_once("::")
+            .map(|(fixture, _)| vec![fixtures_root.join(fixture)])
+            .unwrap_or_default(),
+        _ => {
+            let mut fixtures = Vec::new();
+            collect_c_fixtures(&fixtures_root, &mut fixtures);
+            fixtures.sort();
+            assert!(!fixtures.is_empty(), "no C fixtures found");
+            fixtures
+        }
+    };
+
+    let mut jobs = Vec::new();
+    for fixture in &fixtures {
+        fixture_jobs(fixture, &mut jobs);
     }
     assert!(!jobs.is_empty(), "no FileCheck configurations found");
 
-    let workers = jobs.len().min(6);
-    let chunk_size = jobs.len().div_ceil(workers);
-    std::thread::scope(|scope| {
-        let handles = jobs
-            .chunks(chunk_size)
-            .map(|jobs| {
-                scope.spawn(move || {
-                    jobs.iter().for_each(|job| {
-                        run_job(FixtureJob {
-                            fixture: job.fixture.clone(),
-                            prefix: job.prefix.clone(),
-                            defines: job.defines.clone(),
-                            isystem: job.isystem.clone(),
-                            flavor: job.flavor.clone(),
-                            standard: job.standard.clone(),
-                            show_ids: job.show_ids,
-                            error: job.error,
-                            ir_error: job.ir_error,
-                            warnings: job.warnings,
-                        })
-                    })
-                })
+    let trials = jobs
+        .into_iter()
+        .map(|job| {
+            let name = format!(
+                "{}::{}",
+                job.fixture.strip_prefix(&fixtures_root).unwrap().display(),
+                job.prefix
+            );
+            libtest_mimic::Trial::test(name, move || {
+                run_job(job);
+                Ok(())
             })
-            .collect::<Vec<_>>();
-        for handle in handles {
-            if let Err(payload) = handle.join() {
-                std::panic::resume_unwind(payload);
-            }
-        }
-    });
+        })
+        .collect();
+    libtest_mimic::run(&arguments, trials).exit();
 }
