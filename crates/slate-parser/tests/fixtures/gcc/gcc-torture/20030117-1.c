@@ -54,10 +54,10 @@ int bar(int x, int y, int z) { return foo(x * x, y * y, z * z); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32) -> i32>(%2, const<i32>(5), const<i32>(10), const<i32>(21)), const<i32>(12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32) -> i32>(%3, const<i32>(9), const<i32>(12), const<i32>(15)), const<i32>(150))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

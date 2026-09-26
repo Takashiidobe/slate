@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     fn %3 @main(%4 argc: i32, %5 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 u: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647));
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(u32) -> i32>(%1, read<u32>(%6)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

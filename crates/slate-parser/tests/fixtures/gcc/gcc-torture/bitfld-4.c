@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%2))), neg<u32, overflow=wrap>(const<u32>(123))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(bitfield1<unit=0, bytes=0..4, bits=12..32>(%2))), neg<u32, overflow=wrap>(const<u32>(456))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

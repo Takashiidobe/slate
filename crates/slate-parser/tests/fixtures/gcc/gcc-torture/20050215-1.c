@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 w: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(%3);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(int_to_ptr<ptr<f32>, reason=explicit>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type0>>(%6)), not<u64>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))), ne<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type0>>(%6)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), const<u64>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

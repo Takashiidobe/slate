@@ -63,10 +63,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%2, const<i64>(2), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(3)))), neg<i64, overflow=ub>(const<i64>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%5, const<u64>(2), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), const<u64>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -97,7 +97,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1));
 // DEFAULT-NEXT:         let %12 b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%6, const<i32>(1));
 // DEFAULT-NEXT:         let %13 c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%8, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%15)), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%15)), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

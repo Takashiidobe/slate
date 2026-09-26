@@ -93,9 +93,9 @@ int main() {
 // DEFAULT-NEXT:                     let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%4, read<i32>(%15));
 // DEFAULT-NEXT:                     if gt<i32>(read<i32>(%4), const<i32>(10))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

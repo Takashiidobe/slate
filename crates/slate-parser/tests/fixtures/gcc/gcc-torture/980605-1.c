@@ -184,13 +184,13 @@ int main(void) {
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%6);
 // DEFAULT-NEXT:         write<i32>(%34, call<i32, signature=fn(f64) -> i32>(%7, const<f64>(17.0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(%7, const<f64>(17.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%0, array_decay<ptr<i8>, length=Some(10)>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%39)), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(sprintf, array_decay<ptr<i8>, length=Some(10)>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%39)), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)));
 // DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%24), read<i32>(%25)), read<i32>(%26)), read<i32>(%27)), read<i32>(%28)), read<i32>(%29)), read<i32>(%30)), read<i32>(%31)), read<i32>(%32)), read<i32>(%33)), read<i32>(%34)), const<i32>(227))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %35 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%22);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

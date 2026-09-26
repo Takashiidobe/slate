@@ -71,12 +71,12 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(20)))));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%1, read<ptr<i8>>(%7), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%15)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(strcpy, read<ptr<i8>>(%7), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%15)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(__builtin_setjmp, array_decay<ptr<ptr<void>>, length=Some(20)>(%4)), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%7)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%16))), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%7)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%16))), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %8 q: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%7), const<i32>(2))))))), const<u64>(4))));

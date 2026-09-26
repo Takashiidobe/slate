@@ -42,8 +42,8 @@ int main() {
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 b: i32 [storage=automatic] = div<i32, by_zero=ub, min_by_neg_one=ub>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%2), const<i32>(0))))), mul<i32, overflow=ub>(const<i32>(3), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%2), const<i32>(1)))))), const<i32>(12));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), neg<i32, overflow=ub>(const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

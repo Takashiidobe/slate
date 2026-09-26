@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), ne<u32>(read<u32>(field1(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))), ne<u32>(read<u32>(field2(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))), ne<u32>(read<u32>(field3(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

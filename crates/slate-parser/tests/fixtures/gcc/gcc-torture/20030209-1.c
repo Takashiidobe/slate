@@ -48,8 +48,8 @@ int    main() {
 // DEFAULT-NEXT:         write<i32>(%4, const<i32>(99));
 // DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%2), read<i32>(%4)))), const<i32>(0))), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%2), const<i32>(99)))), const<i32>(0)))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

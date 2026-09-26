@@ -120,7 +120,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @check(%2 type: ptr<const i8>, %3 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%3), neg<i32, overflow=ub>(read<i32>(%3))), read<i32>(%3))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

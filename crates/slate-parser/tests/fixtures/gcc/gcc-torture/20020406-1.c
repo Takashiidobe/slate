@@ -159,11 +159,11 @@ int main() {
 // DEFAULT-NEXT:         return read<i32>(field1(deref(read<ptr<@type1>>(%10))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @DUPFFnew(%12 maxdeg: i32 [const]) -> ptr<@type1> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 ans: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, const<u64>(16)));
+// DEFAULT-NEXT:         let %13 ans: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(16)));
 // DEFAULT-NEXT:         write<ptr<u32>>(field2(deref(read<ptr<@type1>>(%13))), null<ptr<u32>>);
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%12), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<u32>>(field2(deref(read<ptr<@type1>>(%13))), pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%12), const<i32>(1)))), const<u64>(4))));
-// DEFAULT-NEXT:             pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%12), const<i32>(1)))), const<u64>(4)));
+// DEFAULT-NEXT:             write<ptr<u32>>(field2(deref(read<ptr<@type1>>(%13))), pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(calloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%12), const<i32>(1)))), const<u64>(4))));
+// DEFAULT-NEXT:             pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(calloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%12), const<i32>(1)))), const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type1>>(%13))), read<i32>(%12));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%13))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<ptr<@type1>>(%13);
@@ -201,7 +201,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%58, ne<i32>(call<i32, signature=fn(ptr<@type1>) -> i32>(%9, read<ptr<@type1>>(%30)), const<i32>(1)));
 // DEFAULT-NEXT:         if read<bool>(%58)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type1>>(%29)))), const<i32>(0)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             return read<ptr<@type1>>(%29);
 // DEFAULT-NEXT:         write<u32>(%40, reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));

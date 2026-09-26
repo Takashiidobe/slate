@@ -1238,52 +1238,52 @@ int main() {
 // DEFAULT-NEXT:     fn %370 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(%4, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(100))));
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%5, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2048)), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%5, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2048)), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%38, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(513)), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%38, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(513)), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%71, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(512)), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%71, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(512)), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%104, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(511)), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%104, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(511)), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%137, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%137, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%170, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(1), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%170, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(const<i32>(1), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%203, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(511), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%203, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(const<i32>(511), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%236, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(512), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%236, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(const<i32>(512), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%269, const<i32>(3), not<u64>(const<u64>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(513), const<i32>(3)), const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%269, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(mul<i32, overflow=ub>(const<i32>(513), const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%302, const<i32>(3), not<u64>(const<u64>(0))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%302, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%335, const<i32>(3), not<u64>(const<u64>(0))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(neg<u64, overflow=wrap>(read<u64>(%4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32, u64) -> u64>(%335, const<i32>(3), const<u64>(4294967295)), add<u64, overflow=wrap>(mul<u64, overflow=wrap>(neg<u64, overflow=wrap>(read<u64>(%4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), const<u64>(4294967295)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64) -> u64>(%368, read<u64>(%4)), neg<u64, overflow=wrap>(const<u64>(100)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

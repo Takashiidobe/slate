@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:             write<i32>(%36, neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(%27, read<i32>(%36));
 // DEFAULT-NEXT:         let %28 main_after: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%13, const<i32>(23), const<i32>(29));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%35)), read<i32>(%24), read<i32>(%25), read<i32>(%28), read<i32>(%26), read<i32>(%27));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%35)), read<i32>(%24), read<i32>(%25), read<i32>(%28), read<i32>(%26), read<i32>(%27));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

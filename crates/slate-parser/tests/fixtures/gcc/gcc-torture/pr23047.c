@@ -46,11 +46,11 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<i32>(%3, conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(0)), read<i32>(%3), neg<i32, overflow=ub>(read<i32>(%3))));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%3), const<i32>(0))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main(%5 argc: i32, %6 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

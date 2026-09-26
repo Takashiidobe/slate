@@ -53,12 +53,12 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%3, read<i32>(%11));
 // DEFAULT-NEXT:         let %8: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%11)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%3), const<i32>(2)), ne<i32>(read<i32>(%4), const<i32>(3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 t: array<i32, 2> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i32>, i32) -> void>(%2, const<i32>(1), array_decay<ptr<i32>, length=Some(2)>(%6), const<i32>(3));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

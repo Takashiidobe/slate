@@ -94,9 +94,9 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @do_mknod(%9 filename: ptr<const i8>, %10 mode: i32, %11 dev: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(360710264)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @getname(%13 filename: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %14 a1: u32 [storage=automatic];
@@ -130,7 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, i32, u32) -> i32>(%23, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%31)), const<i32>(1), reinterpret<u32, reason=arg, fits=always>(const<i32>(305419896)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

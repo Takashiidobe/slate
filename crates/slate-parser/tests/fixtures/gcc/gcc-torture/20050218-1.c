@@ -76,21 +76,21 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%6), read<u64>(%10))), read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9)))), call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9)))))), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(strncmp, pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%6), read<u64>(%10))), read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9)))), call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9)))))), const<i32>(0))
 // DEFAULT-NEXT:                         return const<i32>(2);
 // DEFAULT-NEXT:                     let %24: u64 [synthetic] = read<u64>(%10);
-// DEFAULT-NEXT:                     let %25: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%24), call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9))))));
+// DEFAULT-NEXT:                     let %25: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%24), call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(deref(ptr_offset<ptr<ptr<const i8>>, subtract=false, element=ptr<const i8>, overflow=ub>(array_decay<ptr<ptr<const i8>>, length=Some(16)>(%4), read<u64>(%9))))));
 // DEFAULT-NEXT:                     write<u64>(%10, read<u64>(%25));
 // DEFAULT-NEXT:                     if ne<ptr<const i8>>(read<ptr<const i8>>(%7), null<ptr<const i8>>)
 // DEFAULT-NEXT:                         let %26: u64 [synthetic] = read<u64>(%10);
-// DEFAULT-NEXT:                         let %27: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%26), call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(%7)));
+// DEFAULT-NEXT:                         let %27: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%26), call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%7)));
 // DEFAULT-NEXT:                         write<u64>(%10, read<u64>(%27));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>, ptr<const i8>, u64) -> i32>(%5, array_decay<ptr<i8>, length=Some(6)>(%21), null<ptr<const i8>>, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

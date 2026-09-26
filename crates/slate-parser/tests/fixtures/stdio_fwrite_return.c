@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %18 buf: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 0]);
 // DEFAULT-NEXT:         let %19 n: u64 [storage=automatic] = call<u64, signature=fn(ptr<const void>, u64, u64, ptr<@type4>) -> u64>(%15, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%18)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(15))), read<ptr<@type4>>(%17));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%34)), read<u64>(%19));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%34)), read<u64>(%19));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type4>) -> i32>(%11, read<ptr<@type4>>(%17));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%35)));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -117,26 +117,26 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %14 x: vector<i32, 2> [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(vector<i32, 2>) -> i32, abi=sysv64(coerce<f64>) -> scalar>(%6, read<vector<i32, 2>>(%14)), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %16 u: @type4 [storage=automatic];
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%16), call<vector<i32, 2>, signature=fn() -> vector<i32, 2>, abi=sysv64() -> coerce<f64>>(%8));
 // DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn() -> vector<i32, 2>, abi=sysv64() -> coerce<f64>>(%8);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%16)), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%16)), const<i32>(1)))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %17 y: vector<i16, 2> [storage=automatic] = aggregate<vector<i16, 2>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         let %19 v: @type5 [storage=automatic];
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%19), call<vector<i32, 2>, signature=fn(vector<i16, 2>) -> vector<i32, 2>, abi=sysv64(coerce<i32>) -> coerce<f64>>(%9, read<vector<i16, 2>>(%17)));
 // DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn(vector<i16, 2>) -> vector<i32, 2>, abi=sysv64(coerce<i32>) -> coerce<f64>>(%9, read<vector<i16, 2>>(%17));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(field1(%19)), widen<i64, reason=usual_arith>(const<i32>(262148)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %20 z: vector<u32, 2> [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6)));
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%16), call<vector<i32, 2>, signature=fn(vector<u32, 2>) -> vector<i32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%11, read<vector<u32, 2>>(%20)));
 // DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn(vector<u32, 2>) -> vector<i32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%11, read<vector<u32, 2>>(%20));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%16)), const<i32>(0)))), const<i32>(6)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%16)), const<i32>(1)))), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

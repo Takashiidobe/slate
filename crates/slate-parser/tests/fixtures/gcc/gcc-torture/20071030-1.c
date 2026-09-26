@@ -173,10 +173,10 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 cl: @type8 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type8>>(%24)), const<i32>(0), const<u64>(2056));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type8>>(%24)), const<i32>(0), const<u64>(2056));
 // DEFAULT-NEXT:         write<f32>(field1(deref(ptr_offset<ptr<@type4>, subtract=false, element=@type4, overflow=ub>(array_decay<ptr<@type4>, length=Some(64)>(field2(%24)), const<i32>(0)))), const<f32>(1.0));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type8>) -> i32>(%17, addr_of<ptr<@type8>>(%24)), const<i32>(1000))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -83,7 +83,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(%6, call<i64, signature=fn(ptr<@type0>) -> i64>(%2, addr_of<ptr<@type0>>(%7)));
 // DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>) -> i64>(%2, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

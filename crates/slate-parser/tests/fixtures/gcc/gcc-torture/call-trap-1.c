@@ -48,14 +48,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @exit(%5 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @bar() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i64, signature=fn(i32) -> i64>(pointer_cast<ptr<fn(i32) -> i64>, reason=explicit>(function_decay<ptr<fn() -> void>>(%3)), call<i32, signature=fn() -> i32>(%2));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

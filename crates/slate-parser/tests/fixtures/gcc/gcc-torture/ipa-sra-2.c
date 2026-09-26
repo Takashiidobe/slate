@@ -81,11 +81,11 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         return read<i32>(%8);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main(%10 argc: i32, %11 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 agg: ptr<@type2> [storage=automatic] = pointer_cast<ptr<@type2>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%3, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(40)));
+// DEFAULT-NEXT:         let %12 agg: ptr<@type2> [storage=automatic] = pointer_cast<ptr<@type2>, reason=assign>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(calloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(40)));
 // DEFAULT-NEXT:         let %13 r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%13, call<i32, signature=fn(i32, ptr<@type2>) -> i32>(%5, from_bool<i32, reason=arg>(gt<i32>(read<i32>(%10), const<i32>(2000))), read<ptr<@type2>>(%12)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<@type2>) -> i32>(%5, from_bool<i32, reason=arg>(gt<i32>(read<i32>(%10), const<i32>(2000))), read<ptr<@type2>>(%12));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%4, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type2>>(%12)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(free, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type2>>(%12)));
 // DEFAULT-NEXT:         return read<i32>(%13);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

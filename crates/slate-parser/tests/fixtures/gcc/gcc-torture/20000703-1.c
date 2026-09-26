@@ -94,11 +94,11 @@ int main() {
 // DEFAULT-NEXT:         let %13 p: @type0 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, u32, u32) -> void>(%3, addr_of<ptr<@type0>>(%13), reinterpret<u32, reason=arg, fits=always>(const<i32>(71)), reinterpret<u32, reason=arg, fits=always>(const<i32>(18)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(field2(%13)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(71))), ne<u32>(read<u32>(field3(%13)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(18))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, u32, u32) -> void>(%7, addr_of<ptr<@type0>>(%13), reinterpret<u32, reason=arg, fits=always>(const<i32>(59)), reinterpret<u32, reason=arg, fits=always>(const<i32>(26)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u32>(read<u32>(field2(%13)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(59))), ne<u32>(read<u32>(field3(%13)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(26))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

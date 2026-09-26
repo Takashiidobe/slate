@@ -47,7 +47,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %3 first: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(5), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(7)));
 // DEFAULT-NEXT:         let %4 second: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(11)));
 // DEFAULT-NEXT:         let %5 imaginary: complex<i32> [storage=automatic] = aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%7)), read<i32>(real(%3)), read<i32>(imag(%3)), read<i32>(real(%4)), read<i32>(imag(%4)), read<i32>(real(%5)), read<i32>(imag(%5)), read<i32>(real(%1)), read<i32>(imag(%1)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%7)), read<i32>(real(%3)), read<i32>(imag(%3)), read<i32>(real(%4)), read<i32>(imag(%4)), read<i32>(real(%5)), read<i32>(imag(%5)), read<i32>(real(%1)), read<i32>(imag(%1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

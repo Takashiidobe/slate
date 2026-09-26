@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @bar(%2 i: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%2), const<u64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @foo(%4 r: ptr<u64>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];

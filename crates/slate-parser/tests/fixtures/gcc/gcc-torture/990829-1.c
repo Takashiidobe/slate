@@ -52,8 +52,8 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(%7, call<f64, signature=fn(f64, f64) -> f64>(%2, const<f64>(1.0), const<f64>(2.0)));
 // DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%2, const<f64>(1.0), const<f64>(2.0));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.24)), gt<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.26)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

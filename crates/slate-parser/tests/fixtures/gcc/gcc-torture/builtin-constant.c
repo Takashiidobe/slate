@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%2, conditional<ptr<i8>>(ne<i32>(const<i32>(0), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%7), array_decay<ptr<i8>, length=Some(2)>(%8)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>) -> void>(%2, conditional<ptr<i8>>(ne<i32>(const<i32>(0), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%9), array_decay<ptr<i8>, length=Some(2)>(%10)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

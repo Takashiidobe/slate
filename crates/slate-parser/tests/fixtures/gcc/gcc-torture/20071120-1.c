@@ -125,7 +125,7 @@ int main() {
 // DEFAULT-NEXT:     global %19 gt_pch_rs_gt_cp_semantics_h: array<@type0, 1> [storage=static] [const] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<u32>>(%18)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @vec_assert_fail() -> void [linkage=external] [inline=never] [definition=emitted] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @VEC_deferred_access_base_last(%10 vec_: ptr<@type5>) -> ptr<@type3> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %24: i32 [synthetic];
@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type5>>(%26))), read<u32>(%28));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @perform_access_checks(%14 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @pop_to_parent_deferring_access_checks() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%18), const<u32>(0))

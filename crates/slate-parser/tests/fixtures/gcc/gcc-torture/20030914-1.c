@@ -93,8 +93,8 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), read<i32>(%10))), add<i32, overflow=ub>(read<i32>(%10), const<i32>(1)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(i32, @type0, f80) -> f80, abi=sysv64(scalar, native_c, scalar) -> scalar>(%3, const<i32>(1), copy<@type0, reason=arg>(read<@type0>(%9)), const<f80>(1.0E+4)), const<f80>(10136))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

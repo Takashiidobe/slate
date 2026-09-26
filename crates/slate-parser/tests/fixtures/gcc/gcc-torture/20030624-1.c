@@ -31,7 +31,7 @@ double foo(double x) { return pow(x,261); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @pow(%3 <unnamed>: f64, %4 <unnamed>: f64) -> f64 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64, f64) -> f64>(%0, read<f64>(%2), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(261)));
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64, f64) -> f64>(pow, read<f64>(%2), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(261)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

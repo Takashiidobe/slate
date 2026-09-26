@@ -55,12 +55,12 @@ int main(void) {
 // DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%4, read<ptr<i8>>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @text_len(%9 s: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%9)))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%9)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 digits: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([52, 50, 0]);
 // DEFAULT-NEXT:         let %12 word: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), call<i32, signature=fn(ptr<i8>) -> i32>(%6, array_decay<ptr<i8>, length=Some(3)>(%11)), call<i32, signature=fn(ptr<i8>) -> i32>(%8, array_decay<ptr<i8>, length=Some(6)>(%12)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), call<i32, signature=fn(ptr<i8>) -> i32>(%6, array_decay<ptr<i8>, length=Some(3)>(%11)), call<i32, signature=fn(ptr<i8>) -> i32>(%8, array_decay<ptr<i8>, length=Some(6)>(%12)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

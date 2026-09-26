@@ -59,10 +59,10 @@ int main(void) {
 // DEFAULT-NEXT:         write<f64>(imag(%4), const<f64>(11.0));
 // DEFAULT-NEXT:         let %5 r: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%1, addr_of<ptr<f64>>(real(%4)));
 // DEFAULT-NEXT:         let %6 i: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%1, addr_of<ptr<f64>>(imag(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(real(%4))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(imag(%4))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%5)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%6)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(real(%4))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(imag(%4))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%5)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%6)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

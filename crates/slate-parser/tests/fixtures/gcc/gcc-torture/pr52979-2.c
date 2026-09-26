@@ -87,7 +87,7 @@ int main() {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..5, bits=0..31>(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

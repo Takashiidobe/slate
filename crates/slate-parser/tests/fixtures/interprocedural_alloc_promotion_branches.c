@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @malloc(%11 __size: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @free(%12 __ptr: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @alloc() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<i32>, reason=return>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))));
+// DEFAULT-NEXT:         return pointer_cast<ptr<i32>, reason=return>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @a() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<ptr<i32>, signature=fn() -> ptr<i32>>(%4);
@@ -74,8 +74,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<i32>>(%9, call<ptr<i32>, signature=fn() -> ptr<i32>>(%7));
 // DEFAULT-NEXT:         call<ptr<i32>, signature=fn() -> ptr<i32>>(%7);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%9), const<i32>(0))), const<i32>(10));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%9), const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%9)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%9), const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(free, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

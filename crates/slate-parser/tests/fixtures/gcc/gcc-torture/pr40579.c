@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @foo(%4 i: i32, %5 x: ptr<const i8>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%4), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 x: i32 [storage=automatic] = add<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(3));

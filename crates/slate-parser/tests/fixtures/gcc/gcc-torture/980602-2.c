@@ -55,9 +55,9 @@ int main() {
 // DEFAULT-NEXT:         let %7: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%6)), const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%3), read<u32>(%7));
 // DEFAULT-NEXT:         if not<bool>(ne<u32>(read<u32>(%6), const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

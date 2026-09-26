@@ -48,12 +48,12 @@ void func(int x, int y) {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%5), read<i32>(%6))
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 x: i32 [storage=automatic] = const<i32>(7);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%2, from_bool<i32, reason=arg>(not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))), from_bool<i32, reason=arg>(not<bool>(ne<i32>(const<i32>(7), const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

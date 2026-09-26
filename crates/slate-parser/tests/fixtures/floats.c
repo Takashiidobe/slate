@@ -53,9 +53,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 x: f32 [storage=automatic] = const<f32>(1.5);
 // DEFAULT-NEXT:         let %7 y: f64 [storage=automatic] = const<f64>(2.25);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_widen<f64, reason=vararg>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%6), const<f32>(0.5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(3.0), const<f64>(4.0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%11)), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(2.0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_widen<f64, reason=vararg>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%6), const<f32>(0.5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(3.0), const<f64>(4.0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%11)), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(2.0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

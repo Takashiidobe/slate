@@ -52,8 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 b: ptr<i16> [storage=automatic] = pointer_cast<ptr<i16>, reason=explicit>(addr_of<ptr<i32>>(%4));
 // DEFAULT-NEXT:         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%5), const<i32>(1))), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%4), const<i32>(305419896))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

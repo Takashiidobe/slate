@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @foo(%8 x: i32, %9 y: i32, %10 z: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%8), const<i32>(245)), ne<i32>(read<i32>(%9), const<i32>(36))), ne<i32>(read<i32>(%10), const<i32>(444)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 g: u64 [storage=automatic];

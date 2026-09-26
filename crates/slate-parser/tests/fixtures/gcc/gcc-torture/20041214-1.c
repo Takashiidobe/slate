@@ -123,7 +123,7 @@ int main(void) {
 // DEFAULT-NEXT:                 label %9 do_form_string:
 // DEFAULT-NEXT:                     write<ptr<const i8>>(%16, va_arg<ptr<const i8>>(%14));
 // DEFAULT-NEXT:                     va_arg<ptr<const i8>>(%14);
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%2, read<ptr<i8>>(%12), read<ptr<const i8>>(%16));
+// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(strcpy, read<ptr<i8>>(%12), read<ptr<const i8>>(%16));
 // DEFAULT-NEXT:                 label %10 end:
 // DEFAULT-NEXT:                     let %37: ptr<const i8> [synthetic] = read<ptr<const i8>>(%15);
 // DEFAULT-NEXT:                     let %38: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%37), const<i32>(1));
@@ -142,8 +142,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 buf: array<i8, 10> [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<const i8>, ...) -> void>(%19, array_decay<ptr<i8>, length=Some(10)>(%24), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%30)), array_decay<ptr<i8>, length=Some(5)>(%31), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%24)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%32))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%24)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%32))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

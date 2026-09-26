@@ -101,7 +101,7 @@ int main() {
 // DEFAULT-NEXT:         let %12 t: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..9>(%12), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i64, u64) -> i32>(%2, addr_of<ptr<@type0>>(%12), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

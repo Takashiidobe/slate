@@ -99,8 +99,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%13, call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i64>, coerce<i64, i64>, coerce<i64, i64>) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%10)), copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%12))));
 // DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i64>, coerce<i64, i64>, coerce<i64, i64>) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%10)), copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%12)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%13), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

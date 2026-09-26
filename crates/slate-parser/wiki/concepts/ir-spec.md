@@ -123,7 +123,14 @@ parameters, or when the prototype names something with no C type in our model
 (`FILE`, `jmp_buf`, ObjC `id`, HLSL resources, C++ references, ext-vectors);
 those still report an unsupported-builtin diagnostic. Named types resolve to the
 target's canonical types, not to any typedef the translation unit declares.
-Ordinary declarations take precedence over implicit builtin recognition.
+An ordinary declaration of a builtin's name keeps builtin status when, as in
+clang, it is a function with external linkage whose type is compatible with
+the builtin's signature (an unprototyped `int abs();`, a `const` parameter, or
+a missing `noreturn` still match); the call then lowers exactly like the
+undeclared builtin. An incompatible or `static` declaration shadows the
+builtin and its calls go to the declared function
+(`tests/fixtures/sema/ir_redeclared_builtins.c`). Header provenance plays no
+part: it decides libc identity for the Rust handoff, not builtin semantics.
 
 Builtins whose result cannot come from a prototype are dispatched by their
 tblgen record through `builtins::custom_builtin`, which returns a typed

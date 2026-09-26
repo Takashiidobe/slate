@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 a: i64 [storage=automatic] = const<i64>(272170);
 // DEFAULT-NEXT:         if eq<i64>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn(i64) -> i16>(%1, read<i64>(%4)))), read<i64>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

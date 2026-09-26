@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:         let %3 uv: u64 [storage=automatic] = const<u64>(68719476737);
 // DEFAULT-NEXT:         write<i32>(%2, conditional<i32>(lt<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128)))), const<i32>(1), conditional<i32>(lt<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2048)))), const<i32>(2), const<i32>(3))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

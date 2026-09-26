@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 path: array<i8, 13> [storage=automatic] = code_units<array<i8, 13>>([115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0]);
 // DEFAULT-NEXT:         let %6 fd: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>) -> i32>(%1, array_decay<ptr<i8>, length=Some(13)>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), from_bool<i32, reason=vararg>(ge<i32>(read<i32>(%6), const<i32>(0))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), from_bool<i32, reason=vararg>(ge<i32>(read<i32>(%6), const<i32>(0))));
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6));

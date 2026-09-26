@@ -100,9 +100,9 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<u8>>(field0(%7), array_decay<ptr<u8>, length=Some(6)>(%8));
 // DEFAULT-NEXT:         write<ptr<u8>>(field1(%7), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(6)>(%8), const<u64>(6)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>) -> i32>(%4, addr_of<ptr<@type0>>(%7)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<ptr<u8>>(read<ptr<u8>>(field0(%7)), read<ptr<u8>>(field1(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

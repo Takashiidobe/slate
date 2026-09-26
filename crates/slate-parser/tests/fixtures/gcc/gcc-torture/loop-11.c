@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(199)>(%1), read<i32>(%5)))), read<i32>(%5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

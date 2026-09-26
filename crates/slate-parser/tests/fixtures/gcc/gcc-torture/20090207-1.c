@@ -54,7 +54,7 @@ int         main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%5, ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(1)));
 // DEFAULT-NEXT:         if read<bool>(%5)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

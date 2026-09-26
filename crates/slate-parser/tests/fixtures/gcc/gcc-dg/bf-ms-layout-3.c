@@ -122,7 +122,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%18, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%10))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type4>>(%10))), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

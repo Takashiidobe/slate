@@ -65,11 +65,11 @@ int main(void) {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%2), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6)))), ne<i32>(read<i32>(%5), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(1))))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_or<bool>(ne<i32>(read<i32>(%4), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(1))))))), ne<i32>(read<i32>(%5), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6)))))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = xor<i32>(read<i32>(%13), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%2, read<i32>(%14));

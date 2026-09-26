@@ -73,8 +73,8 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%10, add<i32, overflow=ub>(read<i32>(%8), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%6)))));
 // DEFAULT-NEXT:         write<u32>(%11, reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%10)));
 // DEFAULT-NEXT:         if le<u32>(read<u32>(%11), const<u32>(268435455))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 x: u16 [storage=automatic];

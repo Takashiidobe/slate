@@ -62,8 +62,8 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @ok(%9 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @find(%6 first: ptr<@type0>, %7 last: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
@@ -79,7 +79,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%2, read<i32>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 DataList: array<@type0, 4> [storage=automatic] [align=16];

@@ -56,8 +56,8 @@ static int f(int x) { return x; }
 // DEFAULT-NEXT:         write<i32>(%5, call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%6));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%4), const<i32>(1)), ne<i32>(read<i32>(%5), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

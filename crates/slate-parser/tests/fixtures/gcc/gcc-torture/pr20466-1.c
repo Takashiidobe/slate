@@ -68,8 +68,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %16 i4p: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%13);
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<ptr<i32>>, ptr<i32>, ptr<i32>, ptr<ptr<i32>>, ptr<ptr<i32>>) -> i32>(%0, addr_of<ptr<ptr<i32>>>(%14), addr_of<ptr<i32>>(%10), addr_of<ptr<i32>>(%11), addr_of<ptr<ptr<i32>>>(%15), addr_of<ptr<ptr<i32>>>(%16));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%9), const<i32>(66)), ne<ptr<i32>>(read<ptr<i32>>(%14), addr_of<ptr<i32>>(%11))), ne<i32>(read<i32>(%11), const<i32>(99))), ne<i32>(read<i32>(%12), neg<i32, overflow=ub>(const<i32>(1)))), ne<ptr<i32>>(read<ptr<i32>>(%15), read<ptr<i32>>(%16))), ne<i32>(read<i32>(%13), const<i32>(55)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

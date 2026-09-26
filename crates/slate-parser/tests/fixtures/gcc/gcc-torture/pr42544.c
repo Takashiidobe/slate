@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if ge<u64>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(%2)))), const<u64>(4294967296))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

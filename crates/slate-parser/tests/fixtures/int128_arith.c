@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @print128(%8 v: u128) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9 hi: u64 [storage=automatic] = truncate<u64, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(%8), const<i32>(64)));
 // DEFAULT-NEXT:         let %10 lo: u64 [storage=automatic] = truncate<u64, reason=explicit, fits=unknown>(read<u128>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%20)), read<u64>(%9), read<u64>(%10));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%20)), read<u64>(%9), read<u64>(%10));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 a: i128 [storage=automatic] = widen<i128, reason=explicit>(const<i64>(9000000000000000000));
@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %17 prod: u128 [storage=automatic] = call<u128, signature=fn(u128, u128) -> u128>(%4, read<u128>(%15), read<u128>(%16));
 // DEFAULT-NEXT:         call<void, signature=fn(u128) -> void>(%7, read<u128>(%17));
 // DEFAULT-NEXT:         let %18 cmp: i32 [storage=automatic] = conditional<i32>(gt<i128>(read<i128>(%14), widen<i128, reason=usual_arith>(const<i32>(0))), const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), read<i32>(%18));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), read<i32>(%18));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

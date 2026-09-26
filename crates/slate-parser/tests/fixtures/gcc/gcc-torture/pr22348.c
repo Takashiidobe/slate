@@ -41,7 +41,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @f(%2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%2), add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 buflen: u32 [storage=automatic];

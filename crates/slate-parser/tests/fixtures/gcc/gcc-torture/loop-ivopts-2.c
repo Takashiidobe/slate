@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%2), read<i32>(%3)))), reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(7), from_bool<i32, reason=promotion>(logical_or<bool>(lt<i32>(read<i32>(%3), const<i32>(256)), ge<i32>(read<i32>(%3), const<i32>(280))))), from_bool<i32, reason=promotion>(logical_and<bool>(ge<i32>(read<i32>(%3), const<i32>(144)), lt<i32>(read<i32>(%3), const<i32>(256)))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];

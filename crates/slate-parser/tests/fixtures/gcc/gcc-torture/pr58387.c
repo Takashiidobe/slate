@@ -40,7 +40,7 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 b: i32 [storage=automatic] = conditional<i32>(eq<i32>(read<i32>(%1), const<i32>(0)), const<i32>(0), neg<i32, overflow=ub>(read<i32>(%1)));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

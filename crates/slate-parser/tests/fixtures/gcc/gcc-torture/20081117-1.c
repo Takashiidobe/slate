@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(ne<u32>(call<u32, signature=fn(@type0, u32) -> u32, abi=sysv64(native_c, scalar) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5)), const<u32>(2271560481)), const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

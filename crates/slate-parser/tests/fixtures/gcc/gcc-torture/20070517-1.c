@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:                         if logical_or<bool>(eq<i32>(read<i32>(%8), const<i32>(9)), eq<i32>(read<i32>(%8), const<i32>(10)))
 // DEFAULT-NEXT:                             write<i32>(%7, read<i32>(%6));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

@@ -110,7 +110,7 @@ int main() {
 // DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%21)), truncate<i16, reason=assign, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%16, reinterpret<i8, reason=arg, fits=unknown>(truncate<u8, reason=arg, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(field0(%2)), const<i32>(15)))));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%6), const<i32>(255)), const<i32>(255))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

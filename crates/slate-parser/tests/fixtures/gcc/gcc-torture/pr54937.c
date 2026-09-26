@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<fn(i32) -> void>>(%3, function_decay<ptr<fn(i32) -> void>>(%0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(100));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

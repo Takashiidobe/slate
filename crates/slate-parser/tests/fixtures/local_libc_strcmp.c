@@ -83,15 +83,15 @@ int main(void) {
 // DEFAULT-NEXT:                 let %29: i32 [synthetic] = read<i32>(%8);
 // DEFAULT-NEXT:                 let %30: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%29), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%5), read<i32>(%10))))));
 // DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%30));
-// DEFAULT-NEXT:         let %11 order: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%3), read<ptr<const i8>>(%5));
+// DEFAULT-NEXT:         let %11 order: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%3), read<ptr<const i8>>(%5));
 // DEFAULT-NEXT:         let %12 sign: i32 [storage=automatic] = sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(gt<i32>(read<i32>(%11), const<i32>(0))), from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%11), const<i32>(0))));
-// DEFAULT-NEXT:         let %13 eq: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, read<ptr<const i8>>(%3), read<ptr<const i8>>(%5)), const<i32>(0)));
+// DEFAULT-NEXT:         let %13 eq: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(strcmp, read<ptr<const i8>>(%3), read<ptr<const i8>>(%5)), const<i32>(0)));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%12), const<i32>(1000)), mul<i32, overflow=ub>(read<i32>(%13), const<i32>(100))), sub<i32, overflow=ub>(read<i32>(%7), read<i32>(%8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 x: array<i8, 4> [storage=automatic] [const] = code_units<array<i8, 4>>([97, 98, 99, 0]);
 // DEFAULT-NEXT:         let %16 y: array<i8, 4> [storage=automatic] [const] = code_units<array<i8, 4>>([97, 98, 100, 0]);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%22)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%16), const<i32>(3)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%16), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%22)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%16), const<i32>(3)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%16), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3)), call<i32, signature=fn(ptr<const i8>, i32, ptr<const i8>, i32) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3), array_decay<ptr<const i8>, length=Some(4)>(%15), const<i32>(3)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

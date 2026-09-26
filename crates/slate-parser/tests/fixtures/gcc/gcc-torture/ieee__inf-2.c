@@ -103,63 +103,63 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @test(%2 f: f64, %3 i: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(__builtin_inf))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(__builtin_inf)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%3), neg<f64>(call<f64, signature=fn() -> f64>(__builtin_inf)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), call<f64, signature=fn() -> f64>(__builtin_inf))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ge<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(__builtin_inf))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(__builtin_inf))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%3), call<f64, signature=fn() -> f64>(__builtin_inf))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(__builtin_inf)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(__builtin_inf)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @testf(%5 f: f32, %6 i: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(__builtin_inff))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(__builtin_inff)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%6), neg<f32>(call<f32, signature=fn() -> f32>(__builtin_inff)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%6), call<f32, signature=fn() -> f32>(__builtin_inff))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ge<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(__builtin_inff))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(__builtin_inff))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%6), call<f32, signature=fn() -> f32>(__builtin_inff))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(__builtin_inff)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(__builtin_inff)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @testl(%8 f: f80, %9 i: f80) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(__builtin_infl))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(__builtin_infl)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%9), neg<f80>(call<f80, signature=fn() -> f80>(__builtin_infl)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%9), call<f80, signature=fn() -> f80>(__builtin_infl))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ge<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(__builtin_infl))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(__builtin_infl))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%9), call<f80, signature=fn() -> f80>(__builtin_infl))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(__builtin_infl)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(__builtin_infl)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%1, const<f64>(34.0), call<f64, signature=fn() -> f64>(__builtin_inf));

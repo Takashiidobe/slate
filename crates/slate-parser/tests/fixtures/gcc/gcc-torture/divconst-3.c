@@ -47,8 +47,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%6, ne<i64>(call<i64, signature=fn(i64) -> i64>(%2, const<i64>(100000000000)), widen<i64, reason=usual_arith>(const<i32>(10))));
 // DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

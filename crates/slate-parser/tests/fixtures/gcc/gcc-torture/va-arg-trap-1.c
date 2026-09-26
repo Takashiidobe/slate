@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @foo() -> ptr<va_list> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         return addr_of<ptr<va_list>>(%3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @bar(%7 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -72,7 +72,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%6, const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

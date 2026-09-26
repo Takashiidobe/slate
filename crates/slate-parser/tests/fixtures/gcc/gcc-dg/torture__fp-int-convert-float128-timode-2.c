@@ -57,8 +57,8 @@ main(void) {
 // DEFAULT-NEXT:         let %5 c: u128 [storage=automatic] = or<u128>(shl<u128, overflow=wrap, amount_out_of_range=ub>(widen<u128, reason=explicit>(read<u64, volatile>(%3)), const<i32>(64)), widen<u128, reason=usual_arith>(read<u64, volatile>(%4)));
 // DEFAULT-NEXT:         let %6 d: f128 [storage=automatic] = int_to_float<f128, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(read<u128>(%5));
 // DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(read<f128>(%6), const<f128>(5192296858534846075274570038771711))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

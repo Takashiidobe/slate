@@ -57,8 +57,8 @@ int main() {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 a: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(const<i32>(65280));
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<i16>) -> i64>(%3, addr_of<ptr<i16>>(%7)), widen<i64, reason=explicit>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65280))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

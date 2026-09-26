@@ -90,14 +90,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<complex<f32>, volatile>(%4, div<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>, volatile>(%2), read<complex<f32>, volatile>(%3)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(not<bool>(float_class<bool, test=nan>(read<f32, volatile>(real(%4)))), not<bool>(float_class<bool, test=nan>(read<f32, volatile>(imag(%4))))), not<bool>(float_class<bool, test=nan>(read<f32, volatile>(real(%5))))), not<bool>(float_class<bool, test=nan>(read<f32, volatile>(imag(%5)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<complex<f64>, volatile>(%8, div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>, volatile>(%6), read<complex<f64>, volatile>(%7)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(not<bool>(float_class<bool, test=nan>(read<f64, volatile>(real(%8)))), not<bool>(float_class<bool, test=nan>(read<f64, volatile>(imag(%8))))), not<bool>(float_class<bool, test=nan>(read<f64, volatile>(real(%9))))), not<bool>(float_class<bool, test=nan>(read<f64, volatile>(imag(%9)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<complex<f80>, volatile>(%12, div<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>, volatile>(%10), read<complex<f80>, volatile>(%11)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(not<bool>(float_class<bool, test=nan>(read<f80, volatile>(real(%12)))), not<bool>(float_class<bool, test=nan>(read<f80, volatile>(imag(%12))))), not<bool>(float_class<bool, test=nan>(read<f80, volatile>(real(%13))))), not<bool>(float_class<bool, test=nan>(read<f80, volatile>(imag(%13)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

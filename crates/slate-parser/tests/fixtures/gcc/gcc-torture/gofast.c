@@ -375,8 +375,8 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%60, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%94, array_decay<ptr<i8>, length=Some(11)>(%134));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%93), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%12, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

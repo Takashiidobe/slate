@@ -139,8 +139,8 @@ int look(struct s *p, struct s **pp) {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%12))), null<ptr<@type0>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<ptr<@type0>>) -> void>(%8, read<ptr<@type0>>(%4), addr_of<ptr<ptr<@type0>>>(%11));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), add<i32, overflow=ub>(const<i32>(10), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -79,13 +79,13 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(i32) -> u64>(%3, reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840))), const<u64>(18446744069414584320))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(u32) -> i64>(%5, const<u32>(4026531840)), const<i64>(64424509440))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u32) -> u64>(%7, const<u32>(4026531840)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(64424509440)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%9, reinterpret<i32, reason=arg, fits=unknown>(const<u32>(4026531840)))), const<u64>(18446744069414584320))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

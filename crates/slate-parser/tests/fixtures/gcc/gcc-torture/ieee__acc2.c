@@ -58,8 +58,8 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 values: array<f64, 4> [storage=automatic] [align=16] = aggregate<array<f64, 4>, zero_fill=false>(index0 = const<f64>(1.7976931348623157e308), index1 = const<f64>(2.0), index2 = const<f64>(0.5), index3 = const<f64>(1.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<const f64>) -> f64>(%2, pointer_cast<ptr<const f64>, reason=arg>(array_decay<ptr<f64>, length=Some(4)>(%6))), const<f64>(1.7976931348623157e308))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

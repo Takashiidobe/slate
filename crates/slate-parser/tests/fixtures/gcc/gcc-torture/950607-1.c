@@ -48,8 +48,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %4 h: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i64>(field0(%4), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if logical_and<bool>(eq<i64>(and<i64>(read<i64>(field0(%4)), widen<i64, reason=usual_arith>(const<i32>(128))), widen<i64, reason=usual_arith>(const<i32>(1))), eq<i64>(and<i64>(read<i64>(field0(%4)), widen<i64, reason=usual_arith>(const<i32>(32))), widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

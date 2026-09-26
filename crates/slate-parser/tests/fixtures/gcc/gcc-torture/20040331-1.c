@@ -60,8 +60,8 @@ int main(void) {
 // DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%4), read<i32>(%8));
 // DEFAULT-NEXT:             yield ne<i32>(read<i32>(%7), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

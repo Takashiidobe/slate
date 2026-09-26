@@ -266,7 +266,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %99 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%98);
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%99), read<i32>(%97)))), read<i32>(%97))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         va_end(%98);
 // DEFAULT-NEXT:     }
@@ -451,9 +451,9 @@ void c(int n, ...) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %90 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if lt<i32>(const<i32>(500), const<i32>(40))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%7, const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -46,8 +46,8 @@ int main() {
 // DEFAULT-NEXT:         let %6: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%5), const<f80>(7.28353587031270189774E-158));
 // DEFAULT-NEXT:         write<f80>(%3, read<f80>(%6));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%3), const<f80>(2.22507385850720138309E-308))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

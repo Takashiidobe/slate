@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(%5, or<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))));
 // DEFAULT-NEXT:         write<u32>(%3, conditional<u32>(eq<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), read<u32>(%4), rem<u32, by_zero=ub>(read<u32>(%4), read<u32>(%5))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%3), read<u32>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

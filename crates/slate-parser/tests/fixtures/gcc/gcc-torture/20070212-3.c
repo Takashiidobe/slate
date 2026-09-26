@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field1(%11), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32, i32, i32) -> i32>(%1, addr_of<ptr<@type0>>(%11), const<i32>(1), const<i32>(1), const<i32>(1)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

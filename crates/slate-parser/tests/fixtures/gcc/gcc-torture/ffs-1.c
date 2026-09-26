@@ -40,8 +40,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @exit(%4 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, read<i32, volatile>(%0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

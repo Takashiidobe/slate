@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 d: f64 [storage=automatic] = const<f64>(2.5);
 // DEFAULT-NEXT:         let %10 i_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%13));
 // DEFAULT-NEXT:         let %11 d_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(7)>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%15)), read<i32>(%4), read<i32>(%5), read<i32>(%6), read<i32>(%7), read<ptr<const i8>>(%10), read<ptr<const i8>>(%11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%15)), read<i32>(%4), read<i32>(%5), read<i32>(%6), read<i32>(%7), read<ptr<const i8>>(%10), read<ptr<const i8>>(%11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @bug(%2 Cref: ptr<f64>, %3 transb: i8, %4 m: i32, %5 n: i32, %6 k: i32, %7 a: f64, %8 A: ptr<f64>, %9 fdA: i32, %10 B: ptr<f64>, %11 fdB: i32, %12 b: f64, %13 C: ptr<f64>, %14 fdC: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<ptr<f64>>(read<ptr<f64>>(%13), read<ptr<f64>>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %16 A: array<f64, 1> [storage=automatic];

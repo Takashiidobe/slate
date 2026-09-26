@@ -85,7 +85,7 @@ int main() {
 // DEFAULT-NEXT:                 case %15 const<u32>(0):
 // DEFAULT-NEXT:                     break %15;
 // DEFAULT-NEXT:                 default %15:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

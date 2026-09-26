@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         let %8 value: i32 [storage=automatic] = const<i32>(7);
 // DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<const i32>) -> ptr<i32>>(%4, pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%8)))), const<i32>(11));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%10)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(%7)), const<i32>(1)))), read<i32>(%8));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%10)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(%7)), const<i32>(1)))), read<i32>(%8));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

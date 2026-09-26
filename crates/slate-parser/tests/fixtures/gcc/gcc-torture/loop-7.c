@@ -65,11 +65,11 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i32>(%5, read<i32>(%4));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(64)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

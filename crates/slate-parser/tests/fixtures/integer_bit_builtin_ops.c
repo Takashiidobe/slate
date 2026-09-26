@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %14 redundant_sign: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, read<i32>(%4));
 // DEFAULT-NEXT:         let %15 left: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(__builtin_rotateleft32, read<u32>(%2), read<u32>(%5));
 // DEFAULT-NEXT:         let %16 right: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(__builtin_rotateright32, read<u32>(%2), read<u32>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(34)>(%18)), read<u32>(%6), read<u32>(%7), read<i32>(%8), read<i32>(%9), read<i32>(%10), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<u32>(%15), read<u32>(%16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(34)>(%18)), read<u32>(%6), read<u32>(%7), read<i32>(%8), read<i32>(%9), read<i32>(%10), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<u32>(%15), read<u32>(%16));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

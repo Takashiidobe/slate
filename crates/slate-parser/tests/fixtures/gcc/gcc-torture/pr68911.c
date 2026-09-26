@@ -86,7 +86,7 @@ die:
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:         label %6 die:
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

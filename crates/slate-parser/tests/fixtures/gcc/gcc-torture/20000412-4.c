@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %11 idx: i32 [storage=automatic] = add<i32, overflow=ub>(sub<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(read<i32>(%10), read<i32>(%3)), read<i32>(%5)), read<i32>(%6)), read<i32>(%4)), read<i32>(%5));
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%11), const<i32>(0))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %20
 // DEFAULT-NEXT:             init:
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32, i32, i32, i32) -> void>(%2, read<i32>(%17), const<i32>(1), read<i32>(%15), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(2), read<i32>(%15)), const<i32>(1)), read<i32>(%16));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

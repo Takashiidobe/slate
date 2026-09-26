@@ -94,23 +94,23 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(i32) -> u32>(%2, read<i32>(%11)), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%11)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(i32) -> u32>(%2, neg<i32, overflow=ub>(read<i32>(%11))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%11)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(u32) -> u32>(%4, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%11))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%11)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(u32) -> u32>(%4, reinterpret<u32, reason=arg, fits=unknown>(neg<i32, overflow=ub>(read<i32>(%11)))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%11)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u64>(call<u64, signature=fn(i64) -> u64>(%6, widen<i64, reason=explicit>(read<i32>(%11))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%11))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u64>(call<u64, signature=fn(i64) -> u64>(%6, widen<i64, reason=explicit>(neg<i32, overflow=ub>(read<i32>(%11)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%11))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u64>(call<u64, signature=fn(u64) -> u64>(%8, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%11)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%11))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u64>(call<u64, signature=fn(u64) -> u64>(%8, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=explicit>(neg<i32, overflow=ub>(read<i32>(%11))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%11))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

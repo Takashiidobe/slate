@@ -66,8 +66,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field1(%3), const<i32>(99));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(__builtin_strcpy, array_decay<ptr<i8>, length=Some(11)>(field0(%3)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%9)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%3))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

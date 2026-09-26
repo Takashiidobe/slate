@@ -105,7 +105,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type1>(%10, copy<@type1, reason=assign>(va_arg<@type1>(%8)));
 // DEFAULT-NEXT:                     copy<@type1, reason=assign>(va_arg<@type1>(%8));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), read<i32>(%9))))), read<f64>(field0(%10))), ne<f64, exceptions=ignore>(read<f64>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), read<i32>(%9))))), read<f64>(field1(%10))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%8);
 // DEFAULT-NEXT:     }
@@ -129,14 +129,14 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type3>(%18, copy<@type3, reason=assign>(va_arg<@type3>(%16)));
 // DEFAULT-NEXT:                     copy<@type3, reason=assign>(va_arg<@type3>(%16));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), read<i32>(%17))))), read<i32>(field0(%18))), ne<i32>(read<i32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), read<i32>(%17))))), read<i32>(field1(%18))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%16);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>) -> scalar>(%6, const<i32>(4), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(0))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(1))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(2))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(%5), const<i32>(3))))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, coerce<i64>, coerce<i64>, coerce<i64>, coerce<i64>) -> scalar>(%14, const<i32>(4), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(0))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(1))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(2))))), copy<@type3, reason=vararg>(read<@type3>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(4)>(%13), const<i32>(3))))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

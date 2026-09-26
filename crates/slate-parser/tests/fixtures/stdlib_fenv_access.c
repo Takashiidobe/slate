@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
 // DEFAULT-NEXT:         write<f64>(%7, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%3), read<f64, volatile>(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%10)), read<f64>(%5), read<f64>(%6), read<f64>(%7));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%10)), read<f64>(%5), read<f64>(%6), read<f64>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

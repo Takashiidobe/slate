@@ -128,7 +128,7 @@ Testing is done via filecheck. Standard gate (use release to run tests
 ~10x faster):
 
 ```
-cargo nextest run --release
+cargo nextest run --release --no-fail-fast
 ```
 
 The AST can additionally be checked against clang-ast as an

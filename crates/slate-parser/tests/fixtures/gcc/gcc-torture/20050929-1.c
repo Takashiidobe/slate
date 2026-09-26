@@ -70,11 +70,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(1)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(3)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field1(%4))))), const<i32>(5)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field1(%4))))), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

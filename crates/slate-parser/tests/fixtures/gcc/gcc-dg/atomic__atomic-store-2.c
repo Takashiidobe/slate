@@ -81,19 +81,19 @@ int main() {
 // DEFAULT-NEXT:         let %5: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%5));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i16, atomic=release>(deref(addr_of<ptr<i16>>(%1)), truncate<i16, reason=arg, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%2)), const<i32>(1))));
 // DEFAULT-NEXT:         let %6: i16 [synthetic] = read<i16>(%2);
 // DEFAULT-NEXT:         let %7: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%6)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%7));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%1)), truncate<i16, reason=arg, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%2)), const<i32>(1))));
 // DEFAULT-NEXT:         let %8: i16 [synthetic] = read<i16>(%2);
 // DEFAULT-NEXT:         let %9: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%8)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%9));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %10: i16 [synthetic] = read<i16>(%2);
 // DEFAULT-NEXT:         let %11: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%11));
@@ -102,16 +102,16 @@ int main() {
 // DEFAULT-NEXT:         let %13: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%12)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%13));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i16, atomic=release>(deref(addr_of<ptr<i16>>(%1)), read<i16>(deref(addr_of<ptr<i16>>(%2))));
 // DEFAULT-NEXT:         let %14: i16 [synthetic] = read<i16>(%2);
 // DEFAULT-NEXT:         let %15: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%14)), const<i32>(1)));
 // DEFAULT-NEXT:         write<i16>(%2, read<i16>(%15));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%14)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%1)), read<i16>(deref(addr_of<ptr<i16>>(%2))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

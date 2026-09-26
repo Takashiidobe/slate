@@ -54,12 +54,12 @@ int    main(void) {
 // DEFAULT-NEXT:         let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%2, read<i32>(%8));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(0.0), const<f64>(0.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<f64>(%4, call<f64, signature=fn(f64) -> f64>(%0, call<f64, signature=fn() -> f64>(%3)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%0, call<f64, signature=fn() -> f64>(%3));
+// DEFAULT-NEXT:         write<f64>(%4, call<f64, signature=fn(f64) -> f64>(sqrt, call<f64, signature=fn() -> f64>(%3)));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(sqrt, call<f64, signature=fn() -> f64>(%3));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

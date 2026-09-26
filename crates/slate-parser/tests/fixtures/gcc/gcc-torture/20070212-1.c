@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         let %9 f: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%9), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, ptr<@type0>, ptr<i32>) -> i32>(%1, const<i32>(5), const<i32>(0), addr_of<ptr<@type0>>(%9), addr_of<ptr<i32>>(field0(%9))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

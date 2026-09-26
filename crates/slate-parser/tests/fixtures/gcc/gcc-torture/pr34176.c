@@ -109,7 +109,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%10, read<i32>(%21));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%20), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return null<ptr<@type3>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

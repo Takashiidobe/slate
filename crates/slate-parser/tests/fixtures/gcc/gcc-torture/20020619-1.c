@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%2);
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%6), const<i32>(16909060)), ne<i32>(read<i32>(%6), const<i32>(67305985)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

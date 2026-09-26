@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 object: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(7));
 // DEFAULT-NEXT:         let %5 local: i32 [storage=automatic] [align=64] = const<i32>(11);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%7)), const<u64>(32), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<@type1>>(%4)), widen<u64, reason=usual_arith>(const<u32>(32))), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<i32>>(%5)), widen<u64, reason=usual_arith>(const<u32>(64))), read<i32>(field0(%4)), read<i32>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%7)), const<u64>(32), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<@type1>>(%4)), widen<u64, reason=usual_arith>(const<u32>(32))), rem<u64, by_zero=ub>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<i32>>(%5)), widen<u64, reason=usual_arith>(const<u32>(64))), read<i32>(field0(%4)), read<i32>(%5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

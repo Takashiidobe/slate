@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         if not<bool>(ne<u8>(from_bool<u8, reason=assign>(read<bool>(%6)), const<u8>(0)))
 // DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%1);
 // DEFAULT-NEXT:         if not<bool>(ne<u8>(read<u8>(%4), const<u8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(1));

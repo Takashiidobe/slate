@@ -48,7 +48,7 @@ int  main() {
 // DEFAULT-NEXT:         write<ptr<i32>>(%4, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%2), const<i32>(1)))));
 // DEFAULT-NEXT:         write<ptr<i32>>(%3, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), neg<i32, overflow=ub>(const<i32>(1))))));
 // DEFAULT-NEXT:         if ge<ptr<i32>>(read<ptr<i32>>(%3), addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%2), const<i32>(9)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

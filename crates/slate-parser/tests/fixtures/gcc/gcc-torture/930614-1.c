@@ -59,8 +59,8 @@ int main(void) {
 // DEFAULT-NEXT:             write<f64>(%7, neg<f64>(read<f64>(%7)));
 // DEFAULT-NEXT:         write<f64>(%8, conditional<f64>(gt<f64, exceptions=ignore>(read<f64>(%6), read<f64>(%7)), read<f64>(%6), read<f64>(%7)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%7), read<f64>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

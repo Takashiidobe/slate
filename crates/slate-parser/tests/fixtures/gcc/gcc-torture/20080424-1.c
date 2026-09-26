@@ -63,7 +63,7 @@ int main() {
 // DEFAULT-NEXT:             write<i32>(%5, read<i32>(%14));
 // DEFAULT-NEXT:             write<bool>(%12, ne<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%4), array_decay<ptr<array<i32, 3>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 3>, 3>>, subtract=false, element=array<array<i32, 3>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 3>, 3>>, length=Some(48)>(%1), read<i32>(%13))))));
 // DEFAULT-NEXT:         if read<bool>(%12)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @foo(%7 x: ptr<array<array<i32, 3>, 3>>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];

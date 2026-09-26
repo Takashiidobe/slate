@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 value: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>(field0 = widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %7 result: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type2>, i32) -> i32>(%4, addr_of<ptr<@type2>>(%6), const<i32>(1));
 // DEFAULT-NEXT:         let %8 nanoseconds_in_range: i32 [storage=automatic] = from_bool<i32, reason=assign>(logical_and<bool>(ge<i64>(read<i64>(field1(%6)), widen<i64, reason=usual_arith>(const<i32>(0))), lt<i64>(read<i64>(field1(%6)), const<i64>(1000000000))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), from_bool<i32, reason=vararg>(eq<i32>(read<i32>(%7), const<i32>(1))), read<i32>(%8));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), from_bool<i32, reason=vararg>(eq<i32>(read<i32>(%7), const<i32>(1))), read<i32>(%8));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

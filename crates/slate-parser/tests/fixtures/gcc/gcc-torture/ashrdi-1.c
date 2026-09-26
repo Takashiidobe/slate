@@ -582,7 +582,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i64>(%8, shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%8), const<i32>(63)));
 // DEFAULT-NEXT:                 break %17;
 // DEFAULT-NEXT:                 default %17:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i64>(%8);
 // DEFAULT-NEXT:     }
@@ -602,7 +602,7 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %12 y: i64 [storage=automatic] = call<i64, signature=fn(i64, i32) -> i64>(%4, read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%2), const<i32>(0)))), read<i32>(%11));
 // DEFAULT-NEXT:                     if ne<i64>(read<i64>(%12), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%2), read<i32>(%11)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %19
 // DEFAULT-NEXT:             init:
@@ -618,7 +618,7 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %13 y: i64 [storage=automatic] = call<i64, signature=fn(i64, i32) -> i64>(%4, read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%3), const<i32>(0)))), read<i32>(%11));
 // DEFAULT-NEXT:                     if ne<i64>(read<i64>(%13), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%3), read<i32>(%11)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %20
 // DEFAULT-NEXT:             init:
@@ -634,7 +634,7 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %14 y: i64 [storage=automatic] = call<i64, signature=fn(i64, i32) -> i64>(%7, read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%2), const<i32>(0)))), read<i32>(%11));
 // DEFAULT-NEXT:                     if ne<i64>(read<i64>(%14), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%2), read<i32>(%11)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %21
 // DEFAULT-NEXT:             init:
@@ -650,9 +650,9 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %15 y: i64 [storage=automatic] = call<i64, signature=fn(i64, i32) -> i64>(%7, read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%3), const<i32>(0)))), read<i32>(%11));
 // DEFAULT-NEXT:                     if ne<i64>(read<i64>(%15), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(64)>(%3), read<i32>(%11)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

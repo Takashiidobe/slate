@@ -42,10 +42,10 @@ int main(void) { foo(0, 4); }
 // DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 n: i32, %4 m: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%3), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%3);
 // DEFAULT-NEXT:                 let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));

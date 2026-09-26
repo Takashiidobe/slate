@@ -80,7 +80,7 @@ float negf(float v) { return -v; }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%24, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%11))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%12))), const<u64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%24)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @expectf(%13 value: f32, %14 expected: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %25: bool [synthetic];
@@ -89,7 +89,7 @@ float negf(float v) { return -v; }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%25, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(__builtin_memcmp, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%13))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%14))), const<u64>(4)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%25)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @negd(%15 v: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<f64>(read<f64>(%15));
@@ -102,7 +102,7 @@ float negf(float v) { return -v; }
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%7, call<f32, signature=fn(f32) -> f32>(%9, read<f32>(%5)), read<f32>(%3));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%6, call<f64, signature=fn(f64) -> f64>(%8, read<f64>(%2)), read<f64>(%4));
 // DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%7, call<f32, signature=fn(f32) -> f32>(%9, read<f32>(%3)), read<f32>(%5));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

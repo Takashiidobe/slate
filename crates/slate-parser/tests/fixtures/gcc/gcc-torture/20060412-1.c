@@ -79,9 +79,9 @@ int main() {
 // DEFAULT-NEXT:             write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         if gt<ptr<@type0>>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

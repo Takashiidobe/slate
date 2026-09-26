@@ -97,21 +97,21 @@ int main(void) {
 // DEFAULT-NEXT:     fn %16 @exit(%39 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %17 @check_float(%18 a: i32, %19 a1: complex<f32>, %20 a2: complex<f32>, %21 a3: complex<f32>, %22 a4: complex<f32>, %23 a5: complex<f32>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%19), read<complex<f32>, volatile>(%0)), ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%20), read<complex<f32>, volatile>(%1))), ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%21), read<complex<f32>, volatile>(%2))), ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%22), read<complex<f32>, volatile>(%3))), ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%23), read<complex<f32>, volatile>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %24 @check_double(%25 a: i32, %26 a1: complex<f64>, %27 a2: complex<f64>, %28 a3: complex<f64>, %29 a4: complex<f64>, %30 a5: complex<f64>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%26), read<complex<f64>, volatile>(%5)), ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%27), read<complex<f64>, volatile>(%6))), ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%28), read<complex<f64>, volatile>(%7))), ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%29), read<complex<f64>, volatile>(%8))), ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%30), read<complex<f64>, volatile>(%9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %31 @check_long_double(%32 a: i32, %33 a1: complex<f80>, %34 a2: complex<f80>, %35 a3: complex<f80>, %36 a4: complex<f80>, %37 a5: complex<f80>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, byval<align=16>, byval<align=16>, byval<align=16>, byval<align=16>, byval<align=16>) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%33), read<complex<f80>, volatile>(%10)), ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%34), read<complex<f80>, volatile>(%11))), ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%35), read<complex<f80>, volatile>(%12))), ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%36), read<complex<f80>, volatile>(%13))), ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%37), read<complex<f80>, volatile>(%14)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %38 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, complex<f32>, complex<f32>, complex<f32>, complex<f32>, complex<f32>) -> void, abi=sysv64(scalar, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>, coerce<pair<f32>>) -> void>(%17, const<i32>(0), read<complex<f32>, volatile>(%0), read<complex<f32>, volatile>(%1), read<complex<f32>, volatile>(%2), read<complex<f32>, volatile>(%3), read<complex<f32>, volatile>(%4));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, complex<f64>, complex<f64>, complex<f64>, complex<f64>, complex<f64>) -> void, abi=sysv64(scalar, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>) -> void>(%24, const<i32>(0), read<complex<f64>, volatile>(%5), read<complex<f64>, volatile>(%6), read<complex<f64>, volatile>(%7), read<complex<f64>, volatile>(%8), read<complex<f64>, volatile>(%9));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, complex<f80>, complex<f80>, complex<f80>, complex<f80>, complex<f80>) -> void, abi=sysv64(scalar, byval<align=16>, byval<align=16>, byval<align=16>, byval<align=16>, byval<align=16>) -> void>(%31, const<i32>(0), read<complex<f80>, volatile>(%10), read<complex<f80>, volatile>(%11), read<complex<f80>, volatile>(%12), read<complex<f80>, volatile>(%13), read<complex<f80>, volatile>(%14));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%16, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

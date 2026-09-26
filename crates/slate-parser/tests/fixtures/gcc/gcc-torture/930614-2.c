@@ -105,9 +105,9 @@ int main(void) {
 // DEFAULT-NEXT:                                             else
 // DEFAULT-NEXT:                                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(2)>(deref(ptr_offset<ptr<array<f32, 2>>, subtract=false, element=array<f32, 2>, overflow=ub>(array_decay<ptr<array<f32, 2>>, length=Some(8)>(deref(ptr_offset<ptr<array<array<f32, 2>, 8>>, subtract=false, element=array<array<f32, 2>, 8>, overflow=ub>(array_decay<ptr<array<array<f32, 2>, 8>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<array<f32, 2>, 8>, 2>>, subtract=false, element=array<array<array<f32, 2>, 8>, 2>, overflow=ub>(array_decay<ptr<array<array<array<f32, 2>, 8>, 2>>, length=Some(8)>(%7), read<i32>(%3)))), read<i32>(%5)))), read<i32>(%4)))), read<i32>(%6))), float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.8)));
 // DEFAULT-NEXT:                                             if lt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(2)>(deref(ptr_offset<ptr<array<f32, 2>>, subtract=false, element=array<f32, 2>, overflow=ub>(array_decay<ptr<array<f32, 2>>, length=Some(8)>(deref(ptr_offset<ptr<array<array<f32, 2>, 8>>, subtract=false, element=array<array<f32, 2>, 8>, overflow=ub>(array_decay<ptr<array<array<f32, 2>, 8>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<array<f32, 2>, 8>, 2>>, subtract=false, element=array<array<array<f32, 2>, 8>, 2>, overflow=ub>(array_decay<ptr<array<array<array<f32, 2>, 8>, 2>>, length=Some(8)>(%7), read<i32>(%3)))), read<i32>(%5)))), read<i32>(%4)))), read<i32>(%6))))), const<f64>(0.0))
-// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                                         }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

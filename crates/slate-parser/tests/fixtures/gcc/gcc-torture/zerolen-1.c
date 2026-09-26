@@ -76,9 +76,9 @@ void set(union iso_directory_record *p) {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%7, addr_of<ptr<@type0>>(%4));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, read<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1)>(field0(field1(deref(read<ptr<@type0>>(%7))))), const<i32>(0)))))), const<i32>(1)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(0)>(field1(field1(deref(read<ptr<@type0>>(%7))))), const<i32>(0))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

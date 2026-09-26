@@ -94,13 +94,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @exit(%24 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @bar(%17 d: @type3, %18 m: u32) -> ptr<@type1> [linkage=external] [abi=sysv64(native_c, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%17)), const<i32>(0)))), widen<i64, reason=usual_arith>(const<i32>(21))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%17)), const<i32>(1)))), widen<i64, reason=usual_arith>(const<i32>(22)))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%17)), const<i32>(2)))), widen<i64, reason=usual_arith>(const<i32>(23))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return null<ptr<@type1>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @foo(%10 x: ptr<@type1>) -> ptr<@type1> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 d: @type3 [storage=automatic];
 // DEFAULT-NEXT:         let %12 u: @type3 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%12)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(4)>(field3(deref(read<ptr<@type1>>(%10)))), const<i32>(1))))), const<u64>(24));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%12)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(4)>(field3(deref(read<ptr<@type1>>(%10)))), const<i32>(1))))), const<u64>(24));
 // DEFAULT-NEXT:         write<@type3>(%11, copy<@type3, reason=assign>(read<@type3>(%12)));
 // DEFAULT-NEXT:         return call<ptr<@type1>, signature=fn(@type3, u32) -> ptr<@type1>, abi=sysv64(native_c, scalar) -> scalar>(%8, copy<@type3, reason=arg>(read<@type3>(%11)), reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=16..24>(deref(read<ptr<@type1>>(%10)))))));
 // DEFAULT-NEXT:     }
@@ -110,14 +110,14 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%15)), const<i32>(0))), const<i64>(4886718345));
 // DEFAULT-NEXT:         write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%15)), const<i32>(1))), const<i64>(68414056839));
 // DEFAULT-NEXT:         write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(field0(%15)), const<i32>(2))), const<i64>(46118400291));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%16)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(4)>(field3(deref(read<ptr<@type1>>(%14)))), const<i32>(1))))), const<u64>(24));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%16)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i64>>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(4)>(field3(deref(read<ptr<@type1>>(%14)))), const<i32>(1))))), const<u64>(24));
 // DEFAULT-NEXT:         write<@type3>(%15, copy<@type3, reason=assign>(read<@type3>(%16)));
 // DEFAULT-NEXT:         return call<ptr<@type1>, signature=fn(@type3, u32) -> ptr<@type1>, abi=sysv64(native_c, scalar) -> scalar>(%8, copy<@type3, reason=arg>(read<@type3>(%15)), reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=16..24>(deref(read<ptr<@type1>>(%14)))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<ptr<@type1>, signature=fn(ptr<@type1>) -> ptr<@type1>>(%13, addr_of<ptr<@type1>>(%19));
 // DEFAULT-NEXT:         call<ptr<@type1>, signature=fn(ptr<@type1>) -> ptr<@type1>>(%9, addr_of<ptr<@type1>>(%19));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

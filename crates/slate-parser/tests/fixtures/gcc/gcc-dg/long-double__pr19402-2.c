@@ -107,29 +107,29 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64, i32) -> f64>(__builtin_powi, const<f64>(1.0), const<i32>(5)), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32, i32) -> f32>(__builtin_powif, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), const<i32>(5))), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80, i32) -> f80>(__builtin_powil, float_widen<f80, reason=arg>(const<f64>(1.0)), const<i32>(5)), float_widen<f80, reason=usual_arith>(const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%12, const<f64>(1.0)), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32) -> f32>(%10, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)))), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%14, float_widen<f80, reason=arg>(const<f64>(1.0))), float_widen<f80, reason=usual_arith>(const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64, i32) -> f64>(%4, const<f64>(1.0), neg<i32, overflow=ub>(const<i32>(5))), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32, i32) -> f32>(%1, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), neg<i32, overflow=ub>(const<i32>(5)))), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80, i32) -> f80>(%7, float_widen<f80, reason=arg>(const<f64>(1.0)), neg<i32, overflow=ub>(const<i32>(5))), float_widen<f80, reason=usual_arith>(const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(i32) -> f64>(%18, const<i32>(1)), const<f64>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(i32) -> f32>(%16, const<i32>(1))), const<f64>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(i32) -> f80>(%20, const<i32>(1)), float_widen<f80, reason=usual_arith>(const<f64>(2.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

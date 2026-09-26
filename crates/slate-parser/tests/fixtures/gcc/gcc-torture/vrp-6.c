@@ -57,23 +57,23 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @test01(%3 a: u32, %4 b: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if lt<u32>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<u32>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u32>(sub<u32, overflow=wrap>(read<u32>(%3), read<u32>(%4)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @test02(%6 a: u32, %7 b: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ge<u32>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12)))
 // DEFAULT-NEXT:             if gt<u32>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15)))
 // DEFAULT-NEXT:                 if lt<u32>(sub<u32, overflow=wrap>(read<u32>(%6), read<u32>(%7)), sub<u32, overflow=wrap>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1)), const<u32>(15)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main(%9 argc: i32, %10 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 x: u32 [storage=automatic] = const<u32>(2147483648);
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%2, add<u32, overflow=wrap>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))), read<u32>(%11));
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%5, reinterpret<u32, reason=arg, fits=always>(const<i32>(14)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

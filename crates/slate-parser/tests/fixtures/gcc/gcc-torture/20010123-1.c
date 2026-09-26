@@ -68,12 +68,12 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %5 t: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(compound_literal %9 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = array_decay<ptr<i8>, length=Some(10)>(%8)));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%5)))), const<i32>(3))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type0>>(%5))), const<i32>(4));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%5)))), const<i32>(4))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4)));
 // DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4));
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=sign_bit>(read<f64>(%5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

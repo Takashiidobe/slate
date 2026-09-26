@@ -53,9 +53,9 @@ int main(void) {
 // DEFAULT-NEXT:         switch %5 widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(read<i32>(%2)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %5 const<i32>(255):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 default %5:
-// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

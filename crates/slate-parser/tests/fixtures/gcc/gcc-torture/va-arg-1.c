@@ -58,16 +58,16 @@ int main(void) {
 // DEFAULT-NEXT:         let %14 select: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%14);
 // DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%14), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%14), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(11))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%14), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         va_end(%14);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u64, u64, u64, u64, u64, u64, u64, u64, ...) -> void>(%4, reinterpret<u64, reason=arg, fits=always>(const<i64>(1)), reinterpret<u64, reason=arg, fits=always>(const<i64>(2)), reinterpret<u64, reason=arg, fits=always>(const<i64>(3)), reinterpret<u64, reason=arg, fits=always>(const<i64>(4)), reinterpret<u64, reason=arg, fits=always>(const<i64>(5)), reinterpret<u64, reason=arg, fits=always>(const<i64>(6)), reinterpret<u64, reason=arg, fits=always>(const<i64>(7)), reinterpret<u64, reason=arg, fits=always>(const<i64>(8)), reinterpret<u64, reason=arg, fits=always>(const<i64>(9)), const<i64>(10), const<i64>(11), const<i64>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

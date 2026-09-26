@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @weakref_alias(%9 <unnamed>: i32) -> i32 [linkage=internal] [weakref="weakref_target"];
 // DEFAULT-NEXT:     fn %5 @weakref_external(%10 <unnamed>: i32) -> i32 [linkage=internal] [weakref="abs"];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%11)), call<i32, signature=fn(i32) -> i32>(%4, const<i32>(35)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(41)), call<i32, signature=fn(i32) -> i32>(%5, neg<i32, overflow=ub>(const<i32>(53))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%11)), call<i32, signature=fn(i32) -> i32>(%4, const<i32>(35)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(41)), call<i32, signature=fn(i32) -> i32>(%5, neg<i32, overflow=ub>(const<i32>(53))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

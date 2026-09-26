@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %10 b: @type1 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%10), addr_of<ptr<i32>>(field0(%9)));
 // DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(@type1, ptr<@type0>, ptr<f32>) -> i32, abi=sysv64(coerce<i64, f32>, scalar, scalar) -> scalar>(%4, copy<@type1, reason=arg>(read<@type1>(%10)), addr_of<ptr<@type0>>(%9), addr_of<ptr<f32>>(%3)), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

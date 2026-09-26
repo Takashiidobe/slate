@@ -156,8 +156,8 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%28, ne<i32>(call<i32, signature=fn(ptr<const @type0>, ptr<const @type2>, ptr<const @type2>) -> i32>(%6, pointer_cast<ptr<const @type0>, reason=arg>(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(3)>(%20), const<i32>(2))), pointer_cast<ptr<const @type2>, reason=arg>(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(4)>(%21), const<i32>(2))), pointer_cast<ptr<const @type2>, reason=arg>(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(4)>(%21), const<i32>(3)))), const<i32>(4)));
 // DEFAULT-NEXT:         if read<bool>(%28)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

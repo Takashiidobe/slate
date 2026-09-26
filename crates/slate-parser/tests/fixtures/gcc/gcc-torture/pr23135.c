@@ -176,7 +176,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @exit(%27 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %11 @verify(%12 a1: i32, %13 a2: i32, %14 b1: i32, %15 b2: i32, %16 big: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%12), read<i32>(%14)), ne<i32>(read<i32>(%13), read<i32>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %18 big: @type0 [storage=automatic];
@@ -221,7 +221,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<i32, 2>>(%8, div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(div<vector<i32, 2>, elementwise=true, by_zero=ub, min_by_neg_one=ub>(read<vector<i32, 2>>(%19), read<vector<i32, 2>>(%20)), read<vector<i32, 2>>(%21)), read<vector<i32, 2>>(%22)), read<vector<i32, 2>>(%23)), read<vector<i32, 2>>(%24)), read<vector<i32, 2>>(%25)), read<vector<i32, 2>>(%26)));
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%10), read<vector<i32, 2>>(%8));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, @type0) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%11, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%10)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%10)), const<i32>(1)))), const<i32>(0), const<i32>(0), copy<@type0, reason=arg>(read<@type0>(%18)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

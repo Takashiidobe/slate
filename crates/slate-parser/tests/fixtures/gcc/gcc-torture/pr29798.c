@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%2), const<i32>(1))
 // DEFAULT-NEXT:                         write<f64>(%4, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%3)));
 // DEFAULT-NEXT:                     if eq<f64, exceptions=ignore>(read<f64>(%4), const<f64>(1.0))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %10: f64 [synthetic] = read<f64>(%5);
 // DEFAULT-NEXT:                     let %11: f64 [synthetic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), const<f64>(2.0));
 // DEFAULT-NEXT:                     write<f64>(%5, read<f64>(%11));

@@ -62,8 +62,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<f64>>(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))), complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> coerce<pair<f32>>>(%2)));
 // DEFAULT-NEXT:         complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> coerce<pair<f32>>>(%2));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(real(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))))), const<f64>(1.0)), ne<f64, exceptions=ignore>(read<f64>(imag(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))))), neg<f64>(const<f64>(1.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

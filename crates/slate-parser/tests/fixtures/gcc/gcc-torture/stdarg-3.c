@@ -325,16 +325,16 @@ int main(void) {
 // DEFAULT-NEXT:         let %46 a4: @type2 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(7), const<i64>(1), const<i64>(2), const<i64>(3), const<i64>(5), const<i64>(7), const<i64>(9), const<i64>(11), const<i64>(13));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), const<i64>(11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(6), const<f64>(1.0), const<f64>(2.0), const<f64>(4.0), const<f64>(8.0), const<f64>(16.0), const<f64>(32.0), const<f64>(64.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%5), const<f64>(32.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%20, const<i32>(2), const<i64>(1), const<i64>(3));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%3)), const<i64>(1)), ne<i64>(read<i64>(%4), const<i64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%24, const<i32>(2), const<f64>(17.0), const<f64>(19.0));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%3), const<i32>(21)), ne<f64, exceptions=ignore>(read<f64>(%5), const<f64>(17.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(field0(%43), const<i32>(131));
 // DEFAULT-NEXT:         write<i32>(field2(%43), const<i32>(251));
 // DEFAULT-NEXT:         write<f64>(field1(%43), const<f64>(15.0));
@@ -344,28 +344,28 @@ int main(void) {
 // DEFAULT-NEXT:         write<f64>(field3(%44), const<f64>(178.0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, byval<align=8>, byval<align=8>, byval<align=8>) -> void>(%28, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%43)), copy<@type1, reason=vararg>(read<@type1>(%44)), copy<@type1, reason=vararg>(read<@type1>(%43)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%8)), const<i32>(131)), ne<i32>(read<i32>(field2(%8)), const<i32>(254))), ne<f64, exceptions=ignore>(read<f64>(field1(%8)), const<f64>(15.0))), ne<f64, exceptions=ignore>(read<f64>(field3(%8)), const<f64>(178.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, byval<align=8>, byval<align=8>, byval<align=8>) -> void>(%28, const<i32>(3), copy<@type1, reason=vararg>(read<@type1>(%43)), copy<@type1, reason=vararg>(read<@type1>(%44)), copy<@type1, reason=vararg>(read<@type1>(%43)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%8)), const<i32>(131)), ne<i32>(read<i32>(field2(%8)), const<i32>(251))), ne<f64, exceptions=ignore>(read<f64>(field1(%8)), const<f64>(15.0))), ne<f64, exceptions=ignore>(read<f64>(field3(%8)), const<f64>(191.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i64>(field1(%45), widen<i64, reason=assign>(const<i32>(138)));
 // DEFAULT-NEXT:         write<f64>(field0(%45), const<f64>(16.0));
 // DEFAULT-NEXT:         write<i64>(field1(%46), widen<i64, reason=assign>(const<i32>(257)));
 // DEFAULT-NEXT:         write<f64>(field0(%46), const<f64>(176.0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<f64, i64>, coerce<f64, i64>, coerce<f64, i64>) -> void>(%31, const<i32>(2), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%46)), copy<@type2, reason=vararg>(read<@type2>(%45)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%10)), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=ignore>(read<f64>(field0(%10)), const<f64>(176.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<f64, i64>, coerce<f64, i64>, coerce<f64, i64>) -> void>(%31, const<i32>(3), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%46)), copy<@type2, reason=vararg>(read<@type2>(%45)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%10)), widen<i64, reason=usual_arith>(const<i32>(138))), ne<f64, exceptions=ignore>(read<f64>(field0(%10)), const<f64>(16.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, byval<align=8>, byval<align=8>, byval<align=8>) -> void>(%34, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%44)), copy<@type1, reason=vararg>(read<@type1>(%43)), copy<@type1, reason=vararg>(read<@type1>(%43)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%8)), const<i32>(131)), ne<i32>(read<i32>(field2(%8)), const<i32>(254))), ne<f64, exceptions=ignore>(read<f64>(field1(%8)), const<f64>(15.0))), ne<f64, exceptions=ignore>(read<f64>(field3(%8)), const<f64>(178.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(131))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<f64, i64>, coerce<f64, i64>, coerce<f64, i64>) -> void>(%38, const<i32>(3), copy<@type2, reason=vararg>(read<@type2>(%46)), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%45)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%10)), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=ignore>(read<f64>(field0(%10)), const<f64>(176.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

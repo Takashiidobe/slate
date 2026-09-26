@@ -51,16 +51,16 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @test(%3 x: i32, %4 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 c: i32 [storage=automatic];
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%4), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(%5, div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%3), read<i32>(%4)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%2, const<i32>(2), const<i32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%2, const<i32>(23));
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(29));
 // DEFAULT-NEXT:         write<i32>(%4, const<i32>(31));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), read<i32>(%2), read<i32>(%3), read<i32>(%4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), read<i32>(%2), read<i32>(%3), read<i32>(%4));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type1>>(field0(%4), addr_of<ptr<@type1>>(%4));
 // DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<void>, ptr<@type0>) -> ptr<void>>(%8, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%2)), addr_of<ptr<@type0>>(%2)), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type1>>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

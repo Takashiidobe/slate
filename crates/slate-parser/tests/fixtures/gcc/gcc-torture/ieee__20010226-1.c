@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<u64>(read<u64>(%4), widen<u64, reason=usual_arith>(const<u32>(2362232012)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

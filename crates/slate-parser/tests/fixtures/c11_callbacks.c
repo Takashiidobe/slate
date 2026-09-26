@@ -129,7 +129,7 @@ int main(void) {
 // DEFAULT-NEXT:                 call<void, signature=fn(u32) -> void>(%21, read<u32>(%31));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %38 quick_registered: i32 [storage=automatic] = call<i32, signature=fn(ptr<fn() -> void>) -> i32>(%5, function_decay<ptr<fn() -> void>>(%28));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%53)), read<i32>(%34), read<i32>(%35), read<i32>(%33), read<i32>(%22), read<i32>(%37), read<i32>(%38));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%53)), read<i32>(%34), read<i32>(%35), read<i32>(%33), read<i32>(%22), read<i32>(%37), read<i32>(%38));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

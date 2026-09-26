@@ -219,7 +219,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%53));
 // DEFAULT-NEXT:                 break %45;
 // DEFAULT-NEXT:                 default %45:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @bar(%11 v: i32) -> void [linkage=external] [fallthrough=ret_void] {
@@ -231,7 +231,7 @@ int main(void) {
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     write<bool>(%54, ne<f64, exceptions=ignore>(va_arg<f64>(%6), neg<f64>(const<f64>(14.0))));
 // DEFAULT-NEXT:                 if read<bool>(%54)
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<i32>(%3, read<i32>(%11));
 // DEFAULT-NEXT:     }
@@ -306,37 +306,37 @@ int main(void) {
 // DEFAULT-NEXT:     fn %44 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%12, const<i32>(1), const<i64>(79));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), const<i64>(79))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(16386), const<i32>(13), neg<f64>(const<f64>(14.0)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(16386))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%16, const<i32>(3), const<i64>(2031));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(2031)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%19, const<i32>(4), const<i32>(18));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%22, const<i32>(5), const<i32>(1), const<f64>(19.0), const<i64>(18));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(38))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(6), const<i64>(18));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), const<i64>(18))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%29, const<i32>(7));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%32, const<i32>(8), const<i64>(2031), const<f64>(13.0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(2044))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%35, const<i32>(9), const<i64>(180));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), const<i64>(180))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%38, const<i32>(10));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%41, const<i32>(11), const<i32>(2030), const<f80>(12));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(2042))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

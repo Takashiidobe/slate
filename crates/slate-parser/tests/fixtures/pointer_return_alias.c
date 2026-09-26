@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%19)), read<i32>(%21));
 // DEFAULT-NEXT:         let %15 read_alias: ptr<const i32> [storage=automatic] = call<ptr<const i32>, signature=fn(ptr<const i32>) -> ptr<const i32>>(%5, pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%13)));
 // DEFAULT-NEXT:         let %16 ambiguous: ptr<i32> [storage=automatic] = call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>, i32) -> ptr<i32>>(%7, addr_of<ptr<i32>>(%12), addr_of<ptr<i32>>(%13), const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%18)), read<i32>(%12), read<i32>(deref(read<ptr<const i32>>(%15))), read<i32>(deref(read<ptr<i32>>(%16))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%18)), read<i32>(%12), read<i32>(deref(read<ptr<const i32>>(%15))), read<i32>(deref(read<ptr<i32>>(%16))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

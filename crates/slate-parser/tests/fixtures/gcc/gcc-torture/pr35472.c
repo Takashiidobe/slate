@@ -62,13 +62,13 @@ int main() {
 // DEFAULT-NEXT:     fn %7 @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %8 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %9 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%8)), const<i32>(0))))), const<i32>(0), const<u64>(64));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), const<i32>(0))))), const<i32>(0), const<u64>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%8)), const<i32>(0))))), const<i32>(0), const<u64>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), const<i32>(0))))), const<i32>(0), const<u64>(64));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>) -> void>(%4, addr_of<ptr<@type0>>(%8), addr_of<ptr<@type0>>(%9));
 // DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%3)), copy<@type0, reason=assign>(read<@type0>(%8)));
 // DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%3)), copy<@type0, reason=assign>(read<@type0>(%9)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);

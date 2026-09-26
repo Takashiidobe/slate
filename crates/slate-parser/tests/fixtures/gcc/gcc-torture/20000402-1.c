@@ -67,7 +67,7 @@ void checkit(int a) {
 // DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @checkit(%9 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(40))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 a: u64 [storage=automatic] [const] = const<u64>(85899345920);
@@ -76,7 +76,7 @@ void checkit(int a) {
 // DEFAULT-NEXT:         let %8 d: u64 [storage=automatic] [const] = div<u64, by_zero=ub>(const<u64>(85899345920), const<u64>(2147483648));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%7))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%8))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

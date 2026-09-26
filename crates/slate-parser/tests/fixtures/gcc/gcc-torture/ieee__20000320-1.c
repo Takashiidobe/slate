@@ -159,7 +159,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(4), const<u64>(4)), ne<u64>(const<u64>(8), const<u64>(8)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%9, const<u64>(3931642474694443008), const<u32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%9, const<u64>(3931642474694443009), const<u32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%9, const<u64>(3936146074321813503), const<u32>(1));
@@ -182,9 +182,9 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%9, const<u64>(4039728867093512192), const<u32>(8388610));
 // DEFAULT-NEXT:         call<void, signature=fn(u64, u32) -> void>(%9, const<u64>(4039728867093512193), const<u32>(8388611));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

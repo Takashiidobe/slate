@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 tmp: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         write<i32>(%5, const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 pom: @type1 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, ptr<@type1>) -> i32>(%4, addr_of<ptr<@type0>>(field1(%8)), addr_of<ptr<@type1>>(%8)), const<i32>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

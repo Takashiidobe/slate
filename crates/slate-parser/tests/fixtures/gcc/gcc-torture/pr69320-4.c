@@ -72,8 +72,8 @@ int main() {
 // DEFAULT-NEXT:                     widen<i32, reason=assign>(call<i16, signature=fn(i32, i32) -> i16>(%6, from_bool<i32, reason=arg>(logical_or<bool>(ne<i16>(read<i16>(%5), const<i16>(0)), ne<i8>(read<i8>(%3), const<i8>(0)))), read<i32>(%2)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=explicit>(read<i32>(%2)), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

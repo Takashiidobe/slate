@@ -100,7 +100,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %12 b: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %13 z: ptr<@type0> [storage=automatic] = call<ptr<@type0>, signature=fn(ptr<void>, ptr<void>) -> ptr<@type0>>(%5, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%11)), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%12)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(eq<ptr<@type0>>(read<ptr<@type0>>(%13), null<ptr<@type0>>), ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type0>>(%13)))), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%11)))), ne<ptr<void>>(read<ptr<void>>(field1(deref(read<ptr<@type0>>(%13)))), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%12)))), ne<u8>(read<u8>(field2(deref(read<ptr<@type0>>(%13)))), const<u8>(0))), ne<u8>(read<u8>(field3(deref(read<ptr<@type0>>(%13)))), const<u8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

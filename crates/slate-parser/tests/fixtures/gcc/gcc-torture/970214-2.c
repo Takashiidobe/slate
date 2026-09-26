@@ -31,7 +31,7 @@ int main(void) { exit(m(0) != L'1'); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @exit(%2 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, from_bool<i32, reason=arg>(ne<i32>(add<i32, overflow=ub>(const<i32>(49), const<i32>(0)), const<i32>(49))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, from_bool<i32, reason=arg>(ne<i32>(add<i32, overflow=ub>(const<i32>(49), const<i32>(0)), const<i32>(49))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

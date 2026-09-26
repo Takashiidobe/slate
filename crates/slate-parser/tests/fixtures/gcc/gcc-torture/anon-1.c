@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<i32>(field0(field1(field1(%4))), const<i32>(6));
 // DEFAULT-NEXT:         write<i32>(field0(field1(%4)), const<i32>(5));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(field1(field1(%4)))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

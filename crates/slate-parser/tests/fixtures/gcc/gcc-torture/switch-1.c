@@ -99,29 +99,29 @@ int main() {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%4), const<i32>(4))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             if ne<i32>(read<i32>(%5), const<i32>(30))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         if eq<i32>(read<i32>(%4), const<i32>(6))
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(%5), const<i32>(30))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             if eq<i32>(read<i32>(%4), const<i32>(9))
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     if ne<i32>(read<i32>(%5), const<i32>(30))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 if eq<i32>(read<i32>(%4), const<i32>(11))
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         if ne<i32>(read<i32>(%5), const<i32>(30))
-// DEFAULT-NEXT:                                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                                 else
 // DEFAULT-NEXT:                                     if ne<i32>(read<i32>(%5), const<i32>(31))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

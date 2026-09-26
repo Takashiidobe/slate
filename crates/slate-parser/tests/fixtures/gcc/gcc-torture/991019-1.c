@@ -82,9 +82,9 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type0>(%9, copy<@type0, reason=assign>(call<@type0, signature=fn(f64) -> @type0, abi=sysv64(scalar) -> coerce<f64>>(%4, const<f64>(1.0))));
 // DEFAULT-NEXT:                     copy<@type0, reason=assign>(call<@type0, signature=fn(f64) -> @type0, abi=sysv64(scalar) -> coerce<f64>>(%4, const<f64>(1.0)));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(field0(%9)), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(1.0)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

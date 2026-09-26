@@ -56,8 +56,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%6, read<u64>(%10));
 // DEFAULT-NEXT:         write<u64>(%7, add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))), ptr_to_int<u64, reason=explicit>(addr_of<ptr<fn(i32, i32) -> i32>>(%2))));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%6), read<u64>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

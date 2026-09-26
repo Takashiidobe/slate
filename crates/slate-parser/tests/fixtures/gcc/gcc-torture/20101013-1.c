@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @build_int_cst(%5 base: ptr<void>, %6 offset: i64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return read<ptr<void>>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @build_ref_for_offset(%8 base: ptr<void>, %9 offset: i64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 ret: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, i64) -> ptr<void>>(%7, null<ptr<void>>, widen<i64, reason=arg>(const<i32>(32)));
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%12), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

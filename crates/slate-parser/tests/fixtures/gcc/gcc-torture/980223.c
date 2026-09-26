@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %11 cons2: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<array<@type0, 2>>>(%10)), field1 = widen<i64, reason=assign>(const<i32>(64))), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), field1 = widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @bar(%4 blah: @type0) -> @type0 [linkage=external] [abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @foo(%6 x: @type0, %7 y: @type0) -> @type0 [linkage=external] [abi=sysv64(coerce<i64, i64>, coerce<i64, i64>) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 z: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(field0(%6))))));

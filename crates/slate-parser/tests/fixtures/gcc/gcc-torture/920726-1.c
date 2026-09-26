@@ -121,7 +121,7 @@ int main(void) {
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%10, va_arg<i32>(%11));
 // DEFAULT-NEXT:                         va_arg<i32>(%11);
-// DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%2, read<ptr<i8>>(%13), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%29)), read<i32>(%10));
+// DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(sprintf, read<ptr<i8>>(%13), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%29)), read<i32>(%10));
 // DEFAULT-NEXT:                         let %38: ptr<i8> [synthetic] = read<ptr<i8>>(%13);
 // DEFAULT-NEXT:                         let %39: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%38), call<u64, signature=fn(ptr<const i8>) -> u64>(__builtin_strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%13))));
 // DEFAULT-NEXT:                         write<ptr<i8>>(%13, read<ptr<i8>>(%39));
@@ -157,7 +157,7 @@ int main(void) {
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%18, va_arg<i32>(%19));
 // DEFAULT-NEXT:                         va_arg<i32>(%19);
-// DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%2, read<ptr<i8>>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%31)), read<i32>(%18));
+// DEFAULT-NEXT:                         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(sprintf, read<ptr<i8>>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%31)), read<i32>(%18));
 // DEFAULT-NEXT:                         let %44: ptr<i8> [synthetic] = read<ptr<i8>>(%21);
 // DEFAULT-NEXT:                         let %45: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%44), call<u64, signature=fn(ptr<const i8>) -> u64>(__builtin_strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%21))));
 // DEFAULT-NEXT:                         write<ptr<i8>>(%21, read<ptr<i8>>(%45));
@@ -182,8 +182,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%48, ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(__builtin_strcmp, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%35)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%24))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%48)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

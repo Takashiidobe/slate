@@ -54,7 +54,7 @@ int         main() {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%6), const<i32>(1))), const<i32>(42));
 // DEFAULT-NEXT:         write<i32>(%2, const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<array<i32, 2>>) -> i32>(%3, addr_of<ptr<array<i32, 2>>>(%6)), const<i32>(42))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -49,8 +49,8 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @memcmp(%6 <unnamed>: ptr<const void>, %7 <unnamed>: ptr<const void>, %8 <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%3)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%4)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%3)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%4)), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

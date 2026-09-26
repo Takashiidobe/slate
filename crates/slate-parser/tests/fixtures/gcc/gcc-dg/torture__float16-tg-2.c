@@ -104,24 +104,24 @@ main(void) {
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%2)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%2)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%4)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%4)), const<i32>(-1), const<i32>(1)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%3)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%3)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%5)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%5)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%6)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%6)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%7)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%7)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%8)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%8)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%9)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%9)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(conditional<i32>(float_class<bool, test=infinite>(read<f16, volatile>(%10)), conditional<i32>(float_class<bool, test=sign_bit>(read<f16, volatile>(%10)), const<i32>(-1), const<i32>(1)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

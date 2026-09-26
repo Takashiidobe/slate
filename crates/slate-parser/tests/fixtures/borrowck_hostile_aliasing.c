@@ -335,7 +335,7 @@ int main(void) {
 // DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%46), read<i32>(field0(%45))), neg<i32, overflow=ub>(const<i32>(1)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(field1(%45))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %47 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%52)), call<i32, signature=fn() -> i32>(%4), call<i32, signature=fn() -> i32>(%11), call<i32, signature=fn() -> i32>(%16), call<i32, signature=fn() -> i32>(%24), call<i32, signature=fn() -> i32>(%29), call<i32, signature=fn() -> i32>(%36), call<i32, signature=fn() -> i32>(%41), call<i32, signature=fn() -> i32>(%44));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%52)), call<i32, signature=fn() -> i32>(%4), call<i32, signature=fn() -> i32>(%11), call<i32, signature=fn() -> i32>(%16), call<i32, signature=fn() -> i32>(%24), call<i32, signature=fn() -> i32>(%29), call<i32, signature=fn() -> i32>(%36), call<i32, signature=fn() -> i32>(%41), call<i32, signature=fn() -> i32>(%44));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

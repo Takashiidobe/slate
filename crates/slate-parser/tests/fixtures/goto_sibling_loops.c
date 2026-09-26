@@ -66,7 +66,7 @@ second:
 // DEFAULT-NEXT:         write<i32>(%5, add<i32, overflow=ub>(read<i32>(%5), const<i32>(1)));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), const<i32>(5))
 // DEFAULT-NEXT:             goto %3;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), read<i32>(%6), read<i32>(%7));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), read<i32>(%6), read<i32>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

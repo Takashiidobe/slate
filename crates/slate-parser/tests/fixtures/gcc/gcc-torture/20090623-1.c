@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<ptr<i32>>(%0, addr_of<ptr<i32>>(%5));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

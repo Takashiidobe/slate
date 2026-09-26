@@ -68,8 +68,8 @@ int main() {
 // DEFAULT-NEXT:         while ne<f64, exceptions=ignore>(read<f64, volatile>(%7), const<f64>(1.0));
 // DEFAULT-NEXT:         write<f64, volatile>(%2, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), read<f64>(%5)));
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64, volatile>(%2), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

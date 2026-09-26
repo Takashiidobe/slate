@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 r: @type4 [storage=automatic] = aggregate<@type4, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(5)), field1 = const<i32>(9), field2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(7)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type4>) -> void>(%11, addr_of<ptr<@type4>>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%16)), read<i32>(field0(field0(%14))), read<i32>(field0(field2(%14))), read<i32>(field1(%14)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%16)), read<i32>(field0(field0(%14))), read<i32>(field0(field2(%14))), read<i32>(field1(%14)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

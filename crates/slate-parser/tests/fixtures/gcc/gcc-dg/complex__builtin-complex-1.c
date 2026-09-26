@@ -277,11 +277,11 @@ int main(void) {
 // DEFAULT-NEXT:                 let %5 s1: f32 [storage=automatic] = call<f32, signature=fn(f32, f32) -> f32>(__builtin_copysignf, float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(%3));
 // DEFAULT-NEXT:                 let %6 s2: f32 [storage=automatic] = call<f32, signature=fn(f32, f32) -> f32>(__builtin_copysignf, float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), read<f32>(%4));
 // DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(read<f32>(%5), read<f32>(%6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%3))), const<i32>(0))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%4))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%3))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
@@ -291,11 +291,11 @@ int main(void) {
 // DEFAULT-NEXT:                 let %10 s1: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(__builtin_copysign, const<f64>(1.0), read<f64>(%8));
 // DEFAULT-NEXT:                 let %11 s2: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(__builtin_copysign, const<f64>(1.0), read<f64>(%9));
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(%10), read<f64>(%11))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f64>(%8))), const<i32>(0))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f64>(%9))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<f64, exceptions=ignore>(read<f64>(%8), read<f64>(%9))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f64>(%8))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
@@ -305,11 +305,11 @@ int main(void) {
 // DEFAULT-NEXT:                 let %15 s1: f80 [storage=automatic] = call<f80, signature=fn(f80, f80) -> f80>(__builtin_copysignl, float_widen<f80, reason=explicit>(const<f64>(1.0)), read<f80>(%13));
 // DEFAULT-NEXT:                 let %16 s2: f80 [storage=automatic] = call<f80, signature=fn(f80, f80) -> f80>(__builtin_copysignl, float_widen<f80, reason=explicit>(const<f64>(1.0)), read<f80>(%14));
 // DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(read<f80>(%15), read<f80>(%16))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f80>(%13))), const<i32>(0))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f80>(%14))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if ne<i32>(from_bool<i32, reason=promotion>(ne<f80, exceptions=ignore>(read<f80>(%13), read<f80>(%14))), from_bool<i32, reason=promotion>(ne<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f80>(%13))), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
@@ -779,7 +779,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%29);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%94);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%159);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

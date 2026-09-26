@@ -157,26 +157,26 @@ int main(void) {
 // DEFAULT-NEXT:         let %40 sine_l: f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %41 cosine_l: f80 [storage=automatic] = const<f80>(0);
 // DEFAULT-NEXT:         let %42 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         call<void, signature=fn(f64, ptr<f64>, ptr<f64>) -> void>(%5, const<f64>(0.5), addr_of<ptr<f64>>(%36), addr_of<ptr<f64>>(%37));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, ptr<f32>, ptr<f32>) -> void>(%21, const<f32>(0.5), addr_of<ptr<f32>>(%38), addr_of<ptr<f32>>(%39));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<f80>, ptr<f80>) -> void>(%31, const<f80>(0.5), addr_of<ptr<f80>>(%40), addr_of<ptr<f80>>(%41));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, ptr<f64>, ptr<f64>) -> void>(sincos, const<f64>(0.5), addr_of<ptr<f64>>(%36), addr_of<ptr<f64>>(%37));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, ptr<f32>, ptr<f32>) -> void>(sincosf, const<f32>(0.5), addr_of<ptr<f32>>(%38), addr_of<ptr<f32>>(%39));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<f80>, ptr<f80>) -> void>(sincosl, const<f80>(0.5), addr_of<ptr<f80>>(%40), addr_of<ptr<f80>>(%41));
 // DEFAULT-NEXT:         let %101: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %102: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%101), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%7, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%36), call<f64, signature=fn(f64) -> f64>(%4, const<f64>(0.5)))), const<f64>(0.0))));
+// DEFAULT-NEXT:         let %102: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%101), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(fabs, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%36), call<f64, signature=fn(f64) -> f64>(sin, const<f64>(0.5)))), const<f64>(0.0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%102));
 // DEFAULT-NEXT:         let %103: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %104: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%103), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%7, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%37), call<f64, signature=fn(f64) -> f64>(%3, const<f64>(0.5)))), const<f64>(0.0))));
+// DEFAULT-NEXT:         let %104: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%103), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(fabs, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%37), call<f64, signature=fn(f64) -> f64>(cos, const<f64>(0.5)))), const<f64>(0.0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%104));
 // DEFAULT-NEXT:         let %105: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %106: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%105), from_bool<i32, reason=promotion>(eq<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%23, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%38), call<f32, signature=fn(f32) -> f32>(%20, const<f32>(0.5)))), const<f32>(0.0))));
+// DEFAULT-NEXT:         let %106: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%105), from_bool<i32, reason=promotion>(eq<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(fabsf, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%38), call<f32, signature=fn(f32) -> f32>(sinf, const<f32>(0.5)))), const<f32>(0.0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%106));
 // DEFAULT-NEXT:         let %107: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %108: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%107), from_bool<i32, reason=promotion>(eq<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%23, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%39), call<f32, signature=fn(f32) -> f32>(%19, const<f32>(0.5)))), const<f32>(0.0))));
+// DEFAULT-NEXT:         let %108: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%107), from_bool<i32, reason=promotion>(eq<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(fabsf, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%39), call<f32, signature=fn(f32) -> f32>(cosf, const<f32>(0.5)))), const<f32>(0.0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%108));
 // DEFAULT-NEXT:         let %109: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %110: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%109), from_bool<i32, reason=promotion>(eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%33, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%40), call<f80, signature=fn(f80) -> f80>(%30, const<f80>(0.5)))), const<f80>(0))));
+// DEFAULT-NEXT:         let %110: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%109), from_bool<i32, reason=promotion>(eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(fabsl, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%40), call<f80, signature=fn(f80) -> f80>(sinl, const<f80>(0.5)))), const<f80>(0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%110));
 // DEFAULT-NEXT:         let %111: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:         let %112: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%111), from_bool<i32, reason=promotion>(eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%33, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%41), call<f80, signature=fn(f80) -> f80>(%29, const<f80>(0.5)))), const<f80>(0))));
+// DEFAULT-NEXT:         let %112: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%111), from_bool<i32, reason=promotion>(eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(fabsl, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%41), call<f80, signature=fn(f80) -> f80>(cosl, const<f80>(0.5)))), const<f80>(0))));
 // DEFAULT-NEXT:         write<i32>(%42, read<i32>(%112));
 // DEFAULT-NEXT:         return read<i32>(%42);
 // DEFAULT-NEXT:     }
@@ -193,7 +193,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %118: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%117), from_bool<i32, reason=promotion>(eq<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%32, const<f80>(2)), const<f80>(100))));
 // DEFAULT-NEXT:         write<i32>(%45, read<i32>(%118));
 // DEFAULT-NEXT:         let %119: i32 [synthetic] = read<i32>(%45);
-// DEFAULT-NEXT:         let %120: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%119), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64, ptr<i32>) -> f64>(%17, const<f64>(0.5), addr_of<ptr<i32>>(%44)), call<f64, signature=fn(f64) -> f64>(%16, const<f64>(0.5)))));
+// DEFAULT-NEXT:         let %120: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%119), from_bool<i32, reason=promotion>(eq<f64, exceptions=ignore>(call<f64, signature=fn(f64, ptr<i32>) -> f64>(%17, const<f64>(0.5), addr_of<ptr<i32>>(%44)), call<f64, signature=fn(f64) -> f64>(lgamma, const<f64>(0.5)))));
 // DEFAULT-NEXT:         write<i32>(%45, read<i32>(%120));
 // DEFAULT-NEXT:         let %121: i32 [synthetic] = read<i32>(%45);
 // DEFAULT-NEXT:         let %122: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%121), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%44), const<i32>(1))));
@@ -284,7 +284,7 @@ int main(void) {
 // DEFAULT-NEXT:         return read<i32>(%51);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %52 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%34, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%100)), call<i32, signature=fn() -> i32>(%35), call<i32, signature=fn() -> i32>(%43), call<i32, signature=fn() -> i32>(%46), call<i32, signature=fn() -> i32>(%48), call<i32, signature=fn() -> i32>(%50));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%100)), call<i32, signature=fn() -> i32>(%35), call<i32, signature=fn() -> i32>(%43), call<i32, signature=fn() -> i32>(%46), call<i32, signature=fn() -> i32>(%48), call<i32, signature=fn() -> i32>(%50));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

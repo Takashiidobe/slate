@@ -116,8 +116,8 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @isofs_bread(%6 block: u32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%6), const<u32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @do_isofs_readdir(%8 inode: ptr<@type0>, %9 filp: ptr<@type2>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 bufsize: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%8)))))));
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         write<ptr<@type1>>(field1(%17), addr_of<ptr<@type1>>(%16));
 // DEFAULT-NEXT:         write<i64>(field0(%18), widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>, ptr<@type2>) -> i32>(%7, addr_of<ptr<@type0>>(%17), addr_of<ptr<@type2>>(%18));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

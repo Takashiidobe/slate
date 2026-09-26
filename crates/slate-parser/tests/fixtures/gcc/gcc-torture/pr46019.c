@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<u64>(div<u64, by_zero=ub>(read<u64>(%2), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(8589934592), read<i32>(%3))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(512), read<i32>(%3)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

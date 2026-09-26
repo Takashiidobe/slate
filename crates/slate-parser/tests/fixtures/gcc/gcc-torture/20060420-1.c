@@ -243,7 +243,7 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %23 e: f32 [storage=automatic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%19)), mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(11)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%19)))), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%19))), mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(12)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%19))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%20), read<i32>(%19)))), read<f32>(%23))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

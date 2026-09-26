@@ -90,18 +90,18 @@ int main(void) {
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(call<f32, signature=fn(ptr<const i8>) -> f32>(__builtin_nansf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%10)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(read<f32, volatile>(%0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(call<f64, signature=fn(ptr<const i8>) -> f64>(__builtin_nans, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%11)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(read<f64, volatile>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(call<f80, signature=fn(ptr<const i8>) -> f80>(__builtin_nansl, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%12)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(read<f80, volatile>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

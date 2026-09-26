@@ -76,8 +76,8 @@ int         main() {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
 // DEFAULT-NEXT:             write<i32>(%3, read<i32>(%10));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%10), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

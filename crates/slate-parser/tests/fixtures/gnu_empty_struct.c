@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 value: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>();
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%8)), const<u64>(0), call<u64, signature=fn(@type1) -> u64, abi=sysv64(native_c) -> scalar>(%3, copy<@type1, reason=arg>(read<@type1>(%6))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%8)), const<u64>(0), call<u64, signature=fn(@type1) -> u64, abi=sysv64(native_c) -> scalar>(%3, copy<@type1, reason=arg>(read<@type1>(%6))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

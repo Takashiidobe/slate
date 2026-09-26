@@ -228,7 +228,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %69
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %9 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%70)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%3), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %10 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%9)));
+// DEFAULT-NEXT:                 let %10 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%9)));
 // DEFAULT-NEXT:                 let %157: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%10), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%157, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -243,7 +243,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %73
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %11 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%3), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%74)));
-// DEFAULT-NEXT:                 let %12 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%11)));
+// DEFAULT-NEXT:                 let %12 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%11)));
 // DEFAULT-NEXT:                 let %160: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%160, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -258,7 +258,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %77
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %13 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%78)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%4), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %14 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%13)));
+// DEFAULT-NEXT:                 let %14 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%13)));
 // DEFAULT-NEXT:                 let %163: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%14), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%163, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -273,7 +273,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %81
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %15 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%4), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(%82)));
-// DEFAULT-NEXT:                 let %16 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%15)));
+// DEFAULT-NEXT:                 let %16 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%15)));
 // DEFAULT-NEXT:                 let %166: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%16), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%166, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -288,7 +288,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %85
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %17 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%86), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%5), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %18 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%17)));
+// DEFAULT-NEXT:                 let %18 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%17)));
 // DEFAULT-NEXT:                 let %169: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%18), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%169, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -303,7 +303,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %89
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %19 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%5), const<i32>(0)))), array_decay<ptr<i8>, length=Some(5)>(%90)));
-// DEFAULT-NEXT:                 let %20 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%19)));
+// DEFAULT-NEXT:                 let %20 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%19)));
 // DEFAULT-NEXT:                 let %172: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%20), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%172, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -318,7 +318,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %93
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %21 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%94), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%6), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %22 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%21)));
+// DEFAULT-NEXT:                 let %22 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%21)));
 // DEFAULT-NEXT:                 let %175: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%22), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%175, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -333,7 +333,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %97
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %23 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%6), const<i32>(0)))), array_decay<ptr<i8>, length=Some(3)>(%98)));
-// DEFAULT-NEXT:                 let %24 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%23)));
+// DEFAULT-NEXT:                 let %24 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%23)));
 // DEFAULT-NEXT:                 let %178: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%24), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%178, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -354,7 +354,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %101
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %30 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%102)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%26), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %31 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%30)));
+// DEFAULT-NEXT:                 let %31 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%30)));
 // DEFAULT-NEXT:                 let %181: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%31), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%181, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -369,7 +369,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %105
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %32 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%26), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%106)));
-// DEFAULT-NEXT:                 let %33 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%32)));
+// DEFAULT-NEXT:                 let %33 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%32)));
 // DEFAULT-NEXT:                 let %184: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%33), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%184, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -384,7 +384,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %109
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %34 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(2)>(%110)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%27), const<i32>(0)))));
-// DEFAULT-NEXT:                 let %35 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%34)));
+// DEFAULT-NEXT:                 let %35 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%34)));
 // DEFAULT-NEXT:                 let %187: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%35), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%187, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -399,7 +399,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %113
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %36 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(ptr_offset<ptr<const array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<const array<i8, 3>>, length=Some(2)>(%27), const<i32>(0)))), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(%114)));
-// DEFAULT-NEXT:                 let %37 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%36)));
+// DEFAULT-NEXT:                 let %37 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%36)));
 // DEFAULT-NEXT:                 let %190: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%37), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%190, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -414,7 +414,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %117
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %38 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%118), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%28), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %39 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%38)));
+// DEFAULT-NEXT:                 let %39 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%38)));
 // DEFAULT-NEXT:                 let %193: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%39), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%193, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -429,7 +429,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %121
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %40 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%28), const<i32>(0)))), array_decay<ptr<i8>, length=Some(5)>(%122)));
-// DEFAULT-NEXT:                 let %41 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%40)));
+// DEFAULT-NEXT:                 let %41 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%40)));
 // DEFAULT-NEXT:                 let %196: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%41), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%196, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -444,7 +444,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %125
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %42 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(2)>(%126), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%29), const<i32>(0))))));
-// DEFAULT-NEXT:                 let %43 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%42)));
+// DEFAULT-NEXT:                 let %43 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%42)));
 // DEFAULT-NEXT:                 let %199: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%43), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%199, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -459,7 +459,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %129
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %44 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%29), const<i32>(0)))), array_decay<ptr<i8>, length=Some(3)>(%130)));
-// DEFAULT-NEXT:                 let %45 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%44)));
+// DEFAULT-NEXT:                 let %45 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%44)));
 // DEFAULT-NEXT:                 let %202: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%45), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%202, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -476,7 +476,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %133
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %47 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(0)), read<ptr<const i8>>(%7), pointer_cast<ptr<const i8>, reason=usual_arith>(conditional<ptr<i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(1)), array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%6), const<i32>(0)))), array_decay<ptr<i8>, length=Some(4)>(%134))));
-// DEFAULT-NEXT:                 let %48 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%47)));
+// DEFAULT-NEXT:                 let %48 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%47)));
 // DEFAULT-NEXT:                 let %205: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%48), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6)))
 // DEFAULT-NEXT:                     write<u32>(%205, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -491,7 +491,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %137
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %49 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%6), const<i32>(0))))), conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(1)), read<ptr<const i8>>(%7), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%138))));
-// DEFAULT-NEXT:                 let %50 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%49)));
+// DEFAULT-NEXT:                 let %50 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%49)));
 // DEFAULT-NEXT:                 let %208: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%50), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%208, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -506,7 +506,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %141
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %51 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(0)), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(4)>(%142)), conditional<ptr<const i8>>(eq<i32>(read<i32, volatile>(%2), const<i32>(1)), read<ptr<const i8>>(%7), pointer_cast<ptr<const i8>, reason=usual_arith>(array_decay<ptr<i8>, length=Some(3)>(deref(ptr_offset<ptr<array<i8, 3>>, subtract=false, element=array<i8, 3>, overflow=ub>(array_decay<ptr<array<i8, 3>>, length=Some(2)>(%6), const<i32>(0)))))));
-// DEFAULT-NEXT:                 let %52 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%51)));
+// DEFAULT-NEXT:                 let %52 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%51)));
 // DEFAULT-NEXT:                 let %211: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%52), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%211, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -523,7 +523,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %145
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %58 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%53))), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%54))));
-// DEFAULT-NEXT:                 let %59 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%58)));
+// DEFAULT-NEXT:                 let %59 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%58)));
 // DEFAULT-NEXT:                 let %214: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%59), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))
 // DEFAULT-NEXT:                     write<u32>(%214, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -538,7 +538,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %148
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %60 _s: ptr<const i8> [storage=automatic] = conditional<ptr<const i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%54))), array_decay<ptr<const i8>, length=Some(3)>(deref(read<ptr<const array<i8, 3>>>(%53))));
-// DEFAULT-NEXT:                 let %61 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%60)));
+// DEFAULT-NEXT:                 let %61 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%60)));
 // DEFAULT-NEXT:                 let %217: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%61), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))
 // DEFAULT-NEXT:                     write<u32>(%217, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -553,7 +553,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %151
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %62 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%55))), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%56)))));
-// DEFAULT-NEXT:                 let %63 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%62)));
+// DEFAULT-NEXT:                 let %63 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%62)));
 // DEFAULT-NEXT:                 let %220: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%63), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5)))
 // DEFAULT-NEXT:                     write<u32>(%220, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
@@ -568,7 +568,7 @@ int main(void) {
 // DEFAULT-NEXT:         do %154
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %64 _s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(conditional<ptr<i8>>(ne<i32>(read<i32, volatile>(%2), const<i32>(0)), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%56))), array_decay<ptr<i8>, length=Some(3)>(deref(read<ptr<array<i8, 3>>>(%55)))));
-// DEFAULT-NEXT:                 let %65 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%0, read<ptr<const i8>>(%64)));
+// DEFAULT-NEXT:                 let %65 _n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, read<ptr<const i8>>(%64)));
 // DEFAULT-NEXT:                 let %223: u32 [synthetic];
 // DEFAULT-NEXT:                 if eq<u32>(read<u32>(%65), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:                     write<u32>(%223, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));

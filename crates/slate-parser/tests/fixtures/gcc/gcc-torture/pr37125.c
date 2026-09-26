@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @func_44(%4 p_45: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if not<bool>(ne<u32>(rem<u32, by_zero=ub>(mul<u32, overflow=wrap>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(9)))), call<u32, signature=fn(i32) -> u32>(%1, neg<i32, overflow=ub>(const<i32>(9)))), const<u32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

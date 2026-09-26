@@ -70,19 +70,19 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 l_110: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%4);
 // DEFAULT-NEXT:         let %6 l_128: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(eq<ptr<i32>>(read<ptr<i32>>(%4), addr_of<ptr<i32>>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%6));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @bar(%8 si1: i8, %9 si2: i8) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
@@ -91,7 +91,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i8>>(%3));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i8, i8) -> i8>(%7, truncate<i8, reason=arg, fits=unknown>(xor<i32>(const<i32>(153), from_bool<i32, reason=promotion>(logical_and<bool>(ne<i8>(read<i8>(field0(%11)), const<i8>(0)), ne<i32>(const<i32>(1), const<i32>(0)))))), truncate<i8, reason=arg, fits=always>(const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(104)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

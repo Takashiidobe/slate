@@ -38,12 +38,12 @@ long long llabs(long long b) { abort(); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: i64 [storage=static] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @llabs(%4 b: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%1, read<i64>(%0)), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(llabs, read<i64>(%0)), widen<i64, reason=usual_arith>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

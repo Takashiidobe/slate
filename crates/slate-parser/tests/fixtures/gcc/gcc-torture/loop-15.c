@@ -127,7 +127,7 @@ int main(void) {
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(5)>(%6), read<i32>(%9)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%9))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                             for %15
 // DEFAULT-NEXT:                                 init:
 // DEFAULT-NEXT:                                     write<i32>(%9, add<i32, overflow=ub>(read<i32>(%7), const<i32>(1)));
@@ -140,7 +140,7 @@ int main(void) {
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(5)>(%6), read<i32>(%9)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(read<i32>(%9), const<i32>(1)))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                             for %16
 // DEFAULT-NEXT:                                 init:
 // DEFAULT-NEXT:                                     write<i32>(%9, add<i32, overflow=ub>(read<i32>(%8), const<i32>(1)));
@@ -153,7 +153,7 @@ int main(void) {
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(5)>(%6), read<i32>(%9)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%9))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -216,7 +216,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field4(%15), addr_of<ptr<@type0>>(%15));
 // DEFAULT-NEXT:         write<ptr<@type0>, volatile>(field4(%16), addr_of<ptr<@type0>>(%15));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%22);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

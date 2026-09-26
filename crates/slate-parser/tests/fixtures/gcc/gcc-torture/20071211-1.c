@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=40..64>(%2), read<u32>(%6));
 // DEFAULT-NEXT:         write<i32>(%4, reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..8, bits=40..64>(%2))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

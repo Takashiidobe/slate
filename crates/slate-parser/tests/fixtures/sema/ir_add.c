@@ -34,7 +34,7 @@ int exercise_add(void) { return main(); }
 // IR-NEXT:         return read<i32>(%4);
 // IR-NEXT:     }
 // IR-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(2), const<i32>(3)));
+// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(2), const<i32>(3)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @exercise_add() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn() -> i32>(%5);

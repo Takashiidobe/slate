@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(truncate<i32, reason=explicit, fits=unknown>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(compound_literal %3 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(2))))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

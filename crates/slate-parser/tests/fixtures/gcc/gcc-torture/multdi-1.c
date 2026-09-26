@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(%1, reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%2, widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))))));
 // DEFAULT-NEXT:         reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%2, widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), neg<i64, overflow=ub>(const<i64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

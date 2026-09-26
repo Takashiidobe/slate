@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 tok: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %8 s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%12));
 // DEFAULT-NEXT:         let %9 r: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, ptr<i32>) -> i32>(%1, read<ptr<const i8>>(%8), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%8), const<i32>(3)), addr_of<ptr<i32>>(%7));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), read<i32>(%9), read<i32>(%7));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), read<i32>(%9), read<i32>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -306,7 +306,7 @@ int main() {
 // DEFAULT-NEXT:     fn %31 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %32 @catchme(%33 i: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%33), const<i32>(0)), ne<i32>(read<i32>(%33), const<i32>(64)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %34 @foobar(%35 chain: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %36 rsi: @type11 [storage=automatic];

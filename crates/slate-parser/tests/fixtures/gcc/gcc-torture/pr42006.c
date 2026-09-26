@@ -75,7 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%9, read<i32>(%13));
 // DEFAULT-NEXT:                     if gt<i32>(read<i32>(%12), const<i32>(1))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<u32>(call<u32, signature=fn(u32, u32) -> u32>(%4, read<u32>(%8), read<u32>(%8)), const<u32>(0))
 // DEFAULT-NEXT:                         return const<i32>(0);
 // DEFAULT-NEXT:                 }

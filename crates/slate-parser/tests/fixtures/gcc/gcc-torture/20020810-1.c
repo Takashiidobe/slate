@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @f(%5 r: @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%5))), read<i64>(field0(field0(%3)))), ne<i64>(read<i64>(field0(field1(%5))), read<i64>(field0(field1(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @g() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%3));
@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type1>(%8, copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%6)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%6));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%8))), read<i64>(field0(field0(%3)))), ne<i64>(read<i64>(field0(field1(%8))), read<i64>(field0(field1(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

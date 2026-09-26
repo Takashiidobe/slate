@@ -43,8 +43,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %4 y: f64 [storage=automatic] = const<f64>(0.5);
 // DEFAULT-NEXT:         write<f64>(%3, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), const<f64>(0.2)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), read<f64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

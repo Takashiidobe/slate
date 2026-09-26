@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %12 rounded: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(__builtin_lround, read<f64, volatile>(%7));
 // DEFAULT-NEXT:         let %13 rounded_ll: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(__builtin_llround, read<f64, volatile>(%7));
 // DEFAULT-NEXT:         let %14 exp10_val: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(__builtin_elementwise_exp10, const<f64>(2.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(35)>(%16)), read<f64>(%8), read<f64>(%9), read<f64>(%10), read<f64>(%11), read<i64>(%12), read<i64>(%13), read<f64>(%14));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(35)>(%16)), read<f64>(%8), read<f64>(%9), read<f64>(%10), read<f64>(%11), read<i64>(%12), read<i64>(%13), read<f64>(%14));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %6 value: i32 [storage=automatic] = const<i32>(41);
 // DEFAULT-NEXT:         let %7 callback: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<fn(ptr<i32>) -> ptr<i32>>>);
 // DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%7), function_decay<ptr<fn(ptr<i32>) -> ptr<i32>>>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%7)), addr_of<ptr<i32>>(%6)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%7)), addr_of<ptr<i32>>(%6)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

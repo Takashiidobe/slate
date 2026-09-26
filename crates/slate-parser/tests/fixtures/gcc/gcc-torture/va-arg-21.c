@@ -84,13 +84,13 @@ int main() {
 // DEFAULT-NEXT:     fn %7 @doit(%8 s: ptr<const i8>, ...) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9 ap_array: array<ptr<va_list>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %10 ap_ptr: ptr<ptr<va_list>> [storage=automatic] = array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9);
-// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(0))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24))));
-// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24)));
+// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(0))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(24))));
+// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(24)));
 // DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(1))), null<ptr<va_list>>);
-// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(2))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24))));
-// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(24)));
+// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(2))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(24))));
+// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(24)));
 // DEFAULT-NEXT:         va_start(deref(read<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(0))))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%3, read<ptr<const i8>>(%8), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(vprintf, read<ptr<const i8>>(%8), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10))))));
 // DEFAULT-NEXT:         let %18: ptr<ptr<va_list>> [synthetic] = read<ptr<ptr<va_list>>>(%10);
 // DEFAULT-NEXT:         let %19: ptr<ptr<va_list>> [synthetic] = ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(read<ptr<ptr<va_list>>>(%18), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<ptr<va_list>>>(%10, read<ptr<ptr<va_list>>>(%19));
@@ -99,14 +99,14 @@ int main() {
 // DEFAULT-NEXT:         let %21: ptr<ptr<va_list>> [synthetic] = ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(read<ptr<ptr<va_list>>>(%20), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<ptr<va_list>>>(%10, read<ptr<ptr<va_list>>>(%21));
 // DEFAULT-NEXT:         va_start(deref(read<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%9), const<i32>(2))))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%3, read<ptr<const i8>>(%8), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(vprintf, read<ptr<const i8>>(%8), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10))))));
 // DEFAULT-NEXT:         va_end(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10)))));
 // DEFAULT-NEXT:         if eq<ptr<va_list>>(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%10))), null<ptr<va_list>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%16)), array_decay<ptr<i8>, length=Some(13)>(%17));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

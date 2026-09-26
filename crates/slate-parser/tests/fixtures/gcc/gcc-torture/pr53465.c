@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%8), const<i32>(0))
 // DEFAULT-NEXT:                         break %10;
 // DEFAULT-NEXT:                     if logical_and<bool>(ne<i32>(read<i32>(%6), const<i32>(0)), le<i32>(read<i32>(%8), read<i32>(%7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     write<i32>(%7, read<i32>(%8));
 // DEFAULT-NEXT:                     write<i32>(%6, const<i32>(1));
 // DEFAULT-NEXT:                 }

@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<i8>>(%8, call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7)));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i64, ptr<i8>) -> ptr<i8>>(%1, widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))), array_decay<ptr<i8>, length=Some(128)>(%7));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%8)))), const<i32>(45))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

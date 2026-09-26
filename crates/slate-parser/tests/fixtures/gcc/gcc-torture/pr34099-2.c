@@ -97,13 +97,13 @@ int         main() {
 // DEFAULT-NEXT:     fn %16 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%0, const<i32>(1), const<i32>(1000)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(1), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%8, const<i32>(1), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%12, const<i32>(1), const<i32>(1000)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

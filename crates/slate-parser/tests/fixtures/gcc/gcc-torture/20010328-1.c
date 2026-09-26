@@ -160,7 +160,7 @@ __statfs64 (const char *file, struct statfs64 *buf)
 // DEFAULT-NEXT:         write<u64>(field6(deref(read<ptr<@type16>>(%21))), read<u64>(field6(%22)));
 // DEFAULT-NEXT:         write<@type5>(field7(deref(read<ptr<@type16>>(%21))), copy<@type5, reason=assign>(read<@type5>(field7(%22))));
 // DEFAULT-NEXT:         write<i32>(field8(deref(read<ptr<@type16>>(%21))), read<i32>(field8(%22)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%15, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(deref(read<ptr<@type16>>(%21))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(%22))), const<u64>(24));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(deref(read<ptr<@type16>>(%21))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(%22))), const<u64>(24));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

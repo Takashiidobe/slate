@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         return addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%3), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(call<ptr<i32>, signature=fn() -> ptr<i32>>(%4))), read<i32>(deref(read<ptr<i32>>(deref(call<ptr<ptr<i32>>, signature=fn() -> ptr<ptr<i32>>>(%5)))))), read<i32>(deref(call<ptr<i32>, signature=fn() -> ptr<i32>>(%6)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(call<ptr<i32>, signature=fn() -> ptr<i32>>(%4))), read<i32>(deref(read<ptr<i32>>(deref(call<ptr<ptr<i32>>, signature=fn() -> ptr<ptr<i32>>>(%5)))))), read<i32>(deref(call<ptr<i32>, signature=fn() -> ptr<i32>>(%6)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -78,11 +78,11 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%9), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %10 c: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%8));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%15)), widen<i32, reason=vararg>(read<i8>(deref(read<ptr<const i8>>(%10)))));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%15)), widen<i32, reason=vararg>(read<i8>(deref(read<ptr<const i8>>(%10)))));
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         let %11 d: ptr<const @type0> [storage=automatic] = pointer_cast<ptr<const @type0>, reason=explicit>(read<ptr<const void>>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(field0(deref(read<ptr<const @type0>>(%11)))), read<i32>(%9));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(field0(deref(read<ptr<const @type0>>(%11)))), read<i32>(%9));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 d: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));

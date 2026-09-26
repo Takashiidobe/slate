@@ -112,9 +112,9 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>) -> i32>(%4, addr_of<ptr<@type0>>(%8));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(read<i32>(%9), const<i32>(2)), eq<i32>(read<i32>(%6), const<i32>(0))), eq<i32>(read<i32>(%5), const<i32>(1)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

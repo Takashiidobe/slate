@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:         fence<scope=thread, order=release>;
 // DEFAULT-NEXT:         fence<scope=thread, order=acquire>;
 // DEFAULT-NEXT:         fence<scope=thread, order=relaxed>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%21)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15), read<i32>(%16), read<i32>(%17), read<i32>(%19), read<i32>(%18), read<i32, atomic=seq_cst>(%11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%21)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15), read<i32>(%16), read<i32>(%17), read<i32>(%19), read<i32>(%18), read<i32, atomic=seq_cst>(%11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

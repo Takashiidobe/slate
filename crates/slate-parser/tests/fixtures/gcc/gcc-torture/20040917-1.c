@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(10));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%1), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

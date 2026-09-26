@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %8 ap: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(%7);
 // DEFAULT-NEXT:         write<ptr<i16>>(deref(ptr_offset<ptr<ptr<i16>>, subtract=false, element=ptr<i16>, overflow=ub>(array_decay<ptr<ptr<i16>>, length=Some(2)>(field1(deref(read<ptr<@type0>>(%8)))), widen<i32, reason=promotion>(read<i16>(%6)))), addr_of<ptr<i16>>(%5));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

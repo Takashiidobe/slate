@@ -91,8 +91,8 @@ int main(void) {
 // DEFAULT-NEXT:             let %10: u64 [synthetic] = or<u64>(read<u64>(%9), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(256)));
 // DEFAULT-NEXT:             write<u64>(%2, read<u64>(%10));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%2), const<u64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

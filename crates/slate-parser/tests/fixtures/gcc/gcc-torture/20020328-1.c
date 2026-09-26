@@ -57,14 +57,14 @@ int main()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @testit(%5 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(20))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 a: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, reinterpret<i32, reason=arg, fits=unknown>(and<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(read<i32>(%7), const<i32>(23))), const<u32>(4294967292))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     write<bool>(%13, ne<ptr<i64>>(call<ptr<i64>, signature=fn(i64) -> ptr<i64>>(%6, widen<i64, reason=arg>(read<i32>(%9))), ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%2), read<i32>(%9))));
 // DEFAULT-NEXT:                 if read<bool>(%13)
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

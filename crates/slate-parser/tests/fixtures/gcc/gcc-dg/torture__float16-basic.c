@@ -195,83 +195,83 @@ int main(void) {
 // DEFAULT-NEXT:         let %20 r: volatile f16 [storage=automatic];
 // DEFAULT-NEXT:         write<f16, volatile>(%20, neg<f16>(read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), read<f16, volatile>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(3.5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, sub<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(1.5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), read<f16, volatile>(%5)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(neg<i32, overflow=ub>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), read<f16, volatile>(%5)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(6.25)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, div<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%3))));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(1.25))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%5), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3))));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(7.5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %21 i: volatile i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(read<f16, volatile>(%20));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%21), neg<i32, overflow=ub>(const<i32>(7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, call<f16, signature=fn(f16, ...) -> f16>(%9, read<f16, volatile>(%3), read<f16, volatile>(%5)));
 // DEFAULT-NEXT:         call<f16, signature=fn(f16, ...) -> f16>(%9, read<f16, volatile>(%3), read<f16, volatile>(%5));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(1.5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, call<f16, signature=fn(f16) -> f16>(%13, read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         call<f16, signature=fn(f16) -> f16>(%13, read<f16, volatile>(%4));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(3.5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, call<f16, signature=fn(f16) -> f16>(%15, read<f16, volatile>(%3)));
 // DEFAULT-NEXT:         call<f16, signature=fn(f16) -> f16>(%15, read<f16, volatile>(%3));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<f16, volatile>(%20, call<f16, signature=fn(f16) -> f16>(%17, read<f16, volatile>(%3)));
 // DEFAULT-NEXT:         call<f16, signature=fn(f16) -> f16>(%17, read<f16, volatile>(%3));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(0.25))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(lt<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(lt<f16, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%3))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(lt<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%6))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(lt<f16, exceptions=ignore>(read<f16, volatile>(%8), read<f16, volatile>(%7))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(le<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(le<f16, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%3))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(le<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%6))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(le<f16, exceptions=ignore>(read<f16, volatile>(%8), read<f16, volatile>(%7))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(gt<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(gt<f16, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%3))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(gt<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%6))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(gt<f16, exceptions=ignore>(read<f16, volatile>(%8), read<f16, volatile>(%7))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(ge<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(ge<f16, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%3))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(ge<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%6))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(ge<f16, exceptions=ignore>(read<f16, volatile>(%8), read<f16, volatile>(%7))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32, volatile>(%21, from_bool<i32, reason=assign>(eq<f16, exceptions=ignore>(read<f16, volatile>(%8), read<f16, volatile>(%7))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%21), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32, volatile>(%21, from_bool<i32, reason=assign>(eq<f16, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%21), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

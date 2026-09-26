@@ -55,17 +55,17 @@ int main() {
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32768)))))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%1))))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32768)))))))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%3)))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%1))))))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

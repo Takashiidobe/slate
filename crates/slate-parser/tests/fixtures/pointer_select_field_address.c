@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%10)), read<u64>(field0(%3)), read<u64>(field1(%3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%10)), read<u64>(field0(%3)), read<u64>(field1(%3)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

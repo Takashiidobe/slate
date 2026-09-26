@@ -67,13 +67,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @g(%8 a: i32, %9 b: ptr<i32> [array=%15]) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %15: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(ptr<i32>) -> i32>(%5, array_decay<ptr<i32>, length=Some(2)>(compound_literal %14 [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = read<i32>(%8), index1 = add<i32, overflow=ub>(read<i32>(%8), const<i32>(2)))))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i32>(0)))), read<i32>(%8)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i32>(1)))), add<i32, overflow=ub>(read<i32>(%8), const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 t: array<i32, 1> [storage=automatic] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i32>) -> void>(%7, const<i32>(1), array_decay<ptr<i32>, length=Some(1)>(%11));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<i32>) -> void>(%7, const<i32>(2), array_decay<ptr<i32>, length=Some(1)>(%11));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

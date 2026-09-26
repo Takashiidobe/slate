@@ -87,11 +87,11 @@ int main(void) {
 // DEFAULT-NEXT:         label %5 loopDone2:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%2), read<ptr<i8>>(%6)), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(%3), read<ptr<i8>>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<i8>) -> void>(%4, array_decay<ptr<i8>, length=Some(6)>(%2), array_decay<ptr<i8>, length=Some(6)>(%3));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -149,7 +149,7 @@ int main() {
 // DEFAULT-NEXT:                                     body:
 // DEFAULT-NEXT:                                         {
 // DEFAULT-NEXT:                                             if not<bool>(ne<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(%20);
+// DEFAULT-NEXT:                                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                                             write<i16>(%17, truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(const<i32>(7), read<i32>(%14))));
 // DEFAULT-NEXT:                                             write<u8>(%13, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(or<i32>(read<i32>(%8), widen<i32, reason=promotion>(read<i16>(%17))))));
 // DEFAULT-NEXT:                                             write<i32>(%28, reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(or<i32>(read<i32>(%8), widen<i32, reason=promotion>(read<i16>(%17))))))));

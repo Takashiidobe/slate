@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 lock: @type2 [storage=automatic] = copy<@type2, reason=assign>(read<@type2>(compound_literal %10 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

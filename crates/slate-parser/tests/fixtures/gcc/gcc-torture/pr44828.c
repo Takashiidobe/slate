@@ -45,7 +45,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = const<i32>(53671368);
 // DEFAULT-NEXT:         if gt<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i8, i8) -> i8>(%1, truncate<i8, reason=arg, fits=unknown>(read<i32>(%6)), truncate<i8, reason=arg, fits=unknown>(read<i32>(%4)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

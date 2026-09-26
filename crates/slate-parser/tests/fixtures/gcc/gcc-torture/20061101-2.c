@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @tar(%2 i: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(36863)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @bug(%4 q: i32, %5 bcount: i64) -> void [linkage=external] [fallthrough=ret_void] {

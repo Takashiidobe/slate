@@ -58,8 +58,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<f32>>(%6, call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f32>(1.0), read<complex<f32>>(%8))));
 // DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f32>(1.0), read<complex<f32>>(%8)));
 // DEFAULT-NEXT:         if ne<complex<f32>, exceptions=ignore>(read<complex<f32>>(%8), read<complex<f32>>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

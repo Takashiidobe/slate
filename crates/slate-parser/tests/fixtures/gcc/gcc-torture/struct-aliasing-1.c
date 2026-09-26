@@ -54,7 +54,7 @@ int         main() {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i32>, ptr<@type0>) -> i32>(%1, addr_of<ptr<i32>>(%8), pointer_cast<ptr<@type0>, reason=explicit>(addr_of<ptr<i32>>(%8))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -58,11 +58,11 @@ int main() {
 // DEFAULT-NEXT:         va_arg<f64>(%6);
 // DEFAULT-NEXT:         va_end(%6);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(%4), const<f64>(1.0)), ne<f64, exceptions=ignore>(read<f64>(%5), const<f64>(2.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(f64, ...) -> void>(%3, const<f64>(1.0), const<f64>(2.0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

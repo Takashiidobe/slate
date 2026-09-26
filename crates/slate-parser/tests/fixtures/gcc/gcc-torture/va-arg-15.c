@@ -89,21 +89,21 @@ int main(void) {
 // DEFAULT-NEXT:                             write<f64>(%5, va_arg<f64>(%9));
 // DEFAULT-NEXT:                             va_arg<f64>(%9);
 // DEFAULT-NEXT:                             if ne<f64, exceptions=ignore>(read<f64>(%5), int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%8)))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<i32>(%6, va_arg<i32>(%9));
 // DEFAULT-NEXT:                             va_arg<i32>(%9);
 // DEFAULT-NEXT:                             if ne<i32>(read<i32>(%6), read<i32>(%8))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ...) -> void>(%3, array_decay<ptr<i8>, length=Some(1)>(%13), const<i32>(1), const<f64>(2.0), const<i32>(3), const<f64>(4.0), const<i32>(5), const<f64>(6.0), const<i32>(7), const<f64>(8.0), const<i32>(9), const<f64>(10.0), const<i32>(11), const<f64>(12.0), const<i32>(13), const<f64>(14.0), const<i32>(15), const<f64>(16.0), const<i32>(17), const<f64>(18.0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

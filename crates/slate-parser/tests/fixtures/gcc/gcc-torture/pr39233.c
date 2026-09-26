@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 l: i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(read<ptr<void>>(%2));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0))), gt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i16 [storage=automatic];

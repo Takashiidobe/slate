@@ -61,7 +61,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 v: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%5)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<void>) -> void>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%5)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<void>) -> void>(free, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%5)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%7);
 // DEFAULT-NEXT:     }
@@ -69,10 +69,10 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 stack_val: i32 [storage=automatic] = const<i32>(10);
 // DEFAULT-NEXT:         let %10 stack_ptr: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%9);
 // DEFAULT-NEXT:         let %11 from_stack: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%4, read<ptr<i32>>(%10), const<i32>(0));
-// DEFAULT-NEXT:         let %12 heap_ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4)));
+// DEFAULT-NEXT:         let %12 heap_ptr: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%12)), const<i32>(100));
 // DEFAULT-NEXT:         let %13 from_heap: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>, i32) -> i32>(%4, read<ptr<i32>>(%12), const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%17)), read<i32>(%9), read<i32>(%11), read<i32>(%13));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%17)), read<i32>(%9), read<i32>(%11), read<i32>(%13));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%9), read<i32>(%11)), read<i32>(%13));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

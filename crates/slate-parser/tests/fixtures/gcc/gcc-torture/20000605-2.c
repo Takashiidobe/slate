@@ -68,7 +68,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%16));
 // DEFAULT-NEXT:                 if gt<i32>(read<i32>(%16), const<i32>(5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 x: @type0 [storage=automatic];
@@ -76,7 +76,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field0(%8), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field0(%9), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>) -> void>(%3, addr_of<ptr<@type0>>(%8), addr_of<ptr<@type0>>(%9));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

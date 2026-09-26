@@ -60,12 +60,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @memset(%9 __s: ptr<void>, %10 __c: i32, %11 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @bla() -> void [linkage=external] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(deref(read<ptr<i32>>(%4))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 warn: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%7)), const<i32>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%7)), const<i32>(0), const<u64>(4));
 // DEFAULT-NEXT:         write<ptr<i32>>(%4, addr_of<ptr<i32>>(%7));
 // DEFAULT-NEXT:         write<i32>(%7, const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);

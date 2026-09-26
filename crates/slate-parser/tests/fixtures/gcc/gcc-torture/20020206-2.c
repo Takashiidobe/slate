@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     fn %3 @exit(%10 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @foo(%5 x: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(ne<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2048))), ne<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2064))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main(%7 argc: i32, %8 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(u32) -> void>(%4, widen<u32, reason=arg>(read<u16>(field0(compound_literal %12 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(conditional<i32>(not<bool>(ne<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%9), const<i32>(4)), const<i32>(0))), const<i32>(8), add<i32, overflow=ub>(const<i32>(64), shr<i32, amount_out_of_range=ub, fill=sign_extend>(read<i32>(%9), const<i32>(4)))), const<i32>(8)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%9), const<i32>(4))))))))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -65,7 +65,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(__builtin_unreachable);
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

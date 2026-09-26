@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 named: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));
 // DEFAULT-NEXT:         let %5 point: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%3)), read<i32>(field0(%5))), read<i32>(field1(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%3)), read<i32>(field0(%5))), read<i32>(field1(%5))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -99,23 +99,46 @@ impl Lowerer {
         ))
     }
 
+    fn builtin_callee(
+        &mut self,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Option<&'static ClangBuiltin> {
+        if specially_lowered(callee, arguments) {
+            return None;
+        }
+        let ExprKind::Identifier(name) = &callee.value else {
+            return None;
+        };
+        let builtin = super::builtins::clang_builtin(name)?;
+        let Some(&binding) = self.types.references.get(&callee.id) else {
+            return Some(builtin);
+        };
+        if self
+            .names
+            .references
+            .iter()
+            .any(|reference| reference.id == callee.id && reference.kind == BindingKind::Function)
+            && matches!(
+                self.types.entities.linkage(binding),
+                Some(Linkage::External)
+            )
+            && let Some(declared) = self.types.entities.ty(&binding)
+            && let Some(signature) = self.types.builtin_signature(builtin)
+            && self.types.ctypes.compatible(declared, signature)
+        {
+            return Some(builtin);
+        }
+        None
+    }
+
     fn function_like_builtin(
         &mut self,
         e: &Expr,
         callee: &Expr,
         arguments: &[Expr],
     ) -> Result<Option<Operand>, ResolveError> {
-        let builtin = if !specially_lowered(callee, arguments)
-            && let ExprKind::Identifier(name) = &callee.value
-            && !self
-                .names
-                .references
-                .iter()
-                .any(|reference| reference.id == callee.id)
-            && let Some(builtin) = super::builtins::clang_builtin(name)
-        {
-            builtin
-        } else {
+        let Some(builtin) = self.builtin_callee(callee, arguments) else {
             return Ok(None);
         };
         let name = builtin.name.to_owned();
@@ -1909,16 +1932,8 @@ impl Lowerer {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);
             }
-            if !specially_lowered(callee, arguments)
-                && let ExprKind::Identifier(name) = &callee.value
-                && !self
-                    .names
-                    .references
-                    .iter()
-                    .any(|reference| reference.id == callee.id)
-                && super::builtins::clang_builtin(name).is_some()
-            {
-                return Err(ResolveError::UnsupportedBuiltin(name.clone()));
+            if let Some(builtin) = self.builtin_callee(callee, arguments) {
+                return Err(ResolveError::UnsupportedBuiltin(builtin.name.to_owned()));
             }
         }
         match &e.value {

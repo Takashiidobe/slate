@@ -124,7 +124,7 @@ int main(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %12 rv: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> coerce<i16>>(%6, addr_of<ptr<@type1>>(%10)));
 // DEFAULT-NEXT:                     if logical_or<bool>(logical_and<bool>(eq<i32>(read<i32>(%11), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%12)))), const<i32>(65535))), logical_and<bool>(gt<i32>(read<i32>(%11), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%12)))), const<i32>(0))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

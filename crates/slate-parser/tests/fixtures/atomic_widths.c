@@ -78,7 +78,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %21 old_i64: i64 [storage=automatic];
 // DEFAULT-NEXT:         let %27: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i64>>(%17)), const<i64>(1234567890123));
 // DEFAULT-NEXT:         write<i64>(%21, read<i64>(%27));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%12, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%23)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%18))), widen<i32, reason=vararg>(read<i8>(%19)), read<u32>(%20), read<i64>(%21), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8, atomic=seq_cst>(%14))), widen<i32, reason=vararg>(read<i8, atomic=seq_cst>(%15)), read<u32, atomic=seq_cst>(%16), read<i64, atomic=seq_cst>(%17));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%23)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%18))), widen<i32, reason=vararg>(read<i8>(%19)), read<u32>(%20), read<i64>(%21), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8, atomic=seq_cst>(%14))), widen<i32, reason=vararg>(read<i8, atomic=seq_cst>(%15)), read<u32, atomic=seq_cst>(%16), read<i64, atomic=seq_cst>(%17));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

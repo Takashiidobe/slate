@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%12, call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096))));
 // DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096)));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%12), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(deref(read<ptr<i32>>(%2))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), read<i32>(%4))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 a: i32 [storage=automatic] = const<i32>(1);

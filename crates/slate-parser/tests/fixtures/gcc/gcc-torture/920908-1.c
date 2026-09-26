@@ -73,11 +73,11 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type1>(%8, copy<@type1, reason=assign>(va_arg<@type1>(%7)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%7));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%8)), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<@type1>(%8, copy<@type1, reason=assign>(va_arg<@type1>(%7)));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%7));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%8)), const<i32>(20))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         va_end(%7);
 // DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%8));
 // DEFAULT-NEXT:     }
@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field0(%10), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(20));
 // DEFAULT-NEXT:         call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, coerce<i32>, coerce<i32>) -> coerce<i32>>(%5, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%10)), copy<@type1, reason=vararg>(read<@type1>(%11)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

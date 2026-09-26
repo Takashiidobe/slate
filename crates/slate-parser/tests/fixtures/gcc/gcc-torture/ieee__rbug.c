@@ -101,15 +101,15 @@ int main(void) {
 // DEFAULT-NEXT:                 call<f64, signature=fn(u64) -> f64>(%2, read<u64>(%9));
 // DEFAULT-NEXT:                 write<u64>(%9, float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%10)));
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(%9), const<u64>(9697299402072393728))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<u64>(%9, const<u64>(9382212434405621761));
 // DEFAULT-NEXT:         write<f64>(%10, float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%5, read<u64>(%9))));
 // DEFAULT-NEXT:         float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%5, read<u64>(%9)));
 // DEFAULT-NEXT:         write<u64>(%9, float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%10)));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%9), const<u64>(9382212984161435648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

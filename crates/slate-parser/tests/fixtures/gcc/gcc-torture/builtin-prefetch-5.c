@@ -107,7 +107,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%5, const<i32>(2));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

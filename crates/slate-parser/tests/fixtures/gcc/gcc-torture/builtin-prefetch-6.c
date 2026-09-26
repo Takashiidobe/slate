@@ -120,7 +120,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

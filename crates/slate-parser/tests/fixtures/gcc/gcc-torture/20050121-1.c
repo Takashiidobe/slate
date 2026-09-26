@@ -197,81 +197,81 @@ int main(void) {
 // DEFAULT-NEXT:             let %60 var: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f32>) -> void>(%6, addr_of<ptr<f32>>(%60));
 // DEFAULT-NEXT:             if ne<f32, exceptions=ignore>(read<f32>(%60), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(6)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<f32>(%60, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f32>) -> void>(%8, addr_of<ptr<f32>>(%60));
 // DEFAULT-NEXT:             if ne<f32, exceptions=ignore>(read<f32>(%60), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(4)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %61 var: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f64>) -> void>(%13, addr_of<ptr<f64>>(%61));
 // DEFAULT-NEXT:             if ne<f64, exceptions=ignore>(read<f64>(%61), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(6)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<f64>(%61, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f64>) -> void>(%15, addr_of<ptr<f64>>(%61));
 // DEFAULT-NEXT:             if ne<f64, exceptions=ignore>(read<f64>(%61), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(4)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %62 var: f80 [storage=automatic] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f80>) -> void>(%20, addr_of<ptr<f80>>(%62));
 // DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(read<f80>(%62), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(6)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<f80>(%62, int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<f80>) -> void>(%22, addr_of<ptr<f80>>(%62));
 // DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(read<f80>(%62), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(4)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %63 var: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i8>) -> void>(%27, addr_of<ptr<i8>>(%63));
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(%63)), const<i32>(6))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<i8>(%63, truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i8>) -> void>(%29, addr_of<ptr<i8>>(%63));
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i8>(%63)), const<i32>(4))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %64 var: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i16>) -> void>(%34, addr_of<ptr<i16>>(%64));
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i16>(%64)), const<i32>(6))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<i16>(%64, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i16>) -> void>(%36, addr_of<ptr<i16>>(%64));
 // DEFAULT-NEXT:             if ne<i32>(widen<i32, reason=promotion>(read<i16>(%64)), const<i32>(4))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %65 var: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>) -> void>(%41, addr_of<ptr<i32>>(%65));
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%65), const<i32>(6))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<i32>(%65, const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>) -> void>(%43, addr_of<ptr<i32>>(%65));
 // DEFAULT-NEXT:             if ne<i32>(read<i32>(%65), const<i32>(4))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %66 var: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i64>) -> void>(%48, addr_of<ptr<i64>>(%66));
 // DEFAULT-NEXT:             if ne<i64>(read<i64>(%66), widen<i64, reason=usual_arith>(const<i32>(6)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<i64>(%66, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i64>) -> void>(%50, addr_of<ptr<i64>>(%66));
 // DEFAULT-NEXT:             if ne<i64>(read<i64>(%66), widen<i64, reason=usual_arith>(const<i32>(4)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %67 var: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i64>) -> void>(%55, addr_of<ptr<i64>>(%67));
 // DEFAULT-NEXT:             if ne<i64>(read<i64>(%67), widen<i64, reason=usual_arith>(const<i32>(6)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             write<i64>(%67, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<i64>) -> void>(%57, addr_of<ptr<i64>>(%67));
 // DEFAULT-NEXT:             if ne<i64>(read<i64>(%67), widen<i64, reason=usual_arith>(const<i32>(4)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

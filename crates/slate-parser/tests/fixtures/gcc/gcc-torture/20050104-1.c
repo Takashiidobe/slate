@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%5, lt<i64>(read<i64>(%3), call<i64, signature=fn() -> i64>(%1)));
 // DEFAULT-NEXT:         if read<bool>(%5)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%2, widen<i64, reason=arg>(const<i32>(10)));

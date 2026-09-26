@@ -55,7 +55,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%5, reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%4))));
 // DEFAULT-NEXT:         write<u64>(%4, widen<u64, reason=explicit>(shl<u32, overflow=wrap, amount_out_of_range=ub>(const<u32>(2), read<i32>(%5))));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

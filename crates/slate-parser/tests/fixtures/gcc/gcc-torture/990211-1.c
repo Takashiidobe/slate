@@ -87,37 +87,37 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @func(%2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%2), const<i32>(0)), ge<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%2), const<i32>(0)), le<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%2), const<i32>(0)), lt<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%2), const<i32>(0)), gt<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%2), const<i32>(77)), ge<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%2), const<i32>(77)), le<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%2), const<i32>(77)), lt<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%2), const<i32>(77)), gt<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%2), const<i32>(0)), ge<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%2), const<i32>(0)), le<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%2), const<i32>(0)), lt<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%2), const<i32>(0)), gt<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%2), const<i32>(77)), ge<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%2), const<i32>(77)), le<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%2), const<i32>(77)), lt<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%2), const<i32>(77)), gt<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -74,7 +74,7 @@ int                                     main() {
 // DEFAULT-NEXT:                     write<i64>(%8, read<i64>(%13));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%7), widen<i64, reason=usual_arith>(const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

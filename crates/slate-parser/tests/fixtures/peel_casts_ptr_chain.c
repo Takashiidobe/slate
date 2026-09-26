@@ -40,7 +40,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 buf: array<i8, 8> [storage=automatic];
 // DEFAULT-NEXT:         let %4 p: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(8)>(%3);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(%4)), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(%4)), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
 // DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

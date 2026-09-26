@@ -66,8 +66,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i16>(field0(%7), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<f64>(field1(%7), const<f64>(16.0));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>) -> i32>(%4, addr_of<ptr<@type0>>(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

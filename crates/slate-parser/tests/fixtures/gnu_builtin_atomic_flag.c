@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %8: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%2)), const<bool>(true));
 // DEFAULT-NEXT:         write<i32>(%4, from_bool<i32, reason=assign>(read<bool>(%8)));
 // DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%2)), const<bool>(false));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), read<i32>(%3), read<i32>(%4), from_bool<i32, reason=vararg>(not<bool>(read<bool>(%2))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), read<i32>(%3), read<i32>(%4), from_bool<i32, reason=vararg>(not<bool>(read<bool>(%2))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -70,10 +70,10 @@ int main(void) {
 // DEFAULT-NEXT:                         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
 // DEFAULT-NEXT:                         write<i32>(%3, read<i32>(%12));
 // DEFAULT-NEXT:                         if gt<i32>(read<i32>(%3), const<i32>(262144))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while gt<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))));
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
@@ -88,13 +88,13 @@ int main(void) {
 // DEFAULT-NEXT:                             let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
 // DEFAULT-NEXT:                             write<i32>(%3, read<i32>(%16));
 // DEFAULT-NEXT:                             if gt<i32>(read<i32>(%3), const<i32>(262144))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while gt<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

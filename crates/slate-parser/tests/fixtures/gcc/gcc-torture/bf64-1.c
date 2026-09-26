@@ -94,10 +94,10 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type1>(%10, copy<@type1, reason=assign>(call<@type1, signature=fn(@type1) -> @type1, abi=sysv64(native_c) -> native_c>(%6, copy<@type1, reason=arg>(read<@type1>(%10)))));
 // DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(@type1) -> @type1, abi=sysv64(native_c) -> native_c>(%6, copy<@type1, reason=arg>(read<@type1>(%10))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%9))), const<i32>(291)), ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..8, bits=12..64>(%9))), const<u64>(18446743335512004223)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..8, bits=52..64>(%10))), const<i32>(291)), ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(%10))), const<u64>(18446743335512004223)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

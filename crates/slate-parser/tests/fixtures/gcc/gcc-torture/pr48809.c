@@ -275,7 +275,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%7, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(99))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %8: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(62)))), const<i32>(19))
 // DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
@@ -287,7 +287,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%9, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(61)))), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%9)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %10: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(28))), const<i32>(105))
 // DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
@@ -299,7 +299,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(29))), const<i32>(111)));
 // DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

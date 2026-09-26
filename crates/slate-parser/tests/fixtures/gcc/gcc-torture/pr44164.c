@@ -68,7 +68,7 @@ int         main() {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(field0(field0(field0(field0(%4)))), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type3>) -> i32>(%5, addr_of<ptr<@type3>>(field0(field0(field0(%4))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

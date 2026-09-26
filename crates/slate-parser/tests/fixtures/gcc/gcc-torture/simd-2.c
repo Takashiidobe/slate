@@ -104,7 +104,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @exit(%18 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @verify(%9 a1: i32, %10 a2: i32, %11 a3: i32, %12 a4: i32, %13 b1: i32, %14 b2: i32, %15 b3: i32, %16 b4: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%9), read<i32>(%13)), ne<i32>(read<i32>(%10), read<i32>(%14))), ne<i32>(read<i32>(%11), read<i32>(%15))), ne<i32>(read<i32>(%12), read<i32>(%16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<vector<i16, 8>>(%5, add<vector<i16, 8>, elementwise=true, overflow=wrap>(read<vector<i16, 8>>(%3), read<vector<i16, 8>>(%4)));
@@ -131,7 +131,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<i16, 8>>(%5, not<vector<i16, 8>, elementwise=true>(read<vector<i16, 8>>(%3)));
 // DEFAULT-NEXT:         write<vector<i16, 8>>(field0(%7), read<vector<i16, 8>>(%5));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> void>(%8, widen<i32, reason=arg>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(8)>(field1(%7)), const<i32>(0))))), widen<i32, reason=arg>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(8)>(field1(%7)), const<i32>(1))))), widen<i32, reason=arg>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(8)>(field1(%7)), const<i32>(2))))), widen<i32, reason=arg>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(8)>(field1(%7)), const<i32>(3))))), neg<i32, overflow=ub>(const<i32>(151)), neg<i32, overflow=ub>(const<i32>(101)), neg<i32, overflow=ub>(const<i32>(151)), neg<i32, overflow=ub>(const<i32>(201)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

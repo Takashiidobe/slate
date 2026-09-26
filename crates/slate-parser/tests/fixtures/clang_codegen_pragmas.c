@@ -85,7 +85,7 @@ int main(void) {
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%9), read<f64>(%10)), read<f64>(%11));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%15)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(1), const<i32>(2)), call<i32, signature=fn() -> i32>(%4), call<i32, signature=fn() -> i32>(%5), call<f64, signature=fn(f64, f64, f64) -> f64>(%8, const<f64>(2.0), const<f64>(3.0), const<f64>(4.0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%15)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(1), const<i32>(2)), call<i32, signature=fn() -> i32>(%4), call<i32, signature=fn() -> i32>(%5), call<f64, signature=fn(f64, f64, f64) -> f64>(%8, const<f64>(2.0), const<f64>(3.0), const<f64>(4.0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -65,8 +65,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @memcpy(%17 __dest: ptr<void> [restrict], %18 __src: ptr<const void> [restrict], %19 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %5 @memset(%20 __s: ptr<void>, %21 __c: i32, %22 __n: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %8 @f(%9 clas: ptr<@type1>, %10 size: i32) -> ptr<@type1> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 child: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%11)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type1>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(field2(deref(read<ptr<@type1>>(%9)))))));
+// DEFAULT-NEXT:         let %11 child: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(memcpy, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%11)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type1>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(field2(deref(read<ptr<@type1>>(%9)))))));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(deref(read<ptr<@type1>>(%11))), pointer_cast<ptr<void>, reason=assign>(read<ptr<@type1>>(%9)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%11))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(field2(deref(read<ptr<@type1>>(%11))), read<i32>(%10));
@@ -75,13 +75,13 @@ int main(void) {
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 foo: @type1 [storage=automatic];
 // DEFAULT-NEXT:         let %14 bar: ptr<@type1> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%5, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(%13)), const<i32>(37), const<u64>(16));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(%13)), const<i32>(37), const<u64>(16));
 // DEFAULT-NEXT:         write<i32>(field2(%13), reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))));
 // DEFAULT-NEXT:         write<ptr<@type1>>(%14, call<ptr<@type1>, signature=fn(ptr<@type1>, i32) -> ptr<@type1>>(%8, addr_of<ptr<@type1>>(%13), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(16)))));
 // DEFAULT-NEXT:         call<ptr<@type1>, signature=fn(ptr<@type1>, i32) -> ptr<@type1>>(%8, addr_of<ptr<@type1>>(%13), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(16))));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type1>>(%14)))), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<@type1>>(%13))), ne<i32>(read<i32>(field1(deref(read<ptr<@type1>>(%14)))), const<i32>(0))), ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field2(deref(read<ptr<@type1>>(%14)))))), const<u64>(16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

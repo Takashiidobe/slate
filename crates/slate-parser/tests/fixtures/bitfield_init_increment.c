@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%4));
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%4), read<i32>(%13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%6)), read<i32>(%8), read<i32>(%10), read<i32>(%12), const<u64>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%6)), read<i32>(%8), read<i32>(%10), read<i32>(%12), const<u64>(4));
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..10>(%4));
 // DEFAULT-NEXT:         let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..10>(%4), read<i32>(%15));
@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %18: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%4));
 // DEFAULT-NEXT:         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%4), read<i32>(%19));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), read<i32>(%15), read<i32>(%17), read<i32>(%19));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), read<i32>(%15), read<i32>(%17), read<i32>(%19));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

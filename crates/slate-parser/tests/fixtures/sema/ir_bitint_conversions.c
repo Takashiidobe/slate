@@ -142,7 +142,7 @@ void contexts(void) {
 // IR-NEXT:         conditional<i32>(ne<i8b>(read<i8b>(%0), const<i8b>(0)), read<i32>(%8), widen<i32>(read<i8b>(%0)));
 // IR-NEXT:         truncate<i8b>(read<i32>(%8));
 // IR-NEXT:         widen<i32>(read<i8b>(%0));
-// IR-NEXT:         call<i32>(%14, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%20)), read<i8b>(%0));
+// IR-NEXT:         call<i32>(printf, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%20)), read<i8b>(%0));
 // IR-NEXT:         switch %21 read<i8b>(%0)
 // IR-NEXT:             {
 // IR-NEXT:                 case %21 const<i8b>(1):

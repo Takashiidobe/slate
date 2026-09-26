@@ -55,10 +55,10 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 n: i64 [storage=automatic];
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(i64) -> f80>(%2, const<i64>(10)), float_widen<f80, reason=usual_arith>(const<f64>(10.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(f80) -> i64>(%4, float_widen<f80, reason=arg>(const<f64>(10.0))), widen<i64, reason=usual_arith>(const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

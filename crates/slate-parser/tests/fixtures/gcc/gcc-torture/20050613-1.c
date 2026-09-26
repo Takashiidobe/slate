@@ -84,7 +84,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @foo(%6 x: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%6)))), const<i32>(0)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%6)))), const<i32>(5))), ne<i32>(read<i32>(field2(deref(read<ptr<@type0>>(%6)))), const<i32>(0))), ne<i32>(read<i32>(field3(deref(read<ptr<@type0>>(%6)))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 b: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>(field0 = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5)));

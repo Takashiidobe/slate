@@ -103,7 +103,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%10)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%9, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

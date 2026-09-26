@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:                 let %6: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(or<i32>(widen<i32, reason=promotion>(read<i16>(%5)), read<i32>(%3)));
 // DEFAULT-NEXT:                 write<i16>(%1, read<i16>(%6));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

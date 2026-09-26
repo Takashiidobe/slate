@@ -52,7 +52,7 @@ int main() {
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 r: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>(field1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%5)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

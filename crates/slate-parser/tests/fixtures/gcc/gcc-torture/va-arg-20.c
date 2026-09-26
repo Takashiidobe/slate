@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @foo(%4 v: va_list) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 x: u64 [storage=automatic] = va_arg<u64>(%4);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @bar(%7 c: i8, %8 d: i8, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %9 v: va_list [storage=automatic];
@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i8, i8, ...) -> void>(%6, truncate<i8, reason=arg, fits=always>(const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(0)), const<i64>(16));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

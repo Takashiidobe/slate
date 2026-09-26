@@ -40,9 +40,9 @@ int main(void) { f(0xffffff01); }
 // DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @f(%3 i: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(read<i64>(%3))), const<i32>(0)), eq<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(read<i64>(%3))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%2, reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(const<u32>(4294967041))));

@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @check(%8 p: ptr<const @type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<const @type0>>(%8)))), const<i32>(2)), ne<f32, exceptions=ignore>(read<f32>(field1(deref(read<ptr<const @type0>>(%8)))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3)))), ne<i32>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(field2(deref(read<ptr<const @type0>>(%8)))), const<i32>(0)))), const<i32>(4))), ne<i32>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(field2(deref(read<ptr<const @type0>>(%8)))), const<i32>(1)))), const<i32>(5))), ne<i32>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(field2(deref(read<ptr<const @type0>>(%8)))), const<i32>(2)))), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 s4: @type0 [storage=automatic] [const] [constexpr] = copy<@type0, reason=assign>(read<@type0>(%4));
@@ -88,7 +88,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>) -> void>(%7, addr_of<ptr<const @type0>>(%10));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>) -> void>(%7, pointer_cast<ptr<const @type0>, reason=arg>(addr_of<ptr<@type0>>(%11)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>) -> void>(%7, addr_of<ptr<const @type0>>(%12));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

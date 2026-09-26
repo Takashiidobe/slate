@@ -93,21 +93,21 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(1)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(1)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(2)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(2)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(3)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(3)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(4)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(4)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(5)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(6)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(6)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(7)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(8)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(8)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
@@ -122,23 +122,23 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(1)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(1)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(2)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(2)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(3)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(3)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(4)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(4)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(5)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(6)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(6)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(7)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%2, read<i32>(%6), const<i32>(8)), div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), const<i32>(8)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

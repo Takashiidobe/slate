@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%7, ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2)), const<i32>(12)));
 // DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %8: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%3, const<i32>(43)), const<i32>(175))
 // DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%9, ne<i32>(call<i32, signature=fn(i32) -> i32>(%3, const<i32>(2)), const<i32>(11)));
 // DEFAULT-NEXT:         if read<bool>(%9)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

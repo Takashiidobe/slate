@@ -79,9 +79,9 @@ int main() {
 // DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @malloc(%11 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%8, add<u64, overflow=wrap>(const<u64>(20), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(256))))));
+// DEFAULT-NEXT:         let %10 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, add<u64, overflow=wrap>(const<u64>(20), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(256))))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(call<i16, signature=fn(ptr<@type0>, i32) -> i16>(%3, read<ptr<@type0>>(%10), const<i32>(16))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

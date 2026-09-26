@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%8, ne<i32>(call<i32, signature=fn(u32) -> i32>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(2147483647))), from_bool<i32, reason=promotion>(lt<i32>(add<i32, overflow=ub>(call<i32, signature=fn(u32) -> i32>(%5, reinterpret<u32, reason=arg, fits=always>(const<i32>(2147483647))), const<i32>(1)), const<i32>(2147483647)))));
 // DEFAULT-NEXT:         if read<bool>(%8)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

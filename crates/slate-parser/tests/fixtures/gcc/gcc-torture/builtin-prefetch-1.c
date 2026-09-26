@@ -135,7 +135,7 @@ int main() {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%13, pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%10)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%15, pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%10)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i32>) -> void>(%17, pointer_cast<ptr<const i32>, reason=arg>(array_decay<ptr<i32>, length=Some(10)>(%10)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

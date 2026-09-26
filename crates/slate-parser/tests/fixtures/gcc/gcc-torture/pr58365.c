@@ -76,7 +76,7 @@ int main() {
 // DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> sret<align=4>>(%7));
 // DEFAULT-NEXT:         write<i32>(field1(%2), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

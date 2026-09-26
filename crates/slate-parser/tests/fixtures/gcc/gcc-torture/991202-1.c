@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i32>(%2, mul<i32, overflow=ub>(const<i32>(2), read<i32>(%2)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while not<bool>(ge<i32>(sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%1)), const<i32>(20)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%2, const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%12)));
 // DEFAULT-NEXT:         let %5 lower: i32 [storage=automatic] = const<i32>(113);
 // DEFAULT-NEXT:         let %6 upper: i32 [storage=automatic] = const<i32>(81);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%5)), call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%6)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), call<i32, signature=fn(i32) -> i32>(toupper, read<i32>(%5)), call<i32, signature=fn(i32) -> i32>(tolower, read<i32>(%6)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

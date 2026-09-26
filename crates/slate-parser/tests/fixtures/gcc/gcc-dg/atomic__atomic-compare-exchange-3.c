@@ -129,63 +129,63 @@ int main() {
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=relaxed>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(%3));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %8: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=acquire, failure=relaxed>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), const<i32>(0));
 // DEFAULT-NEXT:         if read<bool>(%8)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %9: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=release, failure=acquire>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), const<i32>(0));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %10: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=acq_rel, failure=acquire>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(%4));
 // DEFAULT-NEXT:         if read<bool>(%10)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %11: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(%4));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(%1, const<i32>(0));
 // DEFAULT-NEXT:         let %12: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=relaxed>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(deref(addr_of<ptr<i32>>(%3))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %13: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=acquire, failure=relaxed>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(deref(addr_of<ptr<i32>>(%5))));
 // DEFAULT-NEXT:         if read<bool>(%13)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %14: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=release, failure=acquire>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(deref(addr_of<ptr<i32>>(%5))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%14))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %15: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=acq_rel, failure=acquire>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(deref(addr_of<ptr<i32>>(%4))));
 // DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %16: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), read<i32>(deref(addr_of<ptr<i32>>(%4))));
 // DEFAULT-NEXT:         if not<bool>(read<bool>(%16))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

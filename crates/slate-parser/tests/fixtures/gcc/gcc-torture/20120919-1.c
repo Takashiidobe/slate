@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%19));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(1234567890))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

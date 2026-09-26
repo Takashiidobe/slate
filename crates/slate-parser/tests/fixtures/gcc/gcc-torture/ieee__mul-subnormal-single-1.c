@@ -151,8 +151,8 @@ int main() {
 // DEFAULT-NEXT:                     call<void, signature=fn(u32, u32, u32) -> void>(%10, read<u32>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))), read<u32>(field0(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))), read<u32>(field2(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%17), read<u32>(%19))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%9), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

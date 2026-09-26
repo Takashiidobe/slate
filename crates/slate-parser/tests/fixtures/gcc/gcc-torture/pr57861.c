@@ -93,7 +93,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%6)), call<i32, signature=fn(i8) -> i32>(%11, truncate<i8, reason=arg, fits=unknown>(read<i16>(%1))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i8) -> i32>(%11, truncate<i8, reason=arg, fits=unknown>(read<i16>(%1)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

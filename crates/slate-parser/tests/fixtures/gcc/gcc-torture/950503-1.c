@@ -52,8 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%4, shr<u64, amount_out_of_range=ub, fill=zero_extend>(not<u64>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0)))), read<i32>(%3)));
 // DEFAULT-NEXT:         write<u64>(%5, shr<u64, amount_out_of_range=ub, fill=zero_extend>(not<u64>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0)))), const<i32>(16)));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), read<u64>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

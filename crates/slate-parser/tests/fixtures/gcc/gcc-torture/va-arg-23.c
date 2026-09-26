@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%12, va_arg<i32>(%11));
 // DEFAULT-NEXT:         va_arg<i32>(%11);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%10), const<i32>(1)), ne<i32>(read<i32>(%12), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 t: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));

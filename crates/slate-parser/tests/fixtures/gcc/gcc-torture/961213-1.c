@@ -73,8 +73,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%9, call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%2, addr_of<ptr<u64>>(%11), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%10), const<i32>(16)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%2, addr_of<ptr<u64>>(%11), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%10), const<i32>(16));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%11), const<u64>(703710))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

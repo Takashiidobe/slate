@@ -97,8 +97,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %9 s: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(4)>(%15);
 // DEFAULT-NEXT:         let %10 lim: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(3));
 // DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(i32, ptr<i8>, ptr<i8>, i32, i32) -> ptr<i8>>(%2, const<i32>(58), read<ptr<i8>>(%9), read<ptr<i8>>(%10), const<i32>(1), const<i32>(1)), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

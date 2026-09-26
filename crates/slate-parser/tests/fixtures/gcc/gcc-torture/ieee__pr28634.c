@@ -51,8 +51,8 @@ int    main(void) {
 // DEFAULT-NEXT:             let %8: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), read<f64>(%2));
 // DEFAULT-NEXT:             write<f64>(%3, read<f64>(%8));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%2), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

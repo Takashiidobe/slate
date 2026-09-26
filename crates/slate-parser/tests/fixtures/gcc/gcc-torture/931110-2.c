@@ -52,8 +52,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<i32>>(%4, read<ptr<i32>>(%8));
 // DEFAULT-NEXT:         write<i32>(%5, rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(deref(read<ptr<i32>>(%7))), const<i32>(8)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

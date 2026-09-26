@@ -103,7 +103,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @baz3(%8 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%8), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @foo(%11 a: ptr<void>, %12 b: i64, %13 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -183,7 +183,7 @@ int main() {
 // DEFAULT-NEXT:         let %21 n: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(%9, addr_of<ptr<ptr<void>>>(%21));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>, i64, i32) -> i32>(%10, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%21)), widen<i64, reason=arg>(const<i32>(1)), const<i32>(51217));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

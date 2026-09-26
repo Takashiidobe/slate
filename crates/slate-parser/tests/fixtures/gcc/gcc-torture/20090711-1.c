@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %4 d1: i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(990000000)));
 // DEFAULT-NEXT:         let %5 d2: i64 [storage=automatic] = call<i64, signature=fn(i64) -> i64>(%1, read<i64>(%4));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(30212))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

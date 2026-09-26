@@ -93,14 +93,14 @@ int main(void) {
 // DEFAULT-NEXT:                     write<@type1>(%6, copy<@type1, reason=assign>(va_arg<@type1>(%8)));
 // DEFAULT-NEXT:                     copy<@type1, reason=assign>(va_arg<@type1>(%8));
 // DEFAULT-NEXT:                     if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%6))), add<i32, overflow=ub>(read<i32>(%7), const<i32>(10)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(%6))), add<i32, overflow=ub>(read<i32>(%7), const<i32>(20)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %9 x: i64 [storage=automatic] = va_arg<i64>(%8);
 // DEFAULT-NEXT:             if ne<i64>(read<i64>(%9), widen<i64, reason=usual_arith>(const<i32>(123)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         va_end(%8);
 // DEFAULT-NEXT:     }
@@ -113,7 +113,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i8>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%11), const<i32>(1)))), truncate<i8, reason=assign, fits=always>(const<i32>(21)));
 // DEFAULT-NEXT:         write<i8>(field1(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%11), const<i32>(2)))), truncate<i8, reason=assign, fits=always>(const<i32>(22)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<i16>, coerce<i16>, coerce<i16>, scalar) -> void>(%4, const<i32>(3), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%11), const<i32>(0))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%11), const<i32>(1))))), copy<@type1, reason=vararg>(read<@type1>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(3)>(%11), const<i32>(2))))), widen<i64, reason=explicit>(const<i32>(123)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

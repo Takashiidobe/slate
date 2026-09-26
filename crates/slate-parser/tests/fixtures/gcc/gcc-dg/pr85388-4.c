@@ -155,7 +155,7 @@ main(void) {
 // DEFAULT-NEXT:         write<u64>(field0(%38), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
 // DEFAULT-NEXT:         write<u64>(field1(%38), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type4>) -> i32>(%26, const<i32>(3), pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%38))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%31, const<i32>(1000));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%34, const<i32>(1000));
 // DEFAULT-NEXT:         return const<i32>(0);

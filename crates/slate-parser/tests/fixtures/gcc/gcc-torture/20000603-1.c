@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:         let %8 a: @type2 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(field0(field0(%8)), const<f64>(0.0));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(ptr<@type0>, ptr<@type1>) -> f64>(%4, addr_of<ptr<@type0>>(field0(%8)), addr_of<ptr<@type1>>(field1(%8))), const<f64>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

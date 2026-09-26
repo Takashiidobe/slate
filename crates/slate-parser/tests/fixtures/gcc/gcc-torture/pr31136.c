@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%2), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2)))));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%2)))));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2))), const<i32>(15))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %12 attempt: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type3>) -> i32>(%5, array_decay<ptr<@type3>, length=Some(1)>(%8));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%18)), read<i32>(%12));
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%18)), read<i32>(%12));
 // DEFAULT-NEXT:                     if ge<i32>(read<i32>(%12), const<i32>(3))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             break %17;

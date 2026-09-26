@@ -103,31 +103,31 @@ int main() {
 // DEFAULT-NEXT:         write<i64>(%2, widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:         let %5: i64 [synthetic] = update<i64, result=old, atomic=relaxed>(deref(addr_of<ptr<i64>>(%1)), add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%5), read<i64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %6: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %7: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%7));
 // DEFAULT-NEXT:         let %8: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<i64>>(%1)), add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%8), read<i64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %9: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %10: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%9), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%10));
 // DEFAULT-NEXT:         let %11: i64 [synthetic] = update<i64, result=old, atomic=release>(deref(addr_of<ptr<i64>>(%1)), add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%11), read<i64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %12: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %13: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%12), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%13));
 // DEFAULT-NEXT:         let %14: i64 [synthetic] = update<i64, result=old, atomic=acq_rel>(deref(addr_of<ptr<i64>>(%1)), add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%14), read<i64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %15: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %16: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%15), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%16));
 // DEFAULT-NEXT:         let %17: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(deref(addr_of<ptr<i64>>(%1)), add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%17), read<i64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %18: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %19: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%18), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%19));
@@ -137,35 +137,35 @@ int main() {
 // DEFAULT-NEXT:         let %22: i64 [synthetic] = update<i64, result=old, atomic=relaxed>(deref(addr_of<ptr<i64>>(%1)), read<i64>(deref(addr_of<ptr<i64>>(%2))));
 // DEFAULT-NEXT:         write<i64>(deref(addr_of<ptr<i64>>(%3)), read<i64>(%22));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%3), sub<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%1), read<i64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %23: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %24: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%23), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%24));
 // DEFAULT-NEXT:         let %25: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<i64>>(%1)), read<i64>(deref(addr_of<ptr<i64>>(%2))));
 // DEFAULT-NEXT:         write<i64>(deref(addr_of<ptr<i64>>(%3)), read<i64>(%25));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%3), sub<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%1), read<i64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %26: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %27: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%26), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%27));
 // DEFAULT-NEXT:         let %28: i64 [synthetic] = update<i64, result=old, atomic=release>(deref(addr_of<ptr<i64>>(%1)), read<i64>(deref(addr_of<ptr<i64>>(%2))));
 // DEFAULT-NEXT:         write<i64>(deref(addr_of<ptr<i64>>(%3)), read<i64>(%28));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%3), sub<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%1), read<i64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %29: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %30: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%29), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%30));
 // DEFAULT-NEXT:         let %31: i64 [synthetic] = update<i64, result=old, atomic=acq_rel>(deref(addr_of<ptr<i64>>(%1)), read<i64>(deref(addr_of<ptr<i64>>(%2))));
 // DEFAULT-NEXT:         write<i64>(deref(addr_of<ptr<i64>>(%3)), read<i64>(%31));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%3), sub<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%1), read<i64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %32: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %33: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%32), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%33));
 // DEFAULT-NEXT:         let %34: i64 [synthetic] = update<i64, result=old, atomic=seq_cst>(deref(addr_of<ptr<i64>>(%1)), read<i64>(deref(addr_of<ptr<i64>>(%2))));
 // DEFAULT-NEXT:         write<i64>(deref(addr_of<ptr<i64>>(%3)), read<i64>(%34));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(%3), sub<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%1), read<i64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %35: i64 [synthetic] = read<i64>(%2);
 // DEFAULT-NEXT:         let %36: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%35), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%36));

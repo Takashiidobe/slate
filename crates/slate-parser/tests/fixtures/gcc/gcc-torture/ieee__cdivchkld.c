@@ -235,8 +235,8 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         write<i32>(%13, const<i32>(0));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%12), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%13, add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%2, read<f80>(%12)), const<i32>(64)), const<i32>(1)));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%2, read<f80>(%12)), const<i32>(64)), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%13, add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(ilogbl, read<f80>(%12)), const<i32>(64)), const<i32>(1)));
+// DEFAULT-NEXT:                 add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(ilogbl, read<f80>(%12)), const<i32>(64)), const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%13), const<i32>(6))
 // DEFAULT-NEXT:             return const<i32>(0);
@@ -309,8 +309,8 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%30), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

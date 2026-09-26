@@ -123,7 +123,7 @@ int main() {
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<ptr<@type1>>(field0(%16), addr_of<ptr<@type1>>(%17));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type2>) -> ptr<i32>>(%13, addr_of<ptr<i32>>(%18), addr_of<ptr<@type2>>(%16)), addr_of<ptr<i32>>(%18))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

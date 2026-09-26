@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type1>>(%4))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @new_bitfield() -> ptr<@type1> [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 b: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, const<u64>(4)));
+// DEFAULT-NEXT:         let %6 b: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(malloc, const<u64>(4)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type1>>(%6))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%3, read<ptr<@type1>>(%6));
 // DEFAULT-NEXT:         return read<ptr<@type1>>(%6);

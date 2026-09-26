@@ -107,7 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %16 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(i16) -> void>(%4, truncate<i16, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%7), const<i32>(1))))), const<i32>(140))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

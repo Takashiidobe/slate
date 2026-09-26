@@ -173,12 +173,12 @@ int main(void) {
 // DEFAULT-NEXT:                                     write<ptr<i8>>(%11, read<ptr<i8>>(%36));
 // DEFAULT-NEXT:                                     write<i8>(deref(read<ptr<i8>>(%35)), truncate<i8, reason=assign, fits=always>(const<i32>(98)));
 // DEFAULT-NEXT:                             write<ptr<i8>>(%11, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(81)>(field0(%5)), read<u64>(%7)));
-// DEFAULT-NEXT:                             write<u64>(%9, call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11))));
-// DEFAULT-NEXT:                             call<u64, signature=fn(ptr<const i8>) -> u64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11)));
+// DEFAULT-NEXT:                             write<u64>(%9, call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11))));
+// DEFAULT-NEXT:                             call<u64, signature=fn(ptr<const i8>) -> u64>(strlen, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%11)));
 // DEFAULT-NEXT:                             if ne<u64>(read<u64>(%8), read<u64>(%9))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

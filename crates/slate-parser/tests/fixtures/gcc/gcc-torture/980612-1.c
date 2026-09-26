@@ -61,8 +61,8 @@ int main() {
 // DEFAULT-NEXT:         write<u8>(field1(deref(read<ptr<@type0>>(%7))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%5))));
 // DEFAULT-NEXT:         reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%5)));
 // DEFAULT-NEXT:         if le<i32>(and<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type0>>(%7)))))), const<i32>(127)), not<i32>(const<i32>(16))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

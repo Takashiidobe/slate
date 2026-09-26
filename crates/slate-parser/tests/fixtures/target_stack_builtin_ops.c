@@ -148,8 +148,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %11 @clear_padding_probe() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12 value: @type1 [storage=automatic];
 // DEFAULT-NEXT:         let %13 bits: @type2 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(%12)), const<i32>(255), const<u64>(8));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type2>>(%13)), const<i32>(255), const<u64>(1));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(%12)), const<i32>(255), const<u64>(8));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type2>>(%13)), const<i32>(255), const<u64>(1));
 // DEFAULT-NEXT:         write<u8>(field0(%12), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))));
 // DEFAULT-NEXT:         write<u32>(field1(%12), reinterpret<u32, reason=assign, fits=always>(const<i32>(11)));
 // DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%13), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))));
@@ -188,7 +188,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %33 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %34 input: volatile i32 [storage=automatic] = const<i32>(7);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%39)), call<i32, signature=fn(i32) -> i32>(%6, read<i32, volatile>(%34)), call<i32, signature=fn() -> i32>(%9), call<i32, signature=fn() -> i32>(%11), call<i32, signature=fn() -> i32>(%16), call<i32, signature=fn() -> i32>(%23));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%39)), call<i32, signature=fn(i32) -> i32>(%6, read<i32, volatile>(%34)), call<i32, signature=fn() -> i32>(%9), call<i32, signature=fn() -> i32>(%11), call<i32, signature=fn() -> i32>(%16), call<i32, signature=fn() -> i32>(%23));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

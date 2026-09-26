@@ -91,7 +91,7 @@ int main() {
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 _1: array<@type0, 2> [storage=automatic] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%2, array_decay<ptr<@type0>, length=Some(2)>(%12), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

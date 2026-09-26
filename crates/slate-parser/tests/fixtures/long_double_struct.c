@@ -59,9 +59,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 b: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%5), const<i32>(3));
 // DEFAULT-NEXT:         write<f80>(field1(%5), const<f80>(4.5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), call<i32, signature=fn(@type0) -> i32, abi=sysv64(byval<align=16>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), call<i32, signature=fn(@type0) -> i32, abi=sysv64(byval<align=16>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5))));
 // DEFAULT-NEXT:         write<f80>(field1(%5), mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%5)), const<f80>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(field1(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(field1(%5))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

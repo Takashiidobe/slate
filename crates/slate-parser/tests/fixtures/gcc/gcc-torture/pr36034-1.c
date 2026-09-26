@@ -106,7 +106,7 @@ int         main() {
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         if eq<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(6)>(deref(ptr_offset<ptr<array<f64, 6>>, subtract=false, element=array<f64, 6>, overflow=ub>(array_decay<ptr<array<f64, 6>>, length=Some(5)>(%1), read<i32>(%7)))), read<i32>(%8)))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

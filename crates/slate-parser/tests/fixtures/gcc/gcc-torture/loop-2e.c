@@ -105,7 +105,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(40)>(%7), const<i32>(39))), null<ptr<i32>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<ptr<i32>>) -> void>(%1, pointer_cast<ptr<i32>, reason=arg>(read<ptr<void>>(%6)), array_decay<ptr<ptr<i32>>, length=Some(40)>(%7));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(deref(ptr_offset<ptr<ptr<i32>>, subtract=false, element=ptr<i32>, overflow=ub>(array_decay<ptr<ptr<i32>>, length=Some(40)>(%7), const<i32>(39)))), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%6)), const<i32>(39)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

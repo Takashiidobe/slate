@@ -72,8 +72,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         let %10 x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1234));
 // DEFAULT-NEXT:         let %11 y: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%2, read<u32>(%10));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), ne<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(680)))), logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(134)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

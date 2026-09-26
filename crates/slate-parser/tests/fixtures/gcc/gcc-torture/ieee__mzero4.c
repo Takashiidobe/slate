@@ -92,32 +92,32 @@ int main() {
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%11), read<f64>(%12))
 // DEFAULT-NEXT:             write<bool>(%29, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%29, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%11))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%12))), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%29, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%11))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%12))), const<u64>(8)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%29)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @expectf(%13 value: f32, %14 expected: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %30: bool [synthetic];
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%13), read<f32>(%14))
 // DEFAULT-NEXT:             write<bool>(%30, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%30, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%13))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%14))), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%30, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%13))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%14))), const<u64>(4)), const<i32>(0)));
 // DEFAULT-NEXT:         if read<bool>(%30)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%3, const<f64>(0.0)), const<f64>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%4, const<f64>(0.0)), const<f64>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%5, const<f64>(0.0)), const<f64>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%3, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%4, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(%5, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%6, const<f32>(0.0)), const<f32>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%7, const<f32>(0.0)), const<f32>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%8, const<f32>(0.0)), const<f32>(0.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%6, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%7, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(%8, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(sin, const<f64>(0.0)), const<f64>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(tan, const<f64>(0.0)), const<f64>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(atan, const<f64>(0.0)), const<f64>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(sin, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(tan, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%9, call<f64, signature=fn(f64) -> f64>(atan, neg<f64>(const<f64>(0.0))), neg<f64>(const<f64>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(sinf, const<f32>(0.0)), const<f32>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(tanf, const<f32>(0.0)), const<f32>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(atanf, const<f32>(0.0)), const<f32>(0.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(sinf, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(tanf, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%10, call<f32, signature=fn(f32) -> f32>(atanf, neg<f32>(const<f32>(0.0))), neg<f32>(const<f32>(0.0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

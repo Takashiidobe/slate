@@ -76,19 +76,19 @@ int main() {
 // DEFAULT-NEXT:                 let %6 r2: i32 [storage=automatic] = from_bool<i32, reason=assign>(const<bool>(true));
 // DEFAULT-NEXT:                 let %7 r3: i32 [storage=automatic] = from_bool<i32, reason=assign>(const<bool>(true));
 // DEFAULT-NEXT:                 if logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(%5), const<i32>(0)), ne<i32>(read<i32>(%5), const<i32>(1))), ne<i32>(read<i32>(%5), const<i32>(2)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(ne<i32>(read<i32>(%6), const<i32>(0)), ne<i32>(read<i32>(%6), const<i32>(1)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(ne<i32>(read<i32>(%7), const<i32>(0)), ne<i32>(read<i32>(%7), const<i32>(1)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(eq<i32>(read<i32>(%5), const<i32>(2)), ne<i32>(read<i32>(%6), const<i32>(1)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(eq<i32>(read<i32>(%5), const<i32>(2)), ne<i32>(read<i32>(%7), const<i32>(1)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(eq<i32>(read<i32>(%5), const<i32>(0)), ne<i32>(read<i32>(%6), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 if logical_and<bool>(eq<i32>(read<i32>(%5), const<i32>(0)), ne<i32>(read<i32>(%7), const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return const<i32>(0);

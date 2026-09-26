@@ -134,8 +134,8 @@ int         main(void) {
 // DEFAULT-NEXT:         let %11 l: array<i64, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>, i64, i64) -> void>(%0, array_decay<ptr<i64>, length=Some(3)>(%11), array_decay<ptr<i64>, length=Some(4)>(%9), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(2)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(0)))), widen<i64, reason=usual_arith>(const<i32>(3))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(1)))), widen<i64, reason=usual_arith>(const<i32>(9)))), ne<i64>(read<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(3)>(%11), const<i32>(2)))), widen<i64, reason=usual_arith>(const<i32>(21))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%8, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

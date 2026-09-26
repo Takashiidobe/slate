@@ -45,8 +45,8 @@ int main() {
 // DEFAULT-NEXT:         let %4 del: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         let %5 i: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:         if logical_and<bool>(lt<u32>(read<u32>(%5), read<u32>(%2)), ne<i32>(read<i32>(%4), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

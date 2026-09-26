@@ -70,8 +70,8 @@ int main(void) {
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(2)), const<i32>(5)));
 // DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

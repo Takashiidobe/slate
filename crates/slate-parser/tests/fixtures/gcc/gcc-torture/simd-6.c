@@ -56,8 +56,8 @@ int main() {
 // DEFAULT-NEXT:         let %10 r: vector<u8, 8> [storage=automatic];
 // DEFAULT-NEXT:         write<vector<u8, 8>>(%10, call<vector<u8, 8>, signature=fn(vector<u8, 8>, vector<u8, 8>) -> vector<u8, 8>, abi=sysv64(coerce<f64>, coerce<f64>) -> coerce<f64>>(%3, read<vector<u8, 8>>(%7), read<vector<u8, 8>>(%8)));
 // DEFAULT-NEXT:         call<vector<u8, 8>, signature=fn(vector<u8, 8>, vector<u8, 8>) -> vector<u8, 8>, abi=sysv64(coerce<f64>, coerce<f64>) -> coerce<f64>>(%3, read<vector<u8, 8>>(%7), read<vector<u8, 8>>(%8));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%1, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 8>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 8>>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(memcmp, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 8>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 8>>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -51,7 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%2), const<i32>(1))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

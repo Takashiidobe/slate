@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(6)>(%2), const<i32>(0))), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
 // DEFAULT-NEXT:             let %11: i16 [synthetic] = read<i16>(%5);
@@ -66,8 +66,8 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%4, widen<i32, reason=assign>(read<i16>(%5)));
 // DEFAULT-NEXT:         let %9 f: i64 [storage=automatic] = widen<i64, reason=assign>(read<i16>(%5));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%6, truncate<i32, reason=arg, fits=unknown>(and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%9), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(1))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

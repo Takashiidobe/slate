@@ -65,8 +65,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(%9), array_decay<ptr<@type0>, length=Some(3)>(%8));
 // DEFAULT-NEXT:         write<ptr<@type0>>(field1(%9), ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(3)>(%8), const<i32>(3)));
 // DEFAULT-NEXT:         let %10 c: @type0 [storage=automatic] = read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(field0(%9)), const<i32>(1))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(%10))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(field1(%9)), read<ptr<@type0>>(field0(%9)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(%10))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(field1(%9)), read<ptr<@type0>>(field0(%9)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

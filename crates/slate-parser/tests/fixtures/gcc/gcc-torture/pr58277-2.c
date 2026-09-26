@@ -272,7 +272,7 @@ int main() {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%21);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%21);
 // DEFAULT-NEXT:         if ne<i8>(read<i8>(%20), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

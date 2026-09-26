@@ -75,7 +75,7 @@ int main() {
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%13));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), read<i32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @foo(%9 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         switch %11 read<i32>(%9)
@@ -106,7 +106,7 @@ int main() {
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(3));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

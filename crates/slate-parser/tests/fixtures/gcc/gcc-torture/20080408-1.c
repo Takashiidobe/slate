@@ -41,7 +41,7 @@ int         main() {
 // DEFAULT-NEXT:         let %3 usi: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(65280)));
 // DEFAULT-NEXT:         let %4 fail: i32 [storage=automatic] = from_bool<i32, reason=assign>(not<bool>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%2)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%3))))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

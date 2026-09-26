@@ -66,12 +66,12 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%3));
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%3);
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%6)), div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%4));
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%4);
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%6)), rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

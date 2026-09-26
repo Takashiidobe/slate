@@ -78,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:                     write<i128>(%5, read<i128>(%14));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<u128>(read<u128>(%4), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(14348907))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return read<u128>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

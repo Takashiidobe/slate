@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 l: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %12 off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%2, addr_of<ptr<u32>>(%11));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -69,23 +69,23 @@ int main() {
 // DEFAULT-NEXT:         let %6 dh: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(__builtin_huge_val);
 // DEFAULT-NEXT:         let %7 lh: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(__builtin_huge_vall);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%2), read<f32>(%2)), read<f32>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), read<f64>(%3)), read<f64>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%4), read<f80>(%4)), read<f80>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%2), read<f32>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), read<f64>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f32, exceptions=ignore>(read<f32>(%2), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f64, exceptions=ignore>(read<f64>(%3), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if le<f80, exceptions=ignore>(read<f80>(%4), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

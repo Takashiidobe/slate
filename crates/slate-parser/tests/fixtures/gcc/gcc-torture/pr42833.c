@@ -341,7 +341,7 @@ int main() {
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 r: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%5, reinterpret<u32, reason=arg, fits=always>(const<i32>(84215045)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16843009)));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(%24), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(168430090)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

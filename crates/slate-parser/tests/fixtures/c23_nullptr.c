@@ -43,7 +43,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %3 null_value: volatile ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:         let %4 null_pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%6)), from_bool<i32, reason=vararg>(eq<ptr<void>>(read<ptr<void>, volatile>(%3), null<ptr<void>>)), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%4), null<ptr<i32>>)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%6)), from_bool<i32, reason=vararg>(eq<ptr<void>>(read<ptr<void>, volatile>(%3), null<ptr<void>>)), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%4), null<ptr<i32>>)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

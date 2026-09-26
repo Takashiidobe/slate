@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:     type @type2 Pcc_cell = @type1;
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @Parrot_gc_mark_PMC_alive_fun(%5 interp: ptr<i32>, %6 pmc: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @mark_cell(%8 interp: ptr<i32>, %9 c: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i64>(read<i64>(field2(deref(read<ptr<@type1>>(%9)))), widen<i64, reason=usual_arith>(const<i32>(4))), ne<ptr<@type0>>(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%9)))), null<ptr<@type0>>)), not<bool>(ne<u32>(and<u32>(read<u32>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%9))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(18)))), const<u32>(0))))

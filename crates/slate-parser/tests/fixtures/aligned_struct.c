@@ -130,10 +130,10 @@ int main(void) {
 // DEFAULT-NEXT:         let %14 s: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(field0(%14), truncate<i8, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:         write<i32>(field1(%14), const<i32>(4660));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%16)), const<u64>(16), const<u64>(16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%17)), const<u64>(0), const<u64>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)), widen<i32, reason=vararg>(read<i8>(field0(%14))), read<i32>(field1(%14)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%19)), call<i32, signature=fn() -> i32>(%3), call<i32, signature=fn() -> i32>(%5), call<i32, signature=fn() -> i32>(%7), call<i32, signature=fn() -> i32>(%11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%16)), const<u64>(16), const<u64>(16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%17)), const<u64>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)), widen<i32, reason=vararg>(read<i8>(field0(%14))), read<i32>(field1(%14)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%19)), call<i32, signature=fn() -> i32>(%3), call<i32, signature=fn() -> i32>(%5), call<i32, signature=fn() -> i32>(%7), call<i32, signature=fn() -> i32>(%11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

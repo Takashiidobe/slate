@@ -132,7 +132,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @c1(%6 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type1>>(%6))))), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(deref(read<ptr<@type1>>(%6))))), const<i32>(2))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(deref(read<ptr<@type1>>(%6))))), const<i32>(3))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field3(deref(read<ptr<@type1>>(%6))))), const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%6)), const<i32>(170), const<u64>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @c2(%8 p: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {

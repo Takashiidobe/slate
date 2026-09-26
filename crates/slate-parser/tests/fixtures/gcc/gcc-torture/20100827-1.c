@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:                 let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%8));
 // DEFAULT-NEXT:                 if eq<ptr<i8>>(read<ptr<i8>>(%2), null<ptr<i8>>)
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 let %9: ptr<i8> [synthetic] = read<ptr<i8>>(%2);
 // DEFAULT-NEXT:                 let %10: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%2, read<ptr<i8>>(%10));
@@ -66,7 +66,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>) -> i32>(%1, array_decay<ptr<i8>, length=Some(2)>(%6)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

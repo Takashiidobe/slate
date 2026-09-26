@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(__builtin_setjmp, array_decay<ptr<ptr<void>>, length=Some(5)>(%7)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(5)>(%7)));
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @test2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %10 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
@@ -89,14 +89,14 @@ int main(void) {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(__builtin_alloca, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3))));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

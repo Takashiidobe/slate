@@ -60,8 +60,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<f64>(%9, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)));
 // DEFAULT-NEXT:         write<f64>(%7, conditional<f64>(lt<i32>(read<i32>(%2), read<i32>(%3)), read<f64>(%8), read<f64>(%9)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

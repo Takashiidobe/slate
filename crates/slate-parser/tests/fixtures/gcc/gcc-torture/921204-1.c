@@ -100,8 +100,8 @@ int main(void) {
 // DEFAULT-NEXT:         write<@type2>(%11, copy<@type2, reason=assign>(call<@type2, signature=fn(@type2) -> @type2, abi=sysv64(native_c) -> native_c>(%6, copy<@type2, reason=arg>(read<@type2>(%10)))));
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(@type2) -> @type2, abi=sysv64(native_c) -> native_c>(%6, copy<@type2, reason=arg>(read<@type2>(%10))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%10)), read<u32>(field1(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

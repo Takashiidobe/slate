@@ -113,15 +113,15 @@ int         main() {
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%4, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%7, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<i32>(field0(field1(%3)), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(field1(%3)), const<i32>(2));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%10, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<@type2>>(%3))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

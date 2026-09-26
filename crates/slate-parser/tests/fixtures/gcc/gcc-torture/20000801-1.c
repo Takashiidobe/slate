@@ -90,12 +90,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 one: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%2, pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), truncate<u32, reason=arg, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, u32) -> void>(%2, pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), truncate<u32, reason=arg, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

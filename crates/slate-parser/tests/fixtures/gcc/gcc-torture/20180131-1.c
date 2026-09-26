@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 u: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, i32, i32, @type0) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, coerce<i32>) -> scalar>(%3, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type0, reason=arg>(read<@type0>(%10))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

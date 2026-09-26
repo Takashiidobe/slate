@@ -51,7 +51,7 @@ int main(void) {
 // IR-NEXT:         let %6 backward: i64 [storage=automatic] = ptr_diff<i64, element=fn() -> i32, same_array=required, overflow=ub>(ptr_offset<ptr<fn() -> i32>, subtract=true, element=fn() -> i32, overflow=ub>(read<ptr<fn() -> i32>>(%4), const<i32>(2)), read<ptr<fn() -> i32>>(%4));
 // IR-NEXT:         let %7 difference: i64 [storage=automatic] = ptr_diff<i64, element=fn() -> i32, same_array=required, overflow=ub>(read<ptr<fn() -> i32>>(%4), ptr_offset<ptr<fn() -> i32>, subtract=false, element=fn() -> i32, overflow=ub>(read<ptr<fn() -> i32>>(%4), const<i32>(3)));
 // IR-NEXT:         let %8 unchanged: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<fn() -> i32>>(ptr_offset<ptr<fn() -> i32>, subtract=false, element=fn() -> i32, overflow=ub>(read<ptr<fn() -> i32>>(%4), const<i32>(0)), read<ptr<fn() -> i32>>(%4)));
-// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%10)), read<i64>(%5), read<i64>(%6), read<i64>(%7), read<i32>(%8));
+// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%10)), read<i64>(%5), read<i64>(%6), read<i64>(%7), read<i32>(%8));
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT: }

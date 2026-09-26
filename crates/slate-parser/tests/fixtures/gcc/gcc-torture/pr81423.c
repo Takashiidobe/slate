@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<u64>(%4, call<u64, signature=fn() -> u64>(%5));
 // DEFAULT-NEXT:         call<u64, signature=fn() -> u64>(%5);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

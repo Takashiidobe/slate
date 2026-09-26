@@ -87,11 +87,11 @@ int main() {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(%8, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%4)), read<f64>(%4)));
 // DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(%8), read<f64>(%6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 write<f64>(%9, sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), const<f64>(0.5)));
 // DEFAULT-NEXT:                 write<f64>(%8, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%9), read<f64>(%4)), read<f64>(%4)));
 // DEFAULT-NEXT:                 if eq<f64, exceptions=ignore>(read<f64>(%8), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%4)), read<f64>(%4)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }

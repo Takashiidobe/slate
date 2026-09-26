@@ -63,8 +63,8 @@ int main() {
 // DEFAULT-NEXT:         let %8 s2: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type0>>(field0(%7), addr_of<ptr<@type0>>(%8));
 // DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type0>, i32) -> ptr<@type0>>(%3, addr_of<ptr<@type0>>(%7), const<i32>(1)), addr_of<ptr<@type0>>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

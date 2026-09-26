@@ -65,8 +65,8 @@ int main(void) {
 // DEFAULT-NEXT:                 let %10: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%9), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
 // DEFAULT-NEXT:                 write<f80, volatile>(%3, read<f80>(%10));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80, volatile>(%3), const<f80>(1.08420217248550443401E-19))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -244,7 +244,7 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%19, call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%12, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%18), const<i32>(0))))));
 // DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%12, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%18), const<i32>(0)))));
 // DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(field8(field1(deref(read<ptr<@type0>>(%19))))), read<ptr<@type0>>(%19))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

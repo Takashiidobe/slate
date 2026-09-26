@@ -46,7 +46,7 @@ int main() {
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     label %2 label:
 // DEFAULT-NEXT:                         return const<i32>(0);
 // DEFAULT-NEXT:                 }

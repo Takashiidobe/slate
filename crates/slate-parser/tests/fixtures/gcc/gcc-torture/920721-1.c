@@ -42,9 +42,9 @@ int  main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i16, i16) -> i64>(%2, truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32768))), truncate<i16, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))), const<i64>(32768))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

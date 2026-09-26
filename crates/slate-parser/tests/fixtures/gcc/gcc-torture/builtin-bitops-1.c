@@ -617,27 +617,27 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))))), call<i32, signature=fn(u32) -> i32>(%0, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %142: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:                         write<bool>(%142, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))), call<i32, signature=fn(u32) -> i32>(%6, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%142, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%142)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %143: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:                         write<bool>(%143, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))), call<i32, signature=fn(u32) -> i32>(%3, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%143, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%143)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69)))))), call<i32, signature=fn(u32) -> i32>(%9, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))), call<i32, signature=fn(u32) -> i32>(%13, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))), call<i32, signature=fn(u32) -> i32>(%17, read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(13)>(%65), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %90
 // DEFAULT-NEXT:             init:
@@ -652,27 +652,27 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsl, reinterpret<i64, reason=arg, fits=unknown>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))))), call<i32, signature=fn(u64) -> i32>(%21, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %146: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                         write<bool>(%146, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzl, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%27, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%146, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%146)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %147: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                         write<bool>(%147, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzl, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%24, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%147, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%147)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbl, reinterpret<i64, reason=arg, fits=unknown>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69)))))), call<i32, signature=fn(u64) -> i32>(%30, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountl, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%34, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityl, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%38, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%66), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %91
 // DEFAULT-NEXT:             init:
@@ -687,604 +687,604 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=unknown>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))))), call<i32, signature=fn(u64) -> i32>(%42, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %150: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                         write<bool>(%150, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%48, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%150, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%150)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     let %151: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:                         write<bool>(%151, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%45, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))))));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%151, const<bool>(false));
 // DEFAULT-NEXT:                     if read<bool>(%151)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=unknown>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69)))))), call<i32, signature=fn(u64) -> i32>(%51, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%55, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))), call<i32, signature=fn(u64) -> i32>(%59, read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(13)>(%67), read<i32>(%69))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(0)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %152: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%152, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(0)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%152, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%152)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %153: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%153, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(0)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%153, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%153)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(0)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %154: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%154, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(1)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%154, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%154)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %155: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%155, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(1)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%155, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%155)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(2147483648)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %156: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2147483648), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%156, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%156, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%156)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %157: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2147483648), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%157, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%157, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%157)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(2147483648)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(2147483648))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1073741824)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %158: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1073741824), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%158, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%158, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%158)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %159: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1073741824), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%159, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%159, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%159)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1073741824)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(1073741824))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(65536)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(65536))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %160: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(65536), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%160, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(65536))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(65536)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%160, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%160)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %161: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(65536), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%161, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(65536))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(65536)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%161, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%161)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(65536)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(65536))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(65536))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(65536))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(65536))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(65536))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(32768)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(32768))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %162: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(32768), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%162, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(32768))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(32768)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%162, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%162)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %163: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(32768), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%163, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(32768))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(32768)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%163, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%163)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(32768)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(32768))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(32768))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(32768))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(32768))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(32768))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(2779096485)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %164: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2779096485), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%164, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%164, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%164)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %165: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2779096485), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%165, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%165, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%165)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(2779096485)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(2779096485))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1515870810)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %166: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1515870810), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%166, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%166, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%166)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %167: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1515870810), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%167, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%167, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%167)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(1515870810)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(1515870810))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(3405643776)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %168: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(3405643776), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%168, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%168, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%168)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %169: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(3405643776), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%169, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%169, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%169)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(3405643776)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(3405643776))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(13303296)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %170: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(13303296), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%170, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(13303296)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%170, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%170)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %171: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(13303296), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%171, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(13303296)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%171, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%171)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(13303296)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(13303296))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(51966)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(51966))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %172: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(51966), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%172, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(51966))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(51966)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%172, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%172)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %173: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(51966), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%173, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(51966))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(51966)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%173, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%173)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(51966)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(51966))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(51966))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(51966))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(51966))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(51966))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_ffs, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(4294967295)))), call<i32, signature=fn(u32) -> i32>(%0, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %174: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4294967295), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%174, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_clz, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))), call<i32, signature=fn(u32) -> i32>(%6, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%174, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%174)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %175: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4294967295), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%175, ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_ctz, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))), call<i32, signature=fn(u32) -> i32>(%3, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295)))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%175, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%175)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(__builtin_clrsb, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(4294967295)))), call<i32, signature=fn(u32) -> i32>(%9, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_popcount, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))), call<i32, signature=fn(u32) -> i32>(%13, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u32) -> i32>(__builtin_parity, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))), call<i32, signature=fn(u32) -> i32>(%17, truncate<u32, reason=arg, fits=always>(const<u64>(4294967295))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %176: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%176, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(0))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%176, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%176)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %177: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(0), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%177, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(0))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%177, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%177)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(0))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(0)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %178: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%178, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(1)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(1))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%178, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%178)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %179: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%179, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(1)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(1))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%179, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%179)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(1))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(1)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(1)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(9223372036854775808))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(9223372036854775808)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %180: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(9223372036854775808), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%180, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(9223372036854775808)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(9223372036854775808))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%180, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%180)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %181: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(9223372036854775808), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%181, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(9223372036854775808)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(9223372036854775808))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%181, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%181)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(9223372036854775808))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(9223372036854775808)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(9223372036854775808)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(9223372036854775808)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(9223372036854775808)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(9223372036854775808)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(2))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %182: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%182, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(2)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(2))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%182, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%182)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %183: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%183, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(2)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(2))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%183, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%183)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(2))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(2)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(2)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(4611686018427387904))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(4611686018427387904)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %184: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4611686018427387904), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%184, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(4611686018427387904)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(4611686018427387904))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%184, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%184)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %185: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4611686018427387904), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%185, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(4611686018427387904)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(4611686018427387904))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%185, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%185)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(4611686018427387904))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(4611686018427387904)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(4611686018427387904)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(4611686018427387904)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(4611686018427387904)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(4611686018427387904)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(4294967296))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(4294967296)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %186: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4294967296), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%186, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(4294967296)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(4294967296))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%186, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%186)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %187: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4294967296), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%187, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(4294967296)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(4294967296))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%187, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%187)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(4294967296))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(4294967296)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(4294967296)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(4294967296)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(4294967296)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(4294967296)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %188: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2147483648), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%188, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(2147483648)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(2147483648))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%188, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%188)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %189: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(2147483648), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%189, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(2147483648)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(2147483648))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%189, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%189)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(2147483648))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(2147483648)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(2147483648)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(11936128518282651045))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(11936128518282651045)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %190: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(11936128518282651045), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%190, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(11936128518282651045)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(11936128518282651045))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%190, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%190)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %191: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(11936128518282651045), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%191, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(11936128518282651045)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(11936128518282651045))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%191, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%191)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(11936128518282651045))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(11936128518282651045)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(11936128518282651045)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(11936128518282651045)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(11936128518282651045)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(11936128518282651045)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(6510615555426900570))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(6510615555426900570)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %192: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(6510615555426900570), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%192, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(6510615555426900570)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(6510615555426900570))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%192, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%192)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %193: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(6510615555426900570), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%193, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(6510615555426900570)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(6510615555426900570))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%193, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%193)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(6510615555426900570))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(6510615555426900570)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(6510615555426900570)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(6510615555426900570)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(6510615555426900570)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(6510615555426900570)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(14627351832016453632))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(14627351832016453632)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %194: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(14627351832016453632), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%194, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(14627351832016453632)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(14627351832016453632))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%194, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%194)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %195: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(14627351832016453632), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%195, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(14627351832016453632)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(14627351832016453632))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%195, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%195)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(14627351832016453632))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(14627351832016453632)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(14627351832016453632)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(14627351832016453632)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(14627351832016453632)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(14627351832016453632)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(223195676147712))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(223195676147712)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %196: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(223195676147712), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%196, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(223195676147712)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(223195676147712))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%196, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%196)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %197: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(223195676147712), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%197, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(223195676147712)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(223195676147712))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%197, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%197)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(223195676147712))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(223195676147712)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(223195676147712)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(223195676147712)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(223195676147712)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(223195676147712)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=always>(const<u64>(3405695742))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(3405695742)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %198: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(3405695742), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%198, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(3405695742)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(3405695742))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%198, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%198)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %199: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(3405695742), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%199, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(3405695742)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(3405695742))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%199, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%199)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=always>(const<u64>(3405695742))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(3405695742)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(3405695742)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(3405695742)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(3405695742)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(3405695742)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_ffsll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(18446744073709551615))), call<i32, signature=fn(u64) -> i32>(%42, const<u64>(18446744073709551615)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %200: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(18446744073709551615), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%200, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_clzll, const<u64>(18446744073709551615)), call<i32, signature=fn(u64) -> i32>(%48, const<u64>(18446744073709551615))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%200, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%200)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %201: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(18446744073709551615), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
 // DEFAULT-NEXT:             write<bool>(%201, ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_ctzll, const<u64>(18446744073709551615)), call<i32, signature=fn(u64) -> i32>(%45, const<u64>(18446744073709551615))));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%201, const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%201)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(__builtin_clrsbll, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(18446744073709551615))), call<i32, signature=fn(u64) -> i32>(%51, const<u64>(18446744073709551615)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_popcountll, const<u64>(18446744073709551615)), call<i32, signature=fn(u64) -> i32>(%55, const<u64>(18446744073709551615)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(__builtin_parityll, const<u64>(18446744073709551615)), call<i32, signature=fn(u64) -> i32>(%59, const<u64>(18446744073709551615)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%63);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%64, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

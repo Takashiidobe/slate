@@ -117,7 +117,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field0(%14), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(7))));
 // DEFAULT-NEXT:         write<i64>(field1(%14), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(7))));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(@type0) -> i32, abi=sysv64(coerce<i64, i64>) -> scalar>(%9, copy<@type0, reason=arg>(read<@type0>(%14))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

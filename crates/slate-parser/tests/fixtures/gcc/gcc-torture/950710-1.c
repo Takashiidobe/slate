@@ -135,14 +135,14 @@ int main(void) {
 // DEFAULT-NEXT:                                         let %11 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:                                         let %12 b: @type0 [storage=automatic];
 // DEFAULT-NEXT:                                         if lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(conditional<i64>(lt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%12)), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%11))), widen<i64, reason=usual_arith>(const<i32>(0))), neg<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%12)), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%11)))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%12)), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type0>>(%11))))), const<u64>(12))
-// DEFAULT-NEXT:                                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                                             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,8 +42,8 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @snprintf(%7 __s: ptr<i8> [restrict], %8 __maxlen: u64, %9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 buf: array<i8, 64> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %5 n: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(%2, array_decay<ptr<i8>, length=Some(64)>(%4), const<u64>(64), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%10)), const<i32>(3), const<i32>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%11)), read<i32>(%5), array_decay<ptr<i8>, length=Some(64)>(%4));
+// DEFAULT-NEXT:         let %5 n: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>, u64, ptr<const i8>, ...) -> i32>(snprintf, array_decay<ptr<i8>, length=Some(64)>(%4), const<u64>(64), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%10)), const<i32>(3), const<i32>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%11)), read<i32>(%5), array_decay<ptr<i8>, length=Some(64)>(%4));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

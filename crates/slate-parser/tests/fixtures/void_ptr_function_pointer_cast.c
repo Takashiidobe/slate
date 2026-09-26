@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 slot: ptr<void> [storage=automatic] = read<ptr<void>>(field1(%6));
 // DEFAULT-NEXT:         let %8 cb: ptr<fn(i32) -> i32> [storage=automatic] = pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(read<ptr<void>>(%7));
 // DEFAULT-NEXT:         let %9 none: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%11)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%8), const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%9), null<ptr<fn(i32) -> i32>>)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%11)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%8), const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%9), null<ptr<fn(i32) -> i32>>)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

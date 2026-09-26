@@ -48,7 +48,7 @@ int         main() {
 // DEFAULT-NEXT:             let %5: i32 [synthetic] = and<i32>(read<i32>(%4), const<i32>(255));
 // DEFAULT-NEXT:             write<i32>(%3, read<i32>(%5));
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%3), not<i32>(const<i32>(255))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

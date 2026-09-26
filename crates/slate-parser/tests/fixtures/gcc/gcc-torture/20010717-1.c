@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:         write<u64>(%5, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%4), const<i32>(1)));
 // DEFAULT-NEXT:         write<u64>(%6, shr<u64, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3)))), const<i32>(1)));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%5), read<u64>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -48,8 +48,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 l: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..2, bits=0..11>(%5), read<i32>(%3));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), read<i32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

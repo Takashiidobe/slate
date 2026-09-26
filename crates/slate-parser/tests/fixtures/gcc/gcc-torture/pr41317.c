@@ -61,7 +61,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%3, pointer_cast<ptr<@type1>, reason=explicit>(addr_of<ptr<@type0>>(%6)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%6)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

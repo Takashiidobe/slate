@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:         write<i8>(%9, truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%3), const<i32>(14))));
 // DEFAULT-NEXT:         write<i32, volatile>(%4, from_bool<i32, reason=assign>(logical_and<bool>(ne<i8>(read<i8>(%9), const<i8>(0)), ne<i32>(read<i32>(%2), const<i32>(0)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

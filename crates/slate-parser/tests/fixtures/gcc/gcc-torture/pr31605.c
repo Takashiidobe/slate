@@ -43,11 +43,11 @@ int main() {
 // DEFAULT-NEXT:     fn %2 @put_field(%3 start: u32, %4 len: u32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %5 cur_bitshift: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(sub<u32, overflow=wrap>(rem<u32, by_zero=ub>(add<u32, overflow=wrap>(read<u32>(%3), read<u32>(%4)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))));
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%5), neg<i32, overflow=ub>(const<i32>(8)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn(u32, u32) -> void>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

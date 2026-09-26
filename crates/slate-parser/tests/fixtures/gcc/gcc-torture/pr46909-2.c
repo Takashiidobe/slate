@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%4)), sub<i32, overflow=ub>(sub<i32, overflow=ub>(const<i32>(1), mul<i32, overflow=ub>(const<i32>(2), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%4), const<i32>(0))))), mul<i32, overflow=ub>(const<i32>(2), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(%4), const<i32>(13))))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

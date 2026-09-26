@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 i: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>(field0 = const<i32>(2), field1 = const<i32>(0), field2 = neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type1>, u64) -> i32>(%4, addr_of<ptr<@type1>>(%8), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

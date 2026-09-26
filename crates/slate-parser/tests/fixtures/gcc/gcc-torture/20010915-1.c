@@ -134,7 +134,7 @@ int r(const char *f) {
 // DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%6, read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%16), read<i32>(%10)))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         while %38 {
 // DEFAULT-NEXT:             let %42: i32 [synthetic] = read<i32>(%10);
 // DEFAULT-NEXT:             let %43: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%42), const<i32>(1));
@@ -147,7 +147,7 @@ int r(const char *f) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @r(%23 f: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%23)))), widen<i32, reason=promotion>(read<i8>(deref(array_decay<ptr<i8>, length=Some(2)>(%24))))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%23), const<i32>(1))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%24), const<i32>(1))))))), gt<i32>(read<i32>(%25), const<i32>(3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         let %44: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%24), const<i32>(0));
 // DEFAULT-NEXT:         let %45: i8 [synthetic] = read<i8>(deref(read<ptr<i8>>(%44)));
 // DEFAULT-NEXT:         let %46: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%45)), const<i32>(1)));
@@ -167,18 +167,18 @@ int r(const char *f) {
 // DEFAULT-NEXT:             write<i32>(%9, read<i32>(%51));
 // DEFAULT-NEXT:             write<bool>(%49, gt<i32>(read<i32>(%50), const<i32>(1)));
 // DEFAULT-NEXT:         if read<bool>(%49)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         write<ptr<i8>>(deref(read<ptr<ptr<i8>>>(%22)), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%21), const<i32>(1)));
 // DEFAULT-NEXT:         return null<ptr<i8>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @m(%20 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main(%12 argc: i32, %13 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %14 args: array<ptr<i8>, 5> [storage=automatic] [align=16] = aggregate<array<ptr<i8>, 5>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(2)>(%33), index1 = array_decay<ptr<i8>, length=Some(2)>(%34), index2 = array_decay<ptr<i8>, length=Some(2)>(%35), index3 = array_decay<ptr<i8>, length=Some(2)>(%36), index4 = array_decay<ptr<i8>, length=Some(2)>(%37));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%3, const<i32>(5), array_decay<ptr<ptr<i8>>, length=Some(5)>(%14)), const<i32>(0)), ne<i32>(read<i32>(%9), const<i32>(2))), ne<i32>(read<i32>(%10), const<i32>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

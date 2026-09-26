@@ -108,7 +108,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @exit(%19 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %9 @verify(%10 a1: i32, %11 a2: i32, %12 a3: i32, %13 a4: i32, %14 b1: i32, %15 b2: i32, %16 b3: i32, %17 b4: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%10), read<i32>(%14)), ne<i32>(read<i32>(%11), read<i32>(%15))), ne<i32>(read<i32>(%12), read<i32>(%16))), ne<i32>(read<i32>(%13), read<i32>(%17)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%6, add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%4), read<vector<i32, 4>>(%5)));
@@ -135,7 +135,7 @@ int main() {
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%6, not<vector<i32, 4>, elementwise=true>(read<vector<i32, 4>>(%4)));
 // DEFAULT-NEXT:         write<vector<i32, 4>>(field0(%8), read<vector<i32, 4>>(%6));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> void>(%9, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%8)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%8)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%8)), const<i32>(2)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field1(%8)), const<i32>(3)))), neg<i32, overflow=ub>(const<i32>(151)), neg<i32, overflow=ub>(const<i32>(101)), neg<i32, overflow=ub>(const<i32>(151)), neg<i32, overflow=ub>(const<i32>(201)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

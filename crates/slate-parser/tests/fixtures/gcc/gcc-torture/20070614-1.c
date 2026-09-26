@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 z: complex<f64>, %4 x: ptr<i32>) -> void [linkage=external] [abi=sysv64(coerce<f64, f64>, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%3), read<complex<f64>>(%1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @bar(%6 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<complex<f64>>(%1);

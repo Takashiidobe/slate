@@ -54,8 +54,8 @@ int main() {
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type0, i32, i32, i32, i32, i32, i32, i32) -> i32, abi=sysv64(native_c, scalar, scalar, scalar, scalar, scalar, scalar, scalar) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%13)), const<i32>(100), const<i32>(200), const<i32>(300), const<i32>(400), const<i32>(500), const<i32>(600), const<i32>(700)), const<i32>(704))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -52,9 +52,9 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%4)), read<i32>(%6));
 // DEFAULT-NEXT:         write<i32>(%3, read<i32>(%5));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1025)>(%2), const<i32>(0)))), const<i32>(1025))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(1024))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

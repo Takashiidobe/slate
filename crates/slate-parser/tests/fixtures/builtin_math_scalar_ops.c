@@ -54,7 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %8 scalbn_v: f64 [storage=automatic] = call<f64, signature=fn(f64, i32) -> f64>(__builtin_scalbn, const<f64>(10.0), const<i32>(3));
 // DEFAULT-NEXT:         let %9 logb_v: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(__builtin_logb, const<f64>(10.0));
 // DEFAULT-NEXT:         let %10 ilogb_v: i32 [storage=automatic] = call<i32, signature=fn(f64) -> i32>(__builtin_ilogb, const<f64>(10.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(44)>(%12)), read<f64>(%2), read<f64>(%3), read<f64>(%4), read<f64>(%5), read<f64>(%6), read<f64>(%7), read<f64>(%8), read<f64>(%9), read<i32>(%10));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(printf, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(44)>(%12)), read<f64>(%2), read<f64>(%3), read<f64>(%4), read<f64>(%5), read<f64>(%6), read<f64>(%7), read<f64>(%8), read<f64>(%9), read<i32>(%10));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

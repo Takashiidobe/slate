@@ -145,7 +145,7 @@ int main(void) {
 // DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(array_decay<ptr<i8>, length=Some(1)>(%35));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @dummy2(%9 x: ptr<void>, %10 y: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(exit, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @baz(%12 x: u32) -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(__builtin_memset, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%13)), const<i32>(85), const<u64>(72));
@@ -153,7 +153,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @check(%15 x: ptr<void>, %16 y: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(deref(read<ptr<@type1>>(%16)))), const<u32>(0)), ne<u32>(read<u32>(field0(field1(deref(read<ptr<@type1>>(%16))))), const<u32>(0))), ne<u32>(read<u32>(field1(field1(deref(read<ptr<@type1>>(%16))))), const<u32>(0))), ne<ptr<u32>>(read<ptr<u32>>(field2(field1(deref(read<ptr<@type1>>(%16))))), null<ptr<u32>>)), ne<u8>(read<u8>(field3(field1(deref(read<ptr<@type1>>(%16))))), const<u8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @bar(%18 x: u32, %19 y: ptr<void>) -> ptr<@type3> [linkage=internal] [fallthrough=ub_if_used] {
@@ -223,7 +223,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %32 one: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:         let %33 p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<u32>, u32, ptr<ptr<void>>) -> i32>(%23, addr_of<ptr<u32>>(%32), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), addr_of<ptr<ptr<void>>>(%33));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

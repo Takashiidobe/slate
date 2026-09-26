@@ -70,7 +70,7 @@ int main() {
 // DEFAULT-NEXT:         call<i32, signature=fn(f32) -> i32>(%1, read<f32>(field0(%3)));
 // DEFAULT-NEXT:         write<i32>(field1(%3), conditional<i32>(lt<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))), read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f32>(field0(%3), const<f32>(1.0));

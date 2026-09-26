@@ -107,7 +107,7 @@ void bar_2(int *interp, Pcc_cell *c) {
 // DEFAULT-NEXT:     global %4 cond: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %6 @never_ever(%7 interp: i32, %8 pmc: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(abort);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @mark_cell(%10 interp: ptr<i32>, %11 c: ptr<@type1>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))
