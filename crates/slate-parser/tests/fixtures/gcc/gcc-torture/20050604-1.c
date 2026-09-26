@@ -104,7 +104,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %20: vector<f32, 4> [synthetic] = read<vector<f32, 4>>(field0(%6));
-// DEFAULT-NEXT:                 let %21: vector<f32, 4> [synthetic] = add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%20), read<vector<f32, 4>>(compound_literal %13 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(18.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(20.0)), index2 = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(22)))));
+// DEFAULT-NEXT:                 let %21: vector<f32, 4> [synthetic] = add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%20), read<vector<f32, 4>>(compound_literal %13 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=true>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(18.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(20.0)), index2 = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(22)))));
 // DEFAULT-NEXT:                 write<vector<f32, 4>>(field0(%6), read<vector<f32, 4>>(%21));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

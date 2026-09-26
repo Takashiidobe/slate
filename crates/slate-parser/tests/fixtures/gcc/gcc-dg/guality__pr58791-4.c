@@ -78,27 +78,27 @@ main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: f32, %2 b: f32, %3 c: f32, %4 d: f32, %5 l: f32, %6 u: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 e: f32 [storage=automatic] = mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%1), read<f32>(%4));
-// DEFAULT-NEXT:         let %8 f: f32 [storage=automatic] = mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%4), read<f32>(%7));
+// DEFAULT-NEXT:         let %7 e: f32 [storage=automatic] = mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%1), read<f32>(%4));
+// DEFAULT-NEXT:         let %8 f: f32 [storage=automatic] = mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%4), read<f32>(%7));
 // DEFAULT-NEXT:         let %9 g: f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f32>(%8));
 // DEFAULT-NEXT:         let %10 h: f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f32>(%2));
-// DEFAULT-NEXT:         let %11 i: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%9), read<f64>(%10));
-// DEFAULT-NEXT:         let %12 i2: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%11), const<f64>(1.0));
-// DEFAULT-NEXT:         let %13 j: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%11), const<f64>(3.25));
-// DEFAULT-NEXT:         let %14 k: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), read<f64>(%13));
-// DEFAULT-NEXT:         let %15 m: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%5)), const<f64>(8.75)));
+// DEFAULT-NEXT:         let %11 i: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%9), read<f64>(%10));
+// DEFAULT-NEXT:         let %12 i2: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%11), const<f64>(1.0));
+// DEFAULT-NEXT:         let %13 j: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%11), const<f64>(3.25));
+// DEFAULT-NEXT:         let %14 k: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%13));
+// DEFAULT-NEXT:         let %15 m: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f64, reason=usual_arith>(read<f32>(%5)), const<f64>(8.75)));
 // DEFAULT-NEXT:         let %16 n: f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f32>(%15));
 // DEFAULT-NEXT:         let %17 o: f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f32>(%1));
-// DEFAULT-NEXT:         let %18 p: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%16), read<f64>(%17));
-// DEFAULT-NEXT:         let %19 q: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), read<f64>(%18));
-// DEFAULT-NEXT:         let %20 r: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%19), const<f64>(2.5));
-// DEFAULT-NEXT:         let %21 s: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%14), read<f64>(%20));
+// DEFAULT-NEXT:         let %18 p: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%16), read<f64>(%17));
+// DEFAULT-NEXT:         let %19 q: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%18));
+// DEFAULT-NEXT:         let %20 r: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%19), const<f64>(2.5));
+// DEFAULT-NEXT:         let %21 s: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%14), read<f64>(%20));
 // DEFAULT-NEXT:         let %22 t: f64 [storage=automatic] = float_widen<f64, reason=explicit>(read<f32>(%3));
-// DEFAULT-NEXT:         let %23 v: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%17), read<f64>(%6));
-// DEFAULT-NEXT:         let %24 w: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%17), read<f64>(%23));
-// DEFAULT-NEXT:         let %25 x: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), read<f64>(%24));
-// DEFAULT-NEXT:         let %26 y: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), read<f64>(%25));
-// DEFAULT-NEXT:         let %27 z: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%26), const<f64>(8.5));
+// DEFAULT-NEXT:         let %23 v: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%17), read<f64>(%6));
+// DEFAULT-NEXT:         let %24 w: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%17), read<f64>(%23));
+// DEFAULT-NEXT:         let %25 x: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%24));
+// DEFAULT-NEXT:         let %26 y: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%25));
+// DEFAULT-NEXT:         let %27 z: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%26), const<f64>(8.5));
 // DEFAULT-NEXT:         asm volatile "nop" {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
@@ -107,7 +107,7 @@ main() {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%21), read<f64>(%27));
+// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%21), read<f64>(%27));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %28 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<f64, signature=fn(f32, f32, f32, f32, f32, f64) -> f64>(%0, const<f32>(3.0), const<f32>(2.0), neg<f32>(const<f32>(1.0)), const<f32>(9.0), const<f32>(1.0), const<f64>(2.0));

@@ -50,13 +50,13 @@ int main() {
 // DEFAULT-NEXT:         let %2 ph: volatile i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %3 vf: volatile f64 [storage=automatic] = const<f64>(1.0);
 // DEFAULT-NEXT:         let %4 factor: f64 [storage=automatic] = read<f64, volatile>(%3);
-// DEFAULT-NEXT:         let %5 x: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore>(neg<f64>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32, volatile>(%2))), read<f64>(%4));
+// DEFAULT-NEXT:         let %5 x: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(neg<f64>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32, volatile>(%2))), read<f64>(%4));
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%5), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
 // DEFAULT-NEXT:             write<f64>(deref(read<ptr<f64>>(%1)), const<f64>(1.0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<f64>(deref(read<ptr<f64>>(%1)), div<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), read<f64>(%5)));
-// DEFAULT-NEXT:         let %6 w: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0), read<f64>(%5)), read<f64>(%4));
-// DEFAULT-NEXT:         let %7 omww: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), read<f64>(%6));
+// DEFAULT-NEXT:             write<f64>(deref(read<ptr<f64>>(%1)), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), read<f64>(%5)));
+// DEFAULT-NEXT:         let %6 w: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(2.0), read<f64>(%5)), read<f64>(%4));
+// DEFAULT-NEXT:         let %7 omww: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), read<f64>(%6));
 // DEFAULT-NEXT:         return conditional<f64>(gt<f64, exceptions=ignore>(read<f64>(%7), const<f64>(0.0)), read<f64>(%7), const<f64>(0.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

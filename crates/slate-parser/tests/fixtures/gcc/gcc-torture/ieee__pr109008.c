@@ -41,13 +41,13 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 eps: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 d: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), read<f64>(%1));
+// DEFAULT-NEXT:         let %2 d: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), read<f64>(%1));
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), const<f64>(1.0))
 // DEFAULT-NEXT:             return read<f64>(%1);
 // DEFAULT-NEXT:         return const<f64>(0.0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%0, div<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(2.220446049250313e-16), const<f64>(8.0))), const<f64>(0.0))
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%0, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(2.220446049250313e-16), const<f64>(8.0))), const<f64>(0.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

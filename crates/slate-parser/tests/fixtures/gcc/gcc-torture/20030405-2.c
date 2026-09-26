@@ -104,10 +104,10 @@ foo (int n)
 // DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%0)), const<i32>(34));
 // DEFAULT-NEXT:                 return widen<i64, reason=return>(neg<i32, overflow=ub>(const<i32>(2147483647)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%7), const<f64>(65536.0)), conditional<f64>(lt<f64, exceptions=ignore>(read<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), neg<f64>(const<f64>(0.5)), const<f64>(0.5))));
+// DEFAULT-NEXT:         return float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(65536.0)), conditional<f64>(lt<f64, exceptions=ignore>(read<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), neg<f64>(const<f64>(0.5)), const<f64>(0.5))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @fixtof(%9 x: i64) -> f64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%9)), const<f64>(65536.0));
+// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%9)), const<f64>(65536.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @fixdiv(%11 x: i64, %12 y: i64) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i64>(read<i64>(%12), widen<i64, reason=usual_arith>(const<i32>(0)))
@@ -116,7 +116,7 @@ foo (int n)
 // DEFAULT-NEXT:                 return widen<i64, reason=return>(conditional<i32>(lt<i64>(read<i64>(%11), widen<i64, reason=usual_arith>(const<i32>(0))), neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(2147483647)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return call<i64, signature=fn(f64) -> i64>(%6, div<f64, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(i64) -> f64>(%8, read<i64>(%11)), call<f64, signature=fn(i64) -> f64>(%8, read<i64>(%12))));
+// DEFAULT-NEXT:             return call<i64, signature=fn(f64) -> i64>(%6, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(i64) -> f64>(%8, read<i64>(%11)), call<f64, signature=fn(i64) -> f64>(%8, read<i64>(%12))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @itofix(%14 x: i32) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return widen<i64, reason=return>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%14), const<i32>(16)));

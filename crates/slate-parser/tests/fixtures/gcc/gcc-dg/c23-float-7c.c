@@ -66,7 +66,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, or<i32>(or<i32>(or<i32>(or<i32>(const<i32>(32), const<i32>(4)), const<i32>(16)), const<i32>(8)), const<i32>(1)));
 // DEFAULT-NEXT:         let %10: f80 [synthetic] = read<f80, volatile>(%2);
-// DEFAULT-NEXT:         let %11: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%10), read<f80, volatile>(%2));
+// DEFAULT-NEXT:         let %11: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%10), read<f80, volatile>(%2));
 // DEFAULT-NEXT:         write<f80, volatile>(%2, read<f80>(%11));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);

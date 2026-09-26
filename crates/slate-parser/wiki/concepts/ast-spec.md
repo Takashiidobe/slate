@@ -148,7 +148,11 @@ Semantic pragmas are preserved at their source position as `DeclKind::Pragma`
 at file scope or `StmtKind::Pragma` inside a function. Pack, weak, visibility,
 STDC floating-point, `float_control`, and `ms_struct` forms have typed payloads;
 other pragma spellings use `PragmaKind::Opaque` so preprocessing information is
-never discarded.
+never discarded. An STDC pragma is typed only with an uppercase `ON`, `OFF` or
+`DEFAULT`, the values clang recognizes. Every `float_control` spelling is
+typed; one that is not `float_control({push|pop})` or
+`float_control({precise|except}[, {on|off}][, push])` is
+`FloatControl::Malformed`, so sema can reject it per compiler flavor.
 
 `_Pragma` operands are destringized after macro expansion, with spelling and
 expansion locations retained. An operator inside a statement is emitted before

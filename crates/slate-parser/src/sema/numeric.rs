@@ -1,3 +1,4 @@
+use super::pragmas::FloatingRegion;
 use super::validate::{
     bit_int_literal_width, fits_rank, integer_rank_width, select_integer_candidate,
 };
@@ -7,10 +8,10 @@ use crate::const_expr::{
     IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
 };
 use crate::ir::{
-    AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, ConversionKind,
-    ConversionReason, ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType,
-    FixedRounding, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow,
-    Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, Value, ValueKind,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, Contraction, ConversionKind,
+    ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType, FixedRounding,
+    FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy, UnaryArithOp,
+    Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -55,7 +56,7 @@ pub struct Context {
     pub features: StandardFeatures,
     pub signed_overflow: Overflow,
     pub pointer_wrap: bool,
-    pub floating: FloatingSemantics,
+    pub region: FloatingRegion,
 }
 
 type Resolved = (Type, ValueKind);
@@ -65,7 +66,11 @@ impl Context {
         self.target = options.effective_target(self.target);
         self.signed_overflow = options.operations.signed_overflow;
         self.pointer_wrap = options.operations.pointer_wrap;
-        self.floating = options.operations.floating;
+        self.region.floating = options.operations.floating;
+        self
+    }
+    pub fn with_contraction(mut self, contract: Contraction) -> Self {
+        self.region.contract = contract;
         self
     }
     pub fn with_features(mut self, features: StandardFeatures) -> Self {
@@ -79,10 +84,21 @@ impl Context {
             features: StandardFeatures::default(),
             signed_overflow: Overflow::Undefined,
             pointer_wrap: false,
-            floating: FloatingSemantics {
-                rounding: Rounding::NearestEven,
-                exceptions: Exceptions::Ignore,
-            },
+            region: FloatingRegion::default(),
+        }
+    }
+
+    pub(super) fn floating_arith(&self) -> ArithSema {
+        ArithSema::Floating {
+            floating: self.region.floating,
+            contract: self.region.contract,
+        }
+    }
+
+    fn complex_floating_arith(&self) -> ArithSema {
+        ArithSema::ComplexFloating {
+            floating: self.region.floating,
+            range: self.region.complex_range,
         }
     }
 
@@ -250,7 +266,7 @@ impl Context {
         };
         let semantics = match (left_ty, arith) {
             (NumericType::Float(_), ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div) => {
-                ArithSema::Floating(self.floating)
+                self.floating_arith()
             }
             (NumericType::Float(_), _)
             | (
@@ -377,7 +393,7 @@ impl Context {
         }
         if let Type::Complex(component) = operand.ty {
             let semantics = match component {
-                NumericType::Float(_) => ArithSema::ComplexFloating(self.floating),
+                NumericType::Float(_) => self.complex_floating_arith(),
                 NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
                     overflow: if signed {
                         self.signed_overflow
@@ -454,7 +470,7 @@ impl Context {
                     left: Box::new(left),
                     right: Box::new(right),
                     exceptions: matches!(element, NumericType::Float(_))
-                        .then_some(self.floating.exceptions),
+                        .then_some(self.region.floating.exceptions),
                     reason: None,
                 },
             ));
@@ -475,7 +491,7 @@ impl Context {
         // clang emits no nsw for vector arithmetic, so signed lanes wrap
         let semantics = match (element, arith) {
             (NumericType::Float(_), ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div) => {
-                ArithSema::Floating(self.floating)
+                self.floating_arith()
             }
             (NumericType::Float(_), _) => {
                 return Err(ResolveError::Invalid(
@@ -753,7 +769,7 @@ impl Context {
                     left: Box::new(left),
                     right: Box::new(right),
                     exceptions: matches!(component, NumericType::Float(_))
-                        .then_some(self.floating.exceptions),
+                        .then_some(self.region.floating.exceptions),
                     reason: None,
                 },
             ));
@@ -766,7 +782,7 @@ impl Context {
             _ => return Err(ResolveError::Unsupported("complex operator")),
         };
         let semantics = match component {
-            NumericType::Float(_) => ArithSema::ComplexFloating(self.floating),
+            NumericType::Float(_) => self.complex_floating_arith(),
             NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
                 overflow: if signed {
                     self.signed_overflow
@@ -838,7 +854,7 @@ impl Context {
                     },
                     left: Box::new(left),
                     right: Box::new(right),
-                    exceptions: Some(self.floating.exceptions),
+                    exceptions: Some(self.region.floating.exceptions),
                     reason: None,
                 },
             ));
@@ -868,9 +884,9 @@ impl Context {
             _ => Type::Imaginary(format),
         };
         let semantics = if matches!(result_ty, Type::Complex(_)) {
-            ArithSema::ComplexFloating(self.floating)
+            self.complex_floating_arith()
         } else {
-            ArithSema::Floating(self.floating)
+            self.floating_arith()
         };
         Ok((
             result_ty,
@@ -888,7 +904,8 @@ impl Context {
             op,
             left: Box::new(left),
             right: Box::new(right),
-            exceptions: matches!(ty, NumericType::Float(_)).then_some(self.floating.exceptions),
+            exceptions: matches!(ty, NumericType::Float(_))
+                .then_some(self.region.floating.exceptions),
             reason: None,
         }
     }
@@ -961,7 +978,7 @@ impl Context {
                 let semantics = if target.widens_from(from) {
                     ConversionSema::Exact
                 } else {
-                    ConversionSema::Floating(self.floating)
+                    ConversionSema::Floating(self.region.floating)
                 };
                 conversion(
                     value,
@@ -1041,16 +1058,16 @@ impl Context {
                         ConversionSema::Exact
                     }
                     (NumericType::Float(_), NumericType::Float(_)) => {
-                        ConversionSema::Floating(self.floating)
+                        ConversionSema::Floating(self.region.floating)
                     }
                     (NumericType::Integer { width, signed, .. }, NumericType::Float(format)) => {
                         ConversionSema::IntToFloat {
                             exact: width - u32::from(signed) <= format.exact_integer_bits(),
-                            floating: self.floating,
+                            floating: self.region.floating,
                         }
                     }
                     (NumericType::Float(_), NumericType::Integer { .. }) => {
-                        ConversionSema::Exceptions(self.floating.exceptions)
+                        ConversionSema::Exceptions(self.region.floating.exceptions)
                     }
                     (
                         NumericType::Integer {
@@ -1115,7 +1132,7 @@ impl Context {
                 to,
                 ConversionKind::FixedToFloat,
                 reason,
-                ConversionSema::Floating(self.floating),
+                ConversionSema::Floating(self.region.floating),
             ),
             (
                 Type::Numeric(NumericType::Integer {
@@ -1186,7 +1203,7 @@ impl Context {
                     reason,
                     ConversionSema::IntToFloat {
                         exact,
-                        floating: self.floating,
+                        floating: self.region.floating,
                     },
                 )
             }
@@ -1199,12 +1216,12 @@ impl Context {
                 } else if from.is_decimal() != to_format.is_decimal() {
                     (
                         ConversionKind::FloatConvert,
-                        ConversionSema::Floating(self.floating),
+                        ConversionSema::Floating(self.region.floating),
                     )
                 } else {
                     (
                         ConversionKind::FloatNarrow,
-                        ConversionSema::Floating(self.floating),
+                        ConversionSema::Floating(self.region.floating),
                     )
                 };
                 conversion(value, to, kind, reason, semantics)
@@ -1215,7 +1232,7 @@ impl Context {
                     to,
                     ConversionKind::FloatToInt,
                     reason,
-                    ConversionSema::Exceptions(self.floating.exceptions),
+                    ConversionSema::Exceptions(self.region.floating.exceptions),
                 )
             }
             _ => value,

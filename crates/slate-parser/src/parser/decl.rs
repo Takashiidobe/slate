@@ -73,20 +73,13 @@ impl Parser {
                 }
             }
             [Token::Ident(std), Token::Ident(option), Token::Ident(value)] if std == "STDC" => {
-                match (parse_stdc_option(option), parse_on_off(value)) {
-                    (Some(option), Ok(enabled)) => PragmaKind::Stdc { option, enabled },
+                match (parse_stdc_option(option), parse_stdc_value(value)) {
+                    (Some(option), Some(value)) => PragmaKind::Stdc { option, value },
                     _ => PragmaKind::Opaque(text.clone()),
                 }
             }
-            [
-                Token::Ident(name),
-                Token::Ident(option),
-                Token::Ident(value),
-            ] if name == "float_control" => {
-                match (parse_float_control_option(option), parse_on_off(value)) {
-                    (Some(option), Ok(enabled)) => PragmaKind::FloatControl { option, enabled },
-                    _ => PragmaKind::Opaque(text.clone()),
-                }
+            [Token::Ident(name), rest @ ..] if name == "float_control" => {
+                PragmaKind::FloatControl(parse_float_control(rest))
             }
             [Token::Ident(name), Token::Ident(action)] if name == "ms_struct" => {
                 match parse_ms_struct_action(action) {
@@ -487,20 +480,6 @@ fn parse_stack_action_token(token: &Token) -> Result<PragmaStackAction, ParseErr
     }
 }
 
-fn parse_on_off(token: &str) -> Result<bool, ParseError> {
-    match token {
-        value if value.eq_ignore_ascii_case("on") => Ok(true),
-        value if value.eq_ignore_ascii_case("off") => Ok(false),
-        _ => Err(ParseError::new(
-            "<pragma>",
-            "",
-            0,
-            1,
-            "expected `on` or `off`",
-        )),
-    }
-}
-
 fn parse_ms_struct_action(token: &str) -> Option<MsStructAction> {
     match token {
         "on" => Some(MsStructAction::On),
@@ -519,11 +498,57 @@ fn parse_stdc_option(token: &str) -> Option<StdcPragmaOption> {
     }
 }
 
-fn parse_float_control_option(token: &str) -> Option<FloatControlOption> {
+fn parse_stdc_value(token: &str) -> Option<StdcPragmaValue> {
     match token {
+        "ON" => Some(StdcPragmaValue::On),
+        "OFF" => Some(StdcPragmaValue::Off),
+        "DEFAULT" => Some(StdcPragmaValue::Default),
+        _ => None,
+    }
+}
+
+fn parse_float_control(tokens: &[Token]) -> FloatControl {
+    let [Token::LParen, rest @ ..] = tokens else {
+        return FloatControl::Malformed;
+    };
+    let Some(close) = rest.iter().position(|token| *token == Token::RParen) else {
+        return FloatControl::Malformed;
+    };
+    let words: Option<Vec<&str>> = rest[..close]
+        .split(|token| *token == Token::Comma)
+        .map(|argument| match argument {
+            [Token::Ident(word)] => Some(word.as_str()),
+            _ => None,
+        })
+        .collect();
+    let option = |word| match word {
         "precise" => Some(FloatControlOption::Precise),
         "except" => Some(FloatControlOption::Except),
         _ => None,
+    };
+    let enabled = |word| match word {
+        "on" => Some(true),
+        "off" => Some(false),
+        _ => None,
+    };
+    let set = |option, enabled, push| FloatControl::Set {
+        option,
+        enabled,
+        push,
+    };
+    match words.as_deref() {
+        Some(["push"]) => FloatControl::Push,
+        Some(["pop"]) => FloatControl::Pop,
+        Some([kind]) => option(kind).map_or(FloatControl::Malformed, |kind| set(kind, true, false)),
+        Some([kind, value]) => match (option(kind), enabled(value)) {
+            (Some(kind), Some(value)) => set(kind, value, false),
+            _ => FloatControl::Malformed,
+        },
+        Some([kind, value, "push"]) => match (option(kind), enabled(value)) {
+            (Some(kind), Some(value)) => set(kind, value, true),
+            _ => FloatControl::Malformed,
+        },
+        _ => FloatControl::Malformed,
     }
 }
 

@@ -501,7 +501,13 @@ These lower to one `ValueKind::Arith` node keyed by `ArithOp`
 not folded or reassociated. Signed overflow defaults to
 `ub`, unsigned overflow to `wrap`; floating arithmetic defaults to
 nearest-even rounding with ignored exceptions for the default Clang flavor
-(observable exceptions for GCC). Translation-unit operation options
+(observable exceptions for GCC). Floating arithmetic also carries
+`contract=`, the fused multiply-add permission: `on` for Clang and MSVC
+(within one expression), `fast` for GCC in `gnu*` modes (across statements),
+`off` for GCC in ISO modes. Complex floating arithmetic carries `range=`,
+`full` unless `CX_LIMITED_RANGE` permits `basic`. Both are recorded because
+they are useful to a consumer, not because ignoring them is wrong.
+Translation-unit operation options
 initialize the context's independent integer and floating semantic settings.
 Overflow metadata describes the operation's behavior if overflow occurs,
 not a prediction that these operands overflow. Signed add/sub/mul use the
@@ -640,8 +646,12 @@ and exception settings; float-to-int truncates toward zero and records
 Target-dependent `f64x` suffixes return explicit unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
 `-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
-`-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
-semantics and function attribute overrides are not yet wired into this path.
+`-f[no-]trapping-math`, plus the long-double options above. Region-scoped
+floating pragmas override them (see the pragma section); function attribute
+overrides are not yet wired into this path. Initializers of static and
+thread storage duration objects always use nearest-even rounding and
+ignored exceptions, whatever the region: C F.8.5 evaluates them at
+translation time, and clang and gcc both fold them that way.
 The `pointer_wrap` setting implied by strict-overflow options controls pointer
 offset overflow, independently of integer overflow. `-fwrapv` alone does not
 change pointer contracts.
@@ -834,10 +844,35 @@ clang's discrete bit-field codegen. Oracle: clang's ItaniumRecordLayoutBuilder
 `IsMsStruct` path. Microsoft *target* layout (`*-windows-msvc`) is a separate,
 still-missing algorithm.
 
-`STDC` and `float_control` are still dropped: unlike the others they are
-region-scoped rather than declaration-scoped, and `FP_CONTRACT` and
-`CX_LIMITED_RANGE` have nowhere to go, since `FloatingSemantics` carries only
-rounding and exceptions. See `slate-parser-dyd.28`.
+`STDC FENV_ACCESS`/`FP_CONTRACT`/`CX_LIMITED_RANGE` and `float_control` are
+region-scoped rather than declaration-scoped: sema carries a `FloatingRegion`
+(rounding, exceptions, contraction, complex range, precise) that each
+compound statement saves on entry and restores on exit, and a pragma changes
+it from its position on. Under the Clang and MSVC flavors, matching clang 22:
+
+- `FENV_ACCESS ON` gives `rounding=environment, exceptions=observable`.
+  `OFF` and `DEFAULT` give nearest-even rounding (even under
+  `-frounding-math`) and the command-line exception behavior.
+- `FP_CONTRACT ON|OFF|DEFAULT` gives `contract=on|off|<command line>`;
+  `CX_LIMITED_RANGE ON|OFF|DEFAULT` gives `range=basic|full|<command line>`.
+  Only the uppercase values are recognized; clang ignores anything else.
+- `float_control(except, on|off)` sets exceptions observable or ignored;
+  `float_control(precise, on)` gives `contract=on`, `(precise, off)`
+  `contract=fast`. The other fast-math permissions `precise, off` grants
+  (reassociation, no-NaNs, ...) are not yet represented.
+- A pragma must be at file scope or at the start of a compound statement,
+  after nothing but other pragmas. The `push` forms and `float_control(pop)`
+  must be at file scope, where they save and restore the whole region.
+  `FENV_ACCESS ON` and `float_control(except, on)` are errors while precise
+  is off, and `float_control(precise, off)` is an error while exceptions are
+  observable. A malformed `float_control` is an error.
+- The parser hoists a pragma that sits inside a statement to just before
+  that statement, so a pragma used as an `if` or loop body is accepted as
+  if it began the enclosing compound statement, where clang rejects it.
+
+GCC implements none of these pragmas and ignores them with
+`-Wunknown-pragmas`, so under the GCC flavor they have no effect and are
+never errors: regions keep the command-line semantics.
 
 Declarator asm labels are separate work (`slate-parser-dyd.4`).
 
@@ -990,7 +1025,7 @@ floating and GNU integer-complex declarations, scalar/complex and
 complex/complex conversions, `+ - * /`, `== !=`, truth tests, unary negation,
 and `__real__`/`__imag__` reads and writes. Mixed scalar/complex arithmetic
 retains the scalar operand, which matters for floating multiplication and
-division. `ArithSema::ComplexFloating` carries rounding and exception policy;
+division. `ArithSema::ComplexFloating` carries rounding, exception and range policy;
 `ComplexInteger` carries overflow and division-by-zero policy. GNU `~` on a
 complex operand is conjugation, not a bitwise complement, for both floating
 and integer components (gcc and clang both implement it that way); it prints

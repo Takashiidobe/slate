@@ -109,16 +109,16 @@ unsigned long wide_complex_size(void) {
 // IR-NEXT:     }
 // IR-NEXT:     global %3 bfloat_complex: complex<bf16> [storage=static] [linkage=external];
 // IR-NEXT:     fn %0 @add(%1 a: complex<f64>, %2 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%1), read<complex<f64>>(%2));
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%1), read<complex<f64>>(%2));
 // IR-NEXT:     }
 // IR-NEXT:     fn %4 @mixed(%5 a: complex<f64>, %6 b: f64) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%5), read<f64>(%6));
+// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%5), read<f64>(%6));
 // IR-NEXT:     }
 // IR-NEXT:     fn %7 @add_real(%8 a: complex<f64>, %9 b: f64) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%8), read<f64>(%9));
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%8), read<f64>(%9));
 // IR-NEXT:     }
 // IR-NEXT:     fn %10 @precision(%11 a: complex<f32>, %12 b: complex<f64>) -> complex<f32> [linkage=external] [abi=sysv64(coerce<pair<f32>>, coerce<f64, f64>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return complex_convert<complex<f32>, reason=return, rounding=nearest_even, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%11)), read<complex<f64>>(%12)));
+// IR-NEXT:         return complex_convert<complex<f32>, reason=return, rounding=nearest_even, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%11)), read<complex<f64>>(%12)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %13 @equal(%14 a: complex<f64>, %15 b: complex<f64>) -> i32 [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         return from_bool<i32, reason=return>(eq<complex<f64>, exceptions=ignore>(read<complex<f64>>(%14), read<complex<f64>>(%15)));
@@ -133,7 +133,7 @@ unsigned long wide_complex_size(void) {
 // IR-NEXT:         return read<f64>(imag(%22));
 // IR-NEXT:     }
 // IR-NEXT:     fn %23 @result_real(%24 a: complex<f64>, %25 b: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return complex_to_real<f64, reason=explicit>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%24), read<complex<f64>>(%25)));
+// IR-NEXT:         return complex_to_real<f64, reason=explicit>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%24), read<complex<f64>>(%25)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %26 @set_parts(%27 value: ptr<complex<f64>>, %28 x: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<f64>(real(deref(read<ptr<complex<f64>>>(%27))), read<f64>(%28));

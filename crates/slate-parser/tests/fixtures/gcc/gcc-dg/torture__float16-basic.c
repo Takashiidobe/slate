@@ -177,41 +177,41 @@ int main(void) {
 // DEFAULT-NEXT:         let %11 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %12 ret: f16 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%11);
-// DEFAULT-NEXT:         write<f16>(%12, add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%10), va_arg<f16>(%11)));
-// DEFAULT-NEXT:         add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%10), va_arg<f16>(%11));
+// DEFAULT-NEXT:         write<f16>(%12, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%10), va_arg<f16>(%11)));
+// DEFAULT-NEXT:         add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%10), va_arg<f16>(%11));
 // DEFAULT-NEXT:         va_end(%11);
 // DEFAULT-NEXT:         return read<f16>(%12);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %13 @krfn(%14 arg: f16) -> f16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%14), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%14), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @krprofn(%16 arg: f16) -> f16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%16), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
+// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%16), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %17 @profn(%18 arg: f16) -> f16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%18), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(4)));
+// DEFAULT-NEXT:         return div<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%18), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %20 r: volatile f16 [storage=automatic];
 // DEFAULT-NEXT:         write<f16, volatile>(%20, neg<f16>(read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), read<f16, volatile>(%5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, add<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(3.5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, sub<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, sub<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(1.5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore>(int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), read<f16, volatile>(%5)));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), read<f16, volatile>(%5)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(neg<i32, overflow=ub>(const<i32>(5))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%5)));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), read<f16, volatile>(%5)));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(6.25)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, div<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%4), add<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%3))));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, div<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%3))));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), const<f16>(1.25))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%5), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3))));
+// DEFAULT-NEXT:         write<f16, volatile>(%20, mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%5), int_to_float<f16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(3))));
 // DEFAULT-NEXT:         if ne<f16, exceptions=ignore>(read<f16, volatile>(%20), neg<f16>(const<f16>(7.5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         let %21 i: volatile i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(read<f16, volatile>(%20));

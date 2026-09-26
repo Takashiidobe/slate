@@ -71,7 +71,7 @@ int main(void) {
 // DEFAULT-NEXT:             while %10 lt<f80, exceptions=ignore>(read<f80>(%5), read<f80>(%3))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %12: f80 [synthetic] = read<f80>(%5);
-// DEFAULT-NEXT:                     let %13: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%12), const<f80>(2));
+// DEFAULT-NEXT:                     let %13: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%12), const<f80>(2));
 // DEFAULT-NEXT:                     write<f80>(%5, read<f80>(%13));
 // DEFAULT-NEXT:                     let %14: i32 [synthetic] = read<i32>(%6);
 // DEFAULT-NEXT:                     let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
@@ -84,7 +84,7 @@ int main(void) {
 // DEFAULT-NEXT:                 while %11 lt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%5))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %16: f80 [synthetic] = read<f80>(%5);
-// DEFAULT-NEXT:                         let %17: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%16), const<f80>(2));
+// DEFAULT-NEXT:                         let %17: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%16), const<f80>(2));
 // DEFAULT-NEXT:                         write<f80>(%5, read<f80>(%17));
 // DEFAULT-NEXT:                         let %18: i32 [synthetic] = read<i32>(%6);
 // DEFAULT-NEXT:                         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));

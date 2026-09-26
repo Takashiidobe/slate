@@ -89,16 +89,16 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @ctest_float(%4 x: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 res: complex<f32> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f32>>(%5, not<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%4)));
+// DEFAULT-NEXT:         write<complex<f32>>(%5, not<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%4)));
 // DEFAULT-NEXT:         return read<complex<f32>>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @test_float() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %7 res: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         let %8 x: complex<f32> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f32>>(%8, complex_convert<complex<f32>, reason=assign, rounding=nearest_even, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<complex<f32>>(%8, complex_convert<complex<f32>, reason=assign, rounding=nearest_even, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         write<complex<f32>>(%7, call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%3, read<complex<f32>>(%8)));
 // DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%3, read<complex<f32>>(%8));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%7)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%7)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%35)));
 // DEFAULT-NEXT:                 let %40: i32 [synthetic] = read<i32>(%2);
@@ -108,16 +108,16 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @ctest_double(%10 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 res: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%11, not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%10)));
+// DEFAULT-NEXT:         write<complex<f64>>(%11, not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%10)));
 // DEFAULT-NEXT:         return read<complex<f64>>(%11);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @test_double() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %13 res: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         let %14 x: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%14, add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))));
+// DEFAULT-NEXT:         write<complex<f64>>(%14, add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))));
 // DEFAULT-NEXT:         write<complex<f64>>(%13, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%9, read<complex<f64>>(%14)));
 // DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%9, read<complex<f64>>(%14));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%13), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%13), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%36)));
 // DEFAULT-NEXT:                 let %42: i32 [synthetic] = read<i32>(%2);
@@ -127,16 +127,16 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @ctest_long_double(%16 x: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %17 res: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f80>>(%17, not<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%16)));
+// DEFAULT-NEXT:         write<complex<f80>>(%17, not<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%16)));
 // DEFAULT-NEXT:         return read<complex<f80>>(%17);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %18 @test_long_double() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %19 res: complex<f80> [storage=automatic];
 // DEFAULT-NEXT:         let %20 x: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f80>>(%20, complex_convert<complex<f80>, reason=assign>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<complex<f80>>(%20, complex_convert<complex<f80>, reason=assign>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         write<complex<f80>>(%19, call<complex<f80>, signature=fn(complex<f80>) -> complex<f80>, abi=sysv64(byval<align=16>) -> coerce<f80, f80>>(%15, read<complex<f80>>(%20)));
 // DEFAULT-NEXT:         call<complex<f80>, signature=fn(complex<f80>) -> complex<f80>, abi=sysv64(byval<align=16>) -> coerce<f80, f80>>(%15, read<complex<f80>>(%20));
-// DEFAULT-NEXT:         if ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%19), complex_convert<complex<f80>, reason=usual_arith>(sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))))
+// DEFAULT-NEXT:         if ne<complex<f80>, exceptions=ignore>(read<complex<f80>>(%19), complex_convert<complex<f80>, reason=usual_arith>(sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%37)));
 // DEFAULT-NEXT:                 let %44: i32 [synthetic] = read<i32>(%2);
@@ -152,10 +152,10 @@ int main(void) {
 // DEFAULT-NEXT:     fn %24 @test_int() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %25 res: complex<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %26 x: complex<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i32>>(%26, complex_convert<complex<i32>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<complex<i32>>(%26, complex_convert<complex<i32>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         write<complex<i32>>(%25, call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(coerce<i64>) -> coerce<i64>>(%21, read<complex<i32>>(%26)));
 // DEFAULT-NEXT:         call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(coerce<i64>) -> coerce<i64>>(%21, read<complex<i32>>(%26));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%25)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%25)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%38)));
 // DEFAULT-NEXT:                 let %46: i32 [synthetic] = read<i32>(%2);
@@ -171,10 +171,10 @@ int main(void) {
 // DEFAULT-NEXT:     fn %30 @test_long_int() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %31 res: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         let %32 x: complex<i64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i64>>(%32, complex_convert<complex<i64>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<complex<i64>>(%32, complex_convert<complex<i64>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         write<complex<i64>>(%31, call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>>(%27, read<complex<i64>>(%32)));
 // DEFAULT-NEXT:         call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>>(%27, read<complex<i64>>(%32));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<complex<i64>>(%31)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<complex<i64>>(%31)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%39)));
 // DEFAULT-NEXT:                 let %48: i32 [synthetic] = read<i32>(%2);

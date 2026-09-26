@@ -480,8 +480,8 @@ arith_contract    = (* exact: nothing *)
                   | ", by_zero=ub" [ ", min_by_neg_one=ub" ]
                   | overflow ", amount_out_of_range=ub" [ ", negative_left=ub" ]
                   | ", amount_out_of_range=ub, fill=" ( "sign_extend" | "zero_extend" )
-                  | floating
-                  | ", complex=true" floating
+                  | floating ", contract=" ( "off" | "on" | "fast" )
+                  | ", complex=true" floating ", range=" ( "basic" | "full" )
                   | ", complex=true" overflow [ ", by_zero=ub" ]
                   | fixed [ ", by_zero=ub" ] [ ", amount_out_of_range=ub" ] ;
 fixed             = ", overflow=" ( "ub" | "saturate" )
@@ -503,6 +503,11 @@ exceptions        = "ignore" | "observable" ;
   `min_by_neg_one`); `shl` (signed adds `negative_left`); `shr`; floating
   arithmetic (`add`/`sub`/`mul`/`div` and the six extrema); complex
   floating; complex integer; fixed-point.
+- `contract=` is the fused multiply-add permission of floating arithmetic:
+  `off` never fuses, `on` may fuse within one source expression, `fast` may
+  fuse across statements. `range=` is the complex multiply/divide algorithm:
+  `full` handles infinities and NaNs (C Annex G), `basic` may use the plain
+  textbook formulas. Both are permissions; ignoring them is always correct.
 - A fixed-point contract is `overflow=saturate` for a `_Sat` type and
   `overflow=ub` otherwise, and always `rounding=toward_zero`, which is the
   fractional bits the operation discards. It appears on `add`/`sub`/`mul`/

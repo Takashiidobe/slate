@@ -383,10 +383,13 @@ PragmaKind = Pack { action: StackAction, label?: opt<string>,
            | Weak { name: string, alias: opt<string> }
            | Visibility { action: StackAction, visibility: opt<string> }
            | Stdc { option: ( "FenvAccess" | "FpContract" | "CxLimitedRange" ),
-                    enabled: bool }
-           | FloatControl { option: ( "Precise" | "Except" ), enabled: bool }
+                    value: ( "On" | "Off" | "Default" ) }
+           | "FloatControl(" FloatControl ")"
            | MsStruct { action: ( "On" | "Off" | "Reset" ) }
            | "Opaque(" string ")" ;
+FloatControl = Set { option: ( "Precise" | "Except" ), enabled: bool,
+                     push: bool }
+             | "Push" | "Pop" | "Malformed" ;
 StackAction = "Push" | "Pop" | "Show" | "Set" ;
 ```
 

@@ -105,7 +105,7 @@ foo (double w[], int x, double y[], double z[])
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(deref(ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%16), const<i32>(1)))), read<i32>(%15))), div<f64, rounding=nearest_even, exceptions=ignore>(neg<f64>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), sub<i32, overflow=ub>(read<i32>(%12), read<i32>(%15)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), read<i32>(%12))))));
+// DEFAULT-NEXT:                 write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(deref(ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%16), const<i32>(1)))), read<i32>(%15))), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(neg<f64>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), sub<i32, overflow=ub>(read<i32>(%12), read<i32>(%15)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), read<i32>(%12))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

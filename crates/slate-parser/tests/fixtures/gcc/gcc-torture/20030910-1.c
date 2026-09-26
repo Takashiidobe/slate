@@ -37,7 +37,7 @@ void test()
 // DEFAULT-NEXT:     fn %0 @test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %1 dc: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         let %2 d: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%2, complex_to_real<f64, reason=explicit>(mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%1), read<complex<f64>>(%1))));
+// DEFAULT-NEXT:         write<f64>(%2, complex_to_real<f64, reason=explicit>(mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%1), read<complex<f64>>(%1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

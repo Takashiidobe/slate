@@ -43,7 +43,7 @@ int main() {
 // DEFAULT-NEXT:         let %3 x: f80 [storage=automatic];
 // DEFAULT-NEXT:         write<f80>(%3, const<f80>(3.05493636349960468205E-151));
 // DEFAULT-NEXT:         let %5: f80 [synthetic] = read<f80>(%3);
-// DEFAULT-NEXT:         let %6: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%5), const<f80>(7.28353587031270189774E-158));
+// DEFAULT-NEXT:         let %6: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%5), const<f80>(7.28353587031270189774E-158));
 // DEFAULT-NEXT:         write<f80>(%3, read<f80>(%6));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%3), const<f80>(2.22507385850720138309E-308))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

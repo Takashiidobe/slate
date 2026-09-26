@@ -51,12 +51,9 @@ pub enum PragmaKind {
     },
     Stdc {
         option: StdcPragmaOption,
-        enabled: bool,
+        value: StdcPragmaValue,
     },
-    FloatControl {
-        option: FloatControlOption,
-        enabled: bool,
-    },
+    FloatControl(FloatControl),
     MsStruct {
         action: MsStructAction,
     },
@@ -86,9 +83,28 @@ pub enum StdcPragmaOption {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StdcPragmaValue {
+    On,
+    Off,
+    Default,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FloatControlOption {
     Precise,
     Except,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatControl {
+    Set {
+        option: FloatControlOption,
+        enabled: bool,
+        push: bool,
+    },
+    Push,
+    Pop,
+    Malformed,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

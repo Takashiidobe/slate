@@ -45,7 +45,7 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: f64, %2 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 c: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%1), read<f64>(%2));
+// DEFAULT-NEXT:         let %3 c: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), read<f64>(%2));
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=finite>(read<f64>(%3)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if float_class<bool, test=nan>(read<f64>(%3))

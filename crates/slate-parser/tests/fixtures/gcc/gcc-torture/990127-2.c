@@ -52,8 +52,8 @@ int main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @fpTest(%6 x: f64, %7 y: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 result1: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(35.7), const<f64>(100.0)), const<f64>(45.0));
-// DEFAULT-NEXT:         let %9 result2: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%6), const<f64>(100.0)), read<f64>(%7));
+// DEFAULT-NEXT:         let %8 result1: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(35.7), const<f64>(100.0)), const<f64>(45.0));
+// DEFAULT-NEXT:         let %9 result2: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), const<f64>(100.0)), read<f64>(%7));
 // DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%2, read<f64>(%8), read<f64>(%9));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

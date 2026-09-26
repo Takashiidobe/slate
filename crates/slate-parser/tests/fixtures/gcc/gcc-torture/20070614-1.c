@@ -49,7 +49,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 v: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(const<f64>(3.0), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))) [linkage=external];
+// DEFAULT-NEXT:     global %1 v: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(3.0), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @foo(%3 z: complex<f64>, %4 x: ptr<i32>) -> void [linkage=external] [abi=sysv64(coerce<f64, f64>, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%3), read<complex<f64>>(%1))
@@ -72,7 +72,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>, ptr<i32>) -> void, abi=sysv64(coerce<f64, f64>, scalar) -> void>(%2, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%5, complex_convert<complex<f64>, reason=arg>(mul<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%9))))), addr_of<ptr<i32>>(%8));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>, ptr<i32>) -> void, abi=sysv64(coerce<f64, f64>, scalar) -> void>(%2, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%5, complex_convert<complex<f64>, reason=arg>(mul<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%9))))), addr_of<ptr<i32>>(%8));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

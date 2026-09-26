@@ -3,6 +3,7 @@ use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
+use super::pragmas::{FloatingPragmas, PragmaPlacement, default_contraction};
 use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
@@ -25,7 +26,8 @@ pub fn resolve_module(
     let features = StandardFeatures::new(unit.standard);
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
-        .with_features(features);
+        .with_features(features)
+        .with_contraction(default_contraction(unit.flavor, unit.standard));
     let names = super::names::resolve(unit)?;
     let next_id = names
         .bindings
@@ -38,7 +40,6 @@ pub fn resolve_module(
     let mut lower = Lowerer {
         types,
         module: Module::new(context.target.clone()),
-        context,
         names,
         function_declarations: HashMap::new(),
         type_spans: HashMap::new(),
@@ -54,10 +55,20 @@ pub fn resolve_module(
         diagnostic_options: unit.options.diagnostics.clone(),
         standard: unit.standard,
         diagnostics: Vec::new(),
+        floating_pragmas: FloatingPragmas::new(unit.flavor, context.region),
+        compound_start: false,
+        context,
     };
     for declaration in &unit.decls {
         match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::StaticAssert(_) | DeclKind::Pragma(_) => {}
+            DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
+            DeclKind::Pragma(pragma) => {
+                lower.floating_pragmas.apply(
+                    &mut lower.context.region,
+                    &pragma.kind,
+                    PragmaPlacement::File,
+                )?;
+            }
             DeclKind::Asm(asm) => {
                 let lowered = declaration.derive(lower.asm(asm)?);
                 lower.module.asm.push(lowered);
@@ -119,7 +130,7 @@ pub fn resolve_module(
                 lower.return_type = return_type.as_ref().map(|_| return_c);
                 let body = lower.scoped(|lower| {
                     let parameters = lower.parameters(params, Some(&mut prologue))?;
-                    let body = lower.scoped(|lower| {
+                    let body = lower.compound(|lower| {
                         lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
                     })?;
                     prologue.extend(body);
@@ -888,7 +899,13 @@ impl Lowerer {
                 }
                 Some(initializer) => {
                     let anchor = declarator.derive(());
-                    let mut value = self.initializer_value(resolved, initializer, &anchor)?;
+                    let region = self.context.region;
+                    if storage != StorageDuration::Automatic {
+                        self.context.region.floating = FloatingSemantics::default();
+                    }
+                    let value = self.initializer_value(resolved, initializer, &anchor);
+                    self.context.region = region;
+                    let mut value = value?;
                     if self.types.flavor == CompilerFlavor::Msvc
                         && (global || storage_class == StorageClass::Static)
                     {
@@ -1065,6 +1082,17 @@ impl Lowerer {
         result
     }
 
+    pub(super) fn compound<T>(
+        &mut self,
+        lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
+    ) -> Result<T, ResolveError> {
+        let region = self.context.region;
+        self.compound_start = true;
+        let result = self.scoped(lower);
+        self.context.region = region;
+        result
+    }
+
     fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
@@ -1098,6 +1126,23 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         let mut result = Vec::new();
         for statement in body {
+            match &statement.value {
+                StmtKind::Pragma(pragma) => {
+                    let placement = if self.compound_start {
+                        PragmaPlacement::CompoundStart
+                    } else {
+                        PragmaPlacement::Misplaced
+                    };
+                    self.floating_pragmas.apply(
+                        &mut self.context.region,
+                        &pragma.kind,
+                        placement,
+                    )?;
+                    continue;
+                }
+                StmtKind::Comment(_) => continue,
+                _ => self.compound_start = false,
+            }
             let mut annotations = Vec::new();
             let kind = match &statement.value {
                 StmtKind::Comment(_) | StmtKind::StaticAssert(_) | StmtKind::Pragma(_) => continue,
@@ -1285,7 +1330,7 @@ impl Lowerer {
                 },
                 StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm(asm)?)),
                 StmtKind::Block(body) => {
-                    Statement::Block(self.scoped(|lower| lower.statements(body, return_type))?)
+                    Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
                 }
                 StmtKind::ReturnVoid => match self.types.flavor {
                     CompilerFlavor::Msvc => Statement::Return(None),

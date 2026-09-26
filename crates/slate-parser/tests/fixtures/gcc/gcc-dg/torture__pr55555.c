@@ -77,7 +77,7 @@ main() {
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7)))), add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7))))), mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(4)>(%0), sub<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<f64>(%5))));
+// DEFAULT-NEXT:                             write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7)))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), add<i64, overflow=ub>(read<i64>(%6), read<i64>(%7))))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(4)>(%0), sub<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<f64>(%5))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while {
 // DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%4);
@@ -100,7 +100,7 @@ main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), read<i32>(%4)))), mul<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(and<i32>(read<i32>(%4), const<i32>(3)), const<i32>(1))), add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(5.0), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(from_bool<i32, reason=promotion>(ge<i32>(read<i32>(%4), const<i32>(4)))))))
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(8)>(%3), read<i32>(%4)))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(and<i32>(read<i32>(%4), const<i32>(3)), const<i32>(1))), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(5.0), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(from_bool<i32, reason=promotion>(ge<i32>(read<i32>(%4), const<i32>(4)))))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }

@@ -12,5 +12,5 @@ void rounding(void) {
 
 // SLATE-FILECHECK-BEGIN CHECK
 // CHECK: const<i32>(1)
-// CHECK-NEXT: add<f64, rounding=environment, exceptions=observable>(const<f64>(1.0), const<f64>(2.0))
+// CHECK-NEXT: add<f64, rounding=environment, exceptions=observable, contract=fast>(const<f64>(1.0), const<f64>(2.0))
 // SLATE-FILECHECK-END CHECK

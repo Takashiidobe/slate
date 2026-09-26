@@ -19,8 +19,8 @@ void operations(void) {
 // SLATE-FILECHECK-BEGIN CHECK
 // CHECK: add<i32, overflow=wrap>(const<i32>(1), add<i32, overflow=wrap>(const<i32>(2), const<i32>(3)))
 // CHECK-NEXT: add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
-// CHECK-NEXT: add<f32, rounding=nearest_even, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
-// CHECK-NEXT: add<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(1), const<f80>(2))
+// CHECK-NEXT: add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(1.0), const<f32>(2.0))
+// CHECK-NEXT: add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(const<f80>(1), const<f80>(2))
 // CHECK-NEXT: mul<i32, overflow=wrap>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: rem<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1), const<i32>(2))

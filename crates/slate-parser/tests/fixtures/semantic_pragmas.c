@@ -16,7 +16,7 @@ int hidden_function(void) {
 #pragma STDC FENV_ACCESS ON
 #pragma STDC FP_CONTRACT OFF
 #pragma STDC CX_LIMITED_RANGE ON
-#pragma float_control precise on
+#pragma float_control(precise, on)
 #pragma ms_struct push
 #pragma ms_struct pop
 

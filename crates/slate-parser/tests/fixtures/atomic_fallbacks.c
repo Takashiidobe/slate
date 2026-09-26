@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10 f: atomic f32 [storage=automatic] = const<f32>(1.5);
 // DEFAULT-NEXT:         let %11 old_f: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %21: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%10)), add<f32, rounding=nearest_even, exceptions=ignore>(old<f32>, const<f32>(2.25)));
+// DEFAULT-NEXT:         let %21: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%10)), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, const<f32>(2.25)));
 // DEFAULT-NEXT:         write<f32>(%11, read<f32>(%21));
 // DEFAULT-NEXT:         let %12 now_f: f32 [storage=automatic] = read<f32, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%10)));
 // DEFAULT-NEXT:         let %13 values: array<i32, 4> [storage=automatic] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30), index3 = const<i32>(40));

@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @pick(%2 p: ptr<f64>) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%2)), add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(deref(read<ptr<f64>>(%2))), const<f64>(5.0)));
+// DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%2)), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(read<ptr<f64>>(%2))), const<f64>(5.0)));
 // DEFAULT-NEXT:         return read<f64>(deref(read<ptr<f64>>(%2)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -1741,16 +1741,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %489: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %490: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%489), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %490: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%489), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%490));
 // DEFAULT-NEXT:                 let %491: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %492: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%491), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %492: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%491), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%492));
 // DEFAULT-NEXT:                 let %493: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %494: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%493), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %494: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%493), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%494));
 // DEFAULT-NEXT:                 let %495: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %496: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%495), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %496: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%495), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%496));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1761,16 +1761,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %497: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %498: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%497), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %498: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%497), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%498));
 // DEFAULT-NEXT:                 let %499: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %500: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%499), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %500: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%499), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%500));
 // DEFAULT-NEXT:                 let %501: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %502: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%501), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %502: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%501), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%502));
 // DEFAULT-NEXT:                 let %503: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %504: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%503), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %504: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%503), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%504));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1781,16 +1781,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %505: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %506: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%505), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %506: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%505), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%506));
 // DEFAULT-NEXT:                 let %507: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %508: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%507), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %508: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%507), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%508));
 // DEFAULT-NEXT:                 let %509: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %510: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%509), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %510: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%509), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%510));
 // DEFAULT-NEXT:                 let %511: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %512: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%511), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %512: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%511), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%512));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1801,16 +1801,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %513: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %514: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%513), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %514: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%513), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%514));
 // DEFAULT-NEXT:                 let %515: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %516: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%515), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %516: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%515), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%516));
 // DEFAULT-NEXT:                 let %517: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %518: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%517), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %518: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%517), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%518));
 // DEFAULT-NEXT:                 let %519: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %520: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%519), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %520: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%519), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%520));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1821,16 +1821,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %521: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %522: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%521), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %522: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%521), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%522));
 // DEFAULT-NEXT:                 let %523: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %524: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%523), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %524: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%523), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%524));
 // DEFAULT-NEXT:                 let %525: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %526: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%525), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %526: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%525), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%526));
 // DEFAULT-NEXT:                 let %527: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %528: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%527), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %528: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%527), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%528));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1841,16 +1841,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %529: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %530: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%529), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %530: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%529), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%530));
 // DEFAULT-NEXT:                 let %531: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %532: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%531), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %532: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%531), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%532));
 // DEFAULT-NEXT:                 let %533: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %534: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%533), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %534: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%533), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%534));
 // DEFAULT-NEXT:                 let %535: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %536: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%535), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %536: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%535), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%536));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1861,16 +1861,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %537: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %538: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%537), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %538: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%537), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%538));
 // DEFAULT-NEXT:                 let %539: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %540: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%539), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %540: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%539), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%540));
 // DEFAULT-NEXT:                 let %541: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %542: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%541), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %542: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%541), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%542));
 // DEFAULT-NEXT:                 let %543: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %544: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%543), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %544: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%543), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%544));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1881,16 +1881,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %545: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %546: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%545), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %546: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%545), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%546));
 // DEFAULT-NEXT:                 let %547: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %548: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%547), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %548: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%547), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%548));
 // DEFAULT-NEXT:                 let %549: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %550: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%549), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %550: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%549), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%550));
 // DEFAULT-NEXT:                 let %551: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %552: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%551), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %552: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%551), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%552));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1901,16 +1901,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %553: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %554: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%553), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %554: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%553), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%554));
 // DEFAULT-NEXT:                 let %555: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %556: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%555), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %556: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%555), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%556));
 // DEFAULT-NEXT:                 let %557: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %558: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%557), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %558: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%557), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%558));
 // DEFAULT-NEXT:                 let %559: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %560: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%559), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %560: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%559), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%560));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1921,16 +1921,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %561: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %562: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%561), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %562: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%561), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%562));
 // DEFAULT-NEXT:                 let %563: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %564: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%563), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %564: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%563), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%564));
 // DEFAULT-NEXT:                 let %565: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %566: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%565), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %566: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%565), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%566));
 // DEFAULT-NEXT:                 let %567: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %568: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%567), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %568: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%567), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%568));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1941,16 +1941,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %569: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %570: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%569), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %570: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%569), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%570));
 // DEFAULT-NEXT:                 let %571: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %572: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%571), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %572: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%571), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%572));
 // DEFAULT-NEXT:                 let %573: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %574: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%573), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %574: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%573), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%574));
 // DEFAULT-NEXT:                 let %575: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %576: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%575), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %576: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%575), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%576));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1961,16 +1961,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %577: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %578: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%577), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %578: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%577), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%578));
 // DEFAULT-NEXT:                 let %579: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %580: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%579), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %580: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%579), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%580));
 // DEFAULT-NEXT:                 let %581: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %582: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%581), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %582: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%581), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%582));
 // DEFAULT-NEXT:                 let %583: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %584: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%583), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %584: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%583), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%584));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -1981,16 +1981,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %585: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %586: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%585), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %586: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%585), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%586));
 // DEFAULT-NEXT:                 let %587: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %588: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%587), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %588: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%587), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%588));
 // DEFAULT-NEXT:                 let %589: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %590: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%589), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %590: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%589), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%590));
 // DEFAULT-NEXT:                 let %591: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %592: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%591), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %592: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%591), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%592));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2001,16 +2001,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %593: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %594: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%593), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %594: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%593), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%594));
 // DEFAULT-NEXT:                 let %595: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %596: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%595), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %596: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%595), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%596));
 // DEFAULT-NEXT:                 let %597: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %598: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%597), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %598: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%597), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%598));
 // DEFAULT-NEXT:                 let %599: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %600: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%599), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %600: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%599), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%600));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2021,16 +2021,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %601: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %602: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%601), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %602: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%601), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%602));
 // DEFAULT-NEXT:                 let %603: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %604: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%603), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %604: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%603), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%604));
 // DEFAULT-NEXT:                 let %605: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %606: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%605), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %606: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%605), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%606));
 // DEFAULT-NEXT:                 let %607: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %608: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%607), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %608: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%607), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%608));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2041,16 +2041,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %609: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %610: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%609), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %610: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%609), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%610));
 // DEFAULT-NEXT:                 let %611: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %612: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%611), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %612: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%611), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%612));
 // DEFAULT-NEXT:                 let %613: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %614: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%613), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %614: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%613), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%614));
 // DEFAULT-NEXT:                 let %615: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %616: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%615), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %616: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%615), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%616));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2061,16 +2061,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %617: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %618: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%617), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %618: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%617), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%618));
 // DEFAULT-NEXT:                 let %619: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %620: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%619), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %620: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%619), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%620));
 // DEFAULT-NEXT:                 let %621: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %622: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%621), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %622: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%621), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%622));
 // DEFAULT-NEXT:                 let %623: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %624: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%623), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %624: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%623), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%624));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2081,16 +2081,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %625: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %626: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%625), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %626: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%625), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%626));
 // DEFAULT-NEXT:                 let %627: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %628: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%627), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %628: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%627), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%628));
 // DEFAULT-NEXT:                 let %629: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %630: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%629), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %630: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%629), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%630));
 // DEFAULT-NEXT:                 let %631: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %632: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%631), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %632: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%631), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%632));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2101,16 +2101,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %633: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %634: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%633), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %634: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%633), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%634));
 // DEFAULT-NEXT:                 let %635: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %636: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%635), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %636: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%635), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%636));
 // DEFAULT-NEXT:                 let %637: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %638: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%637), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %638: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%637), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%638));
 // DEFAULT-NEXT:                 let %639: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %640: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%639), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %640: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%639), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%640));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2121,16 +2121,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %641: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %642: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%641), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %642: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%641), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%642));
 // DEFAULT-NEXT:                 let %643: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %644: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%643), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %644: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%643), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%644));
 // DEFAULT-NEXT:                 let %645: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %646: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%645), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %646: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%645), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%646));
 // DEFAULT-NEXT:                 let %647: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %648: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%647), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %648: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%647), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%648));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2141,16 +2141,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %649: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %650: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%649), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %650: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%649), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%650));
 // DEFAULT-NEXT:                 let %651: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %652: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%651), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %652: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%651), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%652));
 // DEFAULT-NEXT:                 let %653: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %654: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%653), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %654: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%653), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%654));
 // DEFAULT-NEXT:                 let %655: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %656: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%655), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %656: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%655), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%656));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2161,16 +2161,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %657: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %658: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%657), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %658: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%657), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%658));
 // DEFAULT-NEXT:                 let %659: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %660: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%659), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %660: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%659), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%660));
 // DEFAULT-NEXT:                 let %661: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %662: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%661), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %662: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%661), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%662));
 // DEFAULT-NEXT:                 let %663: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %664: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%663), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %664: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%663), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%664));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2181,16 +2181,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %665: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %666: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%665), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %666: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%665), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%666));
 // DEFAULT-NEXT:                 let %667: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %668: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%667), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %668: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%667), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%668));
 // DEFAULT-NEXT:                 let %669: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %670: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%669), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %670: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%669), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%670));
 // DEFAULT-NEXT:                 let %671: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %672: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%671), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %672: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%671), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%672));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2201,16 +2201,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %673: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %674: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%673), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %674: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%673), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%674));
 // DEFAULT-NEXT:                 let %675: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %676: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%675), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %676: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%675), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%676));
 // DEFAULT-NEXT:                 let %677: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %678: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%677), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %678: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%677), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%678));
 // DEFAULT-NEXT:                 let %679: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %680: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%679), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %680: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%679), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%680));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2221,16 +2221,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %681: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %682: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%681), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %682: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%681), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%682));
 // DEFAULT-NEXT:                 let %683: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %684: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%683), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %684: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%683), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%684));
 // DEFAULT-NEXT:                 let %685: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %686: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%685), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %686: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%685), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%686));
 // DEFAULT-NEXT:                 let %687: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %688: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%687), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %688: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%687), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%688));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2241,16 +2241,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %689: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %690: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%689), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %690: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%689), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%690));
 // DEFAULT-NEXT:                 let %691: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %692: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%691), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %692: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%691), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%692));
 // DEFAULT-NEXT:                 let %693: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %694: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%693), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %694: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%693), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%694));
 // DEFAULT-NEXT:                 let %695: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %696: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%695), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %696: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%695), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%696));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2261,16 +2261,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %697: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %698: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%697), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %698: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%697), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%698));
 // DEFAULT-NEXT:                 let %699: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %700: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%699), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %700: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%699), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%700));
 // DEFAULT-NEXT:                 let %701: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %702: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%701), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %702: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%701), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%702));
 // DEFAULT-NEXT:                 let %703: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %704: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%703), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %704: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%703), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%704));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2281,16 +2281,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %705: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %706: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%705), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %706: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%705), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%706));
 // DEFAULT-NEXT:                 let %707: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %708: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%707), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %708: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%707), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%708));
 // DEFAULT-NEXT:                 let %709: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %710: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%709), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %710: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%709), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%710));
 // DEFAULT-NEXT:                 let %711: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %712: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%711), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %712: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%711), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%712));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2301,16 +2301,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %713: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %714: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%713), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %714: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%713), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%714));
 // DEFAULT-NEXT:                 let %715: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %716: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%715), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %716: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%715), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%716));
 // DEFAULT-NEXT:                 let %717: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %718: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%717), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %718: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%717), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%718));
 // DEFAULT-NEXT:                 let %719: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %720: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%719), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %720: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%719), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%720));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2321,16 +2321,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %721: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %722: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%721), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %722: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%721), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%722));
 // DEFAULT-NEXT:                 let %723: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %724: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%723), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %724: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%723), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%724));
 // DEFAULT-NEXT:                 let %725: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %726: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%725), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %726: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%725), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%726));
 // DEFAULT-NEXT:                 let %727: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %728: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%727), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %728: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%727), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%728));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2341,16 +2341,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %729: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %730: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%729), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %730: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%729), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%730));
 // DEFAULT-NEXT:                 let %731: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %732: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%731), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %732: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%731), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%732));
 // DEFAULT-NEXT:                 let %733: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %734: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%733), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %734: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%733), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%734));
 // DEFAULT-NEXT:                 let %735: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %736: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%735), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %736: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%735), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%736));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2361,16 +2361,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %737: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %738: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%737), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %738: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%737), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%738));
 // DEFAULT-NEXT:                 let %739: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %740: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%739), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %740: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%739), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%740));
 // DEFAULT-NEXT:                 let %741: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %742: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%741), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %742: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%741), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%742));
 // DEFAULT-NEXT:                 let %743: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %744: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%743), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %744: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%743), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%744));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2381,16 +2381,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %745: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %746: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%745), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %746: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%745), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%746));
 // DEFAULT-NEXT:                 let %747: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %748: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%747), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %748: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%747), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%748));
 // DEFAULT-NEXT:                 let %749: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %750: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%749), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %750: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%749), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%750));
 // DEFAULT-NEXT:                 let %751: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %752: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%751), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %752: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%751), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%752));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2401,16 +2401,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %753: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %754: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%753), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %754: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%753), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%754));
 // DEFAULT-NEXT:                 let %755: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %756: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%755), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %756: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%755), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%756));
 // DEFAULT-NEXT:                 let %757: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %758: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%757), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %758: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%757), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%758));
 // DEFAULT-NEXT:                 let %759: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %760: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%759), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %760: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%759), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%760));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2421,16 +2421,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %761: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %762: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%761), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %762: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%761), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%762));
 // DEFAULT-NEXT:                 let %763: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %764: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%763), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %764: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%763), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%764));
 // DEFAULT-NEXT:                 let %765: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %766: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%765), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %766: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%765), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%766));
 // DEFAULT-NEXT:                 let %767: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %768: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%767), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %768: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%767), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%768));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2441,16 +2441,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %769: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %770: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%769), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %770: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%769), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%770));
 // DEFAULT-NEXT:                 let %771: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %772: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%771), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %772: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%771), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%772));
 // DEFAULT-NEXT:                 let %773: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %774: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%773), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %774: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%773), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%774));
 // DEFAULT-NEXT:                 let %775: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %776: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%775), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %776: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%775), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%776));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2461,16 +2461,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %777: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %778: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%777), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %778: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%777), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%778));
 // DEFAULT-NEXT:                 let %779: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %780: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%779), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %780: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%779), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%780));
 // DEFAULT-NEXT:                 let %781: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %782: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%781), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %782: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%781), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%782));
 // DEFAULT-NEXT:                 let %783: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %784: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%783), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %784: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%783), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%784));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2481,16 +2481,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %785: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %786: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%785), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %786: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%785), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%786));
 // DEFAULT-NEXT:                 let %787: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %788: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%787), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %788: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%787), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%788));
 // DEFAULT-NEXT:                 let %789: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %790: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%789), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %790: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%789), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%790));
 // DEFAULT-NEXT:                 let %791: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %792: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%791), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %792: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%791), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%792));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2501,16 +2501,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %793: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %794: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%793), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %794: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%793), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%794));
 // DEFAULT-NEXT:                 let %795: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %796: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%795), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %796: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%795), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%796));
 // DEFAULT-NEXT:                 let %797: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %798: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%797), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %798: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%797), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%798));
 // DEFAULT-NEXT:                 let %799: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %800: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%799), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %800: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%799), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%800));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2521,16 +2521,16 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %801: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %802: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%801), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %802: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%801), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%802));
 // DEFAULT-NEXT:                 let %803: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %804: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%803), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %804: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%803), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%804));
 // DEFAULT-NEXT:                 let %805: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %806: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%805), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %806: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%805), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%806));
 // DEFAULT-NEXT:                 let %807: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %808: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%807), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %808: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%807), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%808));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2543,10 +2543,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %809: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %810: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%809), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %810: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%809), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%810));
 // DEFAULT-NEXT:                 let %811: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %812: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%811), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %812: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%811), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%812));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2557,10 +2557,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %813: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %814: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%813), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %814: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%813), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%814));
 // DEFAULT-NEXT:                 let %815: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %816: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%815), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %816: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%815), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%816));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2571,10 +2571,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %817: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %818: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%817), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %818: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%817), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%818));
 // DEFAULT-NEXT:                 let %819: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %820: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%819), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %820: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%819), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%820));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2585,10 +2585,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %821: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %822: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%821), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %822: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%821), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%822));
 // DEFAULT-NEXT:                 let %823: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %824: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%823), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %824: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%823), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%824));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2599,10 +2599,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %825: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %826: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%825), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %826: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%825), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%826));
 // DEFAULT-NEXT:                 let %827: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %828: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%827), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %828: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%827), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%828));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2613,10 +2613,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %829: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %830: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%829), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %830: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%829), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%830));
 // DEFAULT-NEXT:                 let %831: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %832: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%831), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %832: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%831), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%832));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2627,10 +2627,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %833: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %834: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%833), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %834: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%833), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%834));
 // DEFAULT-NEXT:                 let %835: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %836: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%835), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %836: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%835), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%836));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2641,10 +2641,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %837: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %838: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%837), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %838: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%837), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%838));
 // DEFAULT-NEXT:                 let %839: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %840: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%839), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %840: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%839), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%840));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2655,10 +2655,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %841: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %842: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%841), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %842: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%841), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%842));
 // DEFAULT-NEXT:                 let %843: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %844: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%843), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %844: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%843), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%844));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2669,10 +2669,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %845: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %846: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%845), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %846: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%845), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%846));
 // DEFAULT-NEXT:                 let %847: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %848: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%847), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %848: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%847), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%848));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2683,10 +2683,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %849: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %850: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%849), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %850: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%849), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%850));
 // DEFAULT-NEXT:                 let %851: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %852: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%851), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %852: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%851), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%852));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2697,10 +2697,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %853: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %854: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%853), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %854: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%853), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%854));
 // DEFAULT-NEXT:                 let %855: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %856: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%855), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %856: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%855), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%856));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2711,10 +2711,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %857: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %858: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%857), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %858: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%857), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%858));
 // DEFAULT-NEXT:                 let %859: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %860: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%859), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %860: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%859), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%860));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2725,10 +2725,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %861: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %862: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%861), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %862: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%861), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%862));
 // DEFAULT-NEXT:                 let %863: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %864: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%863), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %864: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%863), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%864));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2739,10 +2739,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %865: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %866: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%865), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %866: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%865), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%866));
 // DEFAULT-NEXT:                 let %867: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %868: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%867), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %868: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%867), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%868));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2753,10 +2753,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %869: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %870: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%869), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %870: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%869), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%870));
 // DEFAULT-NEXT:                 let %871: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %872: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%871), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %872: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%871), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%872));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2767,10 +2767,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %873: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %874: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%873), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %874: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%873), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%874));
 // DEFAULT-NEXT:                 let %875: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %876: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%875), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %876: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%875), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%876));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2781,10 +2781,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %877: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %878: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%877), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %878: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%877), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%878));
 // DEFAULT-NEXT:                 let %879: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %880: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%879), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %880: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%879), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%880));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2795,10 +2795,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %881: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %882: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%881), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %882: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%881), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%882));
 // DEFAULT-NEXT:                 let %883: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %884: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%883), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %884: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%883), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%884));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2809,10 +2809,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %885: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %886: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%885), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %886: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%885), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%886));
 // DEFAULT-NEXT:                 let %887: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %888: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%887), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %888: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%887), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%888));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2823,10 +2823,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %889: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %890: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%889), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %890: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%889), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%890));
 // DEFAULT-NEXT:                 let %891: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %892: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%891), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %892: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%891), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%892));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2837,10 +2837,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %893: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %894: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%893), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %894: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%893), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%894));
 // DEFAULT-NEXT:                 let %895: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %896: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%895), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %896: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%895), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%896));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2851,10 +2851,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %897: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %898: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%897), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %898: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%897), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%898));
 // DEFAULT-NEXT:                 let %899: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %900: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%899), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %900: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%899), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%900));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2865,10 +2865,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %901: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %902: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%901), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %902: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%901), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%902));
 // DEFAULT-NEXT:                 let %903: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %904: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%903), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %904: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%903), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%904));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2879,10 +2879,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %905: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %906: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%905), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %906: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%905), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%906));
 // DEFAULT-NEXT:                 let %907: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %908: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%907), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %908: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%907), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%908));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2893,10 +2893,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %909: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %910: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%909), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %910: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%909), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%910));
 // DEFAULT-NEXT:                 let %911: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %912: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%911), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %912: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%911), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%912));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2907,10 +2907,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %913: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %914: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%913), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %914: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%913), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%914));
 // DEFAULT-NEXT:                 let %915: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %916: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%915), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %916: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%915), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%916));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2921,10 +2921,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %917: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %918: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%917), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %918: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%917), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%918));
 // DEFAULT-NEXT:                 let %919: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %920: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%919), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %920: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%919), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%920));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2935,10 +2935,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %921: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %922: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%921), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %922: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%921), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%922));
 // DEFAULT-NEXT:                 let %923: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %924: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%923), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %924: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%923), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%924));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2949,10 +2949,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %925: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %926: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%925), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %926: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%925), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%926));
 // DEFAULT-NEXT:                 let %927: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %928: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%927), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %928: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%927), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%928));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2963,10 +2963,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %929: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %930: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%929), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %930: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%929), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%930));
 // DEFAULT-NEXT:                 let %931: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %932: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%931), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %932: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%931), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%932));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2977,10 +2977,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %933: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %934: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%933), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %934: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%933), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%934));
 // DEFAULT-NEXT:                 let %935: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %936: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%935), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %936: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%935), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%936));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -2991,10 +2991,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %937: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %938: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%937), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %938: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%937), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%938));
 // DEFAULT-NEXT:                 let %939: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %940: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%939), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %940: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%939), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%940));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3005,10 +3005,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %941: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %942: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%941), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %942: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%941), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%942));
 // DEFAULT-NEXT:                 let %943: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %944: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%943), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %944: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%943), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%944));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3019,10 +3019,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %945: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %946: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%945), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %946: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%945), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%946));
 // DEFAULT-NEXT:                 let %947: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %948: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%947), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %948: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%947), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%948));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3033,10 +3033,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %949: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %950: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%949), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %950: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%949), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%950));
 // DEFAULT-NEXT:                 let %951: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %952: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%951), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %952: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%951), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%952));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3047,10 +3047,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %953: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %954: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%953), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %954: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%953), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%954));
 // DEFAULT-NEXT:                 let %955: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %956: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%955), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %956: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%955), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%956));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3061,10 +3061,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %957: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %958: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%957), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %958: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%957), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%958));
 // DEFAULT-NEXT:                 let %959: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %960: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%959), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %960: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%959), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%960));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3075,10 +3075,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %961: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %962: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%961), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %962: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%961), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%962));
 // DEFAULT-NEXT:                 let %963: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %964: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%963), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %964: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%963), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%964));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
@@ -3089,10 +3089,10 @@ int main() {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(__builtin_abort);
 // DEFAULT-NEXT:                 let %965: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %966: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%965), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %966: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%965), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%966));
 // DEFAULT-NEXT:                 let %967: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %968: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%967), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %968: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%967), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%968));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

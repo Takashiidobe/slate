@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @foo(%5 b: @type1, %6 q: ptr<@type0>, %7 h: ptr<f32>) -> i32 [linkage=external] [abi=sysv64(coerce<i64, f32>, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11: f32 [synthetic] = read<f32>(%3);
-// DEFAULT-NEXT:         let %12: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%11), read<f32>(deref(read<ptr<f32>>(%7))));
+// DEFAULT-NEXT:         let %12: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%11), read<f32>(deref(read<ptr<f32>>(%7))));
 // DEFAULT-NEXT:         write<f32>(%3, read<f32>(%12));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(%5))), const<i32>(3));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%6))), const<i32>(2));

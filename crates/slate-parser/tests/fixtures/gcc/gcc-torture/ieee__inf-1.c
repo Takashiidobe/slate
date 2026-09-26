@@ -68,11 +68,11 @@ int main() {
 // DEFAULT-NEXT:         let %5 fh: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(__builtin_huge_valf);
 // DEFAULT-NEXT:         let %6 dh: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(__builtin_huge_val);
 // DEFAULT-NEXT:         let %7 lh: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(__builtin_huge_vall);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%2), read<f32>(%2)), read<f32>(%2))
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%2), read<f32>(%2)), read<f32>(%2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%3), read<f64>(%3)), read<f64>(%3))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), read<f64>(%3)), read<f64>(%3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%4), read<f80>(%4)), read<f80>(%4))
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%4), read<f80>(%4)), read<f80>(%4))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%2), read<f32>(%5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

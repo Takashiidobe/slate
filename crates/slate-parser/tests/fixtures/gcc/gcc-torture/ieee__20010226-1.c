@@ -60,8 +60,8 @@ int main() {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(const<f80>(1.08420217248550443401E-19), const<f80>(4.65661287307739257813E-10))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         write<f80>(%2, div<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%1), const<f80>(2)));
-// DEFAULT-NEXT:         write<f80>(%3, mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%2), const<f80>(4294967296)));
+// DEFAULT-NEXT:         write<f80>(%2, div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%1), const<f80>(2)));
+// DEFAULT-NEXT:         write<f80>(%3, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%2), const<f80>(4294967296)));
 // DEFAULT-NEXT:         write<u64>(%4, and<u64>(float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(%3)), widen<u64, reason=usual_arith>(const<u32>(4294967295))));
 // DEFAULT-NEXT:         if eq<u64>(read<u64>(%4), widen<u64, reason=usual_arith>(const<u32>(2362232012)))
 // DEFAULT-NEXT:             return const<i32>(0);

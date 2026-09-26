@@ -219,7 +219,7 @@ main() {
 // DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %10: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %11: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%10), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %11: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%10), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%11));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%10));
 // DEFAULT-NEXT:         let %12: bool [synthetic];
@@ -246,7 +246,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0))));
 // DEFAULT-NEXT:         let %16: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %17: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%16), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %17: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%16), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%17));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%16));
 // DEFAULT-NEXT:         let %18: bool [synthetic];
@@ -273,7 +273,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %22: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %23: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%22), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %23: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%22), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%23));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%23));
 // DEFAULT-NEXT:         let %24: bool [synthetic];
@@ -300,7 +300,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0))));
 // DEFAULT-NEXT:         let %28: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %29: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%28), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %29: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%28), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%29));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%29));
 // DEFAULT-NEXT:         let %30: bool [synthetic];
@@ -327,7 +327,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %34: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %35: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%34), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %35: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%34), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%35));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%34));
 // DEFAULT-NEXT:         let %36: bool [synthetic];
@@ -354,7 +354,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0))));
 // DEFAULT-NEXT:         let %40: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %41: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%40), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %41: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%40), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%41));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%40));
 // DEFAULT-NEXT:         let %42: bool [synthetic];
@@ -381,7 +381,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %46: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %47: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%46), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %47: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%46), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%47));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%47));
 // DEFAULT-NEXT:         let %48: bool [synthetic];
@@ -408,7 +408,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f32>>(%2, aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0))));
 // DEFAULT-NEXT:         let %52: complex<f32> [synthetic] = read<complex<f32>>(%2);
-// DEFAULT-NEXT:         let %53: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f32>>(%52), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %53: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%52), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f32>>(%2, read<complex<f32>>(%53));
 // DEFAULT-NEXT:         write<complex<f32>>(%3, read<complex<f32>>(%53));
 // DEFAULT-NEXT:         let %54: bool [synthetic];
@@ -434,7 +434,7 @@ main() {
 // DEFAULT-NEXT:         if read<bool>(%57)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %58: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %59: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%58), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %59: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%58), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%59));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%58));
 // DEFAULT-NEXT:         let %60: bool [synthetic];
@@ -461,7 +461,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = neg<f64>(const<f64>(0.0))));
 // DEFAULT-NEXT:         let %64: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %65: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%64), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %65: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%64), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%65));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%64));
 // DEFAULT-NEXT:         let %66: bool [synthetic];
@@ -488,7 +488,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, real_to_complex<complex<f64>, reason=assign>(int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %70: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %71: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%70), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %71: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%70), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%71));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%71));
 // DEFAULT-NEXT:         let %72: bool [synthetic];
@@ -515,7 +515,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = neg<f64>(const<f64>(0.0))));
 // DEFAULT-NEXT:         let %76: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %77: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%76), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %77: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%76), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%77));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%77));
 // DEFAULT-NEXT:         let %78: bool [synthetic];
@@ -542,7 +542,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, real_to_complex<complex<f64>, reason=assign>(int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %82: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %83: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%82), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %83: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%82), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%83));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%82));
 // DEFAULT-NEXT:         let %84: bool [synthetic];
@@ -569,7 +569,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, complex_convert<complex<f64>, reason=assign>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)))));
 // DEFAULT-NEXT:         let %88: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %89: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%88), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %89: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%88), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%89));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%88));
 // DEFAULT-NEXT:         let %90: bool [synthetic];
@@ -596,7 +596,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, real_to_complex<complex<f64>, reason=assign>(int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %94: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %95: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%94), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %95: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%94), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%95));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%95));
 // DEFAULT-NEXT:         let %96: bool [synthetic];
@@ -623,7 +623,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f64>>(%4, complex_convert<complex<f64>, reason=assign>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = neg<f32>(const<f32>(0.0)))));
 // DEFAULT-NEXT:         let %100: complex<f64> [synthetic] = read<complex<f64>>(%4);
-// DEFAULT-NEXT:         let %101: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%100), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %101: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%100), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f64>>(%4, read<complex<f64>>(%101));
 // DEFAULT-NEXT:         write<complex<f64>>(%5, read<complex<f64>>(%101));
 // DEFAULT-NEXT:         let %102: bool [synthetic];
@@ -649,7 +649,7 @@ main() {
 // DEFAULT-NEXT:         if read<bool>(%105)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         let %106: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %107: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%106), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %107: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%106), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%107));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%106));
 // DEFAULT-NEXT:         let %108: bool [synthetic];
@@ -676,7 +676,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = neg<f80>(const<f80>(0))));
 // DEFAULT-NEXT:         let %112: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %113: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%112), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %113: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%112), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%113));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%112));
 // DEFAULT-NEXT:         let %114: bool [synthetic];
@@ -703,7 +703,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, real_to_complex<complex<f80>, reason=assign>(int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %118: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %119: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%118), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %119: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%118), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%119));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%119));
 // DEFAULT-NEXT:         let %120: bool [synthetic];
@@ -730,7 +730,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = neg<f80>(const<f80>(0))));
 // DEFAULT-NEXT:         let %124: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %125: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%124), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %125: complex<f80> [synthetic] = add<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%124), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%125));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%125));
 // DEFAULT-NEXT:         let %126: bool [synthetic];
@@ -757,7 +757,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, real_to_complex<complex<f80>, reason=assign>(int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %130: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %131: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%130), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %131: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%130), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%131));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%130));
 // DEFAULT-NEXT:         let %132: bool [synthetic];
@@ -784,7 +784,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = neg<f80>(const<f80>(0))));
 // DEFAULT-NEXT:         let %136: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %137: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%136), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %137: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%136), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%137));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%136));
 // DEFAULT-NEXT:         let %138: bool [synthetic];
@@ -811,7 +811,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, real_to_complex<complex<f80>, reason=assign>(int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))));
 // DEFAULT-NEXT:         let %142: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %143: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%142), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %143: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%142), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%143));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%143));
 // DEFAULT-NEXT:         let %144: bool [synthetic];
@@ -838,7 +838,7 @@ main() {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         write<complex<f80>>(%6, aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = neg<f80>(const<f80>(0))));
 // DEFAULT-NEXT:         let %148: complex<f80> [synthetic] = read<complex<f80>>(%6);
-// DEFAULT-NEXT:         let %149: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f80>>(%148), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         let %149: complex<f80> [synthetic] = sub<complex<f80>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f80>>(%148), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:         write<complex<f80>>(%6, read<complex<f80>>(%149));
 // DEFAULT-NEXT:         write<complex<f80>>(%7, read<complex<f80>>(%149));
 // DEFAULT-NEXT:         let %150: bool [synthetic];

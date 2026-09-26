@@ -40,7 +40,7 @@ ld a (ld x, ld y)
 // DEFAULT-NEXT:     type @type1 ld = @type0;
 // DEFAULT-NEXT:     fn %2 @a(%3 x: @type0, %4 y: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<f80>(field0(%5), add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(field0(%3)), read<f80>(field0(%4))));
+// DEFAULT-NEXT:         write<f80>(field0(%5), add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field0(%3)), read<f80>(field0(%4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

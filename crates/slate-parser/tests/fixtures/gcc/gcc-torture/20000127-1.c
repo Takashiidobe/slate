@@ -36,15 +36,15 @@ int foo(void) {
 // DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 a: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %4 b: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn() -> f64>(%0), call<f64, signature=fn() -> f64>(%0)));
+// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn() -> f64>(%0), call<f64, signature=fn() -> f64>(%0)));
 // DEFAULT-NEXT:         write<f64>(%3, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)));
 // DEFAULT-NEXT:         let %6: i32 [synthetic] = read<i32>(%5);
 // DEFAULT-NEXT:         let %7: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%5, read<i32>(%7));
 // DEFAULT-NEXT:         let %8: f64 [synthetic] = read<f64>(%3);
-// DEFAULT-NEXT:         let %9: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%8), const<f64>(0.1));
+// DEFAULT-NEXT:         let %9: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%8), const<f64>(0.1));
 // DEFAULT-NEXT:         write<f64>(%3, read<f64>(%9));
-// DEFAULT-NEXT:         write<i32>(%5, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%1), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)))));
+// DEFAULT-NEXT:         write<i32>(%5, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)))));
 // DEFAULT-NEXT:         return read<i32>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -65,20 +65,20 @@ int         main(void) {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<f80>(%6, mul<f80, rounding=nearest_even, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%2), read<f80>(%3)), read<f80>(%4)));
-// DEFAULT-NEXT:         write<f80>(%7, sub<f80, rounding=nearest_even, exceptions=ignore>(sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%2), read<f80>(%3)), read<f80>(%3)));
-// DEFAULT-NEXT:         write<f80>(%8, add<f80, rounding=nearest_even, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%2), read<f80>(%3)), read<f80>(%3)));
-// DEFAULT-NEXT:         write<f80>(%9, mul<f80, rounding=nearest_even, exceptions=ignore>(sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%2), read<f80>(%3)), read<f80>(%5)));
-// DEFAULT-NEXT:         write<f80>(%6, sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%6), add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%8), read<f80>(%3))));
-// DEFAULT-NEXT:         write<f80>(%10, mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%7), read<f80>(%5)));
-// DEFAULT-NEXT:         write<f80>(%11, mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%8), read<f80>(%4)));
-// DEFAULT-NEXT:         write<f80>(%9, sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%9), read<f80>(%7)));
-// DEFAULT-NEXT:         write<f80>(%7, add<f80, rounding=nearest_even, exceptions=ignore>(sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%3), read<f80>(%7)), read<f80>(%10)));
-// DEFAULT-NEXT:         write<f80>(%8, sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%11), add<f80, rounding=nearest_even, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%8), read<f80>(%3)), read<f80>(%3))));
-// DEFAULT-NEXT:         write<f80>(%10, mul<f80, rounding=nearest_even, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%4), read<f80>(%3)), read<f80>(%5)));
-// DEFAULT-NEXT:         write<f80>(%5, mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%4), read<f80>(%5)));
-// DEFAULT-NEXT:         write<f80>(%10, sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%10), read<f80>(%4)));
-// DEFAULT-NEXT:         write<f80>(%5, sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%5), const<f80>(0.5)));
+// DEFAULT-NEXT:         write<f80>(%6, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%2), read<f80>(%3)), read<f80>(%4)));
+// DEFAULT-NEXT:         write<f80>(%7, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%2), read<f80>(%3)), read<f80>(%3)));
+// DEFAULT-NEXT:         write<f80>(%8, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%2), read<f80>(%3)), read<f80>(%3)));
+// DEFAULT-NEXT:         write<f80>(%9, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%2), read<f80>(%3)), read<f80>(%5)));
+// DEFAULT-NEXT:         write<f80>(%6, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%8), read<f80>(%3))));
+// DEFAULT-NEXT:         write<f80>(%10, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%7), read<f80>(%5)));
+// DEFAULT-NEXT:         write<f80>(%11, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%8), read<f80>(%4)));
+// DEFAULT-NEXT:         write<f80>(%9, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%9), read<f80>(%7)));
+// DEFAULT-NEXT:         write<f80>(%7, add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%3), read<f80>(%7)), read<f80>(%10)));
+// DEFAULT-NEXT:         write<f80>(%8, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%11), add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%8), read<f80>(%3)), read<f80>(%3))));
+// DEFAULT-NEXT:         write<f80>(%10, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%4), read<f80>(%3)), read<f80>(%5)));
+// DEFAULT-NEXT:         write<f80>(%5, mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%4), read<f80>(%5)));
+// DEFAULT-NEXT:         write<f80>(%10, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%10), read<f80>(%4)));
+// DEFAULT-NEXT:         write<f80>(%5, sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%5), const<f80>(0.5)));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%8), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(6)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

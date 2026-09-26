@@ -69,7 +69,7 @@ float casts(double d, unsigned long u) { return (short)d + (float)u; }
 // IR-NEXT:         return read<i32>(deref(read<ptr<i32>>(%13)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %14 @casts(%15 d: f64, %16 u: u64) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%15)))), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(%16)));
+// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i32, reason=promotion>(float_to_int<i16, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%15)))), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(%16)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -105,7 +105,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %2 @exit(%38 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @dummy(%4 x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 y: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%5, truncate<i32, reason=assign, fits=unknown>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%4)), const<f64>(4711.3)))));
+// DEFAULT-NEXT:         write<i32>(%5, truncate<i32, reason=assign, fits=unknown>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%4)), const<f64>(4711.3)))));
 // DEFAULT-NEXT:         return read<i32>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @getval() -> i32 [linkage=external] [fallthrough=ub_if_used] {

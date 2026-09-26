@@ -37,11 +37,11 @@ double conjugate_real(void) { return __real__ ~zd; }
 // IR-NEXT:     global %0 zd: complex<f64> [storage=static] [linkage=external];
 // IR-NEXT:     global %1 zi: complex<i32> [storage=static] [linkage=external];
 // IR-NEXT:     fn %2 @conjugate() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<complex<f64>>(%0, not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%0)));
+// IR-NEXT:         write<complex<f64>>(%0, not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%0)));
 // IR-NEXT:         write<complex<i32>>(%1, not<complex<i32>, complex=true, overflow=ub>(read<complex<i32>>(%1)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %3 @conjugate_real() -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return complex_to_real<f64, reason=explicit>(not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%0)));
+// IR-NEXT:         return complex_to_real<f64, reason=explicit>(not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%0)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

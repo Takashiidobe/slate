@@ -1,8 +1,14 @@
+use super::numeric::ResolveError;
 use crate::ast::{
-    DeclKind, Declaration, FunctionDefinition, MsStructAction, Pragma, PragmaKind,
-    PragmaStackAction, Stmt, StmtKind, TagId, TagSpecifier, TranslationUnit, TypeSpecifier,
+    DeclKind, Declaration, FloatControl, FloatControlOption, FunctionDefinition, MsStructAction,
+    Pragma, PragmaKind, PragmaStackAction, StdcPragmaOption, StdcPragmaValue, Stmt, StmtKind,
+    TagId, TagSpecifier, TranslationUnit, TypeSpecifier,
 };
-use crate::ir::{SymbolAttributes, Visibility};
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::ir::{
+    ComplexRange, Contraction, Exceptions, FloatingSemantics, Rounding, SymbolAttributes,
+    Visibility,
+};
 use crate::visit::{self, Visitor};
 use std::collections::{HashMap, HashSet};
 use std::convert::Infallible;
@@ -39,6 +45,198 @@ impl Pragmas {
             symbol.asm_name = Some(target.clone());
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FloatingRegion {
+    pub floating: FloatingSemantics,
+    pub contract: Contraction,
+    pub complex_range: ComplexRange,
+    pub precise: bool,
+}
+
+impl Default for FloatingRegion {
+    fn default() -> Self {
+        Self {
+            floating: FloatingSemantics::default(),
+            contract: Contraction::On,
+            complex_range: ComplexRange::Full,
+            precise: true,
+        }
+    }
+}
+
+pub fn default_contraction(flavor: CompilerFlavor, standard: LanguageStandard) -> Contraction {
+    match flavor {
+        CompilerFlavor::Gcc if standard.is_gnu() => Contraction::Fast,
+        CompilerFlavor::Gcc => Contraction::Off,
+        CompilerFlavor::Clang | CompilerFlavor::Msvc => Contraction::On,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PragmaPlacement {
+    File,
+    CompoundStart,
+    Misplaced,
+}
+
+#[derive(Debug, Clone)]
+pub struct FloatingPragmas {
+    flavor: CompilerFlavor,
+    defaults: FloatingRegion,
+    stack: Vec<FloatingRegion>,
+}
+
+impl FloatingPragmas {
+    pub fn new(flavor: CompilerFlavor, defaults: FloatingRegion) -> Self {
+        Self {
+            flavor,
+            defaults,
+            stack: Vec::new(),
+        }
+    }
+
+    pub fn apply(
+        &mut self,
+        region: &mut FloatingRegion,
+        pragma: &PragmaKind,
+        placement: PragmaPlacement,
+    ) -> Result<(), ResolveError> {
+        // gcc implements none of these pragmas and ignores them with a warning
+        if self.flavor == CompilerFlavor::Gcc {
+            return Ok(());
+        }
+        let control = match pragma {
+            PragmaKind::Stdc { option, value } => {
+                if placement == PragmaPlacement::Misplaced {
+                    return Err(misplaced());
+                }
+                return self.stdc(region, *option, *value);
+            }
+            PragmaKind::FloatControl(control) => *control,
+            _ => return Ok(()),
+        };
+        match control {
+            FloatControl::Malformed => Err(ResolveError::Invalid(
+                "pragma float_control is malformed; use 'float_control({push|pop})' or 'float_control({precise|except}, {on|off} [,push])'",
+            )),
+            FloatControl::Push | FloatControl::Pop | FloatControl::Set { push: true, .. }
+                if placement != PragmaPlacement::File =>
+            {
+                Err(ResolveError::Invalid(
+                    "'#pragma float_control push/pop' can only appear at file scope",
+                ))
+            }
+            FloatControl::Set { .. } if placement == PragmaPlacement::Misplaced => Err(misplaced()),
+            FloatControl::Push => {
+                self.stack.push(*region);
+                Ok(())
+            }
+            FloatControl::Pop => {
+                // popping an empty stack is diagnosed and ignored
+                if let Some(previous) = self.stack.pop() {
+                    *region = previous;
+                }
+                Ok(())
+            }
+            FloatControl::Set {
+                option,
+                enabled,
+                push,
+            } => {
+                if push {
+                    self.stack.push(*region);
+                }
+                float_control(region, option, enabled)
+            }
+        }
+    }
+
+    fn stdc(
+        &self,
+        region: &mut FloatingRegion,
+        option: StdcPragmaOption,
+        value: StdcPragmaValue,
+    ) -> Result<(), ResolveError> {
+        let on = value == StdcPragmaValue::On;
+        match option {
+            StdcPragmaOption::FenvAccess => {
+                if on && !region.precise {
+                    return Err(ResolveError::Invalid(
+                        "'#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled",
+                    ));
+                }
+                // off restores exceptions but not -frounding-math, as in clang
+                region.floating = if on {
+                    FloatingSemantics {
+                        rounding: Rounding::Environment,
+                        exceptions: Exceptions::Observable,
+                    }
+                } else {
+                    FloatingSemantics {
+                        rounding: Rounding::NearestEven,
+                        exceptions: self.defaults.floating.exceptions,
+                    }
+                };
+            }
+            StdcPragmaOption::FpContract => {
+                region.contract = match value {
+                    StdcPragmaValue::On => Contraction::On,
+                    StdcPragmaValue::Off => Contraction::Off,
+                    StdcPragmaValue::Default => self.defaults.contract,
+                };
+            }
+            StdcPragmaOption::CxLimitedRange => {
+                region.complex_range = match value {
+                    StdcPragmaValue::On => ComplexRange::Basic,
+                    StdcPragmaValue::Off => ComplexRange::Full,
+                    StdcPragmaValue::Default => self.defaults.complex_range,
+                };
+            }
+        }
+        Ok(())
+    }
+}
+
+fn misplaced() -> ResolveError {
+    ResolveError::Invalid(
+        "floating-point pragma can only appear at file scope or at the start of a compound statement",
+    )
+}
+
+fn float_control(
+    region: &mut FloatingRegion,
+    option: FloatControlOption,
+    enabled: bool,
+) -> Result<(), ResolveError> {
+    match (option, enabled) {
+        (FloatControlOption::Precise, true) => {
+            region.precise = true;
+            region.contract = Contraction::On;
+        }
+        (FloatControlOption::Precise, false) => {
+            if region.floating.exceptions == Exceptions::Observable {
+                return Err(ResolveError::Invalid(
+                    "'#pragma float_control(precise, off)' is illegal when except is enabled",
+                ));
+            }
+            region.precise = false;
+            region.contract = Contraction::Fast;
+        }
+        (FloatControlOption::Except, true) => {
+            if !region.precise {
+                return Err(ResolveError::Invalid(
+                    "'#pragma float_control(except, on)' is illegal when precise is disabled",
+                ));
+            }
+            region.floating.exceptions = Exceptions::Observable;
+        }
+        (FloatControlOption::Except, false) => {
+            region.floating.exceptions = Exceptions::Ignore;
+        }
+    }
+    Ok(())
 }
 
 pub fn collect(unit: &TranslationUnit) -> Pragmas {

@@ -67,10 +67,10 @@ int main(void) {
 // DEFAULT-NEXT:         let %8 product: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         let %9 quotient: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<complex<f64>>(%8, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%6), read<complex<f64>>(%7)));
+// DEFAULT-NEXT:             write<complex<f64>>(%8, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(read<complex<f64>>(%6), read<complex<f64>>(%7)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<complex<f64>>(%9, div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%6), read<complex<f64>>(%7)));
+// DEFAULT-NEXT:             write<complex<f64>>(%9, div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%13)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%8)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%1, read<complex<f64>>(%9)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%0, read<complex<f64>>(%9)));
 // DEFAULT-NEXT:         let %14: bool [synthetic];

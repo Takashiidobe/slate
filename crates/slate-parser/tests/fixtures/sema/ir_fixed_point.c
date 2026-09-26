@@ -211,7 +211,7 @@ _Sat _Accum saturating_compound(_Sat _Accum a, int n) {
 // IR-NEXT:         return mul<fixed<i32, 15>, overflow=ub, rounding=toward_zero>(read<fixed<i32, 15>>(%50), int_to_fixed<fixed<i32, 15>, reason=usual_arith, overflow=ub, rounding=toward_zero>(read<i32>(%51)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %52 @promote_to_double(%53 a: fixed<i32, 15>, %54 d: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(fixed_to_float<f64, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<fixed<i32, 15>>(%53)), read<f64>(%54));
+// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(fixed_to_float<f64, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<fixed<i32, 15>>(%53)), read<f64>(%54));
 // IR-NEXT:     }
 // IR-NEXT:     fn %55 @relational(%56 a: fixed<i32, 15>, %57 b: fixed<i32, 15>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return from_bool<i32, reason=return>(lt<fixed<i32, 15>>(read<fixed<i32, 15>>(%56), read<fixed<i32, 15>>(%57)));

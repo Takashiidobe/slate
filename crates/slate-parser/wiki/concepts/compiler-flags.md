@@ -79,13 +79,15 @@ dimensions. Clang describes `-frounding-math` in terms of dynamic rounding;
 See the [Clang manual](https://clang.llvm.org/docs/UsersManual.html) and
 [language extensions](https://clang.llvm.org/docs/LanguageExtensions.html).
 
-**Agreed:** drop optional transformation permissions from IR operations.
-This is not an optimizing IR. `nnan`, `ninf`, `nsz`, `arcp`, `contract`,
-`reassoc`, and `afn` need no operation fields. Their originating compiler
-arguments may remain invocation provenance, and applicable predefines must
-still be emitted. Ordinary arithmetic is a permitted implementation without
-exercising these permissions; it need not reproduce a particular optimized
-C binary's numerical results.
+**Agreed (revised 2026-09-25):** optional transformation permissions are
+recorded on IR operations when a consumer can use them, even though ignoring
+them is always correct. Ordinary arithmetic is a permitted implementation
+without exercising these permissions; it need not reproduce a particular
+optimized C binary's numerical results. Floating arithmetic carries
+`contract=` and complex floating arithmetic `range=` (see `ir-spec.md`).
+`nnan`, `ninf`, `nsz`, `arcp`, `reassoc`, and `afn` are not yet
+represented. This replaces the earlier rule that permissions get no
+operation fields.
 
 `nnan` does not change float representation or require a non-NaN wrapper,
 runtime check, or unsafe assumption in Rust. Optional contraction does not

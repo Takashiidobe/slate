@@ -253,7 +253,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<f64>(%5, va_arg<f64>(%26));
 // DEFAULT-NEXT:                 va_arg<f64>(%26);
 // DEFAULT-NEXT:                 va_end(%26);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%12, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%5), const<f64>(4.0))));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%12, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%5), const<f64>(4.0))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %28 @f5(%29 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {

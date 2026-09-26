@@ -15,7 +15,7 @@ void numbers(void) {
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
-// CHECK: add<f128, rounding=nearest_even, exceptions=ignore>(const<f128>(1), const<f128>(2))
+// CHECK: add<f128, rounding=nearest_even, exceptions=ignore, contract=on>(const<f128>(1), const<f128>(2))
 // CHECK-NEXT: const<f128>(1.00000000000000000000000000000000019)
 // CHECK-NEXT: const<f128>(1.00000000000000011102569059430467124)
 // CHECK-NEXT: const<i32>(16)

@@ -70,14 +70,14 @@ int main(void) {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @read_volatile_param(%7 value: volatile f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(read<f64, volatile>(%7), const<f64>(0.5));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%7), const<f64>(0.5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @use_volatile_fields(%9 input: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 fields: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32, volatile>(field0(%10), call<i32, signature=fn(i32) -> i32>(%4, const<i32>(4)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%4, const<i32>(4));
-// DEFAULT-NEXT:         write<f64, volatile>(field1(%10), add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%9), read<f64, volatile>(%2)));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(read<f64, volatile>(field1(%10)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32, volatile>(field0(%10))));
+// DEFAULT-NEXT:         write<f64, volatile>(field1(%10), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%9), read<f64, volatile>(%2)));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(field1(%10)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32, volatile>(field0(%10))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8, volatile>(%1, truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8, volatile>(%1)), const<i32>(1))));

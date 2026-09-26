@@ -61,17 +61,17 @@ int main(void) {
 // DEFAULT-NEXT:                 if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%2)), const<f64>(0.0))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %7: f32 [synthetic] = read<f32>(%2);
-// DEFAULT-NEXT:                         let %8: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%7), read<f32>(%4));
+// DEFAULT-NEXT:                         let %8: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%7), read<f32>(%4));
 // DEFAULT-NEXT:                         write<f32>(%2, read<f32>(%8));
 // DEFAULT-NEXT:                         let %9: f32 [synthetic] = read<f32>(%2);
-// DEFAULT-NEXT:                         let %10: f32 [synthetic] = sub<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%9), read<f32>(%4));
+// DEFAULT-NEXT:                         let %10: f32 [synthetic] = sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%9), read<f32>(%4));
 // DEFAULT-NEXT:                         write<f32>(%2, read<f32>(%10));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     if lt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%2)), const<f64>(0.0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<f32>(%2, sub<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%4), read<f32>(%2)));
-// DEFAULT-NEXT:                             write<f32>(%2, neg<f32>(sub<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%2), read<f32>(%4))));
+// DEFAULT-NEXT:                             write<f32>(%2, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%4), read<f32>(%2)));
+// DEFAULT-NEXT:                             write<f32>(%2, neg<f32>(sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%2), read<f32>(%4))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<f32>(%2);

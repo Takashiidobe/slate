@@ -210,31 +210,31 @@ int main() {
 // DEFAULT-NEXT:     fn %11 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %12 @exit(%99 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %13 @fp_add(%14 a: f32, %15 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%14), read<f32>(%15));
+// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%14), read<f32>(%15));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @fp_sub(%17 a: f32, %18 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%17), read<f32>(%18));
+// DEFAULT-NEXT:         return sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%17), read<f32>(%18));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @fp_mul(%20 a: f32, %21 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%20), read<f32>(%21));
+// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%20), read<f32>(%21));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @fp_div(%23 a: f32, %24 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%23), read<f32>(%24));
+// DEFAULT-NEXT:         return div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%23), read<f32>(%24));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %25 @fp_neg(%26 a: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<f32>(read<f32>(%26));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %27 @dp_add(%28 a: f64, %29 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%28), read<f64>(%29));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%28), read<f64>(%29));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %30 @dp_sub(%31 a: f64, %32 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%31), read<f64>(%32));
+// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%31), read<f64>(%32));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %33 @dp_mul(%34 a: f64, %35 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%34), read<f64>(%35));
+// DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%34), read<f64>(%35));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %36 @dp_div(%37 a: f64, %38 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%37), read<f64>(%38));
+// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%37), read<f64>(%38));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %39 @dp_neg(%40 a: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<f64>(read<f64>(%40));

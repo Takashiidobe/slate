@@ -198,7 +198,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(%2, va_arg<i32>(%9));
 // DEFAULT-NEXT:                     va_arg<i32>(%9);
 // DEFAULT-NEXT:                 let %46: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %47: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%46)), va_arg<f64>(%9)));
+// DEFAULT-NEXT:                 let %47: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%46)), va_arg<f64>(%9)));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%47));
 // DEFAULT-NEXT:                 let %48: i32 [synthetic] = read<i32>(%2);
 // DEFAULT-NEXT:                 let %49: i32 [synthetic] = truncate<i32, reason=assign, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%48)), va_arg<i64>(%9)));
@@ -208,14 +208,14 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(%2, truncate<i32, reason=assign, fits=unknown>(va_arg<i64>(%9)));
 // DEFAULT-NEXT:                     truncate<i32, reason=assign, fits=unknown>(va_arg<i64>(%9));
 // DEFAULT-NEXT:                 let %50: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %51: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%50)), va_arg<f64>(%9)));
+// DEFAULT-NEXT:                 let %51: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%50)), va_arg<f64>(%9)));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%51));
 // DEFAULT-NEXT:                 break %45;
 // DEFAULT-NEXT:                 case %45 const<i32>(11):
 // DEFAULT-NEXT:                     write<i32>(%2, va_arg<i32>(%9));
 // DEFAULT-NEXT:                     va_arg<i32>(%9);
 // DEFAULT-NEXT:                 let %52: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %53: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%52)), va_arg<f80>(%9)));
+// DEFAULT-NEXT:                 let %53: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%52)), va_arg<f80>(%9)));
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%53));
 // DEFAULT-NEXT:                 break %45;
 // DEFAULT-NEXT:                 default %45:

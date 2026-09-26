@@ -69,19 +69,19 @@ int sizes = sizeof(__bf16) + _Alignof(__bf16);
 // IR-NEXT:     global %43 classify: i32 [storage=static] = const<i32>(8) [linkage=external];
 // IR-NEXT:     global %44 sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(const<u64>(2), const<u64>(2)))) [linkage=external];
 // IR-NEXT:     fn %2 @same(%3 x: bf16, %4 y: bf16) -> bf16 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore>(read<bf16>(%3), read<bf16>(%4));
+// IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore, contract=on>(read<bf16>(%3), read<bf16>(%4));
 // IR-NEXT:     }
 // IR-NEXT:     fn %5 @half(%6 x: bf16, %7 y: f16) -> f16 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore>(float_narrow<f16, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<bf16>(%6)), read<f16>(%7));
+// IR-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(float_narrow<f16, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(read<bf16>(%6)), read<f16>(%7));
 // IR-NEXT:     }
 // IR-NEXT:     fn %8 @single(%9 x: bf16, %10 y: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(float_widen<f32, reason=usual_arith>(read<bf16>(%9)), read<f32>(%10));
+// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f32, reason=usual_arith>(read<bf16>(%9)), read<f32>(%10));
 // IR-NEXT:     }
 // IR-NEXT:     fn %11 @with_int(%12 x: bf16, %13 i: i32) -> bf16 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore>(read<bf16>(%12), int_to_float<bf16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%13)));
+// IR-NEXT:         return add<bf16, rounding=nearest_even, exceptions=ignore, contract=on>(read<bf16>(%12), int_to_float<bf16, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%13)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %14 @with_literal(%15 x: bf16) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<bf16>(%15)), const<f64>(1.0));
+// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f64, reason=usual_arith>(read<bf16>(%15)), const<f64>(1.0));
 // IR-NEXT:     }
 // IR-NEXT:     fn %16 @narrow(%17 x: f16) -> bf16 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return float_narrow<bf16, reason=return, rounding=nearest_even, exceptions=ignore>(read<f16>(%17));

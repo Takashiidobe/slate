@@ -157,7 +157,7 @@ int main(void) {
 // DEFAULT-NEXT:                     if gt<f32, exceptions=ignore>(read<f32>(field1(deref(read<ptr<@type4>>(%22)))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             let %33: f32 [synthetic] = read<f32>(%19);
-// DEFAULT-NEXT:                             let %34: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%33), read<f32>(field1(deref(read<ptr<@type4>>(%22)))));
+// DEFAULT-NEXT:                             let %34: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%33), read<f32>(field1(deref(read<ptr<@type4>>(%22)))));
 // DEFAULT-NEXT:                             write<f32>(%19, read<f32>(%34));
 // DEFAULT-NEXT:                             let %35: i32 [synthetic] = read<i32>(%20);
 // DEFAULT-NEXT:                             let %36: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%35), const<i32>(1));
@@ -167,9 +167,9 @@ int main(void) {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%20), const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(9999);
 // DEFAULT-NEXT:         let %37: f32 [synthetic] = read<f32>(%19);
-// DEFAULT-NEXT:         let %38: f32 [synthetic] = div<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%37), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%20)));
+// DEFAULT-NEXT:         let %38: f32 [synthetic] = div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%37), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%20)));
 // DEFAULT-NEXT:         write<f32>(%19, read<f32>(%38));
-// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%19), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1000))));
+// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%19), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1000))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %24 cl: @type8 [storage=automatic];

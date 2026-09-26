@@ -301,6 +301,21 @@ pub struct FloatingSemantics {
     pub exceptions: Exceptions,
 }
 
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Contraction {
+    Off,
+    #[default]
+    On,
+    Fast,
+}
+
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ComplexRange {
+    Basic,
+    #[default]
+    Full,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArithOp {
     Add,
@@ -438,14 +453,20 @@ pub enum ArithSema {
         amount_out_of_range: UbPolicy,
         negative_left: Option<UbPolicy>,
     },
-    Floating(FloatingSemantics),
+    Floating {
+        floating: FloatingSemantics,
+        contract: Contraction,
+    },
     FixedPoint {
         overflow: FixedOverflow,
         rounding: FixedRounding,
         by_zero: Option<UbPolicy>,
         amount_out_of_range: Option<UbPolicy>,
     },
-    ComplexFloating(FloatingSemantics),
+    ComplexFloating {
+        floating: FloatingSemantics,
+        range: ComplexRange,
+    },
     ComplexInteger {
         overflow: Overflow,
         by_zero: Option<UbPolicy>,

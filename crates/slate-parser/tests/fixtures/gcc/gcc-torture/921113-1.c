@@ -116,7 +116,7 @@ int main(void) {
 // DEFAULT-NEXT:         if le<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%23)), const<f64>(0.0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(f32, f32) -> void>(%7, read<f32>(%23), read<f32>(%22));
-// DEFAULT-NEXT:                 if le<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%23)), mul<f64, rounding=nearest_even, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%22)), const<f64>(0.5)))
+// DEFAULT-NEXT:                 if le<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%23)), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(float_widen<f64, reason=usual_arith>(read<f32>(%22)), const<f64>(0.5)))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         call<void, signature=fn(f32, f32) -> void>(%7, read<f32>(%23), read<f32>(%22));
 // DEFAULT-NEXT:                         write<f32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(%19), const<i32>(0)))), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));

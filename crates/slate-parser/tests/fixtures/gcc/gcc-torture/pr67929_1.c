@@ -34,7 +34,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 a: f32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%1), const<f32>(4.9)));
+// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%1), const<f32>(4.9)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%0, const<f32>(10.0)), const<i32>(49))

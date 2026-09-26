@@ -63,9 +63,9 @@ void f(void)
 // DEFAULT-NEXT:                     let %6 T2re: f64 [storage=automatic];
 // DEFAULT-NEXT:                     write<u32>(%3, add<u32, overflow=wrap>(read<u32>(%1), read<u32>(%2)));
 // DEFAULT-NEXT:                     let %10: f64 [synthetic] = read<f64>(%5);
-// DEFAULT-NEXT:                     let %11: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), read<f64>(%6));
+// DEFAULT-NEXT:                     let %11: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%6));
 // DEFAULT-NEXT:                     write<f64>(%5, read<f64>(%11));
-// DEFAULT-NEXT:                     write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%4), read<u32>(%3)))), read<f64>(%5)));
+// DEFAULT-NEXT:                     write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%4), read<u32>(%3)))), read<f64>(%5)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

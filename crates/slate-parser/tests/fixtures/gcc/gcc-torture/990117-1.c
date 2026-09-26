@@ -41,8 +41,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: i32, %3 y: i32, %4 i: i32, %5 j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 tmp1: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%2)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%3)));
-// DEFAULT-NEXT:         let %7 tmp2: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%4)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)));
+// DEFAULT-NEXT:         let %6 tmp1: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%2)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%3)));
+// DEFAULT-NEXT:         let %7 tmp2: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%4)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f64, exceptions=ignore>(read<f64>(%6), read<f64>(%7)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

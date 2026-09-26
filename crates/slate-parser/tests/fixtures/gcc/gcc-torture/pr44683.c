@@ -40,7 +40,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @copysign_bug(%1 x: f64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(ne<f64, exceptions=ignore>(read<f64>(%1), const<f64>(0.0)), eq<f64, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%1), const<f64>(0.5)), read<f64>(%1)))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<f64, exceptions=ignore>(read<f64>(%1), const<f64>(0.0)), eq<f64, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), const<f64>(0.5)), read<f64>(%1)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(__builtin_copysign, const<f64>(1.0), read<f64>(%1)), const<f64>(0.0))
 // DEFAULT-NEXT:             return const<i32>(2);

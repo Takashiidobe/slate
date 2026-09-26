@@ -53,14 +53,14 @@ int main(void) {
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @sum_box(%3 b: @type0) -> i32 [linkage=internal] [abi=sysv64(byval<align=16>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(field1(%3)), int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(field0(%3)))));
+// DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%3)), int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(field0(%3)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 b: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%5), const<i32>(3));
 // DEFAULT-NEXT:         write<f80>(field1(%5), const<f80>(4.5));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), call<i32, signature=fn(@type0) -> i32, abi=sysv64(byval<align=16>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%5))));
-// DEFAULT-NEXT:         write<f80>(field1(%5), mul<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(field1(%5)), const<f80>(2)));
+// DEFAULT-NEXT:         write<f80>(field1(%5), mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%5)), const<f80>(2)));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(field1(%5))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

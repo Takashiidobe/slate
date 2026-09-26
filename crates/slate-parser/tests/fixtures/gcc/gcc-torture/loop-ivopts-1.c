@@ -86,7 +86,7 @@ void foo(float *x) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), read<i32>(%6))), mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%8), add<i32, overflow=ub>(read<i32>(%6), mul<i32, overflow=ub>(read<i32>(%5), const<i32>(4)))))), read<f32>(%7)));
+// DEFAULT-NEXT:                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), read<i32>(%6))), mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%8), add<i32, overflow=ub>(read<i32>(%6), mul<i32, overflow=ub>(read<i32>(%5), const<i32>(4)))))), read<f32>(%7)));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), const<i32>(0))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), const<i32>(0)))));

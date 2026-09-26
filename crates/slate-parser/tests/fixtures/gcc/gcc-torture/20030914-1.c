@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %16: f80 [synthetic] = read<f80>(%6);
-// DEFAULT-NEXT:                 let %17: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%16), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%5)), read<i32>(%7))))));
+// DEFAULT-NEXT:                 let %17: f80 [synthetic] = add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%16), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%5)), read<i32>(%7))))));
 // DEFAULT-NEXT:                 write<f80>(%6, read<f80>(%17));
 // DEFAULT-NEXT:         return read<f80>(%6);
 // DEFAULT-NEXT:     }

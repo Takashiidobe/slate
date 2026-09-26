@@ -130,7 +130,7 @@ int main() {
 // DEFAULT-NEXT:     fn %10 @tstmul(%11 ux: u32, %12 uy: u32, %13 ur: u32) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %14 x: f32 [storage=automatic] = call<f32, signature=fn(u32) -> f32>(%3, read<u32>(%11));
 // DEFAULT-NEXT:         let %15 y: f32 [storage=automatic] = call<f32, signature=fn(u32) -> f32>(%3, read<u32>(%12));
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f32) -> u32>(%6, mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%14), read<f32>(%15))), read<u32>(%13))
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f32) -> u32>(%6, mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%14), read<f32>(%15))), read<u32>(%13))
 // DEFAULT-NEXT:             write<i32>(%9, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

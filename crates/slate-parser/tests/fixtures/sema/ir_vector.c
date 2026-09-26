@@ -239,13 +239,13 @@ v4su convert_signedness(v4si a) {
 // IR-NEXT:         return shr<vector<u32, 4>, elementwise=true, amount_out_of_range=ub, fill=zero_extend>(read<vector<u32, 4>>(%26), vector_splat<vector<u32, 4>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %27 @float_arithmetic(%28 a: vector<f32, 4>, %29 b: vector<f32, 4>) -> vector<f32, 4> [linkage=external] [abi=sysv64(direct, direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%28), read<vector<f32, 4>>(%29)), read<vector<f32, 4>>(%29));
+// IR-NEXT:         return sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%28), read<vector<f32, 4>>(%29)), read<vector<f32, 4>>(%29));
 // IR-NEXT:     }
 // IR-NEXT:     fn %30 @splat_integer(%31 a: vector<i32, 4>, %32 b: i32) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, scalar) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return mul<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%31), vector_splat<vector<i32, 4>, reason=usual_arith>(read<i32>(%32)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %33 @splat_floating(%34 a: vector<f64, 2>) -> vector<f64, 2> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%34), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)));
+// IR-NEXT:         return div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%34), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %35 @splat_converting(%36 a: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%36), vector_splat<vector<i32, 4>, reason=usual_arith>(float_to_int<i32, reason=usual_arith, out_of_range=ub, exceptions=ignore>(const<f32>(1.0))));
@@ -309,16 +309,16 @@ v4su convert_signedness(v4si a) {
 // IR-NEXT:         return read<f32>(lane(%81, const<i32>(3)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %83 @component(%84 a: vector<f32, 4>) -> f32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(lane(%84, const<i32>(0))), read<f32>(lane(%84, const<i32>(3))));
+// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(lane(%84, const<i32>(0))), read<f32>(lane(%84, const<i32>(3))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %85 @halves(%86 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 2>>(swizzle<lanes=[0, 1]>(%86)), read<vector<f32, 2>>(swizzle<lanes=[2, 3]>(%86)));
+// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 2>>(swizzle<lanes=[0, 1]>(%86)), read<vector<f32, 2>>(swizzle<lanes=[2, 3]>(%86)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %87 @duplicated_components(%88 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return shuffle<vector<f32, 2>, mask=[0, 0]>(read<vector<f32, 4>>(%88));
 // IR-NEXT:     }
 // IR-NEXT:     fn %89 @named_components(%90 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 2>>(swizzle<lanes=[1, 3]>(%90)), read<vector<f32, 2>>(swizzle<lanes=[0, 2]>(%90)));
+// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 2>>(swizzle<lanes=[1, 3]>(%90)), read<vector<f32, 2>>(swizzle<lanes=[0, 2]>(%90)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %91 @assign_components(%92 a: ptr<vector<f32, 4>>, %93 b: vector<f32, 2>) -> void [linkage=external] [abi=sysv64(scalar, coerce<f64>) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         write<f32>(lane(deref(read<ptr<vector<f32, 4>>>(%92)), const<i32>(0)), const<f32>(1.0));

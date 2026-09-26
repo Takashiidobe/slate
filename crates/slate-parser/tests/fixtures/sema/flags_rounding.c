@@ -15,8 +15,8 @@ void operations(void) {
 // SLATE-FILECHECK-BEGIN CHECK
 // CHECK: add<i32, overflow=ub>(const<i32>(1), add<i32, overflow=ub>(const<i32>(2), const<i32>(3)))
 // CHECK-NEXT: add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
-// CHECK-NEXT: add<f32, rounding=environment, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
-// CHECK-NEXT: add<f80, rounding=environment, exceptions=ignore>(const<f80>(1), const<f80>(2))
+// CHECK-NEXT: add<f32, rounding=environment, exceptions=ignore, contract=on>(const<f32>(1.0), const<f32>(2.0))
+// CHECK-NEXT: add<f80, rounding=environment, exceptions=ignore, contract=on>(const<f80>(1), const<f80>(2))
 // CHECK-NEXT: int_to_float<f32, reason=explicit, exact=true, rounding=environment, exceptions=ignore>(from_bool<i32, reason=explicit>(const<bool>(true)))
 // CHECK-NEXT: int_to_float<f32, reason=explicit, exact=false, rounding=environment, exceptions=ignore>(const<i32>(16777217))
 // CHECK-NEXT: float_narrow<f32, reason=explicit, rounding=environment, exceptions=ignore>(const<f64>(1.5))

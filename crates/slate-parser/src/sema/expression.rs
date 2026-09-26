@@ -36,6 +36,8 @@ pub(super) struct Lowerer {
     pub diagnostic_options: DiagnosticOptions,
     pub standard: LanguageStandard,
     pub diagnostics: Vec<super::SemaError>,
+    pub floating_pragmas: super::pragmas::FloatingPragmas,
+    pub compound_start: bool,
 }
 
 impl Lowerer {
@@ -995,7 +997,7 @@ impl Lowerer {
                         left: Box::new(value),
                         right: Box::new(zero),
                         exceptions: matches!(component, NumericType::Float(_))
-                            .then_some(self.context.floating.exceptions),
+                            .then_some(self.context.region.floating.exceptions),
                         reason,
                     },
                 )
@@ -2573,7 +2575,7 @@ impl Lowerer {
                     },
                     None => (&body[..], None, None),
                 };
-                let (statements, value) = self.scoped(|lower| {
+                let (statements, value) = self.compound(|lower| {
                     let mut statements = lower.statements(leading, lower.return_type)?;
                     if let Some(labels) = &labels {
                         statements.extend(

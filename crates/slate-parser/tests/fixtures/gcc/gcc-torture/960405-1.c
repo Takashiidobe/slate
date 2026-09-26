@@ -40,8 +40,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 x: f80 [storage=static] = add<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(5.94865747678615882543E+4931), const<f80>(5.94865747678615882543E+4931)) [linkage=external];
-// DEFAULT-NEXT:     global %3 y: f80 [storage=static] = mul<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(2), const<f80>(5.94865747678615882543E+4931)) [linkage=external];
+// DEFAULT-NEXT:     global %2 x: f80 [storage=static] = add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(const<f80>(5.94865747678615882543E+4931), const<f80>(5.94865747678615882543E+4931)) [linkage=external];
+// DEFAULT-NEXT:     global %3 y: f80 [storage=static] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(const<f80>(2), const<f80>(5.94865747678615882543E+4931)) [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %9: f80 [synthetic] = read<f80, volatile>(%3);
-// DEFAULT-NEXT:                 let %10: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%9), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
+// DEFAULT-NEXT:                 let %10: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%9), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
 // DEFAULT-NEXT:                 write<f80, volatile>(%3, read<f80>(%10));
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80, volatile>(%3), const<f80>(1.08420217248550443401E-19))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

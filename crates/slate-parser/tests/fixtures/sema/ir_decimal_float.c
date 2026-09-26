@@ -39,10 +39,10 @@ int sizes = sizeof(_Decimal32) + sizeof(_Decimal64) + _Alignof(_Decimal128);
 // IR-NEXT:     global %2 c: d128 [storage=static] = const<d128>(0.10) [linkage=external];
 // IR-NEXT:     global %15 sizes: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(4), const<u64>(8)), const<u64>(16)))) [linkage=external];
 // IR-NEXT:     fn %3 @sum(%4 x: d64, %5 y: d64) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<d64, rounding=nearest_even, exceptions=ignore>(read<d64>(%4), read<d64>(%5));
+// IR-NEXT:         return add<d64, rounding=nearest_even, exceptions=ignore, contract=on>(read<d64>(%4), read<d64>(%5));
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @widen(%7 x: d32, %8 i: i32) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return float_widen<d64, reason=return>(add<d32, rounding=nearest_even, exceptions=ignore>(read<d32>(%7), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%8))));
+// IR-NEXT:         return float_widen<d64, reason=return>(add<d32, rounding=nearest_even, exceptions=ignore, contract=on>(read<d32>(%7), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%8))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %9 @cast(%10 d: f64) -> d128 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return float_convert<d128, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%10));

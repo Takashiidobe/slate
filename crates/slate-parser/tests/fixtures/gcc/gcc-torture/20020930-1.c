@@ -41,7 +41,7 @@ float expm1f(float x) {
 // DEFAULT-NEXT:     fn %0 @expm1f(%1 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 sf_u: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(field1(%3), mul<u32, overflow=wrap>(float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(%1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%1), read<f32>(field0(%3)));
+// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%1), read<f32>(field0(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

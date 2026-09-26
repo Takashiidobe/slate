@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:             condition: lt<f64, exceptions=ignore>(read<f64>(%5), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(20)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 let %8: f64 [synthetic] = read<f64>(%5);
-// DEFAULT-NEXT:                 let %9: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%8), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 let %9: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%8), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
 // DEFAULT-NEXT:                 write<f64>(%5, read<f64>(%9));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }

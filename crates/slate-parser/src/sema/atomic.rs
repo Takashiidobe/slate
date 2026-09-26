@@ -950,7 +950,7 @@ impl Lowerer {
             )
         };
         let wrap = if floating {
-            ArithSema::Floating(self.context.floating)
+            self.context.floating_arith()
         } else {
             ArithSema::Integer {
                 overflow: Overflow::Wrap,

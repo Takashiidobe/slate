@@ -72,10 +72,10 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f32>(%4, add<f32, rounding=nearest_even, exceptions=ignore>(const<f32>(1.0), read<f32>(%3)));
+// DEFAULT-NEXT:                     write<f32>(%4, add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(1.0), read<f32>(%3)));
 // DEFAULT-NEXT:                     if eq<f32, exceptions=ignore>(read<f32>(%4), const<f32>(1.0))
 // DEFAULT-NEXT:                         break %7;
-// DEFAULT-NEXT:                     write<f32>(%3, div<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%3), const<f32>(2.0)));
+// DEFAULT-NEXT:                     write<f32>(%3, div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%3), const<f32>(2.0)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(24))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

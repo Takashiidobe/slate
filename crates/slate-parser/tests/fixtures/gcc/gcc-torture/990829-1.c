@@ -44,7 +44,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @test(%3 le: f64 [const], %4 ri: f64 [const]) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore>(sub<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%4), read<f64>(%3)), mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%4), add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%3), const<f64>(1.0))));
+// DEFAULT-NEXT:         let %5 val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), read<f64>(%3)), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), const<f64>(1.0))));
 // DEFAULT-NEXT:         return read<f64>(%5);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

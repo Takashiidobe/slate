@@ -83,7 +83,7 @@ main() {
 // DEFAULT-NEXT:         let %6 d: f32 [storage=automatic] = read<f32>(%5);
 // DEFAULT-NEXT:         let %7 p: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %9: f32 [synthetic] = read<f32>(%6);
-// DEFAULT-NEXT:         let %10: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%9), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
+// DEFAULT-NEXT:         let %10: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%9), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)));
 // DEFAULT-NEXT:         write<f32>(%6, read<f32>(%10));
 // DEFAULT-NEXT:         write<f32>(field0(%7), read<f32>(%10));
 // DEFAULT-NEXT:         let %8 c: i32 [storage=automatic] = sub<i32, overflow=ub>(read<i32>(field1(%7)), const<i32>(4));

@@ -47,7 +47,7 @@ void residual ()
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %6: f80 [synthetic] = read<f80>(%2);
-// DEFAULT-NEXT:                 let %7: f80 [synthetic] = sub<f80, rounding=nearest_even, exceptions=ignore>(read<f80>(%6), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
+// DEFAULT-NEXT:                 let %7: f80 [synthetic] = sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
 // DEFAULT-NEXT:                 write<f80>(%2, read<f80>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

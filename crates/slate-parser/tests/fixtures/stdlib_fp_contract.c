@@ -54,14 +54,14 @@ int main(void) {
 // DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %2 x: volatile f64 [storage=automatic] = const<f64>(1.9999999999999998);
 // DEFAULT-NEXT:         let %3 y: f64 [storage=automatic] = read<f64, volatile>(%2);
-// DEFAULT-NEXT:         let %4 z: f64 [storage=automatic] = neg<f64>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64, volatile>(%2), read<f64, volatile>(%2)));
+// DEFAULT-NEXT:         let %4 z: f64 [storage=automatic] = neg<f64>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%2), read<f64, volatile>(%2)));
 // DEFAULT-NEXT:         let %5 contracted: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %6 uncontracted: f64 [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<f64>(%5, add<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
+// DEFAULT-NEXT:             write<f64>(%5, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore>(mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
+// DEFAULT-NEXT:             write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore, contract=off>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=off>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%8)), read<f64>(%5), read<f64>(%6));
 // DEFAULT-NEXT:         return const<i32>(0);

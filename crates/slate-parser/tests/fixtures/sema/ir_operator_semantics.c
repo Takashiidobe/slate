@@ -77,7 +77,7 @@ void operators(int s, unsigned u, short small, unsigned long amount, double f) {
 // IR-NEXT:         shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i16>(%3)), widen<i32, reason=promotion>(read<i16>(%3)));
 // IR-NEXT:         and<i32>(read<i32>(%1), read<i32>(%1));
 // IR-NEXT:         not<i32>(read<i32>(%1));
-// IR-NEXT:         div<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%5), read<f64>(%5));
+// IR-NEXT:         div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%5), read<f64>(%5));
 // IR-NEXT:         let %6: i32 [synthetic] = read<i32>(%1);
 // IR-NEXT:         let %7: i32 [synthetic] = div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%6), read<i32>(%1));
 // IR-NEXT:         write<i32>(%1, read<i32>(%7));

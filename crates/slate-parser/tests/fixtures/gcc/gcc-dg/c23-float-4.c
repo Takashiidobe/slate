@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(read<f32, volatile>(%0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(add<f32, rounding=nearest_even, exceptions=ignore>(read<f32, volatile>(%0), read<f32, volatile>(%0))))
+// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=nan>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32, volatile>(%0), read<f32, volatile>(%0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -84,10 +84,10 @@ main(void) {
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 r: volatile f16 [storage=automatic];
-// DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%3), read<f16, volatile>(%3)));
+// DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%3), read<f16, volatile>(%3)));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore>(read<f16, volatile>(%4), read<f16, volatile>(%4)));
+// DEFAULT-NEXT:         write<f16, volatile>(%6, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16, volatile>(%4), read<f16, volatile>(%4)));
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

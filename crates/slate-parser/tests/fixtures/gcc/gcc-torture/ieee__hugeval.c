@@ -60,14 +60,14 @@ int main() {
 // DEFAULT-NEXT:     global %2 zero: f64 [storage=static] [const] = const<f64>(0.0) [linkage=internal];
 // DEFAULT-NEXT:     global %3 pone: f64 [storage=static] [const] = const<f64>(1.0) [linkage=internal];
 // DEFAULT-NEXT:     global %4 none: f64 [storage=static] [const] = neg<f64>(const<f64>(1.0)) [linkage=internal];
-// DEFAULT-NEXT:     global %5 pinf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), const<f64>(0.0)) [linkage=internal];
-// DEFAULT-NEXT:     global %6 ninf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0)), const<f64>(0.0)) [linkage=internal];
+// DEFAULT-NEXT:     global %5 pinf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(0.0)) [linkage=internal];
+// DEFAULT-NEXT:     global %6 ninf: f64 [storage=static] [const] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(neg<f64>(const<f64>(1.0)), const<f64>(0.0)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%5), div<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%3), read<f64>(%2)))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%5), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), read<f64>(%2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%6), div<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%4), read<f64>(%2)))
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%6), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), read<f64>(%2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn() -> f64>(__builtin_huge_val), read<f64>(%5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

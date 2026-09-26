@@ -53,7 +53,7 @@ int main() {
 // DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%4), const<f64>(1.0))
 // DEFAULT-NEXT:             return read<f64>(%4);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%4), call<f64, signature=fn(ptr<const f64>) -> f64>(%2, ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(read<ptr<const f64>>(%3), const<i32>(1))));
+// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), call<f64, signature=fn(ptr<const f64>) -> f64>(%2, ptr_offset<ptr<const f64>, subtract=false, element=f64, overflow=ub>(read<ptr<const f64>>(%3), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 values: array<f64, 4> [storage=automatic] = aggregate<array<f64, 4>, zero_fill=false>(index0 = const<f64>(1.7976931348623157e308), index1 = const<f64>(2.0), index2 = const<f64>(0.5), index3 = const<f64>(1.0));

@@ -27,10 +27,10 @@ pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 
 use crate::ast::Span;
 pub use numeric::{
-    ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
-    Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest, FloatType,
-    FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill, Type,
-    UbPolicy, UnaryArithOp, VariableExtent,
+    ArithOp, ArithSema, CompareOp, ComplexRange, Contraction, ConversionKind, ConversionReason,
+    ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest,
+    FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill,
+    Type, UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,
@@ -796,15 +796,18 @@ impl Value {
                     write!(f, ", negative_left={policy}")?;
                 }
             }
-            ArithSema::Floating(properties) => write!(
-                f,
-                ", rounding={}, exceptions={}",
-                match properties.rounding {
-                    Rounding::NearestEven => "nearest_even",
-                    Rounding::Environment => "environment",
-                },
-                exceptions_name(properties.exceptions)
-            )?,
+            ArithSema::Floating { floating, contract } => {
+                format_floating(f, floating)?;
+                write!(
+                    f,
+                    ", contract={}",
+                    match contract {
+                        Contraction::Off => "off",
+                        Contraction::On => "on",
+                        Contraction::Fast => "fast",
+                    }
+                )?;
+            }
             ArithSema::FixedPoint {
                 overflow,
                 rounding,
@@ -819,15 +822,18 @@ impl Value {
                     write!(f, ", amount_out_of_range={policy}")?;
                 }
             }
-            ArithSema::ComplexFloating(properties) => write!(
-                f,
-                ", complex=true, rounding={}, exceptions={}",
-                match properties.rounding {
-                    Rounding::NearestEven => "nearest_even",
-                    Rounding::Environment => "environment",
-                },
-                exceptions_name(properties.exceptions)
-            )?,
+            ArithSema::ComplexFloating { floating, range } => {
+                f.write_str(", complex=true")?;
+                format_floating(f, floating)?;
+                write!(
+                    f,
+                    ", range={}",
+                    match range {
+                        ComplexRange::Basic => "basic",
+                        ComplexRange::Full => "full",
+                    }
+                )?;
+            }
             ArithSema::ComplexInteger { overflow, by_zero } => {
                 f.write_str(", complex=true")?;
                 format_overflow(f, overflow)?;

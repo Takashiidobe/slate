@@ -64,10 +64,10 @@ int main(void) {
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%6)), widen<i32, reason=promotion>(read<i8>(%7))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @scale(%9 value: f32, %10 factor: f32) -> f32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(%9), read<f32>(%10));
+// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%9), read<f32>(%10));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @add_double(%12 a: f64, %13 b: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%12), read<f64>(%13));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%12), read<f64>(%13));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8>(%1, call<i8, signature=fn(i8, i8) -> i8>(%5, read<i8>(%1), truncate<i8, reason=arg, fits=always>(const<i32>(3))));

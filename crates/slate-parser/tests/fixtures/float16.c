@@ -62,10 +62,10 @@ int main(void) {
 // DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %2 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %3 @add16(%4 a: f16, %5 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%4), read<f16>(%5));
+// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%4), read<f16>(%5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @mul16(%7 a: f16, %8 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%7), read<f16>(%8));
+// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%7), read<f16>(%8));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @sum_variadic(%10 n: i32, ...) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 ap: va_list [storage=automatic];
@@ -83,8 +83,8 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f16>(%12, add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%12), va_arg<f16>(%11)));
-// DEFAULT-NEXT:                     add<f16, rounding=nearest_even, exceptions=ignore>(read<f16>(%12), va_arg<f16>(%11));
+// DEFAULT-NEXT:                     write<f16>(%12, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%12), va_arg<f16>(%11)));
+// DEFAULT-NEXT:                     add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%12), va_arg<f16>(%11));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%11);
 // DEFAULT-NEXT:         return read<f16>(%12);

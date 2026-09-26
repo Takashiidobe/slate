@@ -43,7 +43,7 @@ double sequenced(va_list ap) { return __builtin_va_arg(ap, double) + __builtin_v
 // IR-NEXT:         return copy<@type1, reason=return>(va_arg<@type1>(%5));
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @sequenced(%7 ap: va_list) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(va_arg<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(va_arg<i32>(%7)));
+// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(va_arg<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(va_arg<i32>(%7)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

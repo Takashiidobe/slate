@@ -68,10 +68,10 @@ int main(void) {
 // DEFAULT-NEXT:         let %10 r: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%10, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9))));
 // DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9)));
-// DEFAULT-NEXT:         write<f64>(real(%9), mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9)))));
-// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9))));
-// DEFAULT-NEXT:         write<f64>(imag(%9), mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9)))));
-// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9))));
+// DEFAULT-NEXT:         write<f64>(real(%9), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9)))));
+// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9))));
+// DEFAULT-NEXT:         write<f64>(imag(%9), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9)))));
+// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9))));
 // DEFAULT-NEXT:         return read<complex<f64>>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

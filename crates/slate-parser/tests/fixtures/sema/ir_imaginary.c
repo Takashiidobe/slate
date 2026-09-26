@@ -191,31 +191,31 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         return imaginary_convert<imaginary<f32>, reason=return, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%20));
 // IR-NEXT:     }
 // IR-NEXT:     fn %21 @real_times_imaginary(%22 x: f64, %23 y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore>(read<f64>(%22), read<imaginary<f64>>(%23));
+// IR-NEXT:         return mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%22), read<imaginary<f64>>(%23));
 // IR-NEXT:     }
 // IR-NEXT:     fn %24 @imaginary_times_imaginary(%25 y: imaginary<f64>, %26 v: imaginary<f32>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%25), imaginary_convert<imaginary<f64>, reason=usual_arith>(read<imaginary<f32>>(%26)));
+// IR-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%25), imaginary_convert<imaginary<f64>, reason=usual_arith>(read<imaginary<f32>>(%26)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %27 @imaginary_over_imaginary(%28 y: imaginary<f64>, %29 v: imaginary<f64>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%28), read<imaginary<f64>>(%29));
+// IR-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%28), read<imaginary<f64>>(%29));
 // IR-NEXT:     }
 // IR-NEXT:     fn %30 @real_over_imaginary(%31 x: i32, %32 y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return div<imaginary<f64>, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%31)), read<imaginary<f64>>(%32));
+// IR-NEXT:         return div<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%31)), read<imaginary<f64>>(%32));
 // IR-NEXT:     }
 // IR-NEXT:     fn %33 @imaginary_sum(%34 y: imaginary<f64>, %35 v: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<imaginary<f64>, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%34), read<imaginary<f64>>(%35));
+// IR-NEXT:         return add<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%34), read<imaginary<f64>>(%35));
 // IR-NEXT:     }
 // IR-NEXT:     fn %36 @real_plus_imaginary(%37 x: f64, %38 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<f64>(%37), read<imaginary<f64>>(%38));
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%37), read<imaginary<f64>>(%38));
 // IR-NEXT:     }
 // IR-NEXT:     fn %39 @imaginary_minus_real(%40 y: imaginary<f64>, %41 x: f64) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%40), read<f64>(%41));
+// IR-NEXT:         return sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<imaginary<f64>>(%40), read<f64>(%41));
 // IR-NEXT:     }
 // IR-NEXT:     fn %42 @complex_times_imaginary(%43 z: complex<f64>, %44 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(read<complex<f64>>(%43), read<imaginary<f64>>(%44));
+// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%43), read<imaginary<f64>>(%44));
 // IR-NEXT:     }
 // IR-NEXT:     fn %45 @complex_plus_imaginary(%46 z: complex<f32>, %47 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<pair<f32>>, scalar) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%46)), read<imaginary<f64>>(%47));
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%46)), read<imaginary<f64>>(%47));
 // IR-NEXT:     }
 // IR-NEXT:     fn %48 @imaginary_equal(%49 y: imaginary<f64>, %50 v: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return from_bool<i32, reason=return>(eq<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%49), read<imaginary<f64>>(%50)));
@@ -237,7 +237,7 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:     fn %62 @assign(%63 out: ptr<imaginary<f64>>, %64 y: imaginary<f64>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         let %65: ptr<imaginary<f64>> [synthetic] = read<ptr<imaginary<f64>>>(%63);
 // IR-NEXT:         let %66: imaginary<f64> [synthetic] = read<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%65)));
-// IR-NEXT:         let %67: imaginary<f64> [synthetic] = mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%66), const<f64>(2.0));
+// IR-NEXT:         let %67: imaginary<f64> [synthetic] = mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%66), const<f64>(2.0));
 // IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%65)), read<imaginary<f64>>(%67));
 // IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%63)), read<imaginary<f64>>(%64));
 // IR-NEXT:     }

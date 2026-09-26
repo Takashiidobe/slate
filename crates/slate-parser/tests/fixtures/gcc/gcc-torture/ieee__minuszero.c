@@ -59,7 +59,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %5 a: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(5));
 // DEFAULT-NEXT:         let %7 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(field0(%4), div<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%6))));
+// DEFAULT-NEXT:         write<f64>(field0(%4), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%5)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%6))));
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%7, const<i32>(0));

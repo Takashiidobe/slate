@@ -67,7 +67,7 @@ int main() {
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @f(%5 a: ptr<@type0>, %6 b: ptr<@type1>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<f64>(field0(deref(read<ptr<@type0>>(%5))), const<f64>(1.0));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore>(read<f64>(field0(deref(read<ptr<@type1>>(%6)))), const<f64>(1.0));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(field0(deref(read<ptr<@type1>>(%6)))), const<f64>(1.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %8 a: @type2 [storage=automatic];

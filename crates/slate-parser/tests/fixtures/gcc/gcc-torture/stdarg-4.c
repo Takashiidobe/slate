@@ -155,7 +155,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %35: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%34), va_arg<i64>(%5));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%35));
 // DEFAULT-NEXT:         let %36: i64 [synthetic] = read<i64>(%2);
-// DEFAULT-NEXT:         let %37: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%36)), va_arg<f64>(%5)));
+// DEFAULT-NEXT:         let %37: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%36)), va_arg<f64>(%5)));
 // DEFAULT-NEXT:         write<i64>(%2, read<i64>(%37));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @f1(%7 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -171,7 +171,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %39: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%38), va_arg<i64>(%10));
 // DEFAULT-NEXT:         write<i64>(%3, read<i64>(%39));
 // DEFAULT-NEXT:         let %40: i64 [synthetic] = read<i64>(%3);
-// DEFAULT-NEXT:         let %41: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%40)), va_arg<f64>(%10)));
+// DEFAULT-NEXT:         let %41: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%40)), va_arg<f64>(%10)));
 // DEFAULT-NEXT:         write<i64>(%3, read<i64>(%41));
 // DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%4, read<va_list>(%10));
 // DEFAULT-NEXT:     }
@@ -253,7 +253,7 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i64>(%3, float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%30)));
 // DEFAULT-NEXT:                     float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%30));
 // DEFAULT-NEXT:                 let %42: i64 [synthetic] = read<i64>(%3);
-// DEFAULT-NEXT:                 let %43: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%42)), va_arg<f64>(%30)));
+// DEFAULT-NEXT:                 let %43: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%42)), va_arg<f64>(%30)));
 // DEFAULT-NEXT:                 write<i64>(%3, read<i64>(%43));
 // DEFAULT-NEXT:                 break %33;
 // DEFAULT-NEXT:                 default %33:

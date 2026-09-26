@@ -546,8 +546,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(compound_literal %82 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(compound_literal %82 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
 // DEFAULT-NEXT:         do %83
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %30 __i: i32 [storage=automatic];
@@ -568,8 +568,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(compound_literal %85 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(compound_literal %85 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
 // DEFAULT-NEXT:         do %86
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %31 __i: i32 [storage=automatic];
@@ -590,8 +590,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(compound_literal %88 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(compound_literal %88 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
 // DEFAULT-NEXT:         do %89
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %32 __i: i32 [storage=automatic];
@@ -612,8 +612,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(compound_literal %91 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))), read<vector<f32, 4>>(%6)));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(compound_literal %91 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))), read<vector<f32, 4>>(%6)));
 // DEFAULT-NEXT:         do %92
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %33 __i: i32 [storage=automatic];
@@ -634,8 +634,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %94 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %94 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
 // DEFAULT-NEXT:         do %95
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %34 __i: i32 [storage=automatic];
@@ -656,8 +656,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %97 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %97 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
 // DEFAULT-NEXT:         do %98
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %35 __i: i32 [storage=automatic];
@@ -678,8 +678,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %100 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %100 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
 // DEFAULT-NEXT:         do %101
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %36 __i: i32 [storage=automatic];
@@ -700,8 +700,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %103 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%7, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), vector_splat<vector<f32, 4>, reason=usual_arith>(float_narrow<f32, reason=usual_arith, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%8, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 4>>(%6), read<vector<f32, 4>>(compound_literal %103 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))))));
 // DEFAULT-NEXT:         do %104
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %37 __i: i32 [storage=automatic];
@@ -722,8 +722,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(compound_literal %106 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(compound_literal %106 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
 // DEFAULT-NEXT:         do %107
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %38 __i: i32 [storage=automatic];
@@ -744,8 +744,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(compound_literal %109 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(compound_literal %109 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
 // DEFAULT-NEXT:         do %110
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %39 __i: i32 [storage=automatic];
@@ -766,8 +766,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(compound_literal %112 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(compound_literal %112 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
 // DEFAULT-NEXT:         do %113
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %40 __i: i32 [storage=automatic];
@@ -788,8 +788,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(compound_literal %115 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0)), read<vector<f64, 2>>(%9)));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(compound_literal %115 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%9)));
 // DEFAULT-NEXT:         do %116
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %41 __i: i32 [storage=automatic];
@@ -810,8 +810,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %118 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %118 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         do %119
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %42 __i: i32 [storage=automatic];
@@ -832,8 +832,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %121 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %121 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         do %122
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %43 __i: i32 [storage=automatic];
@@ -854,8 +854,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %124 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %124 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         do %125
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %44 __i: i32 [storage=automatic];
@@ -876,8 +876,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %127 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%10, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), vector_splat<vector<f64, 2>, reason=usual_arith>(const<f64>(2.0))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%11, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f64, 2>>(%9), read<vector<f64, 2>>(compound_literal %127 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
 // DEFAULT-NEXT:         do %128
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %45 __i: i32 [storage=automatic];
