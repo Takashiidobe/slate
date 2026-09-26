@@ -16,5 +16,5 @@ struct Trailing {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: typedef alignment attribute
+// DEFAULT: Error:   × unsupported in numeric IR lowering: machine mode attribute
 // SLATE-FILECHECK-END DEFAULT

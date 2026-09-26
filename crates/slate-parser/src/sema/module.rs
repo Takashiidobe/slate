@@ -212,10 +212,10 @@ fn reject_unsupported<'a>(
     subject: Subject,
 ) -> Result<(), ResolveError> {
     for attribute in attributes {
-        if let Use::Unsupported(reason) =
-            super::attributes::declaration_use(&attribute.value, subject)
-        {
-            return Err(ResolveError::Unsupported(reason));
+        match super::attributes::declaration_use(&attribute.value, subject) {
+            Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
+            Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
+            _ => {}
         }
     }
     Ok(())
@@ -415,6 +415,7 @@ impl Lowerer {
         for attribute in attributes {
             match super::attributes::declaration_use(&attribute.value, subject) {
                 Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
+                Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
                 Use::Inapplicable {
                     spelling,
                     applies_to,
@@ -458,14 +459,15 @@ impl Lowerer {
                 }
             }
             let request = self.types.entities.request(&global.variable.id);
-            if let Some(requested) = request.alignment {
-                let natural = u64::from(
-                    self.types
-                        .storage(global.variable.ty.clone())?
-                        .alignment_bytes,
-                );
-                let effective = self.types.effective_alignment(requested, natural);
-                global.variable.alignment = (effective != natural).then_some(effective);
+            let declared = self.types.entities.ty(&id);
+            let typedef_aligned =
+                declared.is_some_and(|q| self.types.ctypes.typedef_alignment(q).is_some());
+            if request.alignment.is_some() || typedef_aligned {
+                global.variable.alignment = self.types.object_alignment_override(
+                    &global.variable.ty,
+                    declared,
+                    request.alignment,
+                )?;
             }
             let symbol = &global.symbol;
             let tentative = global.definition
@@ -736,7 +738,8 @@ impl Lowerer {
             }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
-                self.types.define_alias(name.into(), resolved)?;
+                self.types
+                    .define_alias(name.into(), resolved, attributes.clone())?;
                 for definition in &self.types.definitions[start..] {
                     let span = declarator.derive(definition.clone());
                     if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
@@ -874,13 +877,14 @@ impl Lowerer {
                 },
             };
             self.types.entities.merge_request(id, request)?;
-            let automatic_alignment = match (storage, request.alignment) {
-                (StorageDuration::Automatic, Some(requested)) => {
-                    let natural = u64::from(self.types.storage(ty.clone())?.alignment_bytes);
-                    let effective = self.types.effective_alignment(requested, natural);
-                    (effective != natural).then_some(effective)
-                }
-                _ => None,
+            let automatic_alignment = if storage == StorageDuration::Automatic
+                && (request.alignment.is_some()
+                    || self.types.ctypes.typedef_alignment(resolved).is_some())
+            {
+                self.types
+                    .object_alignment_override(&ty, Some(resolved), request.alignment)?
+            } else {
+                None
             };
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),

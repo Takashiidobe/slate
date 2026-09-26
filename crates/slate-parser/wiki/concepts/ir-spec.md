@@ -405,7 +405,17 @@ The type view resolves struct, union, and enum tag definitions. On the
 supported Linux x86_64, x86, AArch64, and ARM32 targets, record layout records byte size, aggregate alignment,
 one byte offset per field, bit offsets for bit-fields, and byte extents for
 contiguous bit-field storage units. It applies packed,
-aligned, and `_Alignas` requests, including local field alignment. Unnamed
+aligned, and `_Alignas` requests, including local field alignment. An
+`aligned` typedef stays structural in the IR type (`typedef int A
+__attribute__((aligned(16)))` is still `i32`); its alignment lives on the
+sema-side `Typedef` C type and reaches the IR only where alignment is already
+recorded: record field placement, `align_of` constants, and `[align=N]` on
+globals and locals. Unlike a declaration-site `aligned`, it replaces the
+natural alignment and may lower it (`aligned(1)` gives 1 under clang and
+gcc); the outermost aligned typedef in a chain wins, arrays inherit it from
+their element, `_Atomic` drops it, and an array whose element size is not a
+multiple of it is rejected. Access alignment through a pointer to such a type
+is not modeled, since IR loads and stores carry no alignment. Unnamed
 members and zero-width bit-fields remain in the field list. Enum values are
 evaluated in declaration order, each enumerator entering the ordinary scope
 as an `int` constant the moment its value is known, so a later enumerator

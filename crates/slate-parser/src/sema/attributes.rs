@@ -18,6 +18,7 @@ pub(super) enum Use {
         applies_to: Option<&'static str>,
     },
     Unsupported(&'static str),
+    Invalid(&'static str),
 }
 
 pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
@@ -29,7 +30,9 @@ pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
     }
     let alignment = matches!(attribute, Attribute::Aligned(_) | Attribute::AlignAs(_));
     match (subject, general_use(attribute)) {
-        (Subject::Typedef, _) if alignment => Use::Unsupported("typedef alignment attribute"),
+        (Subject::Typedef, _) if matches!(attribute, Attribute::AlignAs(_)) => {
+            Use::Invalid("'_Alignas' applied to a typedef")
+        }
         (Subject::Parameter, _) if alignment => Use::Layout,
         (Subject::Parameter, Use::Symbol) => Use::Unsupported("symbol attribute on a parameter"),
         (Subject::Parameter, Use::Layout) => Use::Unsupported("layout attribute on a parameter"),

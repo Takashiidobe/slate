@@ -217,6 +217,7 @@ pub enum CTypeKind {
     Typedef {
         name: String,
         underlying: QualType,
+        alignment: Option<u64>,
     },
     TypeOf {
         spelling: String,
@@ -407,6 +408,26 @@ impl CTypes {
                 self.qual(CTypeKind::Array { element, extent })
             }
             _ => bare,
+        }
+    }
+
+    // outermost aligned typedef wins, even below natural; clang drops it under _Atomic
+    pub fn typedef_alignment(&self, q: QualType) -> Option<u64> {
+        if q.quals.is_atomic {
+            return None;
+        }
+        match self.kind(q.ty) {
+            CTypeKind::Typedef {
+                alignment: Some(alignment),
+                ..
+            } => Some(*alignment),
+            CTypeKind::Typedef { underlying, .. }
+            | CTypeKind::TypeOf { underlying, .. }
+            | CTypeKind::Array {
+                element: underlying,
+                ..
+            } => self.typedef_alignment(*underlying),
+            _ => None,
         }
     }
 

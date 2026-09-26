@@ -159,7 +159,14 @@ impl Checker<'_> {
             self.types.declare(name, Ordinary::Declared);
             if let Ok(resolved) = resolved {
                 if declaration.specifiers.storage == StorageClass::Typedef {
-                    let _ = self.types.define_alias(name.to_owned(), resolved);
+                    let attributes = declaration
+                        .specifiers
+                        .attributes
+                        .iter()
+                        .chain(&declarator.attributes);
+                    let _ = self
+                        .types
+                        .define_alias(name.to_owned(), resolved, attributes);
                 } else if !self.types.ctypes.is_void(resolved) {
                     let completed = self.completed_array(resolved, declarator.initializer.as_ref());
                     self.types.declare(name, Ordinary::Object(completed));

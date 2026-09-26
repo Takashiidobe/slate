@@ -119,7 +119,9 @@ impl CTypes {
         let mut chain = Vec::new();
         loop {
             q = match self.kind(q.ty) {
-                CTypeKind::Typedef { name, underlying } => {
+                CTypeKind::Typedef {
+                    name, underlying, ..
+                } => {
                     chain.push(name.clone());
                     *underlying
                 }

@@ -258,6 +258,7 @@ impl TypeResolver {
                         }
                         error => error,
                     })?;
+                let layout = self.typedef_storage(ty, layout)?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -333,6 +334,7 @@ impl TypeResolver {
                         }
                         error => error,
                     })?;
+                let layout = self.typedef_storage(resolved, layout)?;
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -788,13 +790,20 @@ impl TypeResolver {
         Ok((field.ty.clone(), offset))
     }
 
-    pub fn define_alias(&mut self, name: String, resolved: QualType) -> Result<(), ResolveError> {
+    pub fn define_alias<'a>(
+        &mut self,
+        name: String,
+        resolved: QualType,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+    ) -> Result<(), ResolveError> {
+        let alignment = requested_alignment(self, attributes)?;
         let ty = self.ir_type(resolved);
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
         let alias = self.ctypes.qual(CTypeKind::Typedef {
             name: name.clone(),
             underlying: resolved,
+            alignment,
         });
         self.declare(&name, Ordinary::Alias(alias));
         Ok(())
@@ -1086,6 +1095,16 @@ impl TypeResolver {
                     if self.ctypes.is_void(q) {
                         return Err(ResolveError::Unsupported("void array element"));
                     }
+                    if self.ctypes.typedef_alignment(q).is_some()
+                        && let Ok(natural) = self.storage(self.ir_type(q))
+                    {
+                        let storage = self.typedef_storage(q, natural)?;
+                        if storage.size_bytes % u64::from(storage.alignment_bytes) != 0 {
+                            return Err(ResolveError::Invalid(
+                                "array element size is not a multiple of its alignment",
+                            ));
+                        }
+                    }
                     q = self.ctypes.qual(CTypeKind::Array { element: q, extent });
                 }
                 self.derive(core, q)
@@ -1329,6 +1348,7 @@ impl TypeResolver {
                 let layout = self.layout_record(
                     tag.kind,
                     &fields,
+                    &field_types,
                     &requests,
                     RecordRules {
                         packed,
@@ -1613,12 +1633,46 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn object_alignment_override(
+        &self,
+        ty: &Type,
+        declared: Option<QualType>,
+        requested: Option<u64>,
+    ) -> Result<Option<u64>, ResolveError> {
+        let storage = self.storage(ty.clone())?;
+        let natural = u64::from(storage.alignment_bytes);
+        let typed = match declared {
+            Some(q) => u64::from(self.typedef_storage(q, storage)?.alignment_bytes),
+            None => natural,
+        };
+        let effective = requested.map_or(typed, |requested| {
+            self.effective_alignment(requested, typed)
+        });
+        Ok((effective != natural).then_some(effective))
+    }
+
     pub(super) fn declared_alignment(&self, requested: u64, natural: u64) -> u64 {
         if matches!(self.flavor, CompilerFlavor::Msvc) {
             requested.max(natural)
         } else {
             requested
         }
+    }
+
+    pub(super) fn typedef_storage(
+        &self,
+        q: QualType,
+        layout: StorageLayout,
+    ) -> Result<StorageLayout, ResolveError> {
+        let Some(requested) = self.ctypes.typedef_alignment(q) else {
+            return Ok(layout);
+        };
+        let alignment = self.declared_alignment(requested, u64::from(layout.alignment_bytes));
+        Ok(StorageLayout {
+            alignment_bytes: u32::try_from(alignment)
+                .map_err(|_| ResolveError::Unsupported("typedef alignment overflow"))?,
+            ..layout
+        })
     }
 
     pub(super) fn qualified_storage(
@@ -1704,6 +1758,7 @@ impl TypeResolver {
         &self,
         kind: TagKind,
         fields: &[crate::ast::Span<Field>],
+        field_types: &[QualType],
         requests: &[(bool, Option<u64>)],
         rules: RecordRules,
         requested: Option<u64>,
@@ -1719,8 +1774,8 @@ impl TypeResolver {
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
         let mut ms_unit = MsUnit::default();
-        for (position, (field, &(field_packed, field_aligned))) in
-            fields.iter().zip(requests).enumerate()
+        for (position, ((field, &c), &(field_packed, field_aligned))) in
+            fields.iter().zip(field_types).zip(requests).enumerate()
         {
             let storage = match &field.ty {
                 Type::Array {
@@ -1734,6 +1789,7 @@ impl TypeResolver {
                 },
                 ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
             };
+            let storage = self.typedef_storage(c, storage)?;
             unit_sizes.push(storage.size_bytes);
             let unit_bits = storage
                 .size_bytes
@@ -2173,7 +2229,14 @@ pub fn resolve_type_module(
                         .to_owned();
                     let resolved = resolver.resolve(&item.specifiers, &declarator.declarator)?;
                     let c_entries = resolver.render(resolved).entries();
-                    resolver.define_alias(name, resolved)?;
+                    resolver.define_alias(
+                        name,
+                        resolved,
+                        item.specifiers
+                            .attributes
+                            .iter()
+                            .chain(&declarator.attributes),
+                    )?;
                     for definition in &resolver.definitions[start..] {
                         let span = declarator.derive(definition.clone());
                         if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
