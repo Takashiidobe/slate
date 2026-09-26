@@ -832,6 +832,37 @@ impl TypeResolver {
         None
     }
 
+    pub(super) fn union_cast_member(
+        &self,
+        to: QualType,
+        from: QualType,
+    ) -> Result<Option<usize>, ResolveError> {
+        let CTypeKind::Record { id, union: true } = self.ctypes.canonical_kind(to) else {
+            return Ok(None);
+        };
+        if self.ctypes.compatible_unqualified(from, to) {
+            return Ok(None);
+        }
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.definitions[id.0 as usize].kind
+        else {
+            return Err(ResolveError::Invalid("cast to incomplete union type"));
+        };
+        let from = self.ctypes.unqualified_view(from);
+        fields
+            .iter()
+            .zip(self.record_fields.get(id).into_iter().flatten())
+            .position(|(field, member)| {
+                field.name.is_some() && self.ctypes.unqualified_view(*member) == from
+            })
+            .map(Some)
+            .ok_or(ResolveError::Invalid(
+                "cast to union type from type not present in union",
+            ))
+    }
+
     pub(super) fn offsetof_member(
         &mut self,
         root: Type,

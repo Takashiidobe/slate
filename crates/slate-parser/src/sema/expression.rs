@@ -2012,7 +2012,19 @@ impl Lowerer {
                 let to = self.resolve_type_name(ty)?;
                 let is_void = self.types.ctypes.is_void(to);
                 let value = self.expr(value)?;
-                let cast = if !is_void {
+                let cast = if let Some(index) = self.types.union_cast_member(to, value.c)? {
+                    self.operand(
+                        e,
+                        to,
+                        ValueKind::Aggregate {
+                            members: vec![AggregateMember {
+                                target: AggregateTarget::Field(index),
+                                value: value.value,
+                            }],
+                            zero_fill: false,
+                        },
+                    )
+                } else if !is_void {
                     self.convert(value, to, ConversionReason::Explicit)?
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);

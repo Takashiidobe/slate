@@ -1579,6 +1579,13 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   lowers to `aggregate<complex<T>>(index0 = re, index1 = im)`, each converted
   to the component type. `{x}` and a bare scalar stay `real_to_complex`.
   Brace elision into a complex component pair is not modeled.
+- A GNU cast to a union type (`(union U)x`, clang's `ToUnion`) lowers to the
+  rvalue `aggregate<@U>(fieldN = x)`, with no conversion node. `N` is the
+  first named member whose unqualified type is exactly `x`'s after lvalue,
+  array and function conversion. No other conversion applies, so a `long` or
+  an `enum` operand does not match an `int` member and the cast is rejected.
+  Casting from the same or a compatible union stays an ordinary copy. Like
+  clang, a bit-field member can match; gcc rejects that.
 - A trailing flexible array member, or (GNU) an incomplete array member at any
   position in a union, has size 0 and the element's alignment in
   the record layout. Omitted, it is skipped by `zero_fill` and absent from the
