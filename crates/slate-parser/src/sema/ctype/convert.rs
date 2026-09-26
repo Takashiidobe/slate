@@ -26,6 +26,7 @@ pub enum CastKind {
     IntToEnum,
     Pointer,
     PtrToInt,
+    PtrToBool,
     IntToPtr,
     NullPointer,
 }
@@ -111,6 +112,9 @@ impl CTypes {
             }
             if !self.is_arithmetic(to) {
                 return Err(ResolveError::Invalid("unsupported pointer conversion"));
+            }
+            if matches!(self.canonical_kind(to), CTypeKind::Bool) {
+                return Ok(Conversion::plain(CastKind::PtrToBool));
             }
             if context.is_assignment() {
                 return Ok(Conversion::warned(

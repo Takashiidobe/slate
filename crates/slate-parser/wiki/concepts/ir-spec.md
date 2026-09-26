@@ -1836,6 +1836,7 @@ Types and policies are elided below; the grammar has the full forms.
 | `f` as value             | `function_decay<ptr<fn(..)>>(f)`                 |
 | `0`, `NULL`, `(void*)0`  | `null<ptr<T>>`                                   |
 | `if (p)`, `!p`           | `ne(p, null)` / `not<bool>(ne(p, null))`         |
+| `_Bool b = p`, `(_Bool)p` | `ne(p, null)`                                   |
 | `char* → const char*`    | `pointer_cast<ptr<const i8>>(p)`                 |
 | `void* ↔ T*`             | `pointer_cast<ptr<T>>(p)`                        |
 | `unsigned* → int*`       | `pointer_cast<ptr<i32>>(p)`                      |
@@ -1866,7 +1867,9 @@ old layout-based check, signedness is compared at every pointer level, so
 
 Integer/pointer conversions across an assignment, argument, return or
 initializer warn `int-conversion` and still emit `int_to_ptr`/`ptr_to_int`; an
-explicit cast is silent. A null pointer constant (an integer constant
+explicit cast is silent. A pointer converted to `_Bool`, implicitly or by cast,
+is the comparison against null C 6.3.1.2 specifies: `ne(p, null)`, never a
+warning (`tests/fixtures/sema/ir_pointer_to_bool.c`). A null pointer constant (an integer constant
 expression 0, or such an expression cast to `void *`) becomes `null<ptr<T>>`
 rather than a converted integer, so it never warns.
 

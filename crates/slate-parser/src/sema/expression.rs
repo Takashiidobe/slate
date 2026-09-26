@@ -850,6 +850,7 @@ impl Lowerer {
                 ))
             }
             CastKind::NullPointer => Ok(self.value(&value.node, ty, ValueKind::Null)),
+            CastKind::PtrToBool => self.condition(value, Some(reason)),
             CastKind::Pointer | CastKind::PtrToInt | CastKind::IntToPtr => {
                 let kind = match kind {
                     CastKind::PtrToInt => ConversionKind::PtrToInt,
