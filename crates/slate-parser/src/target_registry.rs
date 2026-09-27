@@ -346,6 +346,29 @@ pub const TARGETS: &[TargetSpec] = &[
         ),
     },
     TargetSpec {
+        triple: "i686-pc-windows-msvc",
+        layout: TargetInfo::i686_windows_msvc,
+        profile: windows_msvc(
+            &[
+                Predefines {
+                    flavors: MSVC,
+                    ..clang_only(
+                        "<msvc-x86-windows-predefines>",
+                        include_str!("predefines/msvc_19.51.36256_x86_windows.h"),
+                    )
+                },
+                Predefines {
+                    gnu_namespace: include_str!("predefines/slate_gnu_namespace_i386_windows.h"),
+                    ..clang_only(
+                        "<clang-i686-windows-msvc-predefines>",
+                        include_str!("predefines/clang-22.1.8_i686_windows_msvc.h"),
+                    )
+                },
+            ],
+            AbiConvention::X86Win32,
+        ),
+    },
+    TargetSpec {
         triple: "aarch64-pc-windows-msvc",
         layout: TargetInfo::aarch64_windows_msvc,
         profile: windows_msvc(

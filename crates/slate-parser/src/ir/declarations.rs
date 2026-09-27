@@ -38,6 +38,8 @@ pub enum RecordKind {
 pub struct RecordLayout {
     pub size: u64,
     pub align: u64,
+    #[debug(skip_if = Option::is_none)]
+    pub required_align: Option<u64>,
     pub offsets: Vec<u64>,
     #[debug(skip_if = all_none)]
     pub bit_offsets: Vec<Option<u64>>,

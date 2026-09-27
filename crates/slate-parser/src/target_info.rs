@@ -321,6 +321,28 @@ impl TargetInfo {
         Self::windows_msvc(TargetFamily::AArch64)
     }
 
+    pub(crate) fn i686_windows_msvc() -> Self {
+        let mut target = Self::windows_msvc(TargetFamily::X86);
+        for signed in [false, true] {
+            target
+                .scalars
+                .set(ScalarKey::Integer { width: 64, signed }, 8, 8);
+        }
+        target.scalars.set(ScalarKey::Float(FloatType::F64), 8, 8);
+        Self {
+            pointer_width: 32,
+            pointer: StorageLayout {
+                size_bytes: 4,
+                alignment_bytes: 4,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 4,
+                ..TargetAbi::default()
+            },
+            ..target
+        }
+    }
+
     fn windows_msvc(family: TargetFamily) -> Self {
         let mut scalars = ScalarLayouts::for_family(family);
         scalars.entries.remove(&ScalarKey::Float(FloatType::F80));

@@ -429,9 +429,11 @@ initialization is described under "Objects, lifetime, and initialization".
 Target selection separates CPU family (`TargetFamily`), OS (`TargetOs`), and
 ABI environment (`TargetEnvironment`) from compiler flavor. Existing Linux
 profiles use GNU, GNU EABI, or GNU EABI hard-float environments.
-`x86_64-pc-windows-msvc` and `aarch64-pc-windows-msvc` are experimental Windows
-MSVC-environment profiles, with LLP64 widths, binary64 long double, and unsigned
-16-bit wchar_t. Their target triples do not implicitly select compiler flavor:
+`x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` and `i686-pc-windows-msvc`
+are experimental Windows MSVC-environment profiles, with 32-bit `long`, binary64
+long double, and unsigned 16-bit wchar_t. On i686 `long long` and `double` are
+8-aligned (4 on i386 Linux), pointers are 4 bytes, the stack alignment is 4,
+and the convention is `x86_win32`. Their target triples do not implicitly select compiler flavor:
 `--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots; the default
 Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
 shim defaults. GCC on these Windows profiles is rejected rather than falling
@@ -441,8 +443,8 @@ This is selection scaffolding, not Windows compatibility: Microsoft record
 layout, calling conventions, extended-type availability, compiler-option
 validation, standard-mode macro adjustments for native MSVC, and SDK/header
 integration remain incomplete. In particular, the current aggregate algorithm
-must not be treated as a Microsoft ABI oracle. Only 64-bit Windows targets are
-selected for now; the checked-in 32-bit snapshots remain unwired.
+must not be treated as a Microsoft ABI oracle. The checked-in 32-bit ARM MSVC
+snapshot remains unwired.
 
 The type view resolves struct, union, and enum tag definitions. On the
 supported Linux x86_64, x86, AArch64, and ARM32 targets, record layout records byte size, aggregate alignment,
@@ -1280,6 +1282,22 @@ use HFA passing; GCC preserves the ordinary record passing shape.
 The Windows x86-64 and both AArch64 `ir_record_abi_shape.c` fixtures pin these
 shapes against clang.
 
+`x86_win32` is i686-pc-windows-msvc's cdecl (clang's `X86_32ABIInfo` with
+`IsWin32StructABI`). It passes arguments like `x86_cdecl` except in two
+places. A fixed (non-variadic) record argument whose `required_align` is
+above 4 is `byref`; `required_align` is the record's explicitly requested
+alignment (`_Alignas`/`aligned` on the record or a field, or inherited from a
+nested record or an array of one), not its natural alignment, so a
+`struct { long long x; }` that is 8-aligned on Win32 still expands. The first
+three vector arguments are `direct` (XMM registers); later ones, and any
+wider than 64 bytes, are `byref`. Results differ more: a record, union,
+array field or complex whose size is 1, 2, 4 or 8 bytes and whose non-empty
+fields are all themselves register-sized comes back as one `coerce<iN>` (a
+single `float` or pointer member included, unlike Darwin); anything else,
+including a flexible array member or a field like `char[3]`, is `sret` with
+the natural alignment. `tests/fixtures/sema/i686-pc-windows-msvc/abi_target.c`
+pins these against clang.
+
 The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
 AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
 128-bit integers where Clang supports them, and flat records. For example,
@@ -1363,6 +1381,7 @@ depend on the ISA.
 | `sysv64`             | `coerce<iN>`  | `coerce<f64>`                | `direct` | arg `byval`, result `direct`    |
 | `win64`              | `direct`      | `direct`                     | `direct` | `direct`                        |
 | `x86_cdecl`          | `direct`      | arg `coerce<i64>` if MMX     | `direct` | `direct`                        |
+| `x86_win32`          | `direct`      | `direct`                     | `direct` | arg `byref` past 64 bytes or 3 vectors |
 | `aapcs64`/`win_arm64`| arg `coerce<i32>` | `direct`                 | `direct` | arg `byref`, result `sret` (align 16) |
 | `aapcs32`(`_hard_float`) | arg `coerce<i32>` | `direct`             | `direct` | arg `direct`, result `sret` (align 8) |
 

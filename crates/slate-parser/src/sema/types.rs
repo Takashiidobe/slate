@@ -2153,6 +2153,7 @@ impl TypeResolver {
         } = rules;
         let mut end_bits = 0u64;
         let mut aggregate_align = requested.unwrap_or(1);
+        let mut required_align = requested;
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
@@ -2173,6 +2174,11 @@ impl TypeResolver {
                 ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
             };
             let storage = self.typedef_storage(c, storage)?;
+            required_align = required_align
+                .into_iter()
+                .chain(field_aligned)
+                .chain(self.required_alignment(&field.ty))
+                .max();
             unit_sizes.push(storage.size_bytes);
             let unit_bits = storage
                 .size_bytes
@@ -2317,11 +2323,27 @@ impl TypeResolver {
         Ok(RecordLayout {
             size,
             align: aggregate_align,
+            required_align,
             offsets,
             bit_offsets,
             bit_units,
             field_units,
         })
+    }
+
+    pub(super) fn required_alignment(&self, ty: &Type) -> Option<u64> {
+        match ty {
+            Type::Array { element, .. } => self.required_alignment(element),
+            Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.required_alignment(inner),
+                TypeDefinitionKind::Record {
+                    layout: Some(layout),
+                    ..
+                } => layout.required_align,
+                _ => None,
+            },
+            _ => None,
+        }
     }
 
     pub(super) fn push(&mut self, kind: TypeDefinitionKind) -> TypeId {

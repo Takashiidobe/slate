@@ -109,12 +109,20 @@ impl<'a> AbiClassifier<'a> {
         fixed_count: usize,
     ) -> Result<AbiSignature, ResolveError> {
         let convention = self.abi_convention(variadic);
+        let mut free_vector_registers = WIN32_VECTOR_REGISTERS;
         let arguments = parameters
             .iter()
             .enumerate()
             .map(|(index, operand)| -> Result<AbiPass, ResolveError> {
                 let pass = self.abi_pass(operand, false, convention)?;
-                if convention == AbiConvention::WinArm64
+                if convention == AbiConvention::X86Win32 {
+                    self.win32_argument(
+                        operand,
+                        pass,
+                        index < fixed_count,
+                        &mut free_vector_registers,
+                    )
+                } else if convention == AbiConvention::WinArm64
                     && variadic
                     && index >= fixed_count
                     && matches!(pass, AbiPass::Coerce(_))
@@ -147,6 +155,108 @@ impl<'a> AbiClassifier<'a> {
         }
     }
 
+    fn win32_argument(
+        &self,
+        operand: &AbiOperand,
+        pass: AbiPass,
+        fixed: bool,
+        free_vector_registers: &mut usize,
+    ) -> Result<AbiPass, ResolveError> {
+        let by_reference = || -> Result<AbiPass, ResolveError> {
+            Ok(AbiPass::ByReference {
+                align: self.layout(operand)?.alignment_bytes,
+            })
+        };
+        if pass == AbiPass::Direct && self.is_vector(&operand.ty) {
+            if *free_vector_registers == 0 {
+                return by_reference();
+            }
+            *free_vector_registers -= 1;
+            return Ok(pass);
+        }
+        if fixed
+            && !self.atomic_is_memory(operand, AbiConvention::X86Win32)
+            && self
+                .types
+                .required_alignment(&operand.ty)
+                .is_some_and(|align| align > 4)
+        {
+            return by_reference();
+        }
+        Ok(pass)
+    }
+
+    fn win32_returns_in_register(&self, ty: &Type) -> Result<bool, ResolveError> {
+        let size = self.types.qualified_storage(ty.clone(), false)?.size_bytes;
+        if !matches!(size, 1 | 2 | 4 | 8) {
+            return Ok(false);
+        }
+        Ok(match ty {
+            Type::Bool
+            | Type::Numeric(_)
+            | Type::Imaginary(_)
+            | Type::FixedPoint(_)
+            | Type::Pointer { .. }
+            | Type::Complex(_) => true,
+            Type::Vector { .. } => size != 8,
+            Type::Array {
+                element,
+                length: Some(_),
+            } => self.win32_returns_in_register(element)?,
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.win32_returns_in_register(inner)?,
+                TypeDefinitionKind::Enum { .. } => true,
+                TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    ..
+                } => {
+                    for field in fields {
+                        if field.name.is_none() && field.bit_width.is_some()
+                            || self.is_empty_record(&field.ty)
+                        {
+                            continue;
+                        }
+                        if !self.win32_returns_in_register(&field.ty)? {
+                            return Ok(false);
+                        }
+                    }
+                    true
+                }
+                TypeDefinitionKind::Record { .. } => false,
+            },
+            _ => false,
+        })
+    }
+
+    fn is_vector(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Vector { .. } => true,
+            Type::Defined(id) => matches!(
+                &self.types.definitions[id.0 as usize].kind,
+                TypeDefinitionKind::Alias(inner) if self.is_vector(inner)
+            ),
+            _ => false,
+        }
+    }
+
+    fn is_empty_record(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Array { element, .. } => self.is_empty_record(element),
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.is_empty_record(inner),
+                TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    ..
+                } => fields.iter().all(|field| {
+                    field.name.is_none() && field.bit_width.is_some()
+                        || self.is_empty_record(&field.ty)
+                }),
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
     fn layout(
         &self,
         operand: &AbiOperand,
@@ -159,7 +269,10 @@ impl<'a> AbiClassifier<'a> {
         if !operand.atomic || !matches!(self.types.flavor, CompilerFlavor::Clang) {
             return false;
         }
-        if !matches!(convention, AbiConvention::SysV64 | AbiConvention::X86Cdecl) {
+        if !matches!(
+            convention,
+            AbiConvention::SysV64 | AbiConvention::X86Cdecl | AbiConvention::X86Win32
+        ) {
             return false;
         }
         self.is_record_or_complex(&operand.ty)
@@ -187,7 +300,10 @@ impl<'a> AbiClassifier<'a> {
             let align = self.layout(operand)?.alignment_bytes;
             return Ok(if result {
                 AbiPass::SRet { align }
-            } else if convention == AbiConvention::X86Cdecl {
+            } else if matches!(
+                convention,
+                AbiConvention::X86Cdecl | AbiConvention::X86Win32
+            ) {
                 AbiPass::ByValue {
                     align: align.min(4),
                 }
@@ -250,6 +366,15 @@ impl<'a> AbiClassifier<'a> {
                     ..
                 } => {
                     let layout = self.layout(operand)?;
+                    if convention == AbiConvention::X86Win32 && result {
+                        return Ok(if self.win32_returns_in_register(ty)? {
+                            AbiPass::Coerce(vec![AbiChunk::Integer((layout.size_bytes * 8) as u32)])
+                        } else {
+                            AbiPass::SRet {
+                                align: layout.alignment_bytes,
+                            }
+                        });
+                    }
                     let homogeneous = if operand.atomic && self.types.flavor != CompilerFlavor::Gcc
                     {
                         None
@@ -374,6 +499,8 @@ impl<'a> AbiClassifier<'a> {
                 AbiPass::Coerce(vec![AbiChunk::Integer(64)])
             }
             AbiConvention::X86Cdecl => AbiPass::Direct,
+            AbiConvention::X86Win32 if size > 64 && !result => AbiPass::ByReference { align },
+            AbiConvention::X86Win32 => AbiPass::Direct,
             AbiConvention::Aapcs64 | AbiConvention::WinArm64 => match size {
                 _ if size < 8 && !result => AbiPass::Coerce(vec![AbiChunk::Integer(32)]),
                 _ if size <= 16 => AbiPass::Direct,
@@ -434,9 +561,13 @@ impl<'a> AbiClassifier<'a> {
             (AbiConvention::X86Cdecl, _) if result => AbiPass::SRet {
                 align: align.min(4),
             },
-            (AbiConvention::X86Cdecl, _) => AbiPass::ByValue {
+            (AbiConvention::X86Cdecl | AbiConvention::X86Win32, _) if !result => AbiPass::ByValue {
                 align: align.min(4),
             },
+            (AbiConvention::X86Win32, _) if matches!(size, 1 | 2 | 4 | 8) => {
+                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
+            }
+            (AbiConvention::X86Win32, _) => AbiPass::SRet { align },
             (AbiConvention::Aapcs64 | AbiConvention::WinArm64, NumericType::Float(format)) => {
                 AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
             }
@@ -500,7 +631,7 @@ fn record_abi(
                 AbiPass::NativeC
             }
         }
-        AbiConvention::X86Cdecl => {
+        AbiConvention::X86Cdecl | AbiConvention::X86Win32 => {
             if result {
                 AbiPass::SRet {
                     align: align.min(4),
@@ -618,6 +749,8 @@ fn sysv_record_chunks(fields: &[Span<Field>], offsets: &[u64], size: u64) -> Opt
     }
     Some(chunks)
 }
+
+const WIN32_VECTOR_REGISTERS: usize = 3;
 
 fn integer_chunks(size: u64, width: u32) -> AbiPass {
     let bytes = u64::from(width / 8);

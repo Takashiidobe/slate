@@ -205,7 +205,7 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 
 ```ebnf
 abi_signature = convention "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
-convention    = "sysv64" | "win64" | "x86_cdecl" | "aapcs64" | "win_arm64"
+convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "win_arm64"
               | "aapcs32" | "aapcs32_hard_float" ;
 abi_pass      = "void" | "scalar" | "direct" | "native_c"
               | "coerce<" chunk { ", " chunk } ">"
