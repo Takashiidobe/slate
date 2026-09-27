@@ -1,0 +1,138 @@
+/* Test C11 _Noreturn.  Test valid code using stdnoreturn.h.  */
+/* { dg-do run } */
+/* { dg-options "-std=c11 -pedantic-errors" } */
+
+#include <stdnoreturn.h>
+
+extern int strcmp (const char *, const char *);
+
+noreturn void exit (int);
+noreturn void abort (void);
+
+noreturn int f1 (void);
+
+noreturn void f2 (void);
+
+static void noreturn f3 (void) { exit (0); }
+
+/* Returning from a noreturn function is undefined at runtime, not a
+   constraint violation, but recommended practice is to diagnose if
+   such a return appears possible.  */
+
+noreturn int
+f4 (void)
+{
+  return 1; /* { dg-warning "has a 'return' statement" } */
+  /* { dg-warning "does return" "second warning" { target *-*-* } .-1 } */
+}
+
+noreturn void
+f5 (void)
+{
+  return; /* { dg-warning "has a 'return' statement" } */
+  /* { dg-warning "does return" "second warning" { target *-*-* } .-1 } */
+}
+
+noreturn void
+f6 (void)
+{
+} /* { dg-warning "does return" } */
+
+noreturn void
+f7 (int a)
+{
+  if (a)
+    exit (0);
+} /* { dg-warning "does return" } */
+
+/* Declarations need not all have noreturn.  */
+
+void f2 (void);
+
+void f8 (void);
+noreturn void f8 (void);
+
+/* Duplicate noreturn is OK.  */
+noreturn noreturn void noreturn f9 (void);
+
+/* noreturn does not affect type compatibility.  */
+
+void (*fp) (void) = f5;
+
+#ifndef noreturn
+#error "noreturn not defined"
+#endif
+
+#define str(x) #x
+#define xstr(x) str(x)
+
+const char *s = xstr(noreturn);
+
+int
+main (void)
+{
+  if (strcmp (s, "_Noreturn") != 0)
+    abort ();
+  exit (0);
+}
+
+// SLATE-FILECHECK-FLAVOR gcc
+// SLATE-FILECHECK-STD DEFAULT c11
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     global %13 fp: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%7) [linkage=external];
+// DEFAULT-NEXT:     global %19 .str19: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([95, 78, 111, 114, 101, 116, 117, 114, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %14 s: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(10)>(%19)) [linkage=external];
+// DEFAULT-NEXT:     global %20 .str20: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([95, 78, 111, 114, 101, 116, 117, 114, 110, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %0 @strcmp(%16 <unnamed>: ptr<const i8>, %17 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @exit(%18 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @f1() -> i32 [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %4 @f2() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %5 @f3() -> void [linkage=internal] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %6 @f4() -> i32 [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         return const<i32>(1);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @f5() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         return;
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @f6() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @f7(%10 a: i32) -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%10), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %11 @f8() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @f9() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%0, read<ptr<const i8>>(%14), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%20))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
+// SLATE-FILECHECK-END DEFAULT

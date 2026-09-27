@@ -28,3 +28,14 @@ result_large_err = "allow"
 [[test]]
 name = "filecheck"
 harness = false
+
+[profile.dev]
+opt-level = 3
+debug-assertions = false
+overflow-checks = false
+
+[profile.test]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false

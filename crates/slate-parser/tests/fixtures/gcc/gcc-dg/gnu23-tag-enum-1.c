@@ -1,0 +1,74 @@
+/*
+ * { dg-do compile }
+ * { dg-options "-std=gnu23" }
+ */
+
+
+
+void test2(void)
+{
+  enum ee *a;
+  enum ee { F = 2 } *b;
+  b = a;
+}
+
+
+
+enum A { B = 7 } y;
+
+void g(void)
+{
+	// incomplete during construction
+	// this is a GNU extension because enum A is used
+	// before the type is completed.
+
+	enum A { B = _Generic(&y, enum A*: 1, default: 7) };
+	_Static_assert(7 == B, "");
+}
+
+
+
+// SLATE-FILECHECK-FLAVOR gcc
+// SLATE-FILECHECK-STD DEFAULT gnu23
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 ee = enum incomplete;
+// DEFAULT-NEXT:     type @type1 A = enum : u32 {
+// DEFAULT-NEXT:         %0 B = const<i32>(7);
+// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     type @type2 A = enum : u32 {
+// DEFAULT-NEXT:         %0 B = const<i32>(7);
+// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     global %7 y: @type1 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %0 @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %2 a: ptr<@type0> [storage=automatic];
+// DEFAULT-NEXT:         let %4 b: ptr<@type0> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type0>>(%4, read<ptr<@type0>>(%2));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %8 @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
+// SLATE-FILECHECK-END DEFAULT
