@@ -260,10 +260,14 @@ impl Parser {
         };
         let resolve = |operand: &RawOperand, direction: &str| {
             let constraint = decode_constraint(&operand.constraint.value, &output_names);
-            if self.flavor() == CompilerFlavor::Clang
-                && constraint.alternatives.iter().any(|alternative| {
-                    matches!(alternative.location, AsmConstraintLocation::HardRegister(_))
-                })
+            let hard_register = constraint.alternatives.iter().any(|alternative| {
+                matches!(alternative.location, AsmConstraintLocation::HardRegister(_))
+            });
+            let pic = constraint
+                .alternatives
+                .iter()
+                .any(|alternative| alternative.modifiers.contains(&AsmConstraintModifier::Pic));
+            if (self.flavor() == CompilerFlavor::Clang && hard_register) || (pic && !at_file_scope)
             {
                 return Err(invalid_constraint(operand, direction));
             }

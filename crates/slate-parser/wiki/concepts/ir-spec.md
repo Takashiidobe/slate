@@ -856,7 +856,9 @@ template as opaque text with holes.
   (`slate-parser-25m.15`).
 - The parser rejects what both compilers reject and the fold relies on: an
   output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
-  or to a `+` output, and two inputs tied to one output. Under clang an
+  or to a `+` output, and two inputs tied to one output. `-` is rejected
+  inside a function; gcc accepts it only in file-scope asm, which clang
+  has no operand form for, so `Pic` survives only on `Module::asm`. Under clang an
   input also may not match two different outputs, and any-alternative
   matches count as ties; gcc accepts both, so only full ties count there.
 - Effects hoist places first, then input values, in operand order. A tied

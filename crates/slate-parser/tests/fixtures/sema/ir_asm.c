@@ -9,7 +9,7 @@ void basic(void) {
 void extended(int x, int y, int *p) {
     __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
                             : [out] "=&r,m"(x)
-                            : [in] "%-rm,r"(y), "[out],m"(*p)
+                            : [in] "%rm,r"(y), "[out],m"(*p)
                             : "memory", "cc", "unwind", "%rdx", "not_a_register");
 }
 
@@ -69,7 +69,7 @@ void directions(int a, int b, int c, int d, int e) {
 // IR-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
 // IR-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
 // IR-NEXT:             out 0 [out] "r,m" place<i32>(%2);
-// IR-NEXT:             in 1 [in] "%-rm,r" read<i32>(%3);
+// IR-NEXT:             in 1 [in] "%rm,r" read<i32>(%3);
 // IR-NEXT:             in 2 "0,m" read<i32>(deref(read<ptr<i32>>(%4)));
 // IR-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // IR-NEXT:         }

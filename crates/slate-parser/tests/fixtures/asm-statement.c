@@ -2,7 +2,7 @@ void operands(int x, int y, int *p) {
   asm("basic %eax %0");
   __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
                           : [out] "=&r,m"(x)
-                          : [in] "%-rm,r"(y), "[out],m"(*p)
+                          : [in] "%rm,r"(y), "[out],m"(*p)
                           : "memory", "cc", "unwind", "%rdx", "not_a_register");
 }
 
@@ -50,7 +50,7 @@ void dialects(int x) {
 // DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
 // DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
 // DEFAULT-NEXT:             out 0 [out] "r,m" place<i32>(%1);
-// DEFAULT-NEXT:             in 1 [in] "%-rm,r" read<i32>(%2);
+// DEFAULT-NEXT:             in 1 [in] "%rm,r" read<i32>(%2);
 // DEFAULT-NEXT:             in 2 "0,m" read<i32>(deref(read<ptr<i32>>(%3)));
 // DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // DEFAULT-NEXT:         }
