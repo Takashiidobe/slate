@@ -144,8 +144,8 @@ impl Lowerer {
                 .or_default()
                 .push(("c_builtin".into(), builtin.name.into()));
             let state = self.function_declarations.entry(id).or_default();
-            state.noreturn |= builtin.has(BuiltinAttribute::NoReturn);
-            if let Some(memory) = builtin.memory_effects() {
+            state.noreturn |= builtin.noreturn(self.types.flavor);
+            if let Some(memory) = builtin.memory_effects(self.types.flavor) {
                 state.restrict_memory(memory);
             }
         }

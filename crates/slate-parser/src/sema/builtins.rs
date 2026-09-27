@@ -130,8 +130,19 @@ impl ClangBuiltin {
         self.attributes.contains(&attribute)
     }
 
-    pub fn memory_effects(&self) -> Option<MemoryEffects> {
-        if self.has(BuiltinAttribute::Const) {
+    // cl.exe gives a bare `exit` or `toupper` declaration no builtin semantics.
+    fn declaration_semantics(&self, flavor: CompilerFlavor) -> bool {
+        flavor != CompilerFlavor::Msvc || self.kind != ClangBuiltinKind::Library
+    }
+
+    pub fn noreturn(&self, flavor: CompilerFlavor) -> bool {
+        self.declaration_semantics(flavor) && self.has(BuiltinAttribute::NoReturn)
+    }
+
+    pub fn memory_effects(&self, flavor: CompilerFlavor) -> Option<MemoryEffects> {
+        if !self.declaration_semantics(flavor) {
+            None
+        } else if self.has(BuiltinAttribute::Const) {
             Some(MemoryEffects::None)
         } else if self.has(BuiltinAttribute::Pure) {
             Some(MemoryEffects::Read)

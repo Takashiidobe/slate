@@ -1,6 +1,4 @@
-use super::builtins::{
-    BuiltinAttribute, ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass,
-};
+use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass};
 use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
@@ -201,8 +199,8 @@ impl Lowerer {
             linkage: Linkage::External,
             symbol: SymbolAttributes::default(),
             semantics: FunctionSemantics {
-                noreturn: builtin.has(BuiltinAttribute::NoReturn),
-                memory: builtin.memory_effects(),
+                noreturn: builtin.noreturn(self.types.flavor),
+                memory: builtin.memory_effects(self.types.flavor),
                 ..FunctionSemantics::default()
             },
             body: None,

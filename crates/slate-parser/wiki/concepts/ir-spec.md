@@ -152,7 +152,15 @@ declaration (`int exit(long);` is `[noreturn]`); `Const`/`Pure` are
 attributes tied to builtin status and are not inherited. This is the clang
 flavor only: GCC (`void _Exit(long);` in
 `tests/fixtures/builtin_prefixed_library_gcc.c`) and MSVC keep compiling
-code after such a call. Header provenance plays no
+code after such a call. Under the MSVC flavor a library builtin
+(`ClangBuiltinKind::Library`: `exit`, `abort`, `toupper`, `cbrt`) gets
+neither `noreturn` nor `Const`/`Pure` from the registry, declared or
+implicit: cl.exe calls `toupper(x) + toupper(x)` twice and keeps code after
+`exit`, and learns noreturn only from `__declspec(noreturn)`, which like the
+GNU attribute applies to every declaration and call of the function
+(`tests/fixtures/sema/ir_library_builtins_msvc.c`). The declaration keeps
+`c_builtin`, which names the libc entity rather than claiming semantics.
+Header provenance plays no
 part: it decides libc identity for the Rust handoff, not builtin semantics.
 
 Builtins whose result cannot come from a prototype are dispatched by their
