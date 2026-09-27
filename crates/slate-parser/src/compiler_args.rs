@@ -335,6 +335,7 @@ impl CompilerArgParser {
             }
         });
         options.common = raw.common.unwrap_or(false);
+        options.explicit_standard = raw.standard.is_some();
         Ok(CompilerArgs {
             options,
             defines: raw.defines,

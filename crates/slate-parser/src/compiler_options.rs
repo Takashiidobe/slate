@@ -11,6 +11,7 @@ pub struct CompilerOptions {
     pub diagnostics: DiagnosticOptions,
     pub arguments: Vec<String>,
     pub common: bool,
+    pub explicit_standard: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -56,6 +57,7 @@ impl Default for CompilerOptions {
             diagnostics: DiagnosticOptions::default(),
             arguments: Vec::new(),
             common: false,
+            explicit_standard: false,
         }
     }
 }

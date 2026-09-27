@@ -535,6 +535,13 @@ impl<'a> Preprocessor<'a> {
         {
             defines.push("__ROUNDING_MATH__=1".into());
         }
+        if flavor == CompilerFlavor::Msvc
+            && options.explicit_standard
+            && let Some(version) = self.standard.stdc_version()
+        {
+            let version = if version == 202311 { 202312 } else { version };
+            defines.push(format!("__STDC_VERSION__={version}L"));
+        }
         for define in &defines {
             if let Some((name, _)) = define.split_once('=') {
                 self.macros.remove(name);
