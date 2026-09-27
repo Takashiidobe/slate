@@ -203,7 +203,8 @@ impl Hoister {
                             },
                             kind @ (AsmOperandKind::In(_)
                             | AsmOperandKind::InPlace(_)
-                            | AsmOperandKind::Symbol(_)) => kind,
+                            | AsmOperandKind::Symbol(_)
+                            | AsmOperandKind::Memory { .. }) => kind,
                         };
                         placed.push(AsmOperand { kind, ..operand });
                     }

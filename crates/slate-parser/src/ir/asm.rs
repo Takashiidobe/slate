@@ -101,6 +101,16 @@ pub enum AsmPiece {
     Label(usize),
     Percent,
     UniqueId,
+    // an MSVC `__asm` reference into a `Memory` operand's object.
+    Address {
+        operand: usize,
+        displacement: i64,
+        base: Option<String>,
+        index: Option<(String, i64)>,
+        size: Option<&'static str>,
+    },
+    // an MSVC `__asm` label, lowercased; rust `asm!` rejects named labels, so emission renumbers it.
+    LocalLabel(String),
 }
 
 // the register slice a width modifier prints, which overrides the operand's own width.
@@ -164,6 +174,28 @@ pub enum AsmOperandKind {
         input: Option<AsmTiedInput>,
         early_clobber: bool,
     },
+    // MSVC `__asm` addresses the object itself, so the operand is its address.
+    Memory {
+        place: Place,
+        access: AsmAccess,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmAccess {
+    Read,
+    Write,
+    ReadWrite,
+}
+
+impl AsmAccess {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Read => "read",
+            Self::Write => "write",
+            Self::ReadWrite => "readwrite",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -192,9 +224,10 @@ impl AsmOperand {
     // without `&` the allocator may reuse an input's register, which is Rust's late form.
     pub fn direction(&self) -> AsmDirection {
         match self.kind {
-            AsmOperandKind::In(_) | AsmOperandKind::InPlace(_) | AsmOperandKind::Symbol(_) => {
-                AsmDirection::In
-            }
+            AsmOperandKind::In(_)
+            | AsmOperandKind::InPlace(_)
+            | AsmOperandKind::Symbol(_)
+            | AsmOperandKind::Memory { .. } => AsmDirection::In,
             AsmOperandKind::Out {
                 early_clobber: true,
                 ..
@@ -374,6 +407,34 @@ impl fmt::Display for AsmPiece {
             Self::Label(index) => write!(f, "%l{index}"),
             Self::Percent => f.write_str("%%"),
             Self::UniqueId => f.write_str("%="),
+            Self::Address {
+                operand,
+                displacement,
+                base,
+                index,
+                size,
+            } => {
+                f.write_str("addr")?;
+                if let Some(size) = size {
+                    write!(f, "<{size}>")?;
+                }
+                write!(f, "(%{operand}")?;
+                if let Some(base) = base {
+                    write!(f, " + {base}")?;
+                }
+                if let Some((index, scale)) = index {
+                    write!(f, " + {index}*{scale}")?;
+                }
+                match displacement {
+                    0 => {}
+                    displacement if *displacement < 0 => {
+                        write!(f, " - {}", displacement.unsigned_abs())?
+                    }
+                    displacement => write!(f, " + {displacement}")?,
+                }
+                f.write_str(")")
+            }
+            Self::LocalLabel(name) => write!(f, "label({name})"),
         }
     }
 }

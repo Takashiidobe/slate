@@ -128,7 +128,9 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
     if let Some(dialect) = asm.dialect {
         write!(f, " [dialect={}]", dialect.as_str())?;
     }
-    if let Some(options) = asm.options {
+    if let Some(options) = asm.options.map(|options| options.to_string())
+        && !options.is_empty()
+    {
         write!(f, " [options={options}]")?;
     }
     let alternatives = asm
@@ -240,14 +242,16 @@ impl DisplayModule<'_> {
             if let Some(name) = &operand.name {
                 write!(f, " [{name}]")?;
             }
-            write!(f, " {} [", operand.constraint)?;
-            for (index, alternative) in operand.constraint.alternatives.iter().enumerate() {
-                if index > 0 {
-                    f.write_str(", ")?;
+            if !operand.constraint.alternatives.is_empty() {
+                write!(f, " {} [", operand.constraint)?;
+                for (index, alternative) in operand.constraint.alternatives.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    write!(f, "{alternative}")?;
                 }
-                write!(f, "{alternative}")?;
+                f.write_str("]")?;
             }
-            f.write_str("]")?;
             let offered =
                 asm.alternative
                     .and_then(|alternative| operand.constraint.alternatives.get(alternative))
@@ -272,6 +276,10 @@ impl DisplayModule<'_> {
                     continue;
                 }
                 AsmOperandKind::Out { place, .. } => (Some(place), None),
+                AsmOperandKind::Memory { place, access } => {
+                    write!(f, " mem<{}>", access.as_str())?;
+                    (Some(place), None)
+                }
                 AsmOperandKind::InOut { place, input, .. } => {
                     (Some(place), input.as_ref().map(|input| &input.value))
                 }

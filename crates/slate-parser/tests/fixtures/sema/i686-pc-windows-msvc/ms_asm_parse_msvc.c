@@ -1,6 +1,5 @@
 // SLATE-FILECHECK-FLAVOR msvc
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-IR-ERROR DEFAULT
 
 #define READ_CPUID(func, a, b, c, d) \
   __asm {                             \
@@ -32,6 +31,7 @@ int syntax(int x, struct pair p) {
     rep movsb
     lock xadd [ecx], eax
     fld st(1)
+    _emit 0x90
     mov eax, 100h + 10b * 17o - 010
     call callee
     jmp short done
@@ -42,5 +42,64 @@ int syntax(int x, struct pair p) {
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: MSVC `__asm` statement
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "i686-pc-windows-msvc" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=4, align=4];
+// DEFAULT-NEXT:         stack_alignment = 4;
+// DEFAULT-NEXT:         long_double = f64;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 pair = struct {
+// DEFAULT-NEXT:         field0 lo: i32;
+// DEFAULT-NEXT:         field1 hi: i32;
+// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
+// DEFAULT-NEXT:     global %1 table: array<i32, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %2 @callee() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @syntax(%4 x: i32, %5 p: @type0) -> i32 [linkage=external] [abi=x86_win32(scalar, coerce<i32, i32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %6 a: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %7 b: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %8 c: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %9 d: i32 [storage=automatic];
+// DEFAULT-NEXT:         asm volatile "mov eax, 1\nxor ecx, ecx\ncpuid\nmov a, eax\nmov d, edx" [dialect=intel] {
+// DEFAULT-NEXT:             template: "mov eax, 1\nxor ecx, ecx\ncpuid\nmov " addr(%0) ", eax\nmov " addr(%1) ", edx";
+// DEFAULT-NEXT:             in 0 [a] mem<readwrite> place<i32>(%6);
+// DEFAULT-NEXT:             in 1 [d] mem<readwrite> place<i32>(%9);
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         ;
+// DEFAULT-NEXT:         asm volatile "mov eax, x\nadd eax, 1" [dialect=intel] {
+// DEFAULT-NEXT:             template: "mov eax, " addr(%0) "\nadd eax, 1";
+// DEFAULT-NEXT:             in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm volatile "mov x, eax" [dialect=intel] {
+// DEFAULT-NEXT:             template: "mov " addr(%0) ", eax";
+// DEFAULT-NEXT:             in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm volatile "mov ecx, p.hi\nmov eax, table[4]\nmov ecx, type table\nmov edx, dword ptr [esp + 12]\nmov eax, es:[edi]\nrep movsb\nlock xadd [ecx], eax\nfld st(1)\n_emit 144\nmov eax, 256 + 2 * 15 - 8\ncall callee\njmp short done\ndone: int 3" [dialect=intel] {
+// DEFAULT-NEXT:             template: "mov ecx, " addr(%0 + 4) "\nmov eax, " addr(%1 + 4) "\nmov ecx, 4\nmov edx, dword ptr [esp + 12]\nmov eax, es:[edi]\nrep movsb\nlock xadd [ecx], eax\nfld st(1)\n.byte 144\nmov eax, 278\ncall " %2 "\njmp short " label(done) "\n" label(done) ": int 3";
+// DEFAULT-NEXT:             in 0 [p] mem<readwrite> place<@type0>(%5);
+// DEFAULT-NEXT:             in 1 [table] mem<readwrite> place<array<i32, 4>>(%1);
+// DEFAULT-NEXT:             in 2 sym<offset=0>(%2);
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:             asm volatile "mov x, 2" [dialect=intel] {
+// DEFAULT-NEXT:                 template: "mov " addr<dword>(%0) ", 2";
+// DEFAULT-NEXT:                 in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

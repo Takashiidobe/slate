@@ -153,8 +153,8 @@ register, an immediate, or a reference (`MsAsmReference`). Objects become
 `Place`s through the ordinary `place()` path; functions and labels stay
 symbols; enumerators and `TYPE`/`LENGTH`/`SIZE` become constants. `.field`
 needs a typed operand (an object or typedef) and adds the field offset.
-`x[i]` and `x + i` both add bytes. The lowering child consumes the result;
-until then the statement still fails as unsupported.
+`x[i]` and `x + i` both add bytes. The same file then lowers the result
+into IR.
 
 Where the compilers disagree, this follows clang:
 
@@ -168,12 +168,16 @@ Where the compilers disagree, this follows clang:
 
 ### IR
 
-Lowers into `ir::InlineAsm` with `dialect = Some(Intel)`.
+Lowers into `ir::InlineAsm` with `dialect = Some(Intel)` (see `ir-spec.md`,
+Inline asm, for the node and `ir-grammar.md` for how it prints).
 
 - `AsmOperandKind::Memory { place, access: Read | Write | ReadWrite }`: the
-  asm receives the object's address. In Rust the operand is always
-  `in(reg) &raw ... x` (or `sym` for a global), so `access` only decides
-  `mut`-ness and whether the local has to be `mut`.
+  asm receives the object's address, one operand per object however often
+  it is named. In Rust the operand is always `in(reg) &raw ... x` (or `sym`
+  for a global), so `access` only decides `mut`-ness and whether the local
+  has to be `mut`. It is `ReadWrite` until the effects table lands.
+- A function name is a `Symbol` operand (`call f`); `offset x` is an `In`
+  of `x`'s address, which works for locals and globals alike.
 - `AsmPiece::Address { operand, displacement, base, index, size }` at each
   C-object reference. Emission renders it as `dword ptr [{x} + 4]` for a
   pointer in a register, `[{arr} + ebx]` for a `sym`, or a frame-struct base
@@ -184,10 +188,15 @@ Lowers into `ir::InlineAsm` with `dialect = Some(Intel)`.
   fix the memory size: `movzx`/`movsx`, shifts and rotates by `cl`,
   `shld`/`shrd`. Always emitting it would break `movdqu xmm0, int_array`
   (the element type says `dword`).
-- asm-local labels become label pieces, because Rust denies named labels in
-  `asm!`; Slate renumbers them to `N:` / `Nf` / `Nb`.
+- asm-local labels become `LocalLabel` pieces, lowercased, because Rust
+  denies named labels in `asm!`; Slate renumbers them to `N:` / `Nf` / `Nb`.
+- `_emit n` becomes `.byte n`.
+- The quoted template on the node is the statement rebuilt from the AST
+  (numbers in decimal), since a macro-built block has no single source
+  string.
 - options: `volatile`, `memory = Any`, `nostack = false`,
-  `preserves_flags = false`, `may_unwind = false`.
+  `preserves_flags = false`, `may_unwind = false`; `None` in a naked
+  function, as for GNU asm.
 
 ### Effects table
 
@@ -228,9 +237,6 @@ in `st(0)`) returns are deferred.
 
 ## Open decisions
 
-- Phase-1 cut: land parsing and name resolution first, with lowering
-  failing with a clear "MS asm lowering unsupported" error until the IR
-  child lands (recommended).
 - Effects table: hand-curated (recommended, about 60 entries) versus
   generated from LLVM's X86 tablegen.
 - MSVC-only jumps between C labels and asm labels: deferred; reject until

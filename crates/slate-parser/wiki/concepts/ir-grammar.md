@@ -248,8 +248,9 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "clobbers:" clobber { "," clobber } ";" ]
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
-asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
-                  [ asm_chosen ] [ asm_width ] ( value | asm_place | asm_symbol )
+asm_operand = ( "in" integer [ "[" c_identifier "]" ] [ string asm_classes ]
+                  [ asm_chosen ] [ asm_width ]
+                  ( value | asm_place | asm_symbol | asm_memory )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
                   asm_classes [ asm_chosen ] [ asm_width ] asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
@@ -270,8 +271,11 @@ asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_
            | "mem" | "imm" | "sym" | "{" identifier "}" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_symbol = "sym<offset=" [ "-" ] integer ">(" binding ")" ;
+asm_memory = "mem<" ( "read" | "write" | "readwrite" ) ">" asm_place ;
 asm_piece  = string | "%" [ letter ] integer [ asm_view ] | "%l" integer
-           | "%%" | "%=" ;
+           | "%%" | "%=" | asm_address | "label(" identifier ")" ;
+asm_address = "addr" [ "<" identifier ">" ] "(%" integer [ " + " identifier ]
+              [ " + " identifier "*" integer ] [ ( " + " | " - " ) integer ] ")" ;
 asm_view   = "(" ( integer | "high8" ) ")" ;
 clobber    = "memory" | "cc" | "unwind" | register ;
 register   = string [ "as" identifier ] ;
@@ -322,6 +326,7 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 - `[options=...]` is the set of Rust `asm!` options derived during lowering,
   in that fixed order, printed on every statement asm except inside a
   naked function, and never on file-scope asm; `nomem` and `readonly` are exclusive.
+  It is left out when no option is set, as for MSVC `__asm`.
 - An operand line starts with its Rust-facing direction. `=` and `+` and
   `&` are folded into it and no longer appear in the quoted constraint,
   which keeps `,`-separated alternatives, each with `%` or `-` and then a
@@ -336,6 +341,17 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   the asm may address it in place, so no load precedes the statement.
 - An `in` with an `asm_symbol` selected `sym`: a link-time address, the
   binding's symbol plus a byte offset, which Rust takes as a `sym` operand.
+- MSVC `__asm` lowers to the same node with `[dialect=intel]`. Its quoted
+  string is the statement rebuilt from the AST (instructions joined by `\n`,
+  numbers in decimal), not raw source. Its operands carry no constraint:
+  `mem<access>` is a C object the asm addresses, so the operand is the
+  object's address; `access` is what the asm may do there. A function is a
+  `sym`, and `offset x` is an `addr_of` value. In `template:`,
+  `addr<size>(%N + base + index*scale + disp)` is a memory reference into
+  operand `N` (the size appears where MASM needs it spelled out), and
+  `label(name)` is an asm-local label, lowercased, which emission renumbers
+  because Rust `asm!` rejects named labels. Register-only memory such as
+  `dword ptr [esp + 12]` stays text.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus

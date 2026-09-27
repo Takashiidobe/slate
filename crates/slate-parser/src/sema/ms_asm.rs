@@ -1,23 +1,19 @@
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::operand::Lvalue;
 use super::types::Ordinary;
 use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
-use crate::ir::{BindingId, BindingKind, Place, Type, TypeDefinitionKind};
+use crate::ir::{
+    AsmAccess, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind, AsmOptions,
+    AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type, TypeDefinitionKind,
+    ValueKind,
+};
+use std::collections::HashMap;
+use std::fmt::Write;
 
-#[expect(dead_code, reason = "lowered by slate-parser-25m.6.3")]
-#[derive(Debug)]
-pub(super) struct MsAsmLine {
-    pub label: Option<String>,
-    pub prefixes: Vec<String>,
-    pub mnemonic: Option<String>,
-    pub operands: Vec<MsAsmOperand>,
-}
-
-#[expect(dead_code, reason = "lowered by slate-parser-25m.6.3")]
-#[derive(Debug)]
-pub(super) enum MsAsmOperand {
+enum MsAsmOperand {
     Register(Register),
     Segment(MsAsmSegment),
     St(u8),
@@ -25,25 +21,56 @@ pub(super) enum MsAsmOperand {
     Reference(MsAsmReference),
 }
 
-#[expect(dead_code, reason = "lowered by slate-parser-25m.6.3")]
-#[derive(Debug)]
-pub(super) struct MsAsmReference {
-    pub symbol: Option<MsAsmSymbol>,
-    pub displacement: i64,
-    pub base: Option<Register>,
-    pub index: Option<(Register, i64)>,
-    pub size: Option<MsAsmSize>,
-    pub segment: Option<MsAsmSegment>,
-    pub offset: bool,
-    pub short: bool,
+struct MsAsmReference {
+    symbol: Option<MsAsmSymbol>,
+    ty: Option<Type>,
+    displacement: i64,
+    base: Option<Register>,
+    index: Option<(Register, i64)>,
+    size: Option<MsAsmSize>,
+    segment: Option<MsAsmSegment>,
+    offset: bool,
+    short: bool,
 }
 
-#[expect(dead_code, reason = "lowered by slate-parser-25m.6.3")]
-#[derive(Debug)]
-pub(super) enum MsAsmSymbol {
-    Object(Place),
+enum MsAsmSymbol {
+    Object {
+        name: String,
+        lvalue: Lvalue,
+        anchor: Span<()>,
+    },
     Function(BindingId),
     Label(String),
+}
+
+#[derive(Default)]
+struct Lowered {
+    pieces: Vec<AsmPiece>,
+    operands: Vec<AsmOperand>,
+    objects: HashMap<BindingId, usize>,
+    functions: HashMap<BindingId, usize>,
+}
+
+impl Lowered {
+    fn text(&mut self, text: &str) {
+        match self.pieces.last_mut() {
+            Some(AsmPiece::Text(previous)) => previous.push_str(text),
+            _ => self.pieces.push(AsmPiece::Text(text.to_owned())),
+        }
+    }
+
+    fn operand(&mut self, name: Option<String>, kind: AsmOperandKind) -> usize {
+        self.operands.push(AsmOperand {
+            name,
+            constraint: AsmConstraint {
+                alternatives: Vec::new(),
+            },
+            kind,
+            width: None,
+            selected: None,
+        });
+        self.operands.len() - 1
+    }
 }
 
 #[derive(Default)]
@@ -95,10 +122,13 @@ impl Value {
 }
 
 impl Lowerer {
-    pub(super) fn ms_asm(&mut self, asm: &ast::MsAsm) -> Result<Vec<MsAsmLine>, ResolveError> {
-        let mut lines = Vec::with_capacity(asm.instructions.len());
-        for instruction in &asm.instructions {
+    pub(super) fn ms_asm(&mut self, asm: &ast::MsAsm) -> Result<InlineAsm, ResolveError> {
+        let mut lowered = Lowered::default();
+        for (line, instruction) in asm.instructions.iter().enumerate() {
             let instruction = &instruction.value;
+            if line > 0 {
+                lowered.text("\n");
+            }
             let mut operands = Vec::with_capacity(instruction.operands.len());
             for operand in &instruction.operands {
                 operands.push(match &operand.value {
@@ -107,21 +137,235 @@ impl Lowerer {
                     _ => classify(self.ms_asm_value(operand)?)?,
                 });
             }
-            lines.push(MsAsmLine {
-                label: instruction.label.as_ref().map(|label| label.value.clone()),
-                prefixes: instruction
-                    .prefixes
-                    .iter()
-                    .map(|prefix| prefix.value.clone())
-                    .collect(),
-                mnemonic: instruction
-                    .mnemonic
-                    .as_ref()
-                    .map(|mnemonic| mnemonic.value.clone()),
-                operands,
+            if let Some(label) = &instruction.label {
+                lowered
+                    .pieces
+                    .push(AsmPiece::LocalLabel(label.value.to_lowercase()));
+                lowered.text(":");
+                if instruction.mnemonic.is_some() {
+                    lowered.text(" ");
+                }
+            }
+            for prefix in &instruction.prefixes {
+                lowered.text(&prefix.value);
+                lowered.text(" ");
+            }
+            let Some(mnemonic) = &instruction.mnemonic else {
+                continue;
+            };
+            let lower = mnemonic.value.to_lowercase();
+            lowered.text(if lower == "_emit" {
+                ".byte"
+            } else {
+                &mnemonic.value
             });
+            let sized = needs_size(&lower, &operands);
+            for (index, operand) in operands.into_iter().enumerate() {
+                lowered.text(if index == 0 { " " } else { ", " });
+                self.ms_asm_operand(operand, sized, &mut lowered)?;
+            }
         }
-        Ok(lines)
+        let options = (!self.in_naked_function).then_some(AsmOptions {
+            memory: AsmMemory::Any,
+            pure: false,
+            nostack: false,
+            preserves_flags: false,
+            may_unwind: false,
+        });
+        Ok(InlineAsm {
+            template: template(asm),
+            volatile: true,
+            inline: false,
+            goto: false,
+            dialect: Some(AsmDialect::Intel),
+            pieces: lowered.pieces,
+            operands: lowered.operands,
+            clobbers: Vec::new(),
+            labels: Vec::new(),
+            alternative: None,
+            rejected: Vec::new(),
+            options,
+        })
+    }
+
+    fn ms_asm_operand(
+        &mut self,
+        operand: MsAsmOperand,
+        sized: bool,
+        lowered: &mut Lowered,
+    ) -> Result<(), ResolveError> {
+        let reference = match operand {
+            MsAsmOperand::Register(register) => {
+                lowered.text(register_spelling(&register));
+                return Ok(());
+            }
+            MsAsmOperand::Segment(segment) => {
+                lowered.text(segment_spelling(segment));
+                return Ok(());
+            }
+            MsAsmOperand::St(index) => {
+                lowered.text(&format!("st({index})"));
+                return Ok(());
+            }
+            MsAsmOperand::Immediate(value) => {
+                lowered.text(&value.to_string());
+                return Ok(());
+            }
+            MsAsmOperand::Reference(reference) => reference,
+        };
+        let registers = reference.base.is_some() || reference.index.is_some();
+        if reference.short {
+            lowered.text("short ");
+        }
+        match reference.symbol {
+            Some(MsAsmSymbol::Label(name)) => {
+                if registers || reference.displacement != 0 {
+                    return Err(ResolveError::Unsupported("`__asm` label with an offset"));
+                }
+                if reference.offset {
+                    lowered.text("offset ");
+                }
+                lowered
+                    .pieces
+                    .push(AsmPiece::LocalLabel(name.to_lowercase()));
+            }
+            Some(MsAsmSymbol::Function(binding)) => {
+                if registers || reference.displacement != 0 {
+                    return Err(ResolveError::Unsupported("`__asm` function with an offset"));
+                }
+                let index = match lowered.functions.get(&binding) {
+                    Some(index) => *index,
+                    None => {
+                        let index = lowered.operand(
+                            None,
+                            AsmOperandKind::Symbol(AsmSymbol { binding, offset: 0 }),
+                        );
+                        lowered.functions.insert(binding, index);
+                        index
+                    }
+                };
+                lowered.pieces.push(AsmPiece::Operand {
+                    index,
+                    modifier: None,
+                    view: None,
+                });
+            }
+            Some(MsAsmSymbol::Object {
+                name,
+                lvalue,
+                anchor,
+            }) if reference.offset => {
+                if registers {
+                    return Err(ResolveError::Unsupported(
+                        "`__asm` `OFFSET` with a register",
+                    ));
+                }
+                let pointer = self.types.ctypes.pointer(lvalue.c);
+                let address = self.operand(&anchor, pointer, ValueKind::AddressOf(lvalue.place));
+                let index = lowered.operand(Some(name), AsmOperandKind::In(address.value));
+                lowered.pieces.push(AsmPiece::Operand {
+                    index,
+                    modifier: None,
+                    view: None,
+                });
+                write_displacement(lowered, reference.displacement);
+            }
+            Some(MsAsmSymbol::Object { name, lvalue, .. }) => {
+                let place = lvalue.place;
+                let binding = match place.kind {
+                    PlaceKind::Binding(binding) => binding,
+                    _ => return Err(ResolveError::Unsupported("`__asm` non-variable object")),
+                };
+                let operand = match lowered.objects.get(&binding) {
+                    Some(index) => *index,
+                    None => {
+                        let index = lowered.operand(
+                            Some(name),
+                            AsmOperandKind::Memory {
+                                place,
+                                access: AsmAccess::ReadWrite,
+                            },
+                        );
+                        lowered.objects.insert(binding, index);
+                        index
+                    }
+                };
+                let size = match reference.size {
+                    Some(size) => Some(size_keyword(size)),
+                    None if sized => reference.ty.and_then(|ty| self.natural_size(ty)),
+                    None => None,
+                };
+                if let Some(segment) = reference.segment {
+                    lowered.text(segment_spelling(segment));
+                    lowered.text(":");
+                }
+                lowered.pieces.push(AsmPiece::Address {
+                    operand,
+                    displacement: reference.displacement,
+                    base: reference
+                        .base
+                        .as_ref()
+                        .map(|base| register_spelling(base).to_owned()),
+                    index: reference
+                        .index
+                        .as_ref()
+                        .map(|(index, scale)| (register_spelling(index).to_owned(), *scale)),
+                    size,
+                });
+            }
+            None => {
+                let mut text = String::new();
+                if let Some(size) = reference.size {
+                    let _ = write!(text, "{} ptr ", size_keyword(size));
+                }
+                if let Some(segment) = reference.segment {
+                    let _ = write!(text, "{}:", segment_spelling(segment));
+                }
+                text.push('[');
+                let mut terms = Vec::new();
+                if let Some(base) = &reference.base {
+                    terms.push(register_spelling(base).to_owned());
+                }
+                if let Some((index, scale)) = &reference.index {
+                    terms.push(format!("{}*{scale}", register_spelling(index)));
+                }
+                text.push_str(&terms.join(" + "));
+                match reference.displacement {
+                    0 if !terms.is_empty() => {}
+                    displacement if terms.is_empty() => {
+                        let _ = write!(text, "{displacement}");
+                    }
+                    displacement if displacement < 0 => {
+                        let _ = write!(text, " - {}", displacement.unsigned_abs());
+                    }
+                    displacement => {
+                        let _ = write!(text, " + {displacement}");
+                    }
+                }
+                text.push(']');
+                lowered.text(&text);
+            }
+        }
+        Ok(())
+    }
+
+    fn natural_size(&self, ty: Type) -> Option<&'static str> {
+        let mut ty = self.unaliased(ty);
+        while let Type::Array { element, .. } = ty {
+            ty = self.unaliased(*element);
+        }
+        match self.types.storage(ty).ok()?.size_bytes {
+            1 => Some("byte"),
+            2 => Some("word"),
+            4 => Some("dword"),
+            6 => Some("fword"),
+            8 => Some("qword"),
+            10 => Some("tbyte"),
+            16 => Some("xmmword"),
+            32 => Some("ymmword"),
+            64 => Some("zmmword"),
+            _ => None,
+        }
     }
 
     fn ms_asm_value(&mut self, expr: &Span<MsAsmExpr>) -> Result<Value, ResolveError> {
@@ -231,10 +475,14 @@ impl Lowerer {
         );
         Ok(match kind {
             BindingKind::Object | BindingKind::Parameter => {
-                let place = self.place(&identifier)?.place;
+                let lvalue = self.place(&identifier)?;
                 Value {
-                    ty: Some(place.ty.clone()),
-                    symbol: Some(MsAsmSymbol::Object(place)),
+                    ty: Some(lvalue.place.ty.clone()),
+                    symbol: Some(MsAsmSymbol::Object {
+                        name: name.to_owned(),
+                        lvalue,
+                        anchor: expr.derive(()),
+                    }),
                     ..Value::default()
                 }
             }
@@ -366,6 +614,7 @@ fn classify(value: Value) -> Result<MsAsmOperand, ResolveError> {
     };
     Ok(MsAsmOperand::Reference(MsAsmReference {
         symbol: value.symbol,
+        ty: value.ty,
         displacement: value.constant,
         base,
         index,
@@ -374,4 +623,165 @@ fn classify(value: Value) -> Result<MsAsmOperand, ResolveError> {
         offset: value.offset,
         short: value.short,
     }))
+}
+
+// masm leaves a memory operand's size to the register beside it, except where that register does not fix it.
+fn needs_size(mnemonic: &str, operands: &[MsAsmOperand]) -> bool {
+    let register = operands.iter().any(|operand| {
+        matches!(
+            operand,
+            MsAsmOperand::Register(_) | MsAsmOperand::Segment(_)
+        )
+    });
+    !register
+        || matches!(
+            mnemonic,
+            "movzx"
+                | "movsx"
+                | "movsxd"
+                | "shl"
+                | "shr"
+                | "sal"
+                | "sar"
+                | "rol"
+                | "ror"
+                | "rcl"
+                | "rcr"
+                | "shld"
+                | "shrd"
+        )
+}
+
+fn write_displacement(lowered: &mut Lowered, displacement: i64) {
+    match displacement {
+        0 => {}
+        displacement if displacement < 0 => {
+            lowered.text(&format!(" - {}", displacement.unsigned_abs()));
+        }
+        displacement => lowered.text(&format!(" + {displacement}")),
+    }
+}
+
+fn register_spelling(register: &Register) -> &str {
+    match register {
+        Register::X86(info) => &info.spelling,
+        Register::Aarch64(info) => &info.spelling,
+        Register::Other(spelling) => spelling,
+    }
+}
+
+fn segment_spelling(segment: MsAsmSegment) -> &'static str {
+    match segment {
+        MsAsmSegment::Es => "es",
+        MsAsmSegment::Cs => "cs",
+        MsAsmSegment::Ss => "ss",
+        MsAsmSegment::Ds => "ds",
+        MsAsmSegment::Fs => "fs",
+        MsAsmSegment::Gs => "gs",
+    }
+}
+
+// llvm's intel parser knows no `realN` or `oword`, so they print as their plain sizes.
+fn size_keyword(size: MsAsmSize) -> &'static str {
+    match size {
+        MsAsmSize::Byte => "byte",
+        MsAsmSize::Word => "word",
+        MsAsmSize::Dword | MsAsmSize::Real4 => "dword",
+        MsAsmSize::Fword => "fword",
+        MsAsmSize::Qword | MsAsmSize::Real8 => "qword",
+        MsAsmSize::Tbyte | MsAsmSize::Real10 => "tbyte",
+        MsAsmSize::Mmword => "mmword",
+        MsAsmSize::Xmmword | MsAsmSize::Oword => "xmmword",
+        MsAsmSize::Ymmword => "ymmword",
+        MsAsmSize::Zmmword => "zmmword",
+    }
+}
+
+fn template(asm: &ast::MsAsm) -> String {
+    let mut text = String::new();
+    for (line, instruction) in asm.instructions.iter().enumerate() {
+        let instruction = &instruction.value;
+        if line > 0 {
+            text.push('\n');
+        }
+        let mut words = Vec::new();
+        if let Some(label) = &instruction.label {
+            words.push(format!("{}:", label.value));
+        }
+        words.extend(
+            instruction
+                .prefixes
+                .iter()
+                .map(|prefix| prefix.value.clone()),
+        );
+        if let Some(mnemonic) = &instruction.mnemonic {
+            let operands = instruction
+                .operands
+                .iter()
+                .map(|operand| render(&operand.value))
+                .collect::<Vec<_>>()
+                .join(", ");
+            words.push(if operands.is_empty() {
+                mnemonic.value.clone()
+            } else {
+                format!("{} {operands}", mnemonic.value)
+            });
+        }
+        text.push_str(&words.join(" "));
+    }
+    text
+}
+
+fn render(expr: &MsAsmExpr) -> String {
+    match expr {
+        MsAsmExpr::Register(register) => register_spelling(register).to_owned(),
+        MsAsmExpr::SegmentRegister(segment) => segment_spelling(*segment).to_owned(),
+        MsAsmExpr::St(index) => format!("st({index})"),
+        MsAsmExpr::Number(number) => number.to_string(),
+        MsAsmExpr::Name(name) => name.clone(),
+        MsAsmExpr::Member { base, field } => format!("{}.{}", render(&base.value), field.value),
+        MsAsmExpr::Index { base, index } => {
+            format!("{}[{}]", render(&base.value), render(&index.value))
+        }
+        MsAsmExpr::Bracket(operand) => format!("[{}]", render(&operand.value)),
+        MsAsmExpr::Binary { op, lhs, rhs } => {
+            let (symbol, tight) = match op {
+                MsAsmBinaryOp::Add => ("+", false),
+                MsAsmBinaryOp::Sub => ("-", false),
+                MsAsmBinaryOp::Mul => ("*", true),
+                MsAsmBinaryOp::Div => ("/", true),
+            };
+            let side = |operand: &MsAsmExpr| match operand {
+                MsAsmExpr::Binary {
+                    op: MsAsmBinaryOp::Add | MsAsmBinaryOp::Sub,
+                    ..
+                } if tight => format!("({})", render(operand)),
+                _ => render(operand),
+            };
+            let right = match &rhs.value {
+                MsAsmExpr::Binary { .. } if !tight && matches!(op, MsAsmBinaryOp::Sub) => {
+                    format!("({})", render(&rhs.value))
+                }
+                operand => side(operand),
+            };
+            format!("{} {symbol} {right}", side(&lhs.value))
+        }
+        MsAsmExpr::Negate(operand) => format!("-{}", render(&operand.value)),
+        MsAsmExpr::Ptr { size, operand } => {
+            format!("{} ptr {}", size_keyword(*size), render(&operand.value))
+        }
+        MsAsmExpr::Segment { segment, operand } => {
+            format!("{}:{}", segment_spelling(*segment), render(&operand.value))
+        }
+        MsAsmExpr::Operator { operator, operand } => {
+            let keyword = match operator {
+                MsAsmOperator::Offset => "offset",
+                MsAsmOperator::Type => "type",
+                MsAsmOperator::Length => "length",
+                MsAsmOperator::Size => "size",
+                MsAsmOperator::Short => "short",
+            };
+            format!("{keyword} {}", render(&operand.value))
+        }
+    }
 }

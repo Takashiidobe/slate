@@ -150,7 +150,8 @@ impl Lowerer {
                 AsmOperandKind::Symbol(_) => source_width,
                 AsmOperandKind::InPlace(place)
                 | AsmOperandKind::Out { place, .. }
-                | AsmOperandKind::InOut { place, .. } => self.width(&place.ty),
+                | AsmOperandKind::InOut { place, .. }
+                | AsmOperandKind::Memory { place, .. } => self.width(&place.ty),
             };
             lowered.operands.push(AsmOperand {
                 name: source.name,
@@ -216,7 +217,8 @@ impl Lowerer {
             Candidate::Output(
                 AsmOperandKind::InPlace(place)
                 | AsmOperandKind::Out { place, .. }
-                | AsmOperandKind::InOut { place, .. },
+                | AsmOperandKind::InOut { place, .. }
+                | AsmOperandKind::Memory { place, .. },
             ) => Some(&place.ty),
             Candidate::Output(AsmOperandKind::In(value)) | Candidate::Value(value) => {
                 Some(&value.ty)

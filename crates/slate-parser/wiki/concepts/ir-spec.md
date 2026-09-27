@@ -1027,7 +1027,7 @@ template as opaque text with holes.
     `Any` (Rust requires `nomem` or `readonly` with `pure`).
   - `nostack` is always set for GNU asm: neither compiler guarantees stack
     alignment or the red zone to it (clang never emits `alignstack`).
-    MSVC `__asm` will differ.
+    MSVC `__asm` leaves it off.
   - `preserves_flags` is never set on x86 (both compilers clobber
     flags/dirflag/fpsr implicitly). Elsewhere it is set unless `"cc"` is
     written (gcc aarch64 adds `(clobber (reg:CC cc))` only for `"cc"`).
@@ -1037,6 +1037,27 @@ template as opaque text with holes.
   `sema/armv7-unknown-linux-gnueabihf/ir_asm_options.c`. On 32-bit ARM,
   gcc (`arm-none-eabi-gcc` 16.2, `-fdump-rtl-expand`) adds a CC clobber
   only for `"cc"` in ARM, Thumb-2 and Thumb-1 (armv6-m) alike.
+- MSVC `__asm` lowers to the same `Statement::Asm` (`src/sema/ms_asm.rs`,
+  design in `wiki/concepts/msvc-asm.md`): volatile, `dialect = Intel`, and
+  options with `memory = Any` and nothing else set (no `nostack`, since the
+  asm may `push`/`pop`), or `None` in a naked function. `template` is the
+  statement rebuilt from the AST. Operands have no constraint:
+  - each C object is one `AsmOperandKind::Memory { place, access }`, however
+    often the asm names it; the asm receives its address, and `access`
+    (`AsmAccess::{Read, Write, ReadWrite}`) says what the asm may do there.
+    It is `ReadWrite` until the effects table (slate-parser-25m.6.4)
+    refines it;
+  - a function is a `Symbol` operand, and `offset x` an `In` of
+    `AddressOf(x)`.
+  Each reference to an object is an `AsmPiece::Address { operand,
+  displacement, base, index, size }`: `arr[4]`, `s.f` and `x + 4` are byte
+  displacements, and registers stay by spelling. `size` is the explicit
+  `PTR`, or, where MASM infers it from the C type (no register operand, or
+  `movzx`/`movsx`, shifts and rotates, `shld`/`shrd`), the size of the
+  innermost element type. That matches the `dword ptr`/`qword ptr` clang
+  inserts. Asm labels are `AsmPiece::LocalLabel(name)`, lowercased. Clobbers
+  and the implicit EAX/EDX:EAX return are separate children
+  (25m.6.4, 25m.6.5). Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
 
 A naked function (`__attribute__((naked))` on any of its declarations) sets
 `FunctionSemantics::naked`, so the backend picks `naked_asm!` from the function

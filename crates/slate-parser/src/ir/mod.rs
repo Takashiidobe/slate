@@ -9,7 +9,7 @@ mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use asm::{
-    AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
+    AsmAccess, AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmMemory, AsmOperand, AsmOperandClass,
     AsmOperandKind, AsmOptions, AsmPiece, AsmRegister, AsmRegisterClass, AsmRegisterView,
     AsmRejectReason, AsmRejection, AsmSymbol, AsmTiedInput, InlineAsm,
