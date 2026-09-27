@@ -119,16 +119,9 @@ impl CompilerArgs {
             None => PathBuf::from(path),
         };
         let mut system: Vec<PathBuf> = self.isystem.iter().map(|path| include_dir(path)).collect();
-        system.extend(compiler_headers::include_paths(
-            &self.target.triple,
-            self.flavor,
-        ));
+        system.extend(compiler_headers::include_paths(&self.target, self.flavor));
         if !self.nostdlibinc {
-            system.extend(sysroot::include_paths_at(
-                &root,
-                &self.target.triple,
-                self.flavor,
-            ));
+            system.extend(sysroot::include_paths_at(&root, &self.target, self.flavor));
         }
         system.extend(self.idirafter.iter().map(|path| include_dir(path)));
         SearchPaths {
@@ -302,7 +295,7 @@ impl CompilerArgParser {
     {
         let arguments = args.into_iter().collect::<Vec<_>>();
         let raw = parse_arguments(&arguments)?;
-        let mut target = TargetInfo::for_triple(&raw.target)?;
+        let mut target = TargetInfo::for_triple_and_flavor(&raw.target, raw.flavor)?;
         validate_rules(&target).check(&raw)?;
         target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa)
             .map_err(|reason| invalid(&raw.target, &reason))?;
@@ -757,7 +750,7 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                             target.triple
                         ));
                     }
-                    let minimum = if target.triple.starts_with("x86_64-") {
+                    let minimum = if target.family == TargetFamily::X86_64 {
                         4
                     } else {
                         2

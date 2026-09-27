@@ -7,7 +7,7 @@ use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, Field, FloatType, NumericType, RecordKind,
     Type, TypeDefinitionKind, Value,
 };
-use crate::target_info::{TargetEnvironment, TargetFamily, TargetInfo};
+use crate::target_info::TargetInfo;
 
 impl Lowerer {
     pub(super) fn abi_signature(
@@ -139,17 +139,11 @@ impl<'a> AbiClassifier<'a> {
     }
 
     fn abi_convention(&self, variadic: bool) -> AbiConvention {
-        let target = self.target;
-        match (target.family, target.environment) {
-            (TargetFamily::X86_64, TargetEnvironment::Msvc) => AbiConvention::Win64,
-            (TargetFamily::X86_64, _) => AbiConvention::SysV64,
-            (TargetFamily::X86, _) => AbiConvention::X86Cdecl,
-            (TargetFamily::AArch64, TargetEnvironment::Msvc) => AbiConvention::WinArm64,
-            (TargetFamily::AArch64, _) => AbiConvention::Aapcs64,
-            (TargetFamily::Arm32, _) if !variadic && target.isa.arm_hard_float() => {
+        match self.target.profile.convention {
+            AbiConvention::Aapcs32 if !variadic && self.target.isa.arm_hard_float() => {
                 AbiConvention::Aapcs32HardFloat
             }
-            (TargetFamily::Arm32, _) => AbiConvention::Aapcs32,
+            convention => convention,
         }
     }
 

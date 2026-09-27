@@ -1,6 +1,7 @@
 use crate::ir::{FloatType, NumericType, ShiftFill, Type};
 use crate::target::isa::TargetIsa;
 use crate::target::x86_isa::X86Feature;
+use crate::target_registry::TargetProfile;
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,6 +25,7 @@ pub struct TargetInfo {
     pub os: TargetOs,
     pub environment: TargetEnvironment,
     pub isa: TargetIsa,
+    pub profile: TargetProfile,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -66,6 +68,11 @@ pub enum TargetFamily {
 pub enum TargetError {
     #[error("unsupported target triple: {0}")]
     UnsupportedTriple(String),
+    #[error("the {flavor:?} flavor is not supported on {triple}")]
+    UnsupportedFlavor {
+        triple: String,
+        flavor: crate::compiler_args::CompilerFlavor,
+    },
 }
 
 impl miette::Diagnostic for TargetError {}
@@ -95,6 +102,7 @@ impl Default for TargetInfo {
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
             isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Gnu),
+            profile: crate::target_registry::X86_64_LINUX_GNU_PROFILE,
         }
     }
 }
@@ -267,31 +275,40 @@ pub enum LayoutError {
 
 impl TargetInfo {
     pub fn for_triple(triple: &str) -> Result<Self, TargetError> {
-        let target = match triple {
-            "x86_64-unknown-linux-gnu" => Self::default(),
-            "i386-unknown-linux-gnu" | "i686-unknown-linux-gnu" => Self::x86_linux(triple),
-            "aarch64-unknown-linux-gnu" => Self::aarch64_linux(),
-            "aarch64-apple-darwin" => Self::aarch64_apple_darwin(),
-            "x86_64-apple-darwin" => Self::x86_64_apple_darwin(),
-            "aarch64-linux-android" => Self::aarch64_android(),
-            "x86_64-linux-android" => Self::x86_64_android(),
-            "aarch64-unknown-freebsd" => Self::aarch64_freebsd(),
-            "x86_64-unknown-freebsd" => Self::x86_64_freebsd(),
-            "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
-                Self::arm32_linux(triple)
-            }
-            "x86_64-pc-windows-msvc" => Self::windows_msvc(triple, TargetFamily::X86_64),
-            "aarch64-pc-windows-msvc" => Self::windows_msvc(triple, TargetFamily::AArch64),
-            _ => return Err(TargetError::UnsupportedTriple(triple.into())),
-        };
-        Ok(target)
+        let spec = crate::target_registry::lookup(triple)?;
+        Ok(Self {
+            triple: spec.triple.into(),
+            profile: spec.profile,
+            ..(spec.layout)()
+        })
     }
 
-    fn windows_msvc(triple: &str, family: TargetFamily) -> Self {
+    pub fn for_triple_and_flavor(
+        triple: &str,
+        flavor: crate::compiler_args::CompilerFlavor,
+    ) -> Result<Self, TargetError> {
+        let target = Self::for_triple(triple)?;
+        match target.profile.predefines(flavor) {
+            Some(_) => Ok(target),
+            None => Err(TargetError::UnsupportedFlavor {
+                triple: target.triple,
+                flavor,
+            }),
+        }
+    }
+
+    pub(crate) fn x86_64_windows_msvc() -> Self {
+        Self::windows_msvc(TargetFamily::X86_64)
+    }
+
+    pub(crate) fn aarch64_windows_msvc() -> Self {
+        Self::windows_msvc(TargetFamily::AArch64)
+    }
+
+    fn windows_msvc(family: TargetFamily) -> Self {
         let mut scalars = ScalarLayouts::for_family(family);
         scalars.entries.remove(&ScalarKey::Float(FloatType::F80));
         Self {
-            triple: triple.into(),
             os: TargetOs::Windows,
             environment: TargetEnvironment::Msvc,
             family,
@@ -305,9 +322,8 @@ impl TargetInfo {
         }
     }
 
-    fn x86_linux(triple: &str) -> Self {
+    pub(crate) fn x86_linux() -> Self {
         Self {
-            triple: triple.into(),
             endian: Endian::Little,
             long_double: LongDoubleFormat::X87,
             char_signed: true,
@@ -332,12 +348,12 @@ impl TargetInfo {
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
             isa: TargetIsa::baseline(TargetFamily::X86, TargetEnvironment::Gnu),
+            ..Self::default()
         }
     }
 
-    fn aarch64_linux() -> Self {
+    pub(crate) fn aarch64_linux() -> Self {
         Self {
-            triple: "aarch64-unknown-linux-gnu".into(),
             endian: Endian::Little,
             long_double: LongDoubleFormat::Binary128,
             char_signed: false,
@@ -362,12 +378,12 @@ impl TargetInfo {
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
             isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Gnu),
+            ..Self::default()
         }
     }
 
-    fn aarch64_apple_darwin() -> Self {
+    pub(crate) fn aarch64_apple_darwin() -> Self {
         Self {
-            triple: "aarch64-apple-darwin".into(),
             endian: Endian::Little,
             long_double: LongDoubleFormat::Binary64,
             char_signed: true,
@@ -392,12 +408,12 @@ impl TargetInfo {
             os: TargetOs::Darwin,
             environment: TargetEnvironment::Darwin,
             isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Darwin),
+            ..Self::default()
         }
     }
 
-    fn x86_64_apple_darwin() -> Self {
+    pub(crate) fn x86_64_apple_darwin() -> Self {
         Self {
-            triple: "x86_64-apple-darwin".into(),
             os: TargetOs::Darwin,
             environment: TargetEnvironment::Darwin,
             long_double: LongDoubleFormat::X87,
@@ -406,18 +422,16 @@ impl TargetInfo {
         }
     }
 
-    fn aarch64_android() -> Self {
+    pub(crate) fn aarch64_android() -> Self {
         let mut target = Self::aarch64_linux();
-        target.triple = "aarch64-linux-android".into();
         target.os = TargetOs::Android;
         target.environment = TargetEnvironment::Android;
         target.isa = TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Android);
         target
     }
 
-    fn x86_64_android() -> Self {
+    pub(crate) fn x86_64_android() -> Self {
         Self {
-            triple: "x86_64-linux-android".into(),
             long_double: LongDoubleFormat::Binary128,
             os: TargetOs::Android,
             environment: TargetEnvironment::Android,
@@ -426,18 +440,16 @@ impl TargetInfo {
         }
     }
 
-    fn aarch64_freebsd() -> Self {
+    pub(crate) fn aarch64_freebsd() -> Self {
         let mut target = Self::aarch64_linux();
-        target.triple = "aarch64-unknown-freebsd".into();
         target.os = TargetOs::FreeBsd;
         target.environment = TargetEnvironment::FreeBsd;
         target.isa = TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::FreeBsd);
         target
     }
 
-    fn x86_64_freebsd() -> Self {
+    pub(crate) fn x86_64_freebsd() -> Self {
         Self {
-            triple: "x86_64-unknown-freebsd".into(),
             long_double: LongDoubleFormat::X87,
             os: TargetOs::FreeBsd,
             environment: TargetEnvironment::FreeBsd,
@@ -446,14 +458,16 @@ impl TargetInfo {
         }
     }
 
-    fn arm32_linux(triple: &str) -> Self {
-        let environment = if triple.ends_with("gnueabihf") {
-            TargetEnvironment::GnuEabiHf
-        } else {
-            TargetEnvironment::GnuEabi
-        };
+    pub(crate) fn arm32_linux_gnueabi() -> Self {
+        Self::arm32_linux(TargetEnvironment::GnuEabi)
+    }
+
+    pub(crate) fn arm32_linux_gnueabihf() -> Self {
+        Self::arm32_linux(TargetEnvironment::GnuEabiHf)
+    }
+
+    fn arm32_linux(environment: TargetEnvironment) -> Self {
         Self {
-            triple: triple.into(),
             endian: Endian::Little,
             long_double: LongDoubleFormat::Binary64,
             char_signed: false,
@@ -478,6 +492,7 @@ impl TargetInfo {
             os: TargetOs::Linux,
             environment,
             isa: TargetIsa::baseline(TargetFamily::Arm32, environment),
+            ..Self::default()
         }
     }
 
@@ -541,13 +556,7 @@ impl TargetInfo {
     }
 
     pub fn va_list_kind(&self) -> VaListKind {
-        match (self.family, self.os) {
-            (_, TargetOs::Windows) | (TargetFamily::X86, _) => VaListKind::CharPointer,
-            (TargetFamily::AArch64, TargetOs::Darwin) => VaListKind::CharPointer,
-            (TargetFamily::X86_64, _) => VaListKind::X86_64Sysv,
-            (TargetFamily::AArch64, _) => VaListKind::AArch64Aapcs,
-            (TargetFamily::Arm32, _) => VaListKind::ArmAapcs,
-        }
+        self.profile.va_list
     }
 
     fn va_list_storage(&self) -> StorageLayout {

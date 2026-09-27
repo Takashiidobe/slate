@@ -167,6 +167,17 @@ fn show_ids_for_prefix(source: &str, prefix: &str) -> bool {
     })
 }
 
+fn prefix_args(source: &str, prefix: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-PREFIX-ARGS "))
+        .filter_map(|rest| rest.split_once(char::is_whitespace))
+        .filter(|(name, _)| *name == prefix)
+        .flat_map(|(_, args)| args.split_whitespace())
+        .map(str::to_string)
+        .collect()
+}
+
 fn fixture_args(fixture: &Path) -> Vec<String> {
     let mut args = Vec::new();
     if let Some(triple) = fixture
@@ -377,6 +388,7 @@ fn run_fixture(
         command.arg("--show-ids");
     }
     command.args(fixture_ir_args(fixture));
+    command.args(prefix_args(&original, prefix));
     let rendered = command
         .output()
         .expect("run slate-parser filecheck renderer");
@@ -611,7 +623,7 @@ fn assert_evaluated_matches_clang(
     let flavor = flavor.map_or_else(CompilerFlavor::default, |name| {
         name.parse().expect("valid fixture flavor")
     });
-    let target = fixture_target(fixture);
+    let target = TargetInfo::for_triple(&fixture_target(fixture)).expect("valid fixture target");
     let mut system: Vec<PathBuf> = isystem.iter().map(PathBuf::from).collect();
     system.extend(compiler_headers::include_paths(&target, flavor));
     system.extend(sysroot::include_paths(&target, flavor));
@@ -625,7 +637,7 @@ fn assert_evaluated_matches_clang(
                 .iter()
                 .map(|define| define.trim_start_matches("-D").to_string()),
         )
-        .with_target(TargetInfo::for_triple(&target).expect("valid fixture target"))
+        .with_target(target)
         .with_flavor(flavor);
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let ours = summarize_evaluated(&ast);
@@ -647,8 +659,8 @@ fn assert_evaluated_matches_clang(
 
 fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> ClangNode {
     let mut command = Command::new("clang");
-    let target = fixture_target(fixture);
-    command.arg(format!("--target={target}"));
+    let target = TargetInfo::for_triple(&fixture_target(fixture)).expect("valid fixture target");
+    command.arg(format!("--target={}", target.triple));
     if let Some(resource_include) = compiler_headers::include_paths(&target, CompilerFlavor::Clang)
         .into_iter()
         .next()

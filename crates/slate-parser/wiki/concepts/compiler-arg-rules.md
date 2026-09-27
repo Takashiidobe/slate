@@ -15,7 +15,10 @@ particular `-m` spelling. Downstream code receives the normalized typed value,
 not the original spelling.
 
 Target selection accepts `-target`, `--target`, and their `=` forms. The triple
-must be supported by `TargetInfo`. Standard selection accepts `-std` and `--std`
+must be registered in `src/target_registry.rs`, and the selected `--flavor`
+must be one that entry has predefines for; both are checked when arguments are
+parsed (`TargetInfo::for_triple_and_flavor`), not during preprocessing. See
+[Adding a target](adding-a-target.md). Standard selection accepts `-std` and `--std`
 with either value form. C90 and ISO 9899 aliases normalize to the corresponding
 language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
 and otherwise C89 language rules. Unknown triples and standard names are errors.
@@ -27,6 +30,9 @@ explicit `-isystem`, compiler builtin headers, standard headers from the
 selected sysroot, then `-idirafter`. `-I` and `-iquote` headers are user
 headers; the later directories are system headers. `-nostdlibinc` removes
 standard headers while retaining explicit and compiler builtin paths.
+Which directories under the root are standard headers comes from the target's
+`SysrootLayout` (the MSVC flavor always uses the Windows kits layout), and
+the compiler builtin header profile from its `ClangHeaders`.
 `-isysroot` selects the header sysroot over `--sysroot`; either explicit root
 replaces the target-specific default root. An explicit root is used as given,
 without a fallback to another target's or the host's headers. Relative

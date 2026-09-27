@@ -180,6 +180,7 @@ def common_args(job: Job) -> list[str]:
 
 
 def sysroot_include_paths(job: Job) -> list[str]:
+    # mirrors SysrootLayout in src/target_registry.rs and sysroot::include_paths_at
     target = job.target or "x86_64-unknown-linux-gnu"
     sysroots = Path(os.environ.get(
         "SLATE_SYSROOTS",

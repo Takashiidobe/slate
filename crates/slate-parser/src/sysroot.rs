@@ -1,4 +1,6 @@
 use crate::compiler_args::CompilerFlavor;
+use crate::target_info::TargetInfo;
+use crate::target_registry::SysrootLayout;
 use directories::ProjectDirs;
 use std::path::{Path, PathBuf};
 
@@ -12,14 +14,22 @@ pub fn path(target: &str) -> PathBuf {
     root.join(target)
 }
 
-pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
-    let sysroot = path(target);
+pub fn include_paths(target: &TargetInfo, flavor: CompilerFlavor) -> Vec<PathBuf> {
+    let sysroot = path(&target.triple);
     include_paths_at(&sysroot, target, flavor)
 }
 
-pub fn include_paths_at(sysroot: &Path, target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
-    let candidates = if flavor == CompilerFlavor::Msvc || target.ends_with("-windows-msvc") {
-        vec![
+pub fn include_paths_at(
+    sysroot: &Path,
+    target: &TargetInfo,
+    flavor: CompilerFlavor,
+) -> Vec<PathBuf> {
+    let layout = match flavor {
+        CompilerFlavor::Msvc => SysrootLayout::WindowsKits,
+        CompilerFlavor::Gcc | CompilerFlavor::Clang => target.profile.sysroot,
+    };
+    let candidates = match layout {
+        SysrootLayout::WindowsKits => vec![
             sysroot.join("crt/include"),
             sysroot.join("sdk/include/ucrt"),
             sysroot.join("sdk/include/shared"),
@@ -28,21 +38,18 @@ pub fn include_paths_at(sysroot: &Path, target: &str, flavor: CompilerFlavor) ->
             sysroot.join("sdk/include/cppwinrt"),
             sysroot.join("include"),
             sysroot.join("usr/include"),
-        ]
-    } else {
-        let mut candidates = vec![
-            sysroot.join("SDK/usr/include"),
-            sysroot.join("usr/include"),
-            sysroot.join("include"),
-        ];
-        if let Some(arch) = target.strip_suffix("-unknown-linux-gnu") {
-            candidates.push(
-                sysroot
-                    .join("usr")
-                    .join(format!("{arch}-linux-gnu/include")),
+        ],
+        SysrootLayout::Unix { multiarch } => {
+            let mut candidates = vec![
+                sysroot.join("SDK/usr/include"),
+                sysroot.join("usr/include"),
+                sysroot.join("include"),
+            ];
+            candidates.extend(
+                multiarch.map(|multiarch| sysroot.join("usr").join(multiarch).join("include")),
             );
+            candidates
         }
-        candidates
     };
     candidates
         .into_iter()

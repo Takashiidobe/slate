@@ -1,10 +1,12 @@
 use crate::compiler_args::CompilerFlavor;
+use crate::target_info::TargetInfo;
+use crate::target_registry::ClangHeaders;
 use directories::ProjectDirs;
 use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
+pub fn include_paths(target: &TargetInfo, flavor: CompilerFlavor) -> Vec<PathBuf> {
     let root = std::env::var_os("SLATE_COMPILER_HEADERS")
         .map(PathBuf::from)
         .or_else(|| {
@@ -16,7 +18,7 @@ pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
     };
 
     let profiles: Vec<(String, String)> = match flavor {
-        CompilerFlavor::Clang if target.ends_with("-apple-darwin") => {
+        CompilerFlavor::Clang if target.profile.clang_headers == ClangHeaders::AppleFirst => {
             vec![
                 ("apple-clang-".into(), "include".into()),
                 ("clang-".into(), "include".into()),
@@ -24,7 +26,7 @@ pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
         }
         CompilerFlavor::Clang => vec![("clang-".into(), "include".into())],
         CompilerFlavor::Gcc => vec![("gcc-".into(), "include".into())],
-        CompilerFlavor::Msvc => vec![("msvc-".into(), format!("{target}/include"))],
+        CompilerFlavor::Msvc => vec![("msvc-".into(), format!("{}/include", target.triple))],
     };
 
     profiles

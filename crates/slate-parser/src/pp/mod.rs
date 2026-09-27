@@ -142,166 +142,22 @@ impl<'a> Preprocessor<'a> {
         target: &crate::target_info::TargetInfo,
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
-        use crate::target_info::{TargetEnvironment, TargetFamily, TargetOs};
-        let (name, source, defaults, gnu_namespace) =
-            match (target.os, target.environment, target.family, flavor) {
-                (
-                    TargetOs::Windows,
-                    TargetEnvironment::Msvc,
-                    TargetFamily::X86_64,
-                    CompilerFlavor::Msvc,
-                ) => (
-                    "<msvc-x86_64-windows-predefines>",
-                    include_str!("../predefines/msvc_19.51.36256_x86_64_windows.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Windows,
-                    TargetEnvironment::Msvc,
-                    TargetFamily::AArch64,
-                    CompilerFlavor::Msvc,
-                ) => (
-                    "<msvc-aarch64-windows-predefines>",
-                    include_str!("../predefines/msvc_19.51.36256_aarch64_windows.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Windows,
-                    TargetEnvironment::Msvc,
-                    TargetFamily::X86_64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-x86_64-windows-msvc-predefines>",
-                    include_str!("../predefines/clang-22.1.8_x86_64_windows_msvc.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Windows,
-                    TargetEnvironment::Msvc,
-                    TargetFamily::AArch64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-aarch64-windows-msvc-predefines>",
-                    include_str!("../predefines/clang-22.1.8_aarch64_windows_msvc.h"),
-                    "",
-                    "",
-                ),
-                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86_64, _) => (
-                    "<clang-x86_64-linux-gnu-predefines>",
-                    include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
-                    include_str!("../predefines/slate_target_defaults.h"),
-                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
-                ),
-                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86, _) => (
-                    "<clang-i386-linux-gnu-predefines>",
-                    include_str!("../predefines/clang-22.1.8_i686_linux_gnu.h"),
-                    include_str!("../predefines/slate_x86_linux_defaults.h"),
-                    include_str!("../predefines/slate_gnu_namespace_i386_linux.h"),
-                ),
-                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::AArch64, _) => (
-                    "<clang-aarch64-linux-gnu-predefines>",
-                    include_str!("../predefines/clang-22.1.8_aarch64_linux_gnu.h"),
-                    include_str!("../predefines/slate_aarch64_linux_defaults.h"),
-                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
-                ),
-                (
-                    TargetOs::Darwin,
-                    TargetEnvironment::Darwin,
-                    TargetFamily::AArch64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-aarch64-apple-darwin-predefines>",
-                    include_str!("../predefines/clang-22.1.8_aarch64_apple_darwin.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Darwin,
-                    TargetEnvironment::Darwin,
-                    TargetFamily::X86_64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-x86_64-apple-darwin-predefines>",
-                    include_str!("../predefines/clang-22.1.8_x86_64_apple_darwin.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Android,
-                    TargetEnvironment::Android,
-                    TargetFamily::AArch64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-aarch64-linux-android-predefines>",
-                    include_str!("../predefines/clang-22.1.8_aarch64_linux_android.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::Android,
-                    TargetEnvironment::Android,
-                    TargetFamily::X86_64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-x86_64-linux-android-predefines>",
-                    include_str!("../predefines/clang-22.1.8_x86_64_linux_android.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::FreeBsd,
-                    TargetEnvironment::FreeBsd,
-                    TargetFamily::AArch64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-aarch64-unknown-freebsd-predefines>",
-                    include_str!("../predefines/clang-22.1.8_aarch64_unknown_freebsd.h"),
-                    "",
-                    "",
-                ),
-                (
-                    TargetOs::FreeBsd,
-                    TargetEnvironment::FreeBsd,
-                    TargetFamily::X86_64,
-                    CompilerFlavor::Clang,
-                ) => (
-                    "<clang-x86_64-unknown-freebsd-predefines>",
-                    include_str!("../predefines/clang-22.1.8_x86_64_unknown_freebsd.h"),
-                    "",
-                    "",
-                ),
-                (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
-                    "<clang-armv7-linux-gnueabihf-predefines>",
-                    include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
-                    include_str!("../predefines/slate_arm32_linux_defaults.h"),
-                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
-                ),
-                (TargetOs::Linux, TargetEnvironment::GnuEabi, TargetFamily::Arm32, _) => (
-                    "<clang-armv7-linux-gnueabi-predefines>",
-                    include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
-                    include_str!("../predefines/slate_arm32_linux_defaults.h"),
-                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
-                ),
-                _ => {
-                    return Err(
-                        self.render_error(PPFailure::unlocated(PPErrorKind::Directive(format!(
-                            "no predefines for {flavor:?} on {}",
-                            target.triple
-                        )))),
-                    );
-                }
-            };
+        let Some(predefines) = target.profile.predefines(flavor) else {
+            return Err(
+                self.render_error(PPFailure::unlocated(PPErrorKind::Directive(format!(
+                    "no predefines for {flavor:?} on {}",
+                    target.triple
+                )))),
+            );
+        };
         let gnu_namespace = if self.standard.is_gnu() {
-            gnu_namespace
+            predefines.gnu_namespace
         } else {
             ""
         };
         for (name, source) in [
-            (name, source),
-            ("<slate-target-defaults>", defaults),
+            (predefines.name, predefines.source),
+            ("<slate-target-defaults>", predefines.defaults),
             ("<slate-gnu-namespace-predefines>", gnu_namespace),
         ]
         .into_iter()

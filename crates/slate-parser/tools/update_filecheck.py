@@ -24,6 +24,7 @@ WARNING_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-WARNING\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
 FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+([A-Za-z0-9_-]+)\s+(\S+)\s*$")
+PREFIX_ARGS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-PREFIX-ARGS\s+([A-Za-z0-9_-]+)\s+(.*)$")
 SHOW_IDS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-SHOW-IDS\s+([A-Za-z0-9_-]+)\s*$")
 QUOTED_C_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"/]+\.c)"', re.MULTILINE)
 
@@ -83,6 +84,15 @@ def configuration_show_ids_args(source: str, prefix: str) -> list[str]:
         if match and match.group(1) == prefix:
             return ["--show-ids"]
     return []
+
+
+def configuration_prefix_args(source: str, prefix: str) -> list[str]:
+    return [
+        arg
+        for line in source.splitlines()
+        if (match := PREFIX_ARGS_RE.match(line)) and match.group(1) == prefix
+        for arg in match.group(2).split()
+    ]
 
 
 def fixture_args(source: str) -> list[str]:
@@ -470,7 +480,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             defines,
             isystem,
             configuration_std_args(source, prefix),
-            configuration_show_ids_args(source, prefix),
+            configuration_show_ids_args(source, prefix) + configuration_prefix_args(source, prefix),
         )
         check_prefix = f"IR-{prefix}" if prefix in warnings else prefix
         lines = redact_code_units(output.splitlines())

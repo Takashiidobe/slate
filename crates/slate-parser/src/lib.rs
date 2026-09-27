@@ -19,4 +19,5 @@ pub mod standard_features;
 pub mod sysroot;
 pub mod target;
 pub mod target_info;
+pub mod target_registry;
 pub mod visit;
