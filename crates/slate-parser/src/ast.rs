@@ -717,6 +717,44 @@ pub struct AsmConstraint {
     pub alternatives: Vec<AsmConstraintAlternative>,
 }
 
+impl AsmConstraint {
+    pub fn write_modifier(&self) -> Option<AsmConstraintModifier> {
+        self.alternatives
+            .first()?
+            .modifiers
+            .iter()
+            .copied()
+            .find(|modifier| {
+                matches!(
+                    modifier,
+                    AsmConstraintModifier::Overwrite | AsmConstraintModifier::ReadWrite
+                )
+            })
+    }
+
+    pub fn early_clobber(&self) -> bool {
+        self.alternatives.iter().any(|alternative| {
+            alternative
+                .modifiers
+                .contains(&AsmConstraintModifier::EarlyClobber)
+        })
+    }
+
+    pub fn tied_output(&self) -> Option<usize> {
+        let mut tied = None;
+        for alternative in &self.alternatives {
+            let AsmConstraintLocation::Matching(index) = alternative.location else {
+                return None;
+            };
+            if tied.is_some_and(|tied| tied != index) {
+                return None;
+            }
+            tied = Some(index);
+        }
+        tied
+    }
+}
+
 #[derive(CustomDebug, Clone, PartialEq, Eq)]
 pub struct AsmConstraintAlternative {
     #[debug(skip_if = Vec::is_empty)]

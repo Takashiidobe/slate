@@ -76,8 +76,7 @@ main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=r" place<i32>(%9);
-// DEFAULT-NEXT:             in 1 "0" const<i32>(7);
+// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%9) from const<i32>(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i64, signature=fn(i64) -> i64>(%2, widen<i64, reason=arg>(read<i32>(%9)));
 // DEFAULT-NEXT:         call<i64, signature=fn(i32) -> i64>(%5, read<i32>(%9));

@@ -22,8 +22,7 @@ impl Lowerer {
             goto: qualifier(ast::AsmQualifier::Goto),
             dialect,
             pieces: Vec::new(),
-            outputs: Vec::new(),
-            inputs: Vec::new(),
+            operands: Vec::new(),
             clobbers: Vec::new(),
             labels: Vec::new(),
         };
@@ -32,20 +31,59 @@ impl Lowerer {
         };
         lower_pieces(&operands.pieces, dialect, &mut lowered.pieces);
         for output in &operands.outputs {
-            let place = self.place(&output.expr)?;
-            lowered.outputs.push(AsmOutput {
+            let place = self.place(&output.expr)?.place;
+            let early_clobber = output.constraint.value.early_clobber();
+            let kind = match output.constraint.value.write_modifier() {
+                Some(ast::AsmConstraintModifier::ReadWrite) => AsmOperandKind::InOut {
+                    place,
+                    input: None,
+                    early_clobber,
+                },
+                _ => AsmOperandKind::Out {
+                    place,
+                    early_clobber,
+                },
+            };
+            lowered.operands.push(AsmOperand {
                 name: output.name.as_ref().map(|name| name.value.clone()),
                 constraint: constraint(&output.constraint.value),
-                place: place.place,
+                kind,
             });
         }
+        let mut renumbered: Vec<usize> = (0..operands.outputs.len()).collect();
         for input in &operands.inputs {
-            let value = self.expr(&input.expr)?;
-            lowered.inputs.push(AsmInput {
+            let value = self.expr(&input.expr)?.value;
+            if let Some(output) = input.constraint.value.tied_output() {
+                let Some(AsmOperand {
+                    kind:
+                        AsmOperandKind::Out {
+                            place,
+                            early_clobber,
+                        },
+                    ..
+                }) = lowered.operands.get(output)
+                else {
+                    return Err(ResolveError::Unsupported("asm input tied to a non-output"));
+                };
+                lowered.operands[output].kind = AsmOperandKind::InOut {
+                    place: place.clone(),
+                    input: Some(value),
+                    early_clobber: *early_clobber,
+                };
+                renumbered.push(output);
+                continue;
+            }
+            renumbered.push(lowered.operands.len());
+            lowered.operands.push(AsmOperand {
                 name: input.name.as_ref().map(|name| name.value.clone()),
                 constraint: constraint(&input.constraint.value),
-                value: value.value,
+                kind: AsmOperandKind::In(value),
             });
+        }
+        for piece in &mut lowered.pieces {
+            if let AsmPiece::Operand { index, .. } = piece {
+                *index = renumbered[*index];
+            }
         }
         lowered.clobbers = operands
             .clobbers
@@ -113,7 +151,7 @@ fn constraint(constraint: &ast::AsmConstraint) -> AsmConstraint {
             .alternatives
             .iter()
             .map(|alternative| AsmConstraintAlternative {
-                modifiers: alternative.modifiers.iter().map(modifier).collect(),
+                modifiers: alternative.modifiers.iter().filter_map(modifier).collect(),
                 location: match &alternative.location {
                     ast::AsmConstraintLocation::HardRegister(reg) => {
                         AsmConstraintLocation::HardRegister(register(reg))
@@ -130,13 +168,13 @@ fn constraint(constraint: &ast::AsmConstraint) -> AsmConstraint {
     }
 }
 
-fn modifier(modifier: &ast::AsmConstraintModifier) -> AsmConstraintModifier {
+fn modifier(modifier: &ast::AsmConstraintModifier) -> Option<AsmConstraintModifier> {
     match modifier {
-        ast::AsmConstraintModifier::Overwrite => AsmConstraintModifier::Overwrite,
-        ast::AsmConstraintModifier::ReadWrite => AsmConstraintModifier::ReadWrite,
-        ast::AsmConstraintModifier::EarlyClobber => AsmConstraintModifier::EarlyClobber,
-        ast::AsmConstraintModifier::Commutative => AsmConstraintModifier::Commutative,
-        ast::AsmConstraintModifier::Pic => AsmConstraintModifier::Pic,
+        ast::AsmConstraintModifier::Overwrite
+        | ast::AsmConstraintModifier::ReadWrite
+        | ast::AsmConstraintModifier::EarlyClobber => None,
+        ast::AsmConstraintModifier::Commutative => Some(AsmConstraintModifier::Commutative),
+        ast::AsmConstraintModifier::Pic => Some(AsmConstraintModifier::Pic),
     }
 }
 

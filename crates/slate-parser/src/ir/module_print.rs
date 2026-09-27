@@ -1,7 +1,7 @@
 use super::{
-    ArrayExtent, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects,
-    Metadata, Module, NumericType, Parameters, RecordKind, Statement, StorageDuration,
-    SymbolAttributes, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, AsmOperandKind, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage,
+    MemoryEffects, Metadata, Module, NumericType, Parameters, RecordKind, Statement,
+    StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -223,35 +223,37 @@ impl DisplayModule<'_> {
             }
             writeln!(f, ";")?;
         }
-        for (index, output) in asm.outputs.iter().enumerate() {
-            write!(f, "{:indent$}out {index}", "")?;
-            if let Some(name) = &output.name {
+        for (index, operand) in asm.operands.iter().enumerate() {
+            write!(f, "{:indent$}{} {index}", "", operand.direction().as_str())?;
+            if let Some(name) = &operand.name {
                 write!(f, " [{name}]")?;
             }
-            writeln!(
-                f,
-                " {} place<{}{}>({});",
-                output.constraint,
-                output.place.ty,
-                output.place.access,
-                output.place.display_mode(self.compact)
-            )?;
-        }
-        for (offset, input) in asm.inputs.iter().enumerate() {
-            let index = asm.outputs.len() + offset;
-            write!(f, "{:indent$}in {index}", "")?;
-            if let Some(name) = &input.name {
-                write!(f, " [{name}]")?;
+            write!(f, " {}", operand.constraint)?;
+            let (place, input) = match &operand.kind {
+                AsmOperandKind::In(value) => (None, Some(value)),
+                AsmOperandKind::Out { place, .. } => (Some(place), None),
+                AsmOperandKind::InOut { place, input, .. } => (Some(place), input.as_ref()),
+            };
+            if let Some(place) = place {
+                write!(
+                    f,
+                    " place<{}{}>({})",
+                    place.ty,
+                    place.access,
+                    place.display_mode(self.compact)
+                )?;
             }
-            writeln!(
-                f,
-                " {} {};",
-                input.constraint,
-                input
-                    .value
-                    .display_metadata(false, self.table())
-                    .with_compact(self.compact)
-            )?;
+            if let Some(value) = input {
+                write!(
+                    f,
+                    "{} {}",
+                    if place.is_some() { " from" } else { "" },
+                    value
+                        .display_metadata(false, self.table())
+                        .with_compact(self.compact)
+                )?;
+            }
+            writeln!(f, ";")?;
         }
         if !asm.clobbers.is_empty() {
             write!(f, "{:indent$}clobbers:", "")?;

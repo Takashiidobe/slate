@@ -100,8 +100,8 @@ main() {
 // DEFAULT-NEXT:         let %4 q: ptr<i32> [storage=automatic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(1));
 // DEFAULT-NEXT:         let %5 s: @type0 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "+g" place<ptr<i32>>(%3);
-// DEFAULT-NEXT:             out 1 "+g" place<ptr<i32>>(%4);
+// DEFAULT-NEXT:             inlateout 0 "g" place<ptr<i32>>(%3);
+// DEFAULT-NEXT:             inlateout 1 "g" place<ptr<i32>>(%4);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%5), read<ptr<i32>>(%3));
@@ -128,7 +128,7 @@ main() {
 // DEFAULT-NEXT:     fn %8 @baz(%9 x: ptr<i32>, %10 y: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 r: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "+g" place<i32>(%11);
+// DEFAULT-NEXT:             inlateout 0 "g" place<i32>(%11);
 // DEFAULT-NEXT:             in 1 "g" read<ptr<i32>>(%9);
 // DEFAULT-NEXT:             in 2 "g" read<ptr<i32>>(%10);
 // DEFAULT-NEXT:             clobbers: memory;

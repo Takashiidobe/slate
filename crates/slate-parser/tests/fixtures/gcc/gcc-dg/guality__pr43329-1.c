@@ -117,8 +117,7 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=r" place<i32>(%3);
-// DEFAULT-NEXT:             in 1 "0" const<i32>(0);
+// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%3) from const<i32>(0);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);

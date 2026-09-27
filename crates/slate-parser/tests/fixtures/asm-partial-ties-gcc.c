@@ -1,22 +1,10 @@
-// SLATE-FILECHECK-DEFINES DEFAULT
-
-/* Copyright (C) 2000  Free Software Foundation  */
-/* Contributed by Alexandre Oliva <aoliva@redhat.com> */
-
-int
-foo () 
-{
-  while (1)
-    {
-      int a;
-      char b;
-      /* gcse should not merge these asm statements, since their
-	 output operands have different modes.  */
-      __asm__("":"=r" (a)); __asm__("":"=r" (b));
-      if (b)
-	return a;
-    }
+void f(int x, int y, int z, int w) {
+  asm("%0 %1 %2" : "=r,m"(x) : "0,m"(y), "m,0"(z));
+  asm("%0 %1 %2 %3" : "=r,r"(x), "=r,r"(w) : "0,1"(y), "1,0"(z));
 }
+
+// SLATE-FILECHECK-FLAVOR gcc
+// SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {
@@ -41,20 +29,20 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         while %3 ne<i32>(const<i32>(1), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %1 a: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %2 b: i8 [storage=automatic];
-// DEFAULT-NEXT:                 asm "" [dialect=att] {
-// DEFAULT-NEXT:                     lateout 0 "r" place<i32>(%1);
-// DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 asm "" [dialect=att] {
-// DEFAULT-NEXT:                     lateout 0 "r" place<i8>(%2);
-// DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 if ne<i8>(read<i8>(%2), const<i8>(0))
-// DEFAULT-NEXT:                     return read<i32>(%1);
-// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:     fn %0 @f(%1 x: i32, %2 y: i32, %3 z: i32, %4 w: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         asm "%0 %1 %2" [dialect=att] {
+// DEFAULT-NEXT:             template: %0 " " %1 " " %2;
+// DEFAULT-NEXT:             lateout 0 "r,m" place<i32>(%1);
+// DEFAULT-NEXT:             in 1 "0,m" read<i32>(%2);
+// DEFAULT-NEXT:             in 2 "m,0" read<i32>(%3);
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
+// DEFAULT-NEXT:             template: %0 " " %1 " " %2 " " %3;
+// DEFAULT-NEXT:             lateout 0 "r,r" place<i32>(%1);
+// DEFAULT-NEXT:             lateout 1 "r,r" place<i32>(%4);
+// DEFAULT-NEXT:             in 2 "0,1" read<i32>(%2);
+// DEFAULT-NEXT:             in 3 "1,0" read<i32>(%3);
+// DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

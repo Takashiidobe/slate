@@ -71,7 +71,7 @@ main() {
 // DEFAULT-NEXT:     fn %5 @f(%6 f: ptr<@type2>, %7 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 p: ptr<@type1> [storage=automatic] = array_decay<ptr<@type1>, length=None>(field1(deref(read<ptr<@type2>>(%6))));
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "+r" place<ptr<@type2>>(%6);
+// DEFAULT-NEXT:             inlateout 0 "r" place<ptr<@type2>>(%6);
 // DEFAULT-NEXT:             in 1 "r" read<ptr<@type1>>(%8);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type1>>(%8))), widen<i64, reason=assign>(const<i32>(0)));

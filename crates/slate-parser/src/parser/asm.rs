@@ -246,6 +246,18 @@ impl Parser {
         let dialects = matches!(self.target.family, TargetFamily::X86 | TargetFamily::X86_64);
         let pieces = analyze_template(&template.value, &names, operand_count, dialects)
             .map_err(|error| self.error_at_tokens(tokens, template_pos, error))?;
+        let constraint_error = |operand: &RawOperand, message: String| {
+            self.error_at_tokens(tokens, operand.constraint_pos, message)
+        };
+        let invalid_constraint = |operand: &RawOperand, direction: &str| {
+            constraint_error(
+                operand,
+                format!(
+                    "invalid {direction} constraint '{}' in asm",
+                    operand.constraint.value
+                ),
+            )
+        };
         let resolve = |operand: &RawOperand, direction: &str| {
             let constraint = decode_constraint(&operand.constraint.value, &output_names);
             if self.flavor() == CompilerFlavor::Clang
@@ -253,14 +265,7 @@ impl Parser {
                     matches!(alternative.location, AsmConstraintLocation::HardRegister(_))
                 })
             {
-                return Err(self.error_at_tokens(
-                    tokens,
-                    operand.constraint_pos,
-                    format!(
-                        "invalid {direction} constraint '{}' in asm",
-                        operand.constraint.value
-                    ),
-                ));
+                return Err(invalid_constraint(operand, direction));
             }
             Ok(AsmOperand {
                 name: operand.name.clone(),
@@ -272,21 +277,75 @@ impl Parser {
                 expr: operand.expr.clone(),
             })
         };
-        let outputs = outputs
-            .iter()
-            .map(|operand| resolve(operand, "output"))
-            .collect::<Result<_, _>>()?;
-        let inputs = inputs
-            .iter()
-            .map(|operand| resolve(operand, "input"))
-            .collect::<Result<_, _>>()?;
+        let mut resolved_outputs = Vec::with_capacity(outputs.len());
+        for raw in &outputs {
+            let output = resolve(raw, "output")?;
+            if output.constraint.value.write_modifier().is_none() {
+                return Err(invalid_constraint(raw, "output"));
+            }
+            resolved_outputs.push(output);
+        }
+        let mut resolved_inputs = Vec::with_capacity(inputs.len());
+        let mut tied = vec![false; resolved_outputs.len()];
+        for raw in &inputs {
+            let input = resolve(raw, "input")?;
+            let constraint = &input.constraint.value;
+            let matched: Vec<usize> = constraint
+                .alternatives
+                .iter()
+                .filter_map(|alternative| match alternative.location {
+                    AsmConstraintLocation::Matching(index) => Some(index),
+                    _ => None,
+                })
+                .collect();
+            let invalid_match = matched.iter().any(|&index| {
+                resolved_outputs.get(index).is_none_or(|output| {
+                    output.constraint.value.write_modifier()
+                        == Some(AsmConstraintModifier::ReadWrite)
+                })
+            });
+            let direction_modifier = constraint.alternatives.iter().any(|alternative| {
+                alternative.modifiers.iter().any(|modifier| {
+                    matches!(
+                        modifier,
+                        AsmConstraintModifier::Overwrite
+                            | AsmConstraintModifier::ReadWrite
+                            | AsmConstraintModifier::EarlyClobber
+                    )
+                })
+            });
+            if invalid_match || direction_modifier {
+                return Err(invalid_constraint(raw, "input"));
+            }
+            let clang = self.flavor() == CompilerFlavor::Clang;
+            if clang && matched.windows(2).any(|pair| pair[0] != pair[1]) {
+                return Err(invalid_constraint(raw, "input"));
+            }
+            let tie = if clang {
+                matched.first().copied()
+            } else {
+                constraint.tied_output()
+            };
+            if let Some(output) = tie {
+                if tied[output] {
+                    return Err(constraint_error(
+                        raw,
+                        format!(
+                            "more than one input constraint matches the same output '{output}'"
+                        ),
+                    ));
+                }
+                tied[output] = true;
+            }
+            resolved_inputs.push(input);
+        }
         Ok(Some(GnuAsm {
             qualifiers,
             template,
             operands: Some(AsmOperands {
                 pieces,
-                outputs,
-                inputs,
+                outputs: resolved_outputs,
+                inputs: resolved_inputs,
                 clobbers,
                 labels,
             }),

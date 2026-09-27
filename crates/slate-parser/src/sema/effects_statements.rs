@@ -182,17 +182,46 @@ impl Hoister {
                     body: self.statements(body)?,
                 },
                 Statement::Asm(mut asm) => {
-                    for output in std::mem::take(&mut asm.outputs) {
-                        asm.outputs.push(AsmOutput {
-                            place: self.place(output.place, &mut out)?,
-                            ..output
-                        });
+                    let mut placed = Vec::with_capacity(asm.operands.len());
+                    for operand in std::mem::take(&mut asm.operands) {
+                        let kind = match operand.kind {
+                            AsmOperandKind::Out {
+                                place,
+                                early_clobber,
+                            } => AsmOperandKind::Out {
+                                place: self.place(place, &mut out)?,
+                                early_clobber,
+                            },
+                            AsmOperandKind::InOut {
+                                place,
+                                input,
+                                early_clobber,
+                            } => AsmOperandKind::InOut {
+                                place: self.place(place, &mut out)?,
+                                input,
+                                early_clobber,
+                            },
+                            kind @ AsmOperandKind::In(_) => kind,
+                        };
+                        placed.push(AsmOperand { kind, ..operand });
                     }
-                    for input in std::mem::take(&mut asm.inputs) {
-                        asm.inputs.push(AsmInput {
-                            value: self.value(input.value, &mut out)?,
-                            ..input
-                        });
+                    for operand in placed {
+                        let kind = match operand.kind {
+                            AsmOperandKind::In(value) => {
+                                AsmOperandKind::In(self.value(value, &mut out)?)
+                            }
+                            AsmOperandKind::InOut {
+                                place,
+                                input: Some(value),
+                                early_clobber,
+                            } => AsmOperandKind::InOut {
+                                place,
+                                input: Some(self.value(value, &mut out)?),
+                                early_clobber,
+                            },
+                            kind => kind,
+                        };
+                        asm.operands.push(AsmOperand { kind, ..operand });
                     }
                     Statement::Asm(asm)
                 }

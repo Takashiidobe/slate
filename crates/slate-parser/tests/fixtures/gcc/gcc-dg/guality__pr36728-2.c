@@ -94,15 +94,15 @@ main() {
 // DEFAULT-NEXT:         write<i32>(%11, const<i32>(2));
 // DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             out 0 "=m" place<i32>(%11);
-// DEFAULT-NEXT:             out 1 "=m" place<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "m" place<i32>(%11);
+// DEFAULT-NEXT:             lateout 1 "m" place<i32>(%1);
 // DEFAULT-NEXT:             in 2 "m" read<i32>(%11);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%10), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(25)));
 // DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             out 0 "=m" place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%10), const<i32>(0))));
-// DEFAULT-NEXT:             out 1 "=m" place<i32>(%0);
+// DEFAULT-NEXT:             lateout 0 "m" place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%10), const<i32>(0))));
+// DEFAULT-NEXT:             lateout 1 "m" place<i32>(%0);
 // DEFAULT-NEXT:             in 2 "m" read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%10), const<i32>(0))));
 // DEFAULT-NEXT:             in 3 "m" read<i32>(%1);
 // DEFAULT-NEXT:         }
@@ -111,8 +111,7 @@ main() {
 // DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %13 l: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=r" place<i32>(%13);
-// DEFAULT-NEXT:             in 1 "0" read<i32>(%13);
+// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%13) from read<i32>(%13);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32>(%0, call<i32, signature=fn(i32, i32, i32, i32, i32, i32, i32) -> i32>(%2, add<i32, overflow=ub>(read<i32>(%13), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(3)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(4)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(5)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(30))));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, i32, i32, i32, i32, i32) -> i32>(%2, add<i32, overflow=ub>(read<i32>(%13), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(3)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(4)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(5)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%13), const<i32>(30)));

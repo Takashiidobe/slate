@@ -61,8 +61,7 @@ int foo (B *x)
 // DEFAULT-NEXT:     fn %4 @bar(%5 x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 r: u64 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=r" place<u64>(%6);
-// DEFAULT-NEXT:             in 1 "0" read<u32>(%5);
+// DEFAULT-NEXT:             inlateout 0 "r" place<u64>(%6) from read<u32>(%5);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%6), const<i32>(31)));
 // DEFAULT-NEXT:     }

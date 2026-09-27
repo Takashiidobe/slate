@@ -87,7 +87,7 @@ main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 q: i32 [storage=automatic] = const<i32>(6);
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "+r" place<i32>(%9);
+// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%9);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32) -> void>(%0, read<i32>(%9), add<i32, overflow=ub>(read<i32>(%9), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%9), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%9), const<i32>(3)));
 // DEFAULT-NEXT:         return const<i32>(0);

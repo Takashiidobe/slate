@@ -237,12 +237,16 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                ( { metadata } ";"
                | "{" { metadata }
                    [ "template:" { asm_piece } ";" ]
-                   { "out" integer [ "[" c_identifier "]" ] string
-                       "place<" type [ ", volatile" ] ">(" place ")" ";" }
-                   { "in" integer [ "[" c_identifier "]" ] string value ";" }
+                   { asm_operand }
                    [ "clobbers:" clobber { "," clobber } ";" ]
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
+asm_operand = ( "in" integer [ "[" c_identifier "]" ] string value
+              | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
+                  asm_place
+              | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
+                  asm_place [ " from" value ] ) ";" ;
+asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_piece  = string | "%" [ letter ] integer | "%l" integer
            | "%%" | "%=" ;
 clobber    = "memory" | "cc" | "unwind" | register ;
@@ -272,17 +276,19 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   is basic asm, whose template is emitted verbatim. The quoted string after
   the qualifiers is always the raw source template; `template:` is the same
   text with `%`-directives resolved. In a resolved piece, `%N` is an index
-  into outputs-then-inputs, matching the `out N` / `in N` lines, and `%lN`
-  is an index into the `labels:` list — not the operand number the source
-  wrote. An operand piece may carry a one-letter target modifier (`%a1`).
+  into the operand lines, and `%lN` is an index into the `labels:` list —
+  neither is necessarily the number the source wrote, because a tied input
+  is folded into its output and later operands renumber. An operand piece may carry a one-letter target modifier (`%a1`).
 - `[dialect=...]` is the assembler syntax the template is written in; it is
   present on x86 and absent on targets without a dialect choice. `template:`
   holds only the selected side of each `{att|intel}` alternation, so it
   never contains one.
-- An operand's quoted constraint is the GNU spelling reconstructed from the
-  parsed constraint: `,`-separated alternatives, each with its modifier
-  characters (`=` `+` `&` `%` `-`) and then a hard register `{reg}`, a
-  matching operand number, or constraint letters.
+- An operand line starts with its Rust-facing direction. `=` and `+` and
+  `&` are folded into it and no longer appear in the quoted constraint,
+  which keeps `,`-separated alternatives, each with `%` or `-` and then a
+  hard register `{reg}`, a matching operand number, or constraint letters.
+- `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
+  it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus
   `as <canonical>` when the target's register table recognized it. The
   register's width is not carried: a clobber names the whole register, and

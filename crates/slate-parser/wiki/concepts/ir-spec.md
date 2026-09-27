@@ -834,14 +834,35 @@ labels as label `BindingId`s. Instructions inside the template are still not
 parsed — that is deliberately the assembler's job, and Slate treats the
 template as opaque text with holes.
 
-- Operands are numbered outputs first, then inputs, the same numbering the
-  template's `%N` uses. A resolved `Label(n)` piece indexes the statement's
-  label list, not the operand number the source wrote, so `%l1` and
-  `%l[done]` both print as `%l0` when `done` is the first label.
-- An output is a `Place` because an asm output must be an lvalue; sema
-  rejects non-lvalue outputs before lowering. A `+` (read-write) output
-  stays a single output carrying the `ReadWrite` modifier; it is not split
-  into a tied output/input pair.
+- Operands are one list, `InlineAsm::operands`, in GCC order (outputs
+  then inputs), so an `AsmPiece::Operand { index }` is a direct subscript.
+  A resolved `Label(n)` piece indexes the statement's label list, not the
+  operand number the source wrote, so `%l1` and `%l[done]` both print as
+  `%l0` when `done` is the first label.
+- `AsmOperandKind` is `In(Value)`, `Out { place }`, or
+  `InOut { place, input }`; an output is a `Place` because an asm output
+  must be an lvalue. `AsmOperand::direction()` maps to Rust's operand
+  forms, and the mapping is inverted from the naive reading: GCC's plain
+  `=` lets the allocator reuse an input's register, which is Rust's late
+  form. `"=r"` is `lateout`, `"=&r"` is `out`, `"+r"` is `inlateout`,
+  `"+&r"` is `inout`. The `=`/`+` comes from the first alternative (as
+  clang reads it); `&` in any alternative makes the operand early-clobber,
+  which is always safe to over-claim.
+- An input tied to output `n` in every alternative (`"0"`, `"0,0"`,
+  `"[out]"`) is folded into that output as `InOut { input: Some(value) }`
+  and removed, and template pieces are renumbered. A `+` output is
+  `InOut { input: None }`: the place itself is read. A partial tie
+  (`"0,m"`) stays a separate `In` operand until an alternative is chosen
+  (`slate-parser-25m.15`).
+- The parser rejects what both compilers reject and the fold relies on: an
+  output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
+  or to a `+` output, and two inputs tied to one output. Under clang an
+  input also may not match two different outputs, and any-alternative
+  matches count as ties; gcc accepts both, so only full ties count there.
+- Effects hoist places first, then input values, in operand order. A tied
+  input's effects therefore hoist with its output's slot, ahead of untied
+  inputs written before it; clang evaluates inputs in source order. Only
+  observable when two inputs both have side effects.
 - Constraints keep the parsed alternative list (modifiers, hard register,
   matching operand number, or letters). The printer reconstructs the GNU
   spelling from it, so the printed text round-trips the parse rather than

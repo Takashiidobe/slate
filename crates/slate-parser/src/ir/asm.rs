@@ -9,8 +9,7 @@ pub struct InlineAsm {
     pub goto: bool,
     pub dialect: Option<AsmDialect>,
     pub pieces: Vec<AsmPiece>,
-    pub outputs: Vec<AsmOutput>,
-    pub inputs: Vec<AsmInput>,
+    pub operands: Vec<AsmOperand>,
     pub clobbers: Vec<AsmClobber>,
     pub labels: Vec<BindingId>,
 }
@@ -43,17 +42,65 @@ impl AsmDialect {
 }
 
 #[derive(Debug, Clone)]
-pub struct AsmOutput {
+pub struct AsmOperand {
     pub name: Option<String>,
     pub constraint: AsmConstraint,
-    pub place: Place,
+    pub kind: AsmOperandKind,
 }
 
 #[derive(Debug, Clone)]
-pub struct AsmInput {
-    pub name: Option<String>,
-    pub constraint: AsmConstraint,
-    pub value: Value,
+pub enum AsmOperandKind {
+    In(Value),
+    Out {
+        place: Place,
+        early_clobber: bool,
+    },
+    // `input` is a tied `"0"` operand's value; without one the place itself is read.
+    InOut {
+        place: Place,
+        input: Option<Value>,
+        early_clobber: bool,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmDirection {
+    In,
+    Out,
+    LateOut,
+    InOut,
+    InLateOut,
+}
+
+impl AsmOperand {
+    // without `&` the allocator may reuse an input's register, which is Rust's late form.
+    pub fn direction(&self) -> AsmDirection {
+        match self.kind {
+            AsmOperandKind::In(_) => AsmDirection::In,
+            AsmOperandKind::Out {
+                early_clobber: true,
+                ..
+            } => AsmDirection::Out,
+            AsmOperandKind::Out { .. } => AsmDirection::LateOut,
+            AsmOperandKind::InOut {
+                early_clobber: true,
+                ..
+            } => AsmDirection::InOut,
+            AsmOperandKind::InOut { .. } => AsmDirection::InLateOut,
+        }
+    }
+}
+
+impl AsmDirection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::In => "in",
+            Self::Out => "out",
+            Self::LateOut => "lateout",
+            Self::InOut => "inout",
+            Self::InLateOut => "inlateout",
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -69,9 +116,6 @@ pub struct AsmConstraintAlternative {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AsmConstraintModifier {
-    Overwrite,
-    ReadWrite,
-    EarlyClobber,
     Commutative,
     Pic,
 }
@@ -100,8 +144,7 @@ pub struct AsmRegister {
 impl InlineAsm {
     pub fn has_sections(&self) -> bool {
         !self.pieces.is_empty()
-            || !self.outputs.is_empty()
-            || !self.inputs.is_empty()
+            || !self.operands.is_empty()
             || !self.clobbers.is_empty()
             || !self.labels.is_empty()
     }
@@ -129,9 +172,6 @@ impl fmt::Display for AsmPiece {
 impl AsmConstraintModifier {
     fn spelling(self) -> char {
         match self {
-            Self::Overwrite => '=',
-            Self::ReadWrite => '+',
-            Self::EarlyClobber => '&',
             Self::Commutative => '%',
             Self::Pic => '-',
         }

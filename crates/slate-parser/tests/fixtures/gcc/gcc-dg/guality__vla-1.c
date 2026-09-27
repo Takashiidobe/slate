@@ -82,8 +82,7 @@ main() {
 // DEFAULT-NEXT:         let %9 j: volatile i32 [storage=automatic];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic] = const<i32>(5);
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=r" place<i32>(%10);
-// DEFAULT-NEXT:             in 1 "0" read<i32>(%10);
+// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%10) from read<i32>(%10);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32, volatile>(%9, call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%10)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%10));

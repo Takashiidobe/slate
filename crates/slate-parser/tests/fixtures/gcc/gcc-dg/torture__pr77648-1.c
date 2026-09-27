@@ -58,7 +58,7 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @foo(%2 s: ptr<@type0>) -> ptr<ptr<i32>> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 tem: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             out 0 "=g" place<i32>(%3);
+// DEFAULT-NEXT:             lateout 0 "g" place<i32>(%3);
 // DEFAULT-NEXT:             in 1 "g" read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return addr_of<ptr<ptr<i32>>>(field1(deref(read<ptr<@type0>>(%2))));
