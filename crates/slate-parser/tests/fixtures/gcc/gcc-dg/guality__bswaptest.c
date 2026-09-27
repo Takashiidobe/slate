@@ -59,7 +59,7 @@ main() {
 // DEFAULT-NEXT:         let %3 f: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%11, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%2))));
 // DEFAULT-NEXT:         let %4 g: i64 [storage=automatic] = read<i64>(%3);
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i64>(%3);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i64>(%3);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32, volatile>(%0);
 // DEFAULT-NEXT:         let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
@@ -71,7 +71,7 @@ main() {
 // DEFAULT-NEXT:         let %7 f: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%13, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%6))));
 // DEFAULT-NEXT:         let %8 g: i32 [storage=automatic] = read<i32>(%7);
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%7);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32, volatile>(%0);
 // DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));

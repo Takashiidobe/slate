@@ -869,6 +869,20 @@ template as opaque text with holes.
   matching operand number, or letters). The printer reconstructs the GNU
   spelling from it, so the printed text round-trips the parse rather than
   echoing the source.
+- Letters resolve per target to `AsmOperandClass`es (register class,
+  explicit register, memory, immediate), keeping the raw letters beside
+  them. `g` is reg, mem and imm. Per-target facts checked against the
+  compilers: `q` is `reg_abcd` on i386 but any register on x86-64, and `R`
+  is `reg` on i386 but the legacy eight on x86-64 (unresolved there).
+  x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars) and Arm `U` are
+  multi-letter constraints. `?`, `!`, `*`, `^` and `$` are preference
+  hints and are skipped, and `#` ends the alternative. Anything else,
+  including constrained forms Rust has no class for (`l`, `X`, `s`, `p`,
+  AArch64 `y`), is `Unresolved` with its letters rather than a guess.
+- `x` is `xmm_reg` whatever the operand width; picking `ymm_reg`/`zmm_reg`
+  for wider vectors is the width work of `slate-parser-25m.14`. `v` is
+  `zmm_reg` because only that Rust class reaches xmm16-31.
+  Fixtures: `sema/**/ir_asm_classes.c`.
 - Registers carry the source spelling and, when the target register table
   recognized them, the canonical name. Width is dropped: a clobber clobbers
   the whole register, and an operand's width is its IR type.

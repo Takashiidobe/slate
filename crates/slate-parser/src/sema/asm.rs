@@ -11,7 +11,8 @@ impl Lowerer {
                 .iter()
                 .any(|qualifier| qualifier.value == wanted)
         };
-        let dialect = match self.context.target.family {
+        let family = self.context.target.family;
+        let dialect = match family {
             TargetFamily::X86 | TargetFamily::X86_64 => Some(AsmDialect::Att),
             TargetFamily::AArch64 | TargetFamily::Arm32 => None,
         };
@@ -46,7 +47,7 @@ impl Lowerer {
             };
             lowered.operands.push(AsmOperand {
                 name: output.name.as_ref().map(|name| name.value.clone()),
-                constraint: constraint(&output.constraint.value),
+                constraint: constraint(&output.constraint.value, family),
                 kind,
             });
         }
@@ -76,7 +77,7 @@ impl Lowerer {
             renumbered.push(lowered.operands.len());
             lowered.operands.push(AsmOperand {
                 name: input.name.as_ref().map(|name| name.value.clone()),
-                constraint: constraint(&input.constraint.value),
+                constraint: constraint(&input.constraint.value, family),
                 kind: AsmOperandKind::In(value),
             });
         }
@@ -145,7 +146,7 @@ fn lower_pieces(
     }
 }
 
-fn constraint(constraint: &ast::AsmConstraint) -> AsmConstraint {
+fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConstraint {
     AsmConstraint {
         alternatives: constraint
             .alternatives
@@ -160,12 +161,90 @@ fn constraint(constraint: &ast::AsmConstraint) -> AsmConstraint {
                         AsmConstraintLocation::Matching(*index)
                     }
                     ast::AsmConstraintLocation::Letters(letters) => {
-                        AsmConstraintLocation::Letters(letters.clone())
+                        AsmConstraintLocation::Letters {
+                            letters: letters.clone(),
+                            classes: classes(letters, family),
+                        }
                     }
                 },
             })
             .collect(),
     }
+}
+
+fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
+    let x86 = matches!(family, TargetFamily::X86 | TargetFamily::X86_64);
+    let mut classes = Vec::new();
+    let mut rest = letters;
+    while let Some(first) = rest.chars().next() {
+        let length = match first {
+            'Y' | 'W' | 'j' | 'B' if x86 => 2,
+            'U' if family == TargetFamily::AArch64 => 3,
+            'U' if family == TargetFamily::Arm32 => 2,
+            _ => 1,
+        };
+        let end = rest
+            .char_indices()
+            .nth(length)
+            .map_or(rest.len(), |(index, _)| index);
+        let (letter, tail) = rest.split_at(end);
+        rest = tail;
+        let class = match (family, letter) {
+            (_, "#") => break,
+            (_, "?" | "!" | "*" | "^" | "$") => continue,
+            (_, "r") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (_, "m" | "o") => AsmOperandClass::Memory,
+            (_, "i" | "n") => AsmOperandClass::Immediate,
+            (_, "g") => {
+                classes.extend([
+                    AsmOperandClass::Register(AsmRegisterClass::Reg),
+                    AsmOperandClass::Memory,
+                    AsmOperandClass::Immediate,
+                ]);
+                continue;
+            }
+            (TargetFamily::X86, "q") => AsmOperandClass::Register(AsmRegisterClass::RegAbcd),
+            (TargetFamily::X86, "R") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (TargetFamily::X86_64, "q") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (_, "Q") if x86 => AsmOperandClass::Register(AsmRegisterClass::RegAbcd),
+            (_, "a") if x86 => explicit("ax"),
+            (_, "b") if x86 => explicit("bx"),
+            (_, "c") if x86 => explicit("cx"),
+            (_, "d") if x86 => explicit("dx"),
+            (_, "S") if x86 => explicit("si"),
+            (_, "D") if x86 => explicit("di"),
+            (_, "t") if x86 => explicit("st"),
+            (_, "u") if x86 => explicit("st(1)"),
+            (_, "Yz") if x86 => explicit("xmm0"),
+            (_, "x") if x86 => AsmOperandClass::Register(AsmRegisterClass::XmmReg),
+            (_, "v") if x86 => AsmOperandClass::Register(AsmRegisterClass::ZmmReg),
+            (_, "k") if x86 => AsmOperandClass::Register(AsmRegisterClass::KReg),
+            (_, "f") if x86 => AsmOperandClass::Register(AsmRegisterClass::X87Reg),
+            (_, "y") if x86 => AsmOperandClass::Register(AsmRegisterClass::MmxReg),
+            (_, "I" | "J" | "K" | "L" | "M" | "N" | "O" | "e" | "Z") if x86 => {
+                AsmOperandClass::Immediate
+            }
+            (TargetFamily::AArch64, "w") => AsmOperandClass::Register(AsmRegisterClass::VReg),
+            (TargetFamily::AArch64, "x") => AsmOperandClass::Register(AsmRegisterClass::VRegLow16),
+            (TargetFamily::AArch64, "I" | "J" | "K" | "L" | "M" | "N" | "Z") => {
+                AsmOperandClass::Immediate
+            }
+            (TargetFamily::Arm32, "t") => AsmOperandClass::Register(AsmRegisterClass::SReg),
+            (TargetFamily::Arm32, "w") => AsmOperandClass::Register(AsmRegisterClass::DReg),
+            (TargetFamily::Arm32, "I" | "J" | "K" | "L" | "M") => AsmOperandClass::Immediate,
+            (TargetFamily::AArch64 | TargetFamily::Arm32, "Q") => AsmOperandClass::Memory,
+            _ => AsmOperandClass::Unresolved(letter.to_string()),
+        };
+        classes.push(class);
+    }
+    classes
+}
+
+fn explicit(name: &'static str) -> AsmOperandClass {
+    AsmOperandClass::Explicit(AsmRegister {
+        spelling: name.to_string(),
+        canonical: Some(name),
+    })
 }
 
 fn modifier(modifier: &ast::AsmConstraintModifier) -> Option<AsmConstraintModifier> {

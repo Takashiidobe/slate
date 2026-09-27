@@ -1,8 +1,11 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
 // SLATE-FILECHECK-STD IR c23
-void load(int *p) {
-    asm volatile("ld1 {v0.16b}, [%0] {a|b}" : : "r"(p));
+typedef float v4f __attribute__((vector_size(16)));
+
+void classes(long x, double d, v4f v) {
+    asm("// %0 %1 %2" : "=r"(x), "=w"(d), "=x"(v));
+    asm("// %0 %1 %2 %3" : : "I"(1), "Q"(x), "rZ"(0L), "y"(v));
 }
 
 // SLATE-FILECHECK-BEGIN IR
@@ -27,10 +30,20 @@ void load(int *p) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @load(%1 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm volatile "ld1 {v0.16b}, [%0] {a|b}" {
-// IR-NEXT:             template: "ld1 {v0.16b}, [" %0 "] {a|b}";
-// IR-NEXT:             in 0 "r" [reg] read<ptr<i32>>(%1);
+// IR-NEXT:     type @type0 v4f = vector<f32, 4>;
+// IR-NEXT:     fn %1 @classes(%2 x: i64, %3 d: f64, %4 v: vector<f32, 4>) -> void [linkage=external] [abi=aapcs64(scalar, scalar, direct) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         asm "// %0 %1 %2" {
+// IR-NEXT:             template: "// " %0 " " %1 " " %2;
+// IR-NEXT:             lateout 0 "r" [reg] place<i64>(%2);
+// IR-NEXT:             lateout 1 "w" [vreg] place<f64>(%3);
+// IR-NEXT:             lateout 2 "x" [vreg_low16] place<vector<f32, 4>>(%4);
+// IR-NEXT:         }
+// IR-NEXT:         asm "// %0 %1 %2 %3" {
+// IR-NEXT:             template: "// " %0 " " %1 " " %2 " " %3;
+// IR-NEXT:             in 0 "I" [imm] const<i32>(1);
+// IR-NEXT:             in 1 "Q" [mem] read<i64>(%2);
+// IR-NEXT:             in 2 "rZ" [reg | imm] const<i64>(0);
+// IR-NEXT:             in 3 "y" [unresolved("y")] read<vector<f32, 4>>(%4);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

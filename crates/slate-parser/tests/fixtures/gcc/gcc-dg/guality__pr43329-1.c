@@ -87,12 +87,12 @@ main(void) {
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "g" read<i32>(%2);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @baz(%5 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" read<i32>(%5);
+// DEFAULT-NEXT:             in 0 "r" [reg] read<i32>(%5);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -117,7 +117,7 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%3) from const<i32>(0);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%3) from const<i32>(0);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);

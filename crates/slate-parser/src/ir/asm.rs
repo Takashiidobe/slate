@@ -124,7 +124,52 @@ pub enum AsmConstraintModifier {
 pub enum AsmConstraintLocation {
     HardRegister(AsmRegister),
     Matching(usize),
-    Letters(String),
+    Letters {
+        letters: String,
+        classes: Vec<AsmOperandClass>,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub enum AsmOperandClass {
+    Register(AsmRegisterClass),
+    Explicit(AsmRegister),
+    Memory,
+    Immediate,
+    Unresolved(String),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmRegisterClass {
+    Reg,
+    RegAbcd,
+    XmmReg,
+    ZmmReg,
+    KReg,
+    X87Reg,
+    MmxReg,
+    VReg,
+    VRegLow16,
+    SReg,
+    DReg,
+}
+
+impl AsmRegisterClass {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Reg => "reg",
+            Self::RegAbcd => "reg_abcd",
+            Self::XmmReg => "xmm_reg",
+            Self::ZmmReg => "zmm_reg",
+            Self::KReg => "kreg",
+            Self::X87Reg => "x87_reg",
+            Self::MmxReg => "mmx_reg",
+            Self::VReg => "vreg",
+            Self::VRegLow16 => "vreg_low16",
+            Self::SReg => "sreg",
+            Self::DReg => "dreg",
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -197,10 +242,46 @@ impl fmt::Display for AsmConstraint {
                 AsmConstraintLocation::Matching(index) => {
                     spelling.push_str(&index.to_string());
                 }
-                AsmConstraintLocation::Letters(letters) => spelling.push_str(letters),
+                AsmConstraintLocation::Letters { letters, .. } => spelling.push_str(letters),
             }
         }
         write!(f, "{spelling:?}")
+    }
+}
+
+impl fmt::Display for AsmConstraintAlternative {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.location {
+            AsmConstraintLocation::HardRegister(register) => {
+                write!(
+                    f,
+                    "{{{}}}",
+                    register.canonical.unwrap_or(&register.spelling)
+                )
+            }
+            AsmConstraintLocation::Matching(index) => write!(f, "{index}"),
+            AsmConstraintLocation::Letters { classes, .. } => {
+                for (index, class) in classes.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(" | ")?;
+                    }
+                    write!(f, "{class}")?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl fmt::Display for AsmOperandClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Register(class) => f.write_str(class.as_str()),
+            Self::Explicit(register) => write!(f, "{{{}}}", register.spelling),
+            Self::Memory => f.write_str("mem"),
+            Self::Immediate => f.write_str("imm"),
+            Self::Unresolved(letters) => write!(f, "unresolved({letters:?})"),
+        }
     }
 }
 

@@ -30,11 +30,11 @@ asm("# %0" : : "-i"(42));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     asm "%0" [dialect=att] {
 // DEFAULT-NEXT:         template: %0;
-// DEFAULT-NEXT:         in 0 "r" read<i32>(%0);
+// DEFAULT-NEXT:         in 0 "r" [reg] read<i32>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     asm "# %0" [dialect=att] {
 // DEFAULT-NEXT:         template: "# " %0;
-// DEFAULT-NEXT:         in 0 "-i" const<i32>(42);
+// DEFAULT-NEXT:         in 0 "-i" [imm] const<i32>(42);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }

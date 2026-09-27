@@ -107,8 +107,8 @@ int main() {
 // DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @bar(%10 x: ptr<const i8>, %11 y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "g" place<ptr<const i8>>(%10);
-// DEFAULT-NEXT:             inlateout 1 "g" place<i32>(%11);
+// DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm] place<ptr<const i8>>(%10);
+// DEFAULT-NEXT:             inlateout 1 "g" [reg | mem | imm] place<i32>(%11);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%11), const<i32>(2))

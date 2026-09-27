@@ -241,11 +241,17 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "clobbers:" clobber { "," clobber } ";" ]
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
-asm_operand = ( "in" integer [ "[" c_identifier "]" ] string value
+asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes value
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_place
+                  asm_classes asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_place [ " from" value ] ) ";" ;
+                  asm_classes asm_place [ " from" value ] ) ";" ;
+asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
+asm_alt    = "{" identifier "}" | integer
+           | [ asm_class { " | " asm_class } ] ;
+asm_class  = "reg" | "reg_abcd" | "xmm_reg" | "zmm_reg" | "kreg" | "x87_reg"
+           | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
+           | "mem" | "imm" | "{" identifier "}" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_piece  = string | "%" [ letter ] integer | "%l" integer
            | "%%" | "%=" ;
@@ -287,6 +293,11 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   `&` are folded into it and no longer appear in the quoted constraint,
   which keeps `,`-separated alternatives, each with `%` or `-` and then a
   hard register `{reg}`, a matching operand number, or constraint letters.
+- The bracket after the constraint resolves it, one entry per alternative:
+  a hard register or explicit-register letter (`a` is `{ax}`) as its
+  canonical name, a matching operand number, or the letters' classes joined
+  by `|`. Class names are Rust's; a letter with no Rust class prints as
+  `unresolved("l")`.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus

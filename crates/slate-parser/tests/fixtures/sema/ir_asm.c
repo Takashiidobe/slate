@@ -68,9 +68,9 @@ void directions(int a, int b, int c, int d, int e) {
 // IR-NEXT:     fn %1 @extended(%2 x: i32, %3 y: i32, %4 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
 // IR-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
-// IR-NEXT:             out 0 [out] "r,m" place<i32>(%2);
-// IR-NEXT:             in 1 [in] "%rm,r" read<i32>(%3);
-// IR-NEXT:             in 2 "0,m" read<i32>(deref(read<ptr<i32>>(%4)));
+// IR-NEXT:             out 0 [out] "r,m" [reg, mem] place<i32>(%2);
+// IR-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] read<i32>(%3);
+// IR-NEXT:             in 2 "0,m" [0, mem] read<i32>(deref(read<ptr<i32>>(%4)));
 // IR-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // IR-NEXT:         }
 // IR-NEXT:     }
@@ -83,14 +83,14 @@ void directions(int a, int b, int c, int d, int e) {
 // IR-NEXT:         write<i32>(%7, read<i32>(%23));
 // IR-NEXT:         asm "op %0, %1" [dialect=att] {
 // IR-NEXT:             template: "op " %0 ", " %1;
-// IR-NEXT:             lateout 0 "r" place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%6), read<i32>(%20))));
-// IR-NEXT:             in 1 "r" read<i32>(%22);
+// IR-NEXT:             lateout 0 "r" [reg] place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%6), read<i32>(%20))));
+// IR-NEXT:             in 1 "r" [reg] read<i32>(%22);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %8 @jumps(%11 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm goto "jmp %l[done] %l1 %2" [dialect=att] {
 // IR-NEXT:             template: "jmp " %l0 " " %l0 " " %l1;
-// IR-NEXT:             in 0 "r" read<i32>(%11);
+// IR-NEXT:             in 0 "r" [reg] read<i32>(%11);
 // IR-NEXT:             labels: %9, %10;
 // IR-NEXT:         }
 // IR-NEXT:         write<i32>(%11, const<i32>(1));
@@ -102,36 +102,36 @@ void directions(int a, int b, int c, int d, int e) {
 // IR-NEXT:     fn %12 @dialects(%13 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "mov{l|} {%0, %%eax|eax, %0}" [dialect=att] {
 // IR-NEXT:             template: "movl " %0 ", " %% "eax";
-// IR-NEXT:             in 0 "r" read<i32>(%13);
+// IR-NEXT:             in 0 "r" [reg] read<i32>(%13);
 // IR-NEXT:         }
 // IR-NEXT:         asm "a{b|c|d} {e} f|g} {h|i" [dialect=att] {
 // IR-NEXT:             template: "ab e f|g} h";
-// IR-NEXT:             in 0 "r" read<i32>(%13);
+// IR-NEXT:             in 0 "r" [reg] read<i32>(%13);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %14 @directions(%15 a: i32, %16 b: i32, %17 c: i32, %18 d: i32, %19 e: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             lateout 0 "r" place<i32>(%15);
-// IR-NEXT:             out 1 "r" place<i32>(%16);
-// IR-NEXT:             inlateout 2 "r" place<i32>(%17);
-// IR-NEXT:             inout 3 "r" place<i32>(%18);
+// IR-NEXT:             lateout 0 "r" [reg] place<i32>(%15);
+// IR-NEXT:             out 1 "r" [reg] place<i32>(%16);
+// IR-NEXT:             inlateout 2 "r" [reg] place<i32>(%17);
+// IR-NEXT:             inout 3 "r" [reg] place<i32>(%18);
 // IR-NEXT:         }
 // IR-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: %0 " " %1 " " %2 " " %1;
-// IR-NEXT:             lateout 0 "r" place<i32>(%15);
-// IR-NEXT:             inout 1 "r" place<i32>(%16) from read<i32>(%18);
-// IR-NEXT:             in 2 "r" read<i32>(%17);
+// IR-NEXT:             lateout 0 "r" [reg] place<i32>(%15);
+// IR-NEXT:             inout 1 "r" [reg] place<i32>(%16) from read<i32>(%18);
+// IR-NEXT:             in 2 "r" [reg] read<i32>(%17);
 // IR-NEXT:         }
 // IR-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: %0 " " %1 " " %0 " " %2;
-// IR-NEXT:             inlateout 0 "r,m" place<i32>(%15) from read<i32>(%16);
-// IR-NEXT:             lateout 1 "r,m" place<i32>(%19);
-// IR-NEXT:             in 2 "1,m" read<i32>(%17);
+// IR-NEXT:             inlateout 0 "r,m" [reg, mem] place<i32>(%15) from read<i32>(%16);
+// IR-NEXT:             lateout 1 "r,m" [reg, mem] place<i32>(%19);
+// IR-NEXT:             in 2 "1,m" [1, mem] read<i32>(%17);
 // IR-NEXT:         }
 // IR-NEXT:         asm "%[x] %[y]" [dialect=att] {
 // IR-NEXT:             template: %0 " " %0;
-// IR-NEXT:             inlateout 0 [x] "r" place<i32>(%15) from read<i32>(%16);
+// IR-NEXT:             inlateout 0 [x] "r" [reg] place<i32>(%15) from read<i32>(%16);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

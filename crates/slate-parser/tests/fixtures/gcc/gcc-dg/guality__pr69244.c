@@ -72,8 +72,8 @@ main() {
 // DEFAULT-NEXT:     global %2 b: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" addr_of<ptr<f32>>(%1);
-// DEFAULT-NEXT:             in 1 "g" addr_of<ptr<f32>>(%2);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<f32>>(%1);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<f32>>(%2);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

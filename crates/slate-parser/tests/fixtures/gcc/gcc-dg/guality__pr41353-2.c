@@ -58,7 +58,7 @@ main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main(%8 argc: i32, %9 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" addr_of<ptr<volatile ptr<fn() -> i32>>>(%6);
+// DEFAULT-NEXT:             in 0 "r" [reg] addr_of<ptr<volatile ptr<fn() -> i32>>>(%6);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(read<ptr<fn() -> i32>, volatile>(%6));

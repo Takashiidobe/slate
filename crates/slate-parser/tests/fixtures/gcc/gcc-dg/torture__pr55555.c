@@ -87,7 +87,7 @@ main() {
 // DEFAULT-NEXT:                 yield ne<i32>(read<i32>(%15), const<i32>(1));
 // DEFAULT-NEXT:             };
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" array_decay<ptr<f64>, length=Some(8)>(%3);
+// DEFAULT-NEXT:             in 0 "r" [reg] array_decay<ptr<f64>, length=Some(8)>(%3);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         for %11

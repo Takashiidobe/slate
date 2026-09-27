@@ -66,26 +66,26 @@ main(void) {
 // DEFAULT-NEXT:     fn %0 @bar1(%1 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %2 foo: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%9));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%1);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32>(%1);
 // DEFAULT-NEXT:         let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%15));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%1);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<const i8>>(%2, pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%10)));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%1);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32>(%1);
 // DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(%17));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%1);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%1);
@@ -93,14 +93,14 @@ main(void) {
 // DEFAULT-NEXT:     fn %3 @bar2(%4 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 foo: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%11));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%4);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%4);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %18: i32 [synthetic] = read<i32>(%4);
 // DEFAULT-NEXT:         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%4, read<i32>(%19));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%4);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%4);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%4);

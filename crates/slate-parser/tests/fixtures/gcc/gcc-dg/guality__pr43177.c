@@ -57,7 +57,7 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @bar(%1 x: i64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" read<i64>(%1);
+// DEFAULT-NEXT:             in 0 "r" [reg] read<i64>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -76,7 +76,7 @@ main(void) {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" place<i32>(%9) from const<i32>(7);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%9) from const<i32>(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i64, signature=fn(i64) -> i64>(%2, widen<i64, reason=arg>(read<i32>(%9)));
 // DEFAULT-NEXT:         call<i64, signature=fn(i32) -> i64>(%5, read<i32>(%9));

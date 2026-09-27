@@ -228,7 +228,14 @@ impl DisplayModule<'_> {
             if let Some(name) = &operand.name {
                 write!(f, " [{name}]")?;
             }
-            write!(f, " {}", operand.constraint)?;
+            write!(f, " {} [", operand.constraint)?;
+            for (index, alternative) in operand.constraint.alternatives.iter().enumerate() {
+                if index > 0 {
+                    f.write_str(", ")?;
+                }
+                write!(f, "{alternative}")?;
+            }
+            f.write_str("]")?;
             let (place, input) = match &operand.kind {
                 AsmOperandKind::In(value) => (None, Some(value)),
                 AsmOperandKind::Out { place, .. } => (Some(place), None),

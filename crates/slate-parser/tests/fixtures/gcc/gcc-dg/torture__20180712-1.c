@@ -100,8 +100,8 @@ main() {
 // DEFAULT-NEXT:         let %4 q: ptr<i32> [storage=automatic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(1));
 // DEFAULT-NEXT:         let %5 s: @type0 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "g" place<ptr<i32>>(%3);
-// DEFAULT-NEXT:             inlateout 1 "g" place<ptr<i32>>(%4);
+// DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm] place<ptr<i32>>(%3);
+// DEFAULT-NEXT:             inlateout 1 "g" [reg | mem | imm] place<ptr<i32>>(%4);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%5), read<ptr<i32>>(%3));
@@ -115,7 +115,7 @@ main() {
 // DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %6 @bar(%7 x: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" read<ptr<@type0>>(%7);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] read<ptr<@type0>>(%7);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<i32>>(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%7)))), array_decay<ptr<i32>, length=Some(3)>(%1)), ne<ptr<i32>>(read<ptr<i32>>(field1(deref(read<ptr<@type0>>(%7)))), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(1))))
@@ -128,9 +128,9 @@ main() {
 // DEFAULT-NEXT:     fn %8 @baz(%9 x: ptr<i32>, %10 y: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 r: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "g" place<i32>(%11);
-// DEFAULT-NEXT:             in 1 "g" read<ptr<i32>>(%9);
-// DEFAULT-NEXT:             in 2 "g" read<ptr<i32>>(%10);
+// DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm] place<i32>(%11);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] read<ptr<i32>>(%9);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] read<ptr<i32>>(%10);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %26: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(2));

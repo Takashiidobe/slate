@@ -61,11 +61,11 @@ main() {
 // DEFAULT-NEXT:         let %2 a: i32 [storage=automatic] = widen<i32, reason=assign>(reinterpret<i16, reason=explicit, fits=unknown>(read<u16>(deref(read<ptr<u16>>(%1)))));
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
+// DEFAULT-NEXT:             in 0 "D" [{di}] reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
+// DEFAULT-NEXT:             in 0 "D" [{di}] reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
@@ -73,11 +73,11 @@ main() {
 // DEFAULT-NEXT:         let %5 a: u32 [storage=automatic] = widen<u32, reason=assign>(reinterpret<u16, reason=explicit, fits=unknown>(read<i16>(deref(read<ptr<i16>>(%4)))));
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
+// DEFAULT-NEXT:             in 0 "D" [{di}] reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
+// DEFAULT-NEXT:             in 0 "D" [{di}] reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
