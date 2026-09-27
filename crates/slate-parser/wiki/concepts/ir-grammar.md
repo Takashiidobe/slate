@@ -234,20 +234,26 @@ statement  = simple { metadata } ";"
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                [ " [dialect=" ( "att" | "intel" ) "]" ]
+               [ " [alternative=" ( integer | "none" ) "]" ]
                ( { metadata } ";"
                | "{" { metadata }
                    [ "template:" { asm_piece } ";" ]
                    { asm_operand }
+                   [ "rejected:" asm_reject { "," asm_reject } ";" ]
                    [ "clobbers:" clobber { "," clobber } ";" ]
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
 asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
-                  [ asm_width ] ( value | asm_place )
+                  [ asm_chosen ] [ asm_width ] ( value | asm_place )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes [ asm_width ] asm_place
+                  asm_classes [ asm_chosen ] [ asm_width ] asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes [ asm_width ] asm_place [ " from" value ] ) ";" ;
+                  asm_classes [ asm_chosen ] [ asm_width ] asm_place
+                  [ " from" value ] ) ";" ;
+asm_chosen = "->" asm_class ;
 asm_width  = "width" integer ;
+asm_reject = integer "(operand" integer ":" ( "unresolved(" string ")"
+           | "clobber-only" | "width" | "not-constant" | "matching" | "missing" ) ")" ;
 asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
 asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
@@ -294,6 +300,12 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   output (`%0(32)`).
 - `width N` is the operand's storage size in bits; absent when the type
   has no fixed size (a VLA under `"m"`).
+- `[alternative=N]` is the constraint alternative chosen for the whole
+  asm, printed when there is more than one; `none` means no alternative
+  fits Rust. `-> class` is the class an operand took when its chosen
+  alternative offered several (`rm`, `g`). `rejected:` lists each
+  alternative tried before the chosen one with the first operand that
+  ruled it out, numbered as in the source.
 - `[dialect=...]` is the assembler syntax the template is written in; it is
   present on x86 and absent on targets without a dialect choice. `template:`
   holds only the selected side of each `{att|intel}` alternation, so it

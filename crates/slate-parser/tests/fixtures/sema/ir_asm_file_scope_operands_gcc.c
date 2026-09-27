@@ -28,9 +28,10 @@ asm("%0" : : "i"(x));
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     asm "%0" [dialect=att] {
+// IR-NEXT:     asm "%0" [dialect=att] [alternative=none] {
 // IR-NEXT:         template: %0;
 // IR-NEXT:         in 0 "i" [imm] width 32 read<i32>(%0);
+// IR-NEXT:         rejected: 0 (operand 0: not-constant);
 // IR-NEXT:     }
 // IR-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
 // IR-NEXT: }

@@ -12,6 +12,26 @@ pub struct InlineAsm {
     pub operands: Vec<AsmOperand>,
     pub clobbers: Vec<AsmClobber>,
     pub labels: Vec<BindingId>,
+    pub alternative: Option<usize>,
+    pub rejected: Vec<AsmRejection>,
+}
+
+// `operand` is the source operand number, since a rejected tie may have been folded away.
+#[derive(Debug, Clone)]
+pub struct AsmRejection {
+    pub alternative: usize,
+    pub operand: usize,
+    pub reason: AsmRejectReason,
+}
+
+#[derive(Debug, Clone)]
+pub enum AsmRejectReason {
+    Unresolved(String),
+    ClobberOnly,
+    Width,
+    NotConstant,
+    Matching,
+    Missing,
 }
 
 #[derive(Debug, Clone)]
@@ -55,6 +75,7 @@ pub struct AsmOperand {
     pub constraint: AsmConstraint,
     pub kind: AsmOperandKind,
     pub width: Option<u64>,
+    pub selected: Option<AsmOperandClass>,
 }
 
 #[derive(Debug, Clone)]
@@ -337,6 +358,29 @@ impl fmt::Display for AsmOperandClass {
             Self::Memory => f.write_str("mem"),
             Self::Immediate => f.write_str("imm"),
             Self::Unresolved(letters) => write!(f, "unresolved({letters:?})"),
+        }
+    }
+}
+
+impl fmt::Display for AsmRejection {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{} (operand {}: {})",
+            self.alternative, self.operand, self.reason
+        )
+    }
+}
+
+impl fmt::Display for AsmRejectReason {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Unresolved(letters) => write!(f, "unresolved({letters:?})"),
+            Self::ClobberOnly => f.write_str("clobber-only"),
+            Self::Width => f.write_str("width"),
+            Self::NotConstant => f.write_str("not-constant"),
+            Self::Matching => f.write_str("matching"),
+            Self::Missing => f.write_str("missing"),
         }
     }
 }

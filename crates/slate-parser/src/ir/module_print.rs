@@ -1,7 +1,8 @@
 use super::{
-    ArrayExtent, AsmOperandKind, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage,
-    MemoryEffects, Metadata, Module, NumericType, Parameters, RecordKind, Statement,
-    StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, AsmConstraintLocation, AsmOperandKind, DllStorage, Evaluation, FloatType,
+    InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType, Parameters,
+    RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind,
+    Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -123,10 +124,18 @@ pub(super) fn metadata(
     Ok(())
 }
 
-fn asm_dialect(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
-    match asm.dialect {
-        Some(dialect) => write!(f, " [dialect={}]", dialect.as_str()),
-        None => Ok(()),
+fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
+    if let Some(dialect) = asm.dialect {
+        write!(f, " [dialect={}]", dialect.as_str())?;
+    }
+    let alternatives = asm
+        .operands
+        .first()
+        .map_or(0, |operand| operand.constraint.alternatives.len());
+    match asm.alternative {
+        Some(alternative) if alternatives > 1 => write!(f, " [alternative={alternative}]"),
+        None if alternatives > 0 => f.write_str(" [alternative=none]"),
+        _ => Ok(()),
     }
 }
 
@@ -236,6 +245,19 @@ impl DisplayModule<'_> {
                 write!(f, "{alternative}")?;
             }
             f.write_str("]")?;
+            let offered =
+                asm.alternative
+                    .and_then(|alternative| operand.constraint.alternatives.get(alternative))
+                    .map_or(0, |alternative| match &alternative.location {
+                        AsmConstraintLocation::Letters { classes, .. } => classes.len(),
+                        AsmConstraintLocation::HardRegister(_)
+                        | AsmConstraintLocation::Matching(_) => 1,
+                    });
+            if let Some(selected) = &operand.selected
+                && offered > 1
+            {
+                write!(f, " -> {selected}")?;
+            }
             if let Some(width) = operand.width {
                 write!(f, " width {width}")?;
             }
@@ -263,6 +285,13 @@ impl DisplayModule<'_> {
                         .display_metadata(false, self.table())
                         .with_compact(self.compact)
                 )?;
+            }
+            writeln!(f, ";")?;
+        }
+        if !asm.rejected.is_empty() {
+            write!(f, "{:indent$}rejected:", "")?;
+            for (index, rejection) in asm.rejected.iter().enumerate() {
+                write!(f, "{} {rejection}", if index > 0 { "," } else { "" })?;
             }
             writeln!(f, ";")?;
         }
@@ -515,7 +544,7 @@ impl DisplayModule<'_> {
                         f.write_str(" goto")?;
                     }
                     write!(f, " {:?}", asm.template)?;
-                    asm_dialect(f, asm)?;
+                    asm_attributes(f, asm)?;
                     if !asm.has_sections() {
                         metadata(f, self.table(), statement.id)?;
                         writeln!(f, ";")?;
@@ -593,7 +622,7 @@ impl fmt::Display for DisplayModule<'_> {
         writeln!(f, "    }}")?;
         for asm in &self.module.asm {
             write!(f, "    asm {:?}", asm.template)?;
-            asm_dialect(f, asm)?;
+            asm_attributes(f, asm)?;
             if asm.has_sections() {
                 f.write_str(" {")?;
                 metadata(f, self.table(), asm.id)?;

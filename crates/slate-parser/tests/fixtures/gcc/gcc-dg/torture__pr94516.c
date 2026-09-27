@@ -73,14 +73,14 @@ main() {
 // DEFAULT-NEXT:     fn %2 @foo(%3 a: ptr<const i8>, %4 b: ptr<const i8>, %5 c: ptr<const i8>, %6 d: ptr<const @type0>, %7 e: i32, %8 f: i32, %9 g: i32, %10 h: i32, %11 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %12 v: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<vector<i32, 4>>>(%12);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<vector<i32, 4>>>(%12);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %25: vector<i32, 4> [synthetic] = read<vector<i32, 4>>(%12);
 // DEFAULT-NEXT:         let %26: vector<i32, 4> [synthetic] = add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%25), read<vector<i32, 4>>(compound_literal %16 [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6), index2 = const<i32>(7), index3 = const<i32>(8))));
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%12, read<vector<i32, 4>>(%26));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<vector<i32, 4>>>(%12);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<vector<i32, 4>>>(%12);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

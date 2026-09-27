@@ -1,5 +1,7 @@
 use super::expression::Lowerer;
+use super::fold::integer_constant;
 use super::numeric::ResolveError;
+use super::operand::Lvalue;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
@@ -27,11 +29,14 @@ impl Lowerer {
             operands: Vec::new(),
             clobbers: Vec::new(),
             labels: Vec::new(),
+            alternative: None,
+            rejected: Vec::new(),
         };
         let Some(operands) = &asm.operands else {
             return Ok(lowered);
         };
         lower_pieces(&operands.pieces, dialect, family, &mut lowered.pieces);
+        let mut sources = Vec::new();
         for output in &operands.outputs {
             let constraint = constraint(&output.constraint.value, family);
             let place = self.place(&output.expr)?.place;
@@ -48,17 +53,49 @@ impl Lowerer {
                     early_clobber,
                 },
             };
-            let name = output.name.as_ref().map(|name| name.value.clone());
-            lowered
-                .operands
-                .push(self.asm_operand(name, constraint, kind));
+            sources.push(self.source(output, constraint, Candidate::Output(kind)));
         }
-        let mut renumbered: Vec<(usize, Option<AsmRegisterView>)> = (0..operands.outputs.len())
-            .map(|index| (index, None))
-            .collect();
         for input in &operands.inputs {
-            if let Some(output) = input.constraint.value.tied_output() {
-                let value = self.expr(&input.expr)?.value;
+            let constraint = constraint(&input.constraint.value, family);
+            let candidate = self.input_candidate(&input.expr, &constraint)?;
+            sources.push(self.source(input, constraint, candidate));
+        }
+        let (alternative, rejected) = select(&sources, family);
+        lowered.alternative = alternative;
+        lowered.rejected = rejected;
+        let mut renumbered: Vec<(usize, Option<AsmRegisterView>)> = Vec::new();
+        for (index, source) in sources.into_iter().enumerate() {
+            let choice =
+                alternative.and_then(|alternative| choose(&source, alternative, family).ok());
+            let tie = match choice {
+                Some(Choice::Tie(output)) => Some(output),
+                Some(Choice::Class(_)) => None,
+                None => index
+                    .checked_sub(operands.outputs.len())
+                    .and_then(|input| operands.inputs.get(input))
+                    .and_then(|input| input.constraint.value.tied_output()),
+            };
+            let selected = match choice {
+                Some(Choice::Class(class)) => Some(class),
+                Some(Choice::Tie(_)) | None => None,
+            };
+            let memory = match &selected {
+                Some(class) => matches!(class, AsmOperandClass::Memory),
+                None => source.constraint.allows_memory(),
+            };
+            let kind = match source.candidate {
+                Candidate::Output(kind) => kind,
+                Candidate::Lvalue {
+                    lvalue,
+                    addressable: true,
+                    ..
+                } if memory && tie.is_none() => AsmOperandKind::InPlace(lvalue.place),
+                Candidate::Lvalue { expr, lvalue, .. } => {
+                    AsmOperandKind::In(self.read(expr, lvalue)?.value)
+                }
+                Candidate::Value(value) => AsmOperandKind::In(value),
+            };
+            if let (Some(output), AsmOperandKind::In(value)) = (tie, &kind) {
                 let input_width = self.width(&value.ty);
                 let Some(AsmOperand {
                     kind:
@@ -84,23 +121,26 @@ impl Lowerer {
                 };
                 lowered.operands[output].kind = AsmOperandKind::InOut {
                     place: place.clone(),
-                    input: Some(value),
+                    input: Some(value.clone()),
                     early_clobber: *early_clobber,
                 };
                 renumbered.push((output, view));
                 continue;
             }
-            let constraint = constraint(&input.constraint.value, family);
-            let kind = if constraint.allows_memory() {
-                self.memory_input(&input.expr, constraint.memory_only())?
-            } else {
-                AsmOperandKind::In(self.expr(&input.expr)?.value)
-            };
             renumbered.push((lowered.operands.len(), None));
-            let name = input.name.as_ref().map(|name| name.value.clone());
-            lowered
-                .operands
-                .push(self.asm_operand(name, constraint, kind));
+            let width = match &kind {
+                AsmOperandKind::In(value) => self.width(&value.ty),
+                AsmOperandKind::InPlace(place)
+                | AsmOperandKind::Out { place, .. }
+                | AsmOperandKind::InOut { place, .. } => self.width(&place.ty),
+            };
+            lowered.operands.push(AsmOperand {
+                name: source.name,
+                constraint: source.constraint,
+                kind,
+                width,
+                selected,
+            });
         }
         for piece in &mut lowered.pieces {
             if let AsmPiece::Operand { index, view, .. } = piece {
@@ -134,19 +174,24 @@ impl Lowerer {
 }
 
 impl Lowerer {
-    fn asm_operand(
+    fn source<'a>(
         &self,
-        name: Option<String>,
+        operand: &ast::AsmOperand,
         mut constraint: AsmConstraint,
-        kind: AsmOperandKind,
-    ) -> AsmOperand {
-        let ty = match &kind {
-            AsmOperandKind::In(value) => &value.ty,
-            AsmOperandKind::InPlace(place)
-            | AsmOperandKind::Out { place, .. }
-            | AsmOperandKind::InOut { place, .. } => &place.ty,
+        candidate: Candidate<'a>,
+    ) -> Source<'a> {
+        let ty = match &candidate {
+            Candidate::Output(
+                AsmOperandKind::InPlace(place)
+                | AsmOperandKind::Out { place, .. }
+                | AsmOperandKind::InOut { place, .. },
+            ) => Some(&place.ty),
+            Candidate::Output(AsmOperandKind::In(value)) | Candidate::Value(value) => {
+                Some(&value.ty)
+            }
+            Candidate::Lvalue { lvalue, .. } => Some(&lvalue.place.ty),
         };
-        let width = self.width(ty);
+        let width = ty.and_then(|ty| self.width(ty));
         let wide = match width {
             Some(256) => Some(AsmRegisterClass::YmmReg),
             Some(512) => Some(AsmRegisterClass::ZmmReg),
@@ -163,26 +208,36 @@ impl Lowerer {
                 }
             }
         }
-        AsmOperand {
-            name,
+        let constant = match &candidate {
+            Candidate::Value(value) => {
+                integer_constant(value, self.types.compiler_flavor()).is_some()
+            }
+            Candidate::Output(_) | Candidate::Lvalue { .. } => false,
+        };
+        let decays = ty.is_some_and(|ty| {
+            matches!(
+                ty,
+                Type::Array { .. } | Type::VariableArray { .. } | Type::Function { .. }
+            )
+        }) && matches!(candidate, Candidate::Lvalue { .. });
+        Source {
+            name: operand.name.as_ref().map(|name| name.value.clone()),
             constraint,
-            kind,
-            width,
+            candidate,
+            width: if decays { None } else { width },
+            constant,
         }
     }
 
-    fn width(&self, ty: &Type) -> Option<u64> {
-        self.types
-            .storage(ty.clone())
-            .ok()
-            .map(|storage| storage.size_bytes * 8)
-    }
-
-    fn memory_input(
+    fn input_candidate<'a>(
         &mut self,
-        expr: &ast::Expr,
-        memory_only: bool,
-    ) -> Result<AsmOperandKind, ResolveError> {
+        expr: &'a ast::Expr,
+        constraint: &AsmConstraint,
+    ) -> Result<Candidate<'a>, ResolveError> {
+        if !constraint.allows_memory() {
+            return Ok(Candidate::Value(self.expr(expr)?.value));
+        }
+        let memory_only = constraint.memory_only();
         let lvalue = match self.place(expr) {
             Ok(lvalue) => lvalue,
             Err(_) if memory_only => {
@@ -190,13 +245,21 @@ impl Lowerer {
                     "asm input with a memory-only constraint is not an lvalue",
                 ));
             }
-            Err(_) => return Ok(AsmOperandKind::In(self.expr(expr)?.value)),
+            Err(_) => return Ok(Candidate::Value(self.expr(expr)?.value)),
         };
-        if self.memory_place(&lvalue.place, memory_only)? {
-            Ok(AsmOperandKind::InPlace(lvalue.place))
-        } else {
-            Ok(AsmOperandKind::In(self.read(expr, lvalue)?.value))
-        }
+        let addressable = self.memory_place(&lvalue.place, memory_only)?;
+        Ok(Candidate::Lvalue {
+            expr,
+            lvalue,
+            addressable,
+        })
+    }
+
+    fn width(&self, ty: &Type) -> Option<u64> {
+        self.types
+            .storage(ty.clone())
+            .ok()
+            .map(|storage| storage.size_bytes * 8)
     }
 
     // compilers spill an unaddressable object to a temporary, which an input cannot tell from a copy.
@@ -217,6 +280,151 @@ impl Lowerer {
             _ => Ok(self.addressable(place).is_ok()),
         }
     }
+}
+
+enum Candidate<'a> {
+    Output(AsmOperandKind),
+    Value(Value),
+    Lvalue {
+        expr: &'a ast::Expr,
+        lvalue: Lvalue,
+        addressable: bool,
+    },
+}
+
+struct Source<'a> {
+    name: Option<String>,
+    constraint: AsmConstraint,
+    candidate: Candidate<'a>,
+    width: Option<u64>,
+    constant: bool,
+}
+
+enum Choice {
+    Class(AsmOperandClass),
+    Tie(usize),
+}
+
+// rust takes one class per operand, so the first alternative every operand can use wins.
+fn select(sources: &[Source<'_>], family: TargetFamily) -> (Option<usize>, Vec<AsmRejection>) {
+    let count = sources
+        .first()
+        .map_or(0, |source| source.constraint.alternatives.len());
+    let mut rejected = Vec::new();
+    for alternative in 0..count {
+        let failure = sources.iter().enumerate().find_map(|(operand, source)| {
+            choose(source, alternative, family)
+                .err()
+                .map(|reason| AsmRejection {
+                    alternative,
+                    operand,
+                    reason,
+                })
+        });
+        match failure {
+            Some(rejection) => rejected.push(rejection),
+            None => return (Some(alternative), rejected),
+        }
+    }
+    (None, rejected)
+}
+
+fn choose(
+    source: &Source<'_>,
+    alternative: usize,
+    family: TargetFamily,
+) -> Result<Choice, AsmRejectReason> {
+    let output = matches!(source.candidate, Candidate::Output(_));
+    let location = source
+        .constraint
+        .alternatives
+        .get(alternative)
+        .map(|alternative| &alternative.location)
+        .ok_or(AsmRejectReason::Missing)?;
+    match location {
+        AsmConstraintLocation::HardRegister(register) if clobber_only(register) => {
+            Err(AsmRejectReason::ClobberOnly)
+        }
+        AsmConstraintLocation::HardRegister(register) => {
+            Ok(Choice::Class(AsmOperandClass::Explicit(register.clone())))
+        }
+        AsmConstraintLocation::Matching(_) if output => Err(AsmRejectReason::Matching),
+        AsmConstraintLocation::Matching(index) => Ok(Choice::Tie(*index)),
+        AsmConstraintLocation::Letters { letters, classes } => {
+            let mut first = None;
+            let mut best: Option<(u8, &AsmOperandClass)> = None;
+            for class in classes {
+                match rank(source, class, output, family) {
+                    Ok(rank) if best.is_none_or(|(best, _)| rank < best) => {
+                        best = Some((rank, class));
+                    }
+                    Ok(_) => {}
+                    Err(reason) => {
+                        first.get_or_insert(reason);
+                    }
+                }
+            }
+            match best {
+                Some((_, class)) => Ok(Choice::Class(class.clone())),
+                None => Err(first.unwrap_or_else(|| AsmRejectReason::Unresolved(letters.clone()))),
+            }
+        }
+    }
+}
+
+// a constant prefers the immediate and anything else prefers a register, as both compilers do.
+fn rank(
+    source: &Source<'_>,
+    class: &AsmOperandClass,
+    output: bool,
+    family: TargetFamily,
+) -> Result<u8, AsmRejectReason> {
+    match class {
+        AsmOperandClass::Immediate if !output && source.constant => Ok(0),
+        AsmOperandClass::Immediate => Err(AsmRejectReason::NotConstant),
+        AsmOperandClass::Register(AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg) => {
+            Err(AsmRejectReason::ClobberOnly)
+        }
+        AsmOperandClass::Register(register) if fits(*register, source.width, family) => Ok(1),
+        AsmOperandClass::Register(_) => Err(AsmRejectReason::Width),
+        AsmOperandClass::Explicit(register) if clobber_only(register) => {
+            Err(AsmRejectReason::ClobberOnly)
+        }
+        AsmOperandClass::Explicit(_) => Ok(2),
+        AsmOperandClass::Memory => Ok(3),
+        AsmOperandClass::Unresolved(letters) => Err(AsmRejectReason::Unresolved(letters.clone())),
+    }
+}
+
+fn fits(register: AsmRegisterClass, width: Option<u64>, family: TargetFamily) -> bool {
+    let Some(width) = width else {
+        return false;
+    };
+    match register {
+        AsmRegisterClass::Reg | AsmRegisterClass::RegAbcd | AsmRegisterClass::RegLegacy => {
+            match family {
+                TargetFamily::X86_64 | TargetFamily::AArch64 => matches!(width, 8 | 16 | 32 | 64),
+                TargetFamily::X86 | TargetFamily::Arm32 => matches!(width, 8 | 16 | 32),
+            }
+        }
+        AsmRegisterClass::XmmReg => matches!(width, 16 | 32 | 64 | 128),
+        AsmRegisterClass::YmmReg => matches!(width, 16 | 32 | 64 | 128 | 256),
+        AsmRegisterClass::ZmmReg => matches!(width, 16 | 32 | 64 | 128 | 256 | 512),
+        AsmRegisterClass::KReg => matches!(width, 8 | 16 | 32 | 64),
+        AsmRegisterClass::VReg | AsmRegisterClass::VRegLow16 | AsmRegisterClass::VRegLow8 => {
+            matches!(width, 8 | 16 | 32 | 64 | 128)
+        }
+        AsmRegisterClass::SReg => width == 32,
+        AsmRegisterClass::DReg => width == 64,
+        AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg => false,
+    }
+}
+
+fn clobber_only(register: &AsmRegister) -> bool {
+    let name = register.canonical.unwrap_or(&register.spelling);
+    ["st", "mm", "tmm"]
+        .iter()
+        .any(|prefix| name.starts_with(prefix))
 }
 
 fn lower_pieces(

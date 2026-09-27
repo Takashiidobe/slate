@@ -54,7 +54,7 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%3);
 // IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%2);
-// IR-NEXT:             in 2 "g" [reg | mem | imm] width 32 place<i32>(%2);
+// IR-NEXT:             in 2 "g" [reg | mem | imm] -> reg width 32 read<i32>(%2);
 // IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%4);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3 %4" [dialect=att] {
@@ -65,17 +65,19 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:             in 3 "S" [{si}] width 64 read<i64>(%5);
 // IR-NEXT:             in 4 "D" [{di}] width 64 read<i64>(%5);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] {
+// IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [alternative=none] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%6);
 // IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%7);
 // IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%4);
 // IR-NEXT:             in 3 "X" [unresolved("X")] width 32 read<i32>(%2);
+// IR-NEXT:             rejected: 0 (operand 0: clobber-only);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%2);
-// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] width 64 read<i64>(%5);
+// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] -> reg width 64 read<i64>(%5);
+// IR-NEXT:             rejected: 0 (operand 1: unresolved("l"));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0" [dialect=att] {
 // IR-NEXT:             template: "# " %0;

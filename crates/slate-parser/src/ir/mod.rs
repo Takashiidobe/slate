@@ -11,7 +11,8 @@ pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use asm::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmOperand, AsmOperandClass, AsmOperandKind,
-    AsmPiece, AsmRegister, AsmRegisterClass, AsmRegisterView, InlineAsm,
+    AsmPiece, AsmRegister, AsmRegisterClass, AsmRegisterView, AsmRejectReason, AsmRejection,
+    InlineAsm,
 };
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
 pub use declarations::{

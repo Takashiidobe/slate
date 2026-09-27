@@ -42,7 +42,7 @@ void classes(long x, double d, v4f v) {
 // IR-NEXT:             template: "// " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "I" [imm] width 32 const<i32>(1);
 // IR-NEXT:             in 1 "Q" [mem] width 64 place<i64>(%2);
-// IR-NEXT:             in 2 "rZ" [reg | imm] width 64 const<i64>(0);
+// IR-NEXT:             in 2 "rZ" [reg | imm] -> imm width 64 const<i64>(0);
 // IR-NEXT:             in 3 "y" [vreg_low8] width 128 read<vector<f32, 4>>(%4);
 // IR-NEXT:         }
 // IR-NEXT:     }

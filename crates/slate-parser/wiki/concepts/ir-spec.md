@@ -848,12 +848,28 @@ template as opaque text with holes.
   `"+&r"` is `inout`. The `=`/`+` comes from the first alternative (as
   clang reads it); `&` in any alternative makes the operand early-clobber,
   which is always safe to over-claim.
-- An input tied to output `n` in every alternative (`"0"`, `"0,0"`,
-  `"[out]"`) is folded into that output as `InOut { input: Some(value) }`
-  and removed, and template pieces are renumbered. A `+` output is
-  `InOut { input: None }`: the place itself is read. A partial tie
-  (`"0,m"`) stays a separate `In` (or `InPlace`) operand until an alternative is chosen
-  (`slate-parser-25m.15`).
+- An input whose chosen alternative matches output `n` (`"0"`, `"0,m"`
+  when alternative 0 is chosen, `"[out]"`) is folded into that output as
+  `InOut { input: Some(value) }` and removed, and template pieces are
+  renumbered. With no alternative chosen, only a tie in every alternative
+  folds. A `+` output is `InOut { input: None }`: the place itself is
+  read.
+- Rust takes one class per operand, so lowering picks one alternative for
+  the whole asm (GCC indexes alternatives across all operands): the first
+  where every operand has a usable class. Within an alternative a
+  constant input prefers the immediate (both compilers print `$5` for
+  `"ri"(5)`), then a register class the width fits, then an explicit
+  register, then memory. gcc prefers the register for `rm` and clang the
+  memory; either is correct, and the register is what Rust expresses
+  without a pointer. A class is unusable when it is unresolved, x87/MMX/AMX
+  (clobber-only in Rust, including `t`/`u`/`{st}`), a register the width
+  doesn't fit (a 24-byte struct under `r`, i64 on i386), an immediate
+  whose value isn't an integer constant (`"i"(&x)` needs a Rust `sym`
+  operand), or a match on an output. The chosen alternative is
+  `InlineAsm::alternative`, each operand's class is
+  `AsmOperand::selected`, and the ruled-out alternatives are kept as
+  `AsmRejection`s. When nothing fits, `alternative` is `None` and the
+  operands lower as if unselected. Fixture: `sema/ir_asm_alternatives.c`.
 - The parser rejects what both compilers reject and the fold relies on: an
   output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
   or to a `+` output, and two inputs tied to one output. `-` is rejected
@@ -885,12 +901,14 @@ template as opaque text with holes.
   the set (`in("v7")`, `in("rsi")`), avoiding the asm's other explicit
   operands and clobbers. No save/restore is needed; that trick is only for
   reserved registers such as `rbx`.
-- An input whose constraint allows memory in any alternative (`m`, `o`,
-  `g`, `rm`, Arm `Q`) lowers to `AsmOperandKind::InPlace(place)` when the
-  operand is an addressable lvalue, so the object is named rather than
-  loaded before the asm. Emission turns it into `in(reg) &raw const x`
-  and wraps the reference site, or reads the place for a register
-  alternative (`slate-parser-25m.15`). Outputs already carry places.
+- An input whose chosen class is memory (`m`, `o`, Arm `Q`, or `rm`
+  whose register won't fit) lowers to `AsmOperandKind::InPlace(place)`
+  when the operand is an addressable lvalue, so the object is named rather
+  than loaded before the asm. Emission turns it into
+  `in(reg) &raw const x` and wraps the reference site. An input that
+  chose a register reads the place instead. With no alternative chosen,
+  any memory-capable constraint gives `InPlace`. Outputs already carry
+  places.
 - An unaddressable memory-capable operand (bit-field, vector lane,
   register variable, temporary) falls back to a value: compilers spill it
   to a temporary, which an input cannot tell from a copy. Errors are only
@@ -914,7 +932,7 @@ template as opaque text with holes.
   `char`), but Rust's `{0}` prints the full register (`rdi`), so emission
   must add a Rust modifier. An unmodified AArch64 reference prints the full
   `x`/`v` register in both compilers, like Rust. The Rust modifier depends
-  on the class an alternative picks (`slate-parser-25m.15`), from the view
+  on the chosen class (`AsmOperand::selected`), from the view
   or else the width: x86 GPR classes 8 `l`, 16 `x`, 32 `e`, 64 `r`, high
   byte `h`; x86 vector classes up to 128 `x`, 256 `y`, 512 `z`; AArch64
   `reg` 32 `w`, 64 `x`, and `vreg` 8/16/32/64/128 `b`/`h`/`s`/`d`/`q`.

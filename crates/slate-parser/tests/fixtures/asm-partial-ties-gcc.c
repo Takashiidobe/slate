@@ -30,18 +30,15 @@ void f(int x, int y, int z, int w) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @f(%1 x: i32, %2 y: i32, %3 z: i32, %4 w: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "%0 %1 %2" [dialect=att] {
-// DEFAULT-NEXT:             template: %0 " " %1 " " %2;
-// DEFAULT-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "0,m" [0, mem] width 32 place<i32>(%2);
-// DEFAULT-NEXT:             in 2 "m,0" [mem, 0] width 32 place<i32>(%3);
+// DEFAULT-NEXT:         asm "%0 %1 %2" [dialect=att] [alternative=0] {
+// DEFAULT-NEXT:             template: %0 " " %0 " " %1;
+// DEFAULT-NEXT:             inlateout 0 "r,m" [reg, mem] width 32 place<i32>(%1) from read<i32>(%2);
+// DEFAULT-NEXT:             in 1 "m,0" [mem, 0] width 32 place<i32>(%3);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
-// DEFAULT-NEXT:             template: %0 " " %1 " " %2 " " %3;
-// DEFAULT-NEXT:             lateout 0 "r,r" [reg, reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             lateout 1 "r,r" [reg, reg] width 32 place<i32>(%4);
-// DEFAULT-NEXT:             in 2 "0,1" [0, 1] width 32 read<i32>(%2);
-// DEFAULT-NEXT:             in 3 "1,0" [1, 0] width 32 read<i32>(%3);
+// DEFAULT-NEXT:         asm "%0 %1 %2 %3" [dialect=att] [alternative=0] {
+// DEFAULT-NEXT:             template: %0 " " %1 " " %0 " " %1;
+// DEFAULT-NEXT:             inlateout 0 "r,r" [reg, reg] width 32 place<i32>(%1) from read<i32>(%2);
+// DEFAULT-NEXT:             inlateout 1 "r,r" [reg, reg] width 32 place<i32>(%4) from read<i32>(%3);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

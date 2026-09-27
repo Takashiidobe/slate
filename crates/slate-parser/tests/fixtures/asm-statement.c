@@ -47,11 +47,10 @@ void dialects(int x) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @operands(%1 x: i32, %2 y: i32, %3 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "basic %eax %0" [dialect=att];
-// DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
-// DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
-// DEFAULT-NEXT:             out 0 [out] "r,m" [reg, mem] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] width 32 place<i32>(%2);
-// DEFAULT-NEXT:             in 2 "0,m" [0, mem] width 32 place<i32>(deref(read<ptr<i32>>(%3)));
+// DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [alternative=0] {
+// DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
+// DEFAULT-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%1) from read<i32>(deref(read<ptr<i32>>(%3)));
+// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%2);
 // DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

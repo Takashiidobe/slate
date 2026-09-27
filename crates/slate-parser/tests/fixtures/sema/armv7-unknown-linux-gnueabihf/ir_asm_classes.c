@@ -34,11 +34,12 @@ void classes(int x, float f, double d) {
 // IR-NEXT:             lateout 1 "t" [sreg] width 32 place<f32>(%2);
 // IR-NEXT:             lateout 2 "w" [dreg] width 64 place<f64>(%3);
 // IR-NEXT:         }
-// IR-NEXT:         asm "@ %0 %1 %2" {
+// IR-NEXT:         asm "@ %0 %1 %2" [alternative=none] {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
 // IR-NEXT:             in 0 "I" [imm] width 32 const<i32>(1);
 // IR-NEXT:             in 1 "Q" [mem] width 32 place<i32>(%1);
 // IR-NEXT:             in 2 "l" [unresolved("l")] width 32 read<i32>(%1);
+// IR-NEXT:             rejected: 0 (operand 2: unresolved("l"));
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

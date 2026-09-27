@@ -79,11 +79,10 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:         asm volatile "mfence" [dialect=att];
 // IR-NEXT:     }
 // IR-NEXT:     fn %2 @extended(%3 x: i32, %4 y: i32, %5 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
-// IR-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
-// IR-NEXT:             out 0 [out] "r,m" [reg, mem] width 32 place<i32>(%3);
-// IR-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] width 32 place<i32>(%4);
-// IR-NEXT:             in 2 "0,m" [0, mem] width 32 place<i32>(deref(read<ptr<i32>>(%5)));
+// IR-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [alternative=0] {
+// IR-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
+// IR-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%3) from read<i32>(deref(read<ptr<i32>>(%5)));
+// IR-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%4);
 // IR-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // IR-NEXT:         }
 // IR-NEXT:     }
@@ -136,11 +135,10 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:             inout 1 "r" [reg] width 32 place<i32>(%17) from read<i32>(%19);
 // IR-NEXT:             in 2 "r" [reg] width 32 read<i32>(%18);
 // IR-NEXT:         }
-// IR-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
-// IR-NEXT:             template: %0 " " %1 " " %0 " " %2;
+// IR-NEXT:         asm "%0 %1 %2 %3" [dialect=att] [alternative=0] {
+// IR-NEXT:             template: %0 " " %1 " " %0 " " %1;
 // IR-NEXT:             inlateout 0 "r,m" [reg, mem] width 32 place<i32>(%16) from read<i32>(%17);
-// IR-NEXT:             lateout 1 "r,m" [reg, mem] width 32 place<i32>(%20);
-// IR-NEXT:             in 2 "1,m" [1, mem] width 32 place<i32>(%18);
+// IR-NEXT:             inlateout 1 "r,m" [reg, mem] width 32 place<i32>(%20) from read<i32>(%18);
 // IR-NEXT:         }
 // IR-NEXT:         asm "%[x] %[y]" [dialect=att] {
 // IR-NEXT:             template: %0 " " %0;
@@ -157,8 +155,8 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
 // IR-NEXT:             inlateout 0 "m" [mem] width 32 place<i32>(%22);
-// IR-NEXT:             in 1 "rm" [reg | mem] width 32 add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
-// IR-NEXT:             in 2 "g" [reg | mem | imm] width 32 place<i32>(field1(deref(read<ptr<@type0>>(%24))));
+// IR-NEXT:             in 1 "rm" [reg | mem] -> reg width 32 add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
+// IR-NEXT:             in 2 "g" [reg | mem | imm] -> reg width 32 read<i32>(field1(deref(read<ptr<@type0>>(%24))));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %0;

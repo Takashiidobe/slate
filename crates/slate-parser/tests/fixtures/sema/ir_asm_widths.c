@@ -84,7 +84,7 @@ void vectors(v4f v, v8f w, v16f z, float f) {
 // IR-NEXT:             template: "# " %0 " " %x0(128) " " %t0(256) " " %g0(512);
 // IR-NEXT:             inlateout 0 "v" [zmm_reg] width 128 place<vector<f32, 4>>(%12);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0" [dialect=att] {
+// IR-NEXT:         asm "# %0" [dialect=att] [alternative=0] {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             inlateout 0 "x,m" [ymm_reg, mem] width 256 place<vector<f32, 8>>(%13);
 // IR-NEXT:         }
