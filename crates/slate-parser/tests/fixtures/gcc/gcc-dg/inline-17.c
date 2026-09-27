@@ -53,10 +53,10 @@ int func4 (void) { return 5; }
 // DEFAULT-NEXT:     fn %0 @func1() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @func2() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @func2() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @func3() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @func3() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @func4() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {

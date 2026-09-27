@@ -10,7 +10,7 @@ use crate::attribute_support;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::{Lexer, Token, TokenSpanExt};
+use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
 use crate::standard_features::StandardFeatures;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
@@ -778,7 +778,7 @@ impl<'a> Preprocessor<'a> {
         let expanded = self
             .expand_macros(source_tokens, &mut HashSet::new())
             .into_iter()
-            .map(|token| token.with_provenance(provenance))
+            .map(|token| self.classify_keyword(token).with_provenance(provenance))
             .collect::<Vec<_>>();
         let mut nodes = Vec::new();
         let mut code_start = 0;
@@ -811,6 +811,11 @@ impl<'a> Preprocessor<'a> {
                     .into_iter()
                     .map(|token| origin.clone().with_value(token))
                     .collect::<Vec<_>>();
+                let classified_tokens = pragma_tokens
+                    .iter()
+                    .cloned()
+                    .map(|token| self.classify_keyword(token))
+                    .collect::<Vec<_>>();
                 let pragma_loc = expanded[index]
                     .spelling
                     .through(expanded[index + 3].spelling);
@@ -824,7 +829,7 @@ impl<'a> Preprocessor<'a> {
                     Span::new(
                         PPNodeKind::Pragma {
                             text: tokens_source(pragma_tokens.values()),
-                            tokens: pragma_tokens,
+                            tokens: classified_tokens,
                             provenance,
                         },
                         pragma_loc,
@@ -1159,13 +1164,28 @@ impl<'a> Preprocessor<'a> {
         Span::new(
             PPNodeKind::Pragma {
                 text: self.spelling(directive.loc).to_string(),
-                tokens: directive.arguments.clone(),
+                tokens: directive
+                    .arguments
+                    .iter()
+                    .cloned()
+                    .map(|token| self.classify_keyword(token))
+                    .collect(),
                 provenance,
             },
             directive.loc,
             directive.loc,
         )
         .with_provenance(provenance)
+    }
+
+    fn classify_keyword(&self, token: Span<Token>) -> Span<Token> {
+        match &token.value {
+            Token::Ident(word) => match keyword_token(word, &self.features) {
+                Some(keyword) => token.with_value(keyword),
+                None => token,
+            },
+            _ => token,
+        }
     }
 
     fn spelling(&self, loc: Loc) -> &str {

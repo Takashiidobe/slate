@@ -703,113 +703,7 @@ impl Lexer {
                 }
             }
             let word: String = self.chars[i..self.pos].iter().collect();
-            let token = match word.as_str() {
-                "sizeof" => Token::Sizeof,
-                "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
-                "alignof" if self.features.keyword_alignof.is_accepted() => Token::Alignof,
-                "_Bool" => Token::Keyword(Keyword::Bool),
-                "bool" if self.features.keyword_bool_true_false.is_accepted() => {
-                    Token::Keyword(Keyword::Bool)
-                }
-                "__bf16" => Token::Keyword(Keyword::BFloat16),
-                "char" => Token::Keyword(Keyword::Char),
-                "double" => Token::Keyword(Keyword::Double),
-                "float" => Token::Keyword(Keyword::Float),
-                "_Float16" if self.features.keyword_float16.is_accepted() => {
-                    Token::Keyword(Keyword::Float16)
-                }
-                "__fp16" => Token::Keyword(Keyword::Fp16),
-                "_Float32" | "_Float64" | "_Float32x" | "_Float64x" | "_Float128"
-                | "_Float128x" => Token::Ident(word.clone()),
-                "__float128" => Token::Keyword(Keyword::Float128Ext),
-                "_Decimal32" if self.features.decimal_floating_point.is_accepted() => {
-                    Token::Keyword(Keyword::Decimal32)
-                }
-                "_Decimal64" if self.features.decimal_floating_point.is_accepted() => {
-                    Token::Keyword(Keyword::Decimal64)
-                }
-                "_Decimal128" if self.features.decimal_floating_point.is_accepted() => {
-                    Token::Keyword(Keyword::Decimal128)
-                }
-                "int" => Token::Keyword(Keyword::Int),
-                "long" => Token::Keyword(Keyword::Long),
-                "return" => Token::Keyword(Keyword::Return),
-                "short" => Token::Keyword(Keyword::Short),
-                "signed" | "__signed" | "__signed__" => Token::Keyword(Keyword::Signed),
-                "typedef" => Token::Keyword(Keyword::Typedef),
-                "unsigned" | "__unsigned" | "__unsigned__" => Token::Keyword(Keyword::Unsigned),
-                "void" => Token::Keyword(Keyword::Void),
-                "_Complex" | "__complex__" | "__complex" => Token::Keyword(Keyword::Complex),
-                "struct" => Token::Keyword(Keyword::Struct),
-                "union" => Token::Keyword(Keyword::Union),
-                "enum" => Token::Keyword(Keyword::Enum),
-                "const" | "__const" | "__const__" => Token::Keyword(Keyword::Const),
-                "volatile" | "__volatile" | "__volatile__" => Token::Keyword(Keyword::Volatile),
-                "restrict" if self.features.keyword_restrict.is_accepted() => {
-                    Token::Keyword(Keyword::Restrict)
-                }
-                "_Atomic" => Token::Keyword(Keyword::Atomic),
-                "extern" => Token::Keyword(Keyword::Extern),
-                "static" => Token::Keyword(Keyword::Static),
-                "auto" => Token::Keyword(Keyword::Auto),
-                "register" => Token::Keyword(Keyword::Register),
-                "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
-                "inline" if self.features.keyword_inline.is_accepted() => {
-                    Token::Keyword(Keyword::Inline)
-                }
-                "__int128" => Token::Keyword(Keyword::Int128),
-                "__int8" | "_int8" if self.features.microsoft_keywords => {
-                    Token::Keyword(Keyword::Char)
-                }
-                "__int16" | "_int16" if self.features.microsoft_keywords => {
-                    Token::Keyword(Keyword::Short)
-                }
-                "__int32" | "_int32" if self.features.microsoft_keywords => {
-                    Token::Keyword(Keyword::Int)
-                }
-                "__int64" | "_int64" if self.features.microsoft_keywords => {
-                    Token::Keyword(Keyword::Int64)
-                }
-                "_Noreturn" => Token::Keyword(Keyword::Noreturn),
-                "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
-                "thread_local" if self.features.keyword_thread_local.is_accepted() => {
-                    Token::Keyword(Keyword::ThreadLocal)
-                }
-                "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
-                "_BitInt" => Token::Keyword(Keyword::BitInt),
-                "_Accum" => Token::Keyword(Keyword::Accum),
-                "_Fract" => Token::Keyword(Keyword::Fract),
-                "_Sat" => Token::Keyword(Keyword::Saturated),
-                "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
-                "typeof" if self.features.keyword_typeof.is_accepted() => {
-                    Token::Keyword(Keyword::Typeof)
-                }
-                "__typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),
-                "typeof_unqual" if self.features.keyword_typeof_unqual.is_accepted() => {
-                    Token::Keyword(Keyword::TypeofUnqual)
-                }
-                "constexpr" if self.features.keyword_constexpr.is_accepted() => {
-                    Token::Keyword(Keyword::Constexpr)
-                }
-                "_Imaginary" => Token::Keyword(Keyword::Imaginary),
-                "if" => Token::Keyword(Keyword::If),
-                "else" => Token::Keyword(Keyword::Else),
-                "while" => Token::Keyword(Keyword::While),
-                "do" => Token::Keyword(Keyword::Do),
-                "for" => Token::Keyword(Keyword::For),
-                "switch" => Token::Keyword(Keyword::Switch),
-                "case" => Token::Keyword(Keyword::Case),
-                "default" => Token::Keyword(Keyword::Default),
-                "break" => Token::Keyword(Keyword::Break),
-                "continue" => Token::Keyword(Keyword::Continue),
-                "goto" => Token::Keyword(Keyword::Goto),
-                "_Static_assert" => Token::Keyword(Keyword::StaticAssert),
-                "static_assert" if self.features.keyword_static_assert.is_accepted() => {
-                    Token::Keyword(Keyword::StaticAssert)
-                }
-                _ => Token::Ident(word),
-            };
-            self.emit(token);
+            self.emit(Token::Ident(word));
         } else if let Some(token) = self.try_consume_op() {
             self.emit(token);
         } else {
@@ -1017,4 +911,96 @@ impl Lexer {
         }
         (value, e)
     }
+}
+
+pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
+    Some(match word {
+        "sizeof" => Token::Sizeof,
+        "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
+        "alignof" if features.keyword_alignof.is_accepted() => Token::Alignof,
+        "_Bool" => Token::Keyword(Keyword::Bool),
+        "bool" if features.keyword_bool_true_false.is_accepted() => Token::Keyword(Keyword::Bool),
+        "__bf16" => Token::Keyword(Keyword::BFloat16),
+        "char" => Token::Keyword(Keyword::Char),
+        "double" => Token::Keyword(Keyword::Double),
+        "float" => Token::Keyword(Keyword::Float),
+        "_Float16" if features.keyword_float16.is_accepted() => Token::Keyword(Keyword::Float16),
+        "__fp16" => Token::Keyword(Keyword::Fp16),
+        "_Float32" | "_Float64" | "_Float32x" | "_Float64x" | "_Float128" | "_Float128x" => {
+            return None;
+        }
+        "__float128" => Token::Keyword(Keyword::Float128Ext),
+        "_Decimal32" if features.decimal_floating_point.is_accepted() => {
+            Token::Keyword(Keyword::Decimal32)
+        }
+        "_Decimal64" if features.decimal_floating_point.is_accepted() => {
+            Token::Keyword(Keyword::Decimal64)
+        }
+        "_Decimal128" if features.decimal_floating_point.is_accepted() => {
+            Token::Keyword(Keyword::Decimal128)
+        }
+        "int" => Token::Keyword(Keyword::Int),
+        "long" => Token::Keyword(Keyword::Long),
+        "return" => Token::Keyword(Keyword::Return),
+        "short" => Token::Keyword(Keyword::Short),
+        "signed" | "__signed" | "__signed__" => Token::Keyword(Keyword::Signed),
+        "typedef" => Token::Keyword(Keyword::Typedef),
+        "unsigned" | "__unsigned" | "__unsigned__" => Token::Keyword(Keyword::Unsigned),
+        "void" => Token::Keyword(Keyword::Void),
+        "_Complex" | "__complex__" | "__complex" => Token::Keyword(Keyword::Complex),
+        "struct" => Token::Keyword(Keyword::Struct),
+        "union" => Token::Keyword(Keyword::Union),
+        "enum" => Token::Keyword(Keyword::Enum),
+        "const" | "__const" | "__const__" => Token::Keyword(Keyword::Const),
+        "volatile" | "__volatile" | "__volatile__" => Token::Keyword(Keyword::Volatile),
+        "restrict" if features.keyword_restrict.is_accepted() => Token::Keyword(Keyword::Restrict),
+        "_Atomic" => Token::Keyword(Keyword::Atomic),
+        "extern" => Token::Keyword(Keyword::Extern),
+        "static" => Token::Keyword(Keyword::Static),
+        "auto" => Token::Keyword(Keyword::Auto),
+        "register" => Token::Keyword(Keyword::Register),
+        "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
+        "inline" if features.keyword_inline.is_accepted() => Token::Keyword(Keyword::Inline),
+        "__int128" => Token::Keyword(Keyword::Int128),
+        "__int8" | "_int8" if features.microsoft_keywords => Token::Keyword(Keyword::Char),
+        "__int16" | "_int16" if features.microsoft_keywords => Token::Keyword(Keyword::Short),
+        "__int32" | "_int32" if features.microsoft_keywords => Token::Keyword(Keyword::Int),
+        "__int64" | "_int64" if features.microsoft_keywords => Token::Keyword(Keyword::Int64),
+        "_Noreturn" => Token::Keyword(Keyword::Noreturn),
+        "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
+        "thread_local" if features.keyword_thread_local.is_accepted() => {
+            Token::Keyword(Keyword::ThreadLocal)
+        }
+        "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
+        "_BitInt" => Token::Keyword(Keyword::BitInt),
+        "_Accum" => Token::Keyword(Keyword::Accum),
+        "_Fract" => Token::Keyword(Keyword::Fract),
+        "_Sat" => Token::Keyword(Keyword::Saturated),
+        "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+        "typeof" if features.keyword_typeof.is_accepted() => Token::Keyword(Keyword::Typeof),
+        "__typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),
+        "typeof_unqual" if features.keyword_typeof_unqual.is_accepted() => {
+            Token::Keyword(Keyword::TypeofUnqual)
+        }
+        "constexpr" if features.keyword_constexpr.is_accepted() => {
+            Token::Keyword(Keyword::Constexpr)
+        }
+        "_Imaginary" => Token::Keyword(Keyword::Imaginary),
+        "if" => Token::Keyword(Keyword::If),
+        "else" => Token::Keyword(Keyword::Else),
+        "while" => Token::Keyword(Keyword::While),
+        "do" => Token::Keyword(Keyword::Do),
+        "for" => Token::Keyword(Keyword::For),
+        "switch" => Token::Keyword(Keyword::Switch),
+        "case" => Token::Keyword(Keyword::Case),
+        "default" => Token::Keyword(Keyword::Default),
+        "break" => Token::Keyword(Keyword::Break),
+        "continue" => Token::Keyword(Keyword::Continue),
+        "goto" => Token::Keyword(Keyword::Goto),
+        "_Static_assert" => Token::Keyword(Keyword::StaticAssert),
+        "static_assert" if features.keyword_static_assert.is_accepted() => {
+            Token::Keyword(Keyword::StaticAssert)
+        }
+        _ => return None,
+    })
 }
