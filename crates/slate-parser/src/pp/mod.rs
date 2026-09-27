@@ -509,7 +509,7 @@ impl<'a> Preprocessor<'a> {
         self.flavor = flavor;
         self.features = self
             .features
-            .with_microsoft_keywords(microsoft_keywords_enabled(flavor, &target));
+            .with_microsoft_extensions(microsoft_extensions_enabled(flavor, &target));
         self.seed_builtin_macros(&target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;
@@ -784,11 +784,7 @@ impl<'a> Preprocessor<'a> {
         let mut code_start = 0;
         let mut index = 0;
         while index < expanded.len() {
-            if expanded.value_at(index) == Some(&Token::Ident("_Pragma".into()))
-                && expanded.value_at(index + 1) == Some(&Token::LParen)
-                && let Some(Token::StringLit(value)) = expanded.value_at(index + 2)
-                && expanded.value_at(index + 3) == Some(&Token::RParen)
-            {
+            if let Some((pragma_tokens, end)) = self.pragma_operator(&expanded, index) {
                 if code_start < index {
                     let code = expanded[code_start..index].to_vec();
                     nodes.push(
@@ -804,21 +800,13 @@ impl<'a> Preprocessor<'a> {
                         .with_provenance(provenance),
                     );
                 }
-                let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
-                let origin = Span::cover((), &expanded[index..index + 4]);
-                let pragma_tokens = self
-                    .lex(&decoded)
-                    .into_iter()
-                    .map(|token| origin.clone().with_value(token))
-                    .collect::<Vec<_>>();
+                let origin = Span::cover((), &expanded[index..end]);
                 let classified_tokens = pragma_tokens
                     .iter()
                     .cloned()
                     .map(|token| self.classify_keyword(token))
                     .collect::<Vec<_>>();
-                let pragma_loc = expanded[index]
-                    .spelling
-                    .through(expanded[index + 3].spelling);
+                let pragma_loc = expanded[index].spelling.through(expanded[end - 1].spelling);
                 self.record_pragma(&Directive {
                     name: DirectiveName::Pragma,
                     arguments: pragma_tokens.clone(),
@@ -837,7 +825,7 @@ impl<'a> Preprocessor<'a> {
                     )
                     .with_provenance(provenance),
                 );
-                index += 4;
+                index = end;
                 code_start = index;
             } else {
                 index += 1;
@@ -859,6 +847,50 @@ impl<'a> Preprocessor<'a> {
             );
         }
         nodes
+    }
+
+    fn pragma_operator(
+        &self,
+        tokens: &[Span<Token>],
+        index: usize,
+    ) -> Option<(Vec<Span<Token>>, usize)> {
+        let Some(Token::Ident(name)) = tokens.value_at(index) else {
+            return None;
+        };
+        if tokens.value_at(index + 1) != Some(&Token::LParen) {
+            return None;
+        }
+        match name.as_str() {
+            "_Pragma" => {
+                let Some(Token::StringLit(value)) = tokens.value_at(index + 2) else {
+                    return None;
+                };
+                if tokens.value_at(index + 3) != Some(&Token::RParen) {
+                    return None;
+                }
+                let origin = Span::cover((), &tokens[index..index + 4]);
+                let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
+                let pragma_tokens = self
+                    .lex(&decoded)
+                    .into_iter()
+                    .map(|token| origin.clone().with_value(token))
+                    .collect();
+                Some((pragma_tokens, index + 4))
+            }
+            "__pragma" if self.features.microsoft_extensions => {
+                let mut depth = 0usize;
+                let close = (index + 1..tokens.len()).find(|&at| {
+                    match tokens[at].value {
+                        Token::LParen => depth += 1,
+                        Token::RParen => depth -= 1,
+                        _ => {}
+                    }
+                    depth == 0
+                })?;
+                Some((tokens[index + 2..close].to_vec(), close + 1))
+            }
+            _ => None,
+        }
     }
 
     fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
@@ -1195,7 +1227,7 @@ impl<'a> Preprocessor<'a> {
     }
 }
 
-fn microsoft_keywords_enabled(
+fn microsoft_extensions_enabled(
     flavor: CompilerFlavor,
     target: &crate::target_info::TargetInfo,
 ) -> bool {

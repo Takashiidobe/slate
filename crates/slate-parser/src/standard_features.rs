@@ -44,7 +44,7 @@ pub struct StandardFeatures {
     pub main_implicit_return_zero: bool,
     pub valueless_return_in_nonvoid: bool,
     pub inline_semantics: InlineSemantics,
-    pub microsoft_keywords: bool,
+    pub microsoft_extensions: bool,
 }
 
 impl StandardFeatures {
@@ -98,12 +98,12 @@ impl StandardFeatures {
             } else {
                 InlineSemantics::ProvideDef
             },
-            microsoft_keywords: false,
+            microsoft_extensions: false,
         }
     }
 
-    pub fn with_microsoft_keywords(mut self, enabled: bool) -> Self {
-        self.microsoft_keywords = enabled;
+    pub fn with_microsoft_extensions(mut self, enabled: bool) -> Self {
+        self.microsoft_extensions = enabled;
         self
     }
 }

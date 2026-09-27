@@ -155,7 +155,9 @@ typed; one that is not `float_control({push|pop})` or
 `FloatControl::Malformed`, so sema can reject it per compiler flavor.
 
 `_Pragma` operands are destringized after macro expansion, with spelling and
-expansion locations retained. An operator inside a statement is emitted before
+expansion locations retained. The MS `__pragma(tokens)` operator, gated like
+the MS keywords below, takes its balanced, already-expanded operand tokens as
+the pragma, so `__pragma(pack(push, _CRT_PACKING))` packs to the macro's value. An operator inside a statement is emitted before
 that containing statement; its span records the position within the expression.
 Completed statements preceding the operator keep their order and typedef scope.
 The preprocessor executes `push_macro` and `pop_macro` operators as well as
