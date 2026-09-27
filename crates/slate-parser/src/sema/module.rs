@@ -9,7 +9,6 @@ use super::types::{Ordinary, TypeResolver, is_folded};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
-use crate::attribute_support;
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{IntegerLiteral, IntegerSizeSuffix, IntegerSuffix, Radix};
 use crate::diagnostics::Warning;
@@ -55,9 +54,6 @@ pub fn resolve_module(
         pretty_function_name: None,
         files: files.clone(),
         return_type: None,
-        diagnostic_options: unit.options.diagnostics.clone(),
-        standard: unit.standard,
-        diagnostics: Vec::new(),
         floating_pragmas: FloatingPragmas::new(unit.flavor, context.region),
         compound_start: false,
         context,
@@ -85,7 +81,9 @@ pub fn resolve_module(
                     &function.declarator,
                     &function.attributes,
                 );
-                lower.check_attributes(attributes.iter().copied(), Subject::Function)?;
+                lower
+                    .types
+                    .check_attributes(attributes.iter().copied(), Subject::Function)?;
                 let mut symbol = function_symbol(attributes.iter().copied(), None)?;
                 let name = function
                     .declarator
@@ -206,7 +204,7 @@ pub fn resolve_module(
         .map(|(id, c)| (id, lower.types.access_of(c)))
         .collect();
     super::effects_statements::normalize(&mut lower.module, lower.next_id, access)?;
-    Ok((lower.module, lower.diagnostics))
+    Ok((lower.module, lower.types.diagnostics))
 }
 
 fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
@@ -215,20 +213,6 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
         StorageClass::None | StorageClass::Extern => Ok(Linkage::External),
         _ => Err(ResolveError::Unsupported("linkage storage class")),
     }
-}
-
-fn reject_unsupported<'a>(
-    attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
-    subject: Subject,
-) -> Result<(), ResolveError> {
-    for attribute in attributes {
-        match super::attributes::declaration_use(&attribute.value, subject) {
-            Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
-            Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
-            _ => {}
-        }
-    }
-    Ok(())
 }
 
 fn applies(attribute: &Span<ast::Attribute>, subject: Subject) -> bool {
@@ -417,51 +401,6 @@ impl Lowerer {
         })
     }
 
-    fn check_attributes<'a>(
-        &mut self,
-        attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
-        subject: Subject,
-    ) -> Result<(), ResolveError> {
-        for attribute in attributes {
-            match super::attributes::declaration_use(&attribute.value, subject) {
-                Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
-                Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
-                Use::Inapplicable {
-                    spelling,
-                    applies_to,
-                } => {
-                    let message = match applies_to {
-                        Some(subjects) => {
-                            format!("'{spelling}' attribute ignored; it applies only to {subjects}")
-                        }
-                        None => format!("'{spelling}' attribute ignored"),
-                    };
-                    self.warn(Warning::IgnoredAttributes, &message, attribute);
-                }
-                Use::Unknown => {
-                    if let ast::Attribute::Unknown { name, .. } = &attribute.value
-                        && !attribute_support::spelling_registered(
-                            name,
-                            self.types.flavor,
-                            &self.context.target,
-                        )
-                    {
-                        let message = format!("unknown attribute '{name}' ignored");
-                        self.warn(Warning::UnknownAttributes, &message, attribute);
-                    }
-                }
-                Use::UnsupportedDeclspec => {
-                    if let ast::Attribute::IgnoredDeclspec { name, .. } = &attribute.value {
-                        let message = format!("__declspec attribute '{name}' is not supported");
-                        self.warn(Warning::IgnoredAttributes, &message, attribute);
-                    }
-                }
-                Use::Symbol | Use::Layout | Use::Ignored => {}
-            }
-        }
-        Ok(())
-    }
-
     fn resolve_object_requests(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         let msvc_target = self.context.target.environment == TargetEnvironment::Msvc;
         for function in &mut self.module.functions {
@@ -633,7 +572,8 @@ impl Lowerer {
                     .iter()
                     .chain(&parameter.attributes)
             };
-            self.check_attributes(attributes(), Subject::Parameter)?;
+            self.types
+                .check_attributes(attributes(), Subject::Parameter)?;
             let alignment = super::types::requested_alignment(&mut self.types, attributes())?;
             if let Some(alignment) = alignment {
                 let rejected_by = if attributes()
@@ -773,7 +713,13 @@ impl Lowerer {
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         if item.declarators.is_empty() {
-            reject_unsupported(&item.specifiers.attributes, Subject::Record)?;
+            for attribute in &item.specifiers.attributes {
+                self.warn(
+                    Warning::IgnoredAttributes,
+                    "attribute ignored; place it after the tag keyword to apply it to the type",
+                    attribute,
+                );
+            }
             if !self.types.declare_forward_tag(&item.specifiers) {
                 self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
             }
@@ -794,7 +740,8 @@ impl Lowerer {
                 .iter()
                 .chain(&declarator.attributes);
             if storage_class == StorageClass::Typedef {
-                self.check_attributes(attributes.clone(), Subject::Typedef)?;
+                self.types
+                    .check_attributes(attributes.clone(), Subject::Typedef)?;
             }
             let thread = item.specifiers.is_thread_local
                 || attributes
@@ -894,7 +841,8 @@ impl Lowerer {
                     &declarator.declarator,
                     &declarator.attributes,
                 );
-                self.check_attributes(attributes.iter().copied(), Subject::Function)?;
+                self.types
+                    .check_attributes(attributes.iter().copied(), Subject::Function)?;
                 let mut symbol =
                     function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
                 self.types.pragmas.apply(name, &mut symbol);
@@ -956,7 +904,7 @@ impl Lowerer {
             let subject = Subject::Object {
                 automatic: storage == StorageDuration::Automatic,
             };
-            self.check_attributes(attributes.clone(), subject)?;
+            self.types.check_attributes(attributes.clone(), subject)?;
             let attributes = || attributes.clone().filter(|a| applies(a, subject));
             if let Some(metadata) = self.c_attribute_metadata(attributes())? {
                 c_entries.push(metadata);

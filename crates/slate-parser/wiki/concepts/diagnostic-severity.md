@@ -131,7 +131,8 @@ Whether an attribute is *applied* or *dropped* is a property of the pair
 produces wrong IR — a visibility, section or `used` flag on a declaration
 clang leaves alone — rather than only a missing diagnostic. `sema/attributes.rs`
 states the pair once: `Subject` names what the attribute is written on
-(`Function`, `Object { automatic }`, `Parameter`, `Typedef`, `Record`) and
+(`Function`, `Object { automatic }`, `Parameter`, `Typedef`, `Field`,
+`Record { union }`) and
 `declaration_use(attribute, subject)` answers with
 
 - `Inapplicable` — outside clang's subject list: dropped, never applied, and
@@ -140,8 +141,11 @@ states the pair once: `Subject` names what the attribute is written on
 - `Unsupported` — applicable here, but lowering cannot yet express it, which
   is the only remaining reason to refuse a declaration.
 
-`Lowerer::check_attributes` is the single place that turns that answer into a
-warning or a `ResolveError`, and each call site filters the inapplicable
+`TypeResolver::check_attributes` is the single place that turns that answer
+into a warning or a `ResolveError`. It lives on the type resolver, which also
+owns the one warning sink (`Lowerer::warn` forwards to it), because record
+and field attributes are only seen in `TypeResolver::define_tag`; `tag_ids` is
+never rolled back, so a tag is defined, and diagnosed, once. Each call site filters the inapplicable
 attributes out before `symbol_attributes` and `requested_alignment` read them.
 That split is what fixes the too-strict half of slate-parser-dyd.15: before
 it, `transparent_union`, `ms_struct`, `gcc_struct`, `ifunc` and
@@ -159,6 +163,27 @@ Measured against clang 22.1.8 (2026-09-21); `ok` is silently accepted and
 | `cleanup` | `ign` unless automatic | `ign` | `ign` | `ign` |
 | `packed`, `ms_struct`, `gcc_struct`, `transparent_union` | `ign` | `ign` | `ign` | `ign` |
 | `malloc`, `cold`, `ifunc`, `alloc_size`, … | `ign` | ok | `ign` | `ign` |
+
+Fields and tag definitions (slate-parser-dyd.47, same clang); `err` is a hard
+error in clang too:
+
+| written on | field | struct/union definition |
+| --- | --- | --- |
+| `packed`, `aligned`, `vector_size`, `may_alias` | ok | ok |
+| `ms_struct`, `gcc_struct` | `ign` | ok (layout) |
+| `transparent_union` | `ign` | ok on a union, `ign` on a struct |
+| `mode` | ok | `err` |
+| `section`, `alias`, `tls_model` | `err` | `err` |
+| `used`, `retain`, `weak`, `common`, `nocommon`, `cleanup`, `noreturn`, `nonnull` | `ign` | `ign` |
+| `malloc`, `cold`, `format`, `noinline`, … | `ign` | `ign` |
+
+`transparent_union` is `Ignored` rather than `Unsupported` on a union: the
+calling convention is not modeled, but a call that needs it already fails in
+the argument conversion, so accepting the definition cannot lower a wrong
+program. Attributes written before the tag keyword of a declaration with no
+declarators (`__attribute__((packed)) struct S {...};`) never reach the tag;
+clang ignores them with a "place it after struct" warning whatever the
+attribute, and so does slate (they used to be rejected when `Unsupported`).
 
 Before subject applicability comes registration: whether the flavor knows the
 spelling at all on this target. `src/attribute_support.rs` is the one
@@ -217,12 +242,10 @@ matters beyond attributes: glibc's `<string.h>` enables its C23
 const-preserving `strchr`/`memchr`/`strstr` `_Generic` wrappers behind
 `#ifdef __has_extension`. Fixtures: `has-operators-defined-{clang,gcc,msvc}.c`.
 
-One gap remains, filed rather than guessed at: the record and field subjects
-are not diagnosed, because lowering does not route their attributes through
-`check_attributes` yet.
-
 Fixtures: `sema/ir_attribute_applicability.c` (the applied/dropped half, in
-the IR) and `sema/attribute_applicability_warnings.c` (the diagnostics).
+the IR), `sema/attribute_applicability_warnings.c` (the diagnostics),
+`sema/record_attribute_applicability.c` (fields and tags, with the layouts)
+and `error/field-section-attribute.c`.
 
 The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
 types, so they come from IR lowering rather than `TranslationUnit::analyze`.

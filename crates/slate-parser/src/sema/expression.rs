@@ -5,9 +5,8 @@ use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
-use crate::compiler_args::LanguageStandard;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
-use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
+use crate::diagnostics::Warning;
 use crate::ir::*;
 use num_bigint::BigInt;
 use std::collections::HashMap;
@@ -34,9 +33,6 @@ pub(super) struct Lowerer {
     pub pretty_function_name: Option<String>,
     pub files: crate::files::Files,
     pub return_type: Option<QualType>,
-    pub diagnostic_options: DiagnosticOptions,
-    pub standard: LanguageStandard,
-    pub diagnostics: Vec<super::SemaError>,
     pub floating_pragmas: super::pragmas::FloatingPragmas,
     pub compound_start: bool,
 }
@@ -1009,17 +1005,7 @@ impl Lowerer {
     }
 
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
-        let diagnostics = DiagnosticContext {
-            options: &self.diagnostic_options,
-            standard: self.standard,
-            flavor: self.types.compiler_flavor(),
-        };
-        self.diagnostics.extend(warning.diagnose(
-            message,
-            diagnostics,
-            node.provenance,
-            node.expansion,
-        ));
+        self.types.warn(warning, message, node);
     }
 
     pub fn fresh(&mut self) -> BindingId {

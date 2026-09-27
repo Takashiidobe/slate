@@ -6,7 +6,8 @@ pub(super) enum Subject {
     Object { automatic: bool },
     Parameter,
     Typedef,
-    Record,
+    Field,
+    Record { union: bool },
 }
 
 pub(super) enum Use {
@@ -37,6 +38,9 @@ pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
         }
         (Subject::Parameter, _) if alignment || attribute.is_type_attribute() => Use::Layout,
         (Subject::Parameter, Use::Symbol | Use::Layout) => parameter_use(attribute),
+        (Subject::Field | Subject::Record { .. }, general) => {
+            member_use(attribute, subject, general)
+        }
         (_, general) => general,
     }
 }
@@ -75,6 +79,24 @@ fn parameter_use(attribute: &Attribute) -> Use {
     }
 }
 
+fn member_use(attribute: &Attribute, subject: Subject, general: Use) -> Use {
+    match attribute {
+        Attribute::Section(_) => {
+            Use::Invalid("'section' attribute only applies to functions and global variables")
+        }
+        Attribute::Alias(_) => {
+            Use::Invalid("'alias' attribute only applies to functions and global variables")
+        }
+        Attribute::TlsModel(_) => {
+            Use::Invalid("'tls_model' attribute only applies to thread-local variables")
+        }
+        Attribute::Mode(_) if subject != Subject::Field => Use::Invalid(
+            "'mode' attribute only applies to variables, enums, typedefs, and non-static data members",
+        ),
+        _ => general,
+    }
+}
+
 /// What the attribute means to lowering once it is known to apply.
 fn general_use(attribute: &Attribute) -> Use {
     match attribute {
@@ -95,6 +117,8 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::VectorSize(_)
         | Attribute::ExtVectorType(_)
         | Attribute::Packed
+        | Attribute::MsStruct
+        | Attribute::GccStruct
         | Attribute::ThreadLocal
         | Attribute::Common
         | Attribute::NoCommon => Use::Layout,
@@ -103,8 +127,7 @@ fn general_use(attribute: &Attribute) -> Use {
         Attribute::AddressSpace(_) => Use::Ignored,
         Attribute::Cleanup(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Ignored,
-        Attribute::TransparentUnion => Use::Unsupported("transparent union attribute"),
-        Attribute::MsStruct | Attribute::GccStruct => Use::Unsupported("record layout attribute"),
+        Attribute::TransparentUnion => Use::Ignored,
         Attribute::Ifunc(_) => Use::Unsupported("ifunc attribute"),
         Attribute::CodeSeg(_) => Use::Unsupported("code segment attribute"),
         Attribute::Invalid { .. } => Use::Unsupported("invalid attribute"),
@@ -171,15 +194,17 @@ fn inapplicable(
 ) -> Option<(&'static str, Option<&'static str>)> {
     let function_only =
         |spelling| (subject != Subject::Function).then_some((spelling, Some("functions")));
+    let record = matches!(subject, Subject::Record { .. });
     match attribute {
-        Attribute::Packed => (subject != Subject::Record).then_some(("packed", None)),
-        Attribute::TransparentUnion => {
-            (subject != Subject::Record).then_some(("transparent_union", Some("unions")))
+        Attribute::Packed => (!record && subject != Subject::Field).then_some(("packed", None)),
+        Attribute::TransparentUnion => (subject != Subject::Record { union: true })
+            .then_some(("transparent_union", Some("unions"))),
+        Attribute::MsStruct => {
+            (!record).then_some(("ms_struct", Some("structs, unions, and classes")))
         }
-        Attribute::MsStruct => (subject != Subject::Record)
-            .then_some(("ms_struct", Some("structs, unions, and classes"))),
-        Attribute::GccStruct => (subject != Subject::Record)
-            .then_some(("gcc_struct", Some("structs, unions, and classes"))),
+        Attribute::GccStruct => {
+            (!record).then_some(("gcc_struct", Some("structs, unions, and classes")))
+        }
         Attribute::Ifunc(_) => function_only("ifunc"),
         Attribute::Malloc => function_only("malloc"),
         Attribute::Cold => function_only("cold"),
@@ -236,7 +261,11 @@ fn inapplicable(
             };
             matches!(
                 subject,
-                Subject::Object { automatic: true } | Subject::Parameter | Subject::Typedef
+                Subject::Object { automatic: true }
+                    | Subject::Parameter
+                    | Subject::Typedef
+                    | Subject::Field
+                    | Subject::Record { .. }
             )
             .then_some((
                 spelling,
@@ -246,7 +275,11 @@ fn inapplicable(
         Attribute::Cleanup(_) => (!matches!(subject, Subject::Object { automatic: true }))
             .then_some(("cleanup", Some("local variables"))),
         Attribute::Visibility(_) => (subject == Subject::Typedef).then_some(("visibility", None)),
-        Attribute::Weak => (subject == Subject::Typedef).then_some(("weak", None)),
+        Attribute::Weak => matches!(
+            subject,
+            Subject::Typedef | Subject::Field | Subject::Record { .. }
+        )
+        .then_some(("weak", None)),
 
         _ => None,
     }

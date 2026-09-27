@@ -6,7 +6,8 @@ use crate::ast::{
     IntegerType, ParameterList, Span, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, Enumerator, Field, Number,
     NumericType, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value,
@@ -17,6 +18,7 @@ use crate::target_info::{
 };
 use num_bigint::{BigInt, BigUint};
 
+use super::attributes::{Subject, Use};
 use super::ctype::{
     CTypeKind, CTypeMetadata, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank,
     QualType, Qualifiers,
@@ -51,6 +53,9 @@ pub struct TypeResolver {
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     pub(super) pragmas: super::pragmas::Pragmas,
+    pub(super) diagnostics: Vec<super::SemaError>,
+    diagnostic_options: DiagnosticOptions,
+    standard: LanguageStandard,
     prototype_scope: bool,
 }
 
@@ -86,6 +91,9 @@ impl TypeResolver {
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
+            diagnostics: Vec::new(),
+            diagnostic_options: DiagnosticOptions::default(),
+            standard: LanguageStandard::default(),
             prototype_scope: false,
         }
     }
@@ -124,7 +132,68 @@ impl TypeResolver {
         resolver.features = StandardFeatures::new(unit.standard);
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
+        resolver.diagnostic_options = unit.options.diagnostics.clone();
+        resolver.standard = unit.standard;
         resolver
+    }
+
+    pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
+        let diagnostics = DiagnosticContext {
+            options: &self.diagnostic_options,
+            standard: self.standard,
+            flavor: self.flavor,
+        };
+        self.diagnostics.extend(warning.diagnose(
+            message,
+            diagnostics,
+            node.provenance,
+            node.expansion,
+        ));
+    }
+
+    pub(super) fn check_attributes<'a>(
+        &mut self,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+        subject: Subject,
+    ) -> Result<(), ResolveError> {
+        for attribute in attributes {
+            match super::attributes::declaration_use(&attribute.value, subject) {
+                Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
+                Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
+                Use::Inapplicable {
+                    spelling,
+                    applies_to,
+                } => {
+                    let message = match applies_to {
+                        Some(subjects) => {
+                            format!("'{spelling}' attribute ignored; it applies only to {subjects}")
+                        }
+                        None => format!("'{spelling}' attribute ignored"),
+                    };
+                    self.warn(Warning::IgnoredAttributes, &message, attribute);
+                }
+                Use::Unknown => {
+                    if let Attribute::Unknown { name, .. } = &attribute.value
+                        && !crate::attribute_support::spelling_registered(
+                            name,
+                            self.flavor,
+                            &self.target,
+                        )
+                    {
+                        let message = format!("unknown attribute '{name}' ignored");
+                        self.warn(Warning::UnknownAttributes, &message, attribute);
+                    }
+                }
+                Use::UnsupportedDeclspec => {
+                    if let Attribute::IgnoredDeclspec { name, .. } = &attribute.value {
+                        let message = format!("__declspec attribute '{name}' is not supported");
+                        self.warn(Warning::IgnoredAttributes, &message, attribute);
+                    }
+                }
+                Use::Symbol | Use::Layout | Use::Ignored => {}
+            }
+        }
+        Ok(())
     }
 
     pub fn tag_span<'a>(
@@ -1461,6 +1530,8 @@ impl TypeResolver {
         }
         let kind = match &tag.body {
             TagBody::Record(items) => {
+                let union = tag.kind == TagKind::Union;
+                self.check_attributes(&tag.attributes, Subject::Record { union })?;
                 let mut fields = Vec::new();
                 let mut field_types = Vec::new();
                 let mut requests = Vec::new();
@@ -1482,6 +1553,7 @@ impl TypeResolver {
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
                             continue;
                         }
+                        self.check_attributes(&declaration.specifiers.attributes, Subject::Field)?;
                         let resolved =
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
                         fields.push(item.derive(Field {
@@ -1499,6 +1571,14 @@ impl TypeResolver {
                         )?);
                     }
                     for declarator in &declaration.declarators {
+                        self.check_attributes(
+                            declaration
+                                .specifiers
+                                .attributes
+                                .iter()
+                                .chain(&declarator.attributes),
+                            Subject::Field,
+                        )?;
                         let resolved = self.resolve_declarator(
                             &declaration.specifiers,
                             &declarator.declarator,
