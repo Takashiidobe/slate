@@ -259,6 +259,14 @@ parse. Under the same gate:
   of declared objects to 1 but never changes record member layout. clang
   applies that to any type; cl.exe applies it only to pointer types.
 
+Under `--flavor=gcc` on x86, in gnu modes only, gcc's named address spaces
+`__seg_fs` and `__seg_gs` are type qualifiers, recorded as
+`Qualifiers::is_seg_fs` and `is_seg_gs`. Strict `-std=cNN` and other targets
+leave them identifiers. Under clang they are predefined macros for
+`__attribute__((address_space(257/256)))`. Sema ignores both spellings: the
+pointee's address space does not reach the IR, and `_Generic` does not tell
+`int __seg_gs *` from `int *`.
+
 `Vector` and `Mode` are not written as specifiers. The parser wraps the
 declaration's type specifier in one per `vector_size`, `ext_vector_type` or
 `mode` attribute in specifier position, in attribute order. Those apply to

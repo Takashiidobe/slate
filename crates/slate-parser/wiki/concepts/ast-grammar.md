@@ -122,7 +122,8 @@ Qualifiers   = Qualifiers { is_const?: true, is_volatile?: true,
                             is_restrict?: true, is_atomic?: true,
                             is_unaligned?: true, is_ptr32?: true,
                             is_ptr64?: true, is_sptr?: true,
-                            is_uptr?: true } ;
+                            is_uptr?: true, is_seg_fs?: true,
+                            is_seg_gs?: true } ;
 StorageClass = "Typedef" | "Extern" | "Static" | "Auto" | "Register" ;
 TypeName     = TypeName { specifiers: DeclarationSpecifiers,
                           declarator: Declarator } ;

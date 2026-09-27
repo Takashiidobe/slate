@@ -625,6 +625,8 @@ pub(super) fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
         Keyword::Ptr64 => qualifiers.is_ptr64 = true,
         Keyword::Sptr => qualifiers.is_sptr = true,
         Keyword::Uptr => qualifiers.is_uptr = true,
+        Keyword::SegFs => qualifiers.is_seg_fs = true,
+        Keyword::SegGs => qualifiers.is_seg_gs = true,
         _ => {}
     }
 }

@@ -48,6 +48,7 @@ pub struct StandardFeatures {
     pub gnu_floating_keywords: bool,
     pub keyword_float80: bool,
     pub fixed_point_keywords: bool,
+    pub x86_segment_keywords: bool,
 }
 
 impl StandardFeatures {
@@ -105,6 +106,7 @@ impl StandardFeatures {
             gnu_floating_keywords: false,
             keyword_float80: false,
             fixed_point_keywords: true,
+            x86_segment_keywords: false,
         }
     }
 
@@ -118,6 +120,7 @@ impl StandardFeatures {
         self.keyword_float80 = x86;
         // gcc's -std=cNN implies -fno-asm, which unreserves the fixed-point keywords
         self.fixed_point_keywords = standard.is_gnu();
+        self.x86_segment_keywords = x86 && standard.is_gnu();
         self
     }
 }

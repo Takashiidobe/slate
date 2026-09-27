@@ -1084,6 +1084,10 @@ pub struct Qualifiers {
     pub is_sptr: bool,
     #[debug(skip_if = is_false)]
     pub is_uptr: bool,
+    #[debug(skip_if = is_false)]
+    pub is_seg_fs: bool,
+    #[debug(skip_if = is_false)]
+    pub is_seg_gs: bool,
 }
 
 impl Qualifiers {

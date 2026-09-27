@@ -2132,6 +2132,8 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Ptr64
                 | Keyword::Sptr
                 | Keyword::Uptr
+                | Keyword::SegFs
+                | Keyword::SegGs
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Int128

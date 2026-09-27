@@ -1070,6 +1070,8 @@ impl<'a> DeclaratorParser<'a> {
                 | Keyword::Ptr64
                 | Keyword::Sptr
                 | Keyword::Uptr
+                | Keyword::SegFs
+                | Keyword::SegGs
         ) {
             return None;
         }
