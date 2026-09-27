@@ -224,8 +224,8 @@ or functions; those come only from declarators.
 | Variant                                                            | Source                                                                 |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                 |
-| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`                               |
-| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | including `__int128_t`/`__uint128_t`                                   |
+| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                  |
+| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | including `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64` |
 | `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                        |
 | `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
 | `Float(Decimal32 \| Decimal64 \| Decimal128)`                      | `_Decimal32`, `_Decimal64`, `_Decimal128`; literals `DF`/`DD`/`DL`     |
@@ -239,6 +239,13 @@ or functions; those come only from declarators.
 | `Inferred`                                                         | `__auto_type`, or C23 `auto` standing in for the type                  |
 | `Vector { element, size }`                                         | GNU vector types                                                       |
 | `Mode { base, mode }`                                              | GNU `__attribute__((mode(M)))`, mode name as spelled                   |
+
+The MS sized-integer keywords (`__intN` and `_intN`) are keywords only under
+`--flavor=msvc` or on a `*-windows-msvc` target with the clang flavor, like
+clang's `-fms-extensions`; elsewhere they are ordinary identifiers. `__int8`,
+`__int16` and `__int32` are aliases of `char`, `short` and `int`; `__int64` is
+a `long long` width, so clang-style `__int64 unsigned int` and `long __int64`
+parse.
 
 `Vector` and `Mode` are not written as specifiers. The parser wraps the
 declaration's type specifier in one per `vector_size`, `ext_vector_type` or

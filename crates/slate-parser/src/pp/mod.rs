@@ -507,6 +507,9 @@ impl<'a> Preprocessor<'a> {
     ) -> Result<(), PPError> {
         self.target = target.clone();
         self.flavor = flavor;
+        self.features = self
+            .features
+            .with_microsoft_keywords(microsoft_keywords_enabled(flavor, &target));
         self.seed_builtin_macros(&target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;
@@ -1169,6 +1172,17 @@ impl<'a> Preprocessor<'a> {
         self.source(loc.file)
             .get(loc.offset..loc.offset + loc.length)
             .unwrap_or_default()
+    }
+}
+
+fn microsoft_keywords_enabled(
+    flavor: CompilerFlavor,
+    target: &crate::target_info::TargetInfo,
+) -> bool {
+    match flavor {
+        CompilerFlavor::Msvc => true,
+        CompilerFlavor::Clang => target.environment == crate::target_info::TargetEnvironment::Msvc,
+        CompilerFlavor::Gcc => false,
     }
 }
 

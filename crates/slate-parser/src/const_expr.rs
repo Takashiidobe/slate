@@ -2122,6 +2122,7 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Int128
+                | Keyword::Int64
                 | Keyword::BitInt
                 | Keyword::Accum
                 | Keyword::Fract

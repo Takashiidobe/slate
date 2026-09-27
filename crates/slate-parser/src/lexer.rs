@@ -53,6 +53,7 @@ pub enum Keyword {
     Register,
     Inline,
     Int128,
+    Int64,
     Noreturn,
     ThreadLocal,
     BitInt,
@@ -130,6 +131,7 @@ impl From<Keyword> for &'static str {
             Keyword::Register => "register",
             Keyword::Inline => "inline",
             Keyword::Int128 => "__int128",
+            Keyword::Int64 => "__int64",
             Keyword::Noreturn => "_Noreturn",
             Keyword::ThreadLocal => "_Thread_local",
             Keyword::BitInt => "_BitInt",
@@ -756,6 +758,18 @@ impl Lexer {
                     Token::Keyword(Keyword::Inline)
                 }
                 "__int128" => Token::Keyword(Keyword::Int128),
+                "__int8" | "_int8" if self.features.microsoft_keywords => {
+                    Token::Keyword(Keyword::Char)
+                }
+                "__int16" | "_int16" if self.features.microsoft_keywords => {
+                    Token::Keyword(Keyword::Short)
+                }
+                "__int32" | "_int32" if self.features.microsoft_keywords => {
+                    Token::Keyword(Keyword::Int)
+                }
+                "__int64" | "_int64" if self.features.microsoft_keywords => {
+                    Token::Keyword(Keyword::Int64)
+                }
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
                 "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
                 "thread_local" if self.features.keyword_thread_local.is_accepted() => {

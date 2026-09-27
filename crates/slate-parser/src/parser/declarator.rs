@@ -100,6 +100,11 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
+    // clang accepts `long __int64` as `long long`
+    fn matches_long_long_tail(&mut self) -> bool {
+        self.matches(Token::Keyword(Keyword::Long)) || self.matches(Token::Keyword(Keyword::Int64))
+    }
+
     pub(crate) fn parse_base_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         if self.fixed_point_ahead() {
             return self.parse_fixed_point();
@@ -152,8 +157,19 @@ impl<'a> DeclaratorParser<'a> {
                 rank: IntegerRank::Int128,
                 signed: true,
             }),
+            Token::Keyword(Keyword::Int64) => {
+                let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
+                if signed {
+                    self.matches(Token::Keyword(Keyword::Signed));
+                }
+                self.matches(Token::Keyword(Keyword::Int));
+                TypeSpecifier::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::LongLong,
+                    signed,
+                })
+            }
             Token::Keyword(Keyword::Long) => {
-                if self.matches(Token::Keyword(Keyword::Long)) {
+                if self.matches_long_long_tail() {
                     let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
                     if signed {
                         self.matches(Token::Keyword(Keyword::Signed));
@@ -213,7 +229,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Long)) => {
                     self.pos += 1;
-                    if self.matches(Token::Keyword(Keyword::Long)) {
+                    if self.matches_long_long_tail() {
                         self.matches(Token::Keyword(Keyword::Int));
                         TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::LongLong,
@@ -226,6 +242,14 @@ impl<'a> DeclaratorParser<'a> {
                             signed: true,
                         })
                     }
+                }
+                Some(Token::Keyword(Keyword::Int64)) => {
+                    self.pos += 1;
+                    self.matches(Token::Keyword(Keyword::Int));
+                    TypeSpecifier::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::LongLong,
+                        signed: true,
+                    })
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
@@ -267,7 +291,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Long)) => {
                     self.pos += 1;
-                    if self.matches(Token::Keyword(Keyword::Long)) {
+                    if self.matches_long_long_tail() {
                         self.matches(Token::Keyword(Keyword::Int));
                         TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::LongLong,
@@ -280,6 +304,14 @@ impl<'a> DeclaratorParser<'a> {
                             signed: false,
                         })
                     }
+                }
+                Some(Token::Keyword(Keyword::Int64)) => {
+                    self.pos += 1;
+                    self.matches(Token::Keyword(Keyword::Int));
+                    TypeSpecifier::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::LongLong,
+                        signed: false,
+                    })
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
