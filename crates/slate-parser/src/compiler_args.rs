@@ -297,7 +297,7 @@ impl CompilerArgParser {
         let raw = parse_arguments(&arguments)?;
         let mut target = TargetInfo::for_triple_and_flavor(&raw.target, raw.flavor)?;
         validate_rules(&target).check(&raw)?;
-        target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa)
+        target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
         let layout = LayoutOptions {
@@ -684,7 +684,7 @@ fn validate_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 
 fn isa_target_rule<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
     Rule::validate("target ISA options", move |args: &ParsedCompilerArgs| {
-        TargetIsa::resolve(target.family, target.environment, &args.isa)
+        TargetIsa::resolve(target.family, target.environment, &args.isa, args.flavor)
             .map(drop)
             .map_err(|reason| format!("{reason} for {}", target.triple))
     })

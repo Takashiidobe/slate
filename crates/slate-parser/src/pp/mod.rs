@@ -393,7 +393,11 @@ impl<'a> Preprocessor<'a> {
             Vec::new()
         } else {
             let mut defines = target.long_double.predefines();
-            defines.extend(target.isa.predefines(target.family, flavor));
+            defines.extend(
+                target
+                    .isa
+                    .predefines(target.family, flavor, !self.standard.is_gnu()),
+            );
             defines
         };
         if flavor == CompilerFlavor::Gcc

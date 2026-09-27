@@ -53,6 +53,7 @@ impl TargetIsa {
         family: TargetFamily,
         environment: TargetEnvironment,
         request: &IsaRequest,
+        flavor: CompilerFlavor,
     ) -> Result<Self, String> {
         match family {
             TargetFamily::X86_64 | TargetFamily::X86 => {
@@ -89,6 +90,7 @@ impl TargetIsa {
                 Ok(Self::AArch64(AArch64Isa::resolve(
                     march,
                     request.sve_vector_bits,
+                    flavor,
                 )))
             }
             TargetFamily::Arm32 => {
@@ -134,10 +136,15 @@ impl TargetIsa {
         matches!(self, Self::Arm(isa) if isa.hard_float())
     }
 
-    pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {
+    pub fn predefines(
+        self,
+        family: TargetFamily,
+        flavor: CompilerFlavor,
+        strict_iso: bool,
+    ) -> Vec<String> {
         match self {
             Self::X86(isa) => isa.predefines(family, flavor),
-            Self::AArch64(isa) => isa.predefines(flavor),
+            Self::AArch64(isa) => isa.predefines(flavor, strict_iso),
             Self::Arm(isa) => isa.predefines(flavor),
         }
     }

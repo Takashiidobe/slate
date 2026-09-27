@@ -353,7 +353,25 @@ flavor.
   fp16fml only on armv8.4–8.9-a; `+nosimd` hides `__ARM_FEATURE_SVE` but keeps
   SVE2; `+aes+sha2` forms an implicit pair (CRYPTO, no SHA3), and disabling
   either half of a pair (or `+nocrypto`) drops both; `+crypto` adds
-  SHA3/SHA512/SM3/SM4 on armv8.4+. No flag here changes the aapcs64 ABI of
+  SHA3/SHA512/SM3/SM4 on armv8.4+. Those are clang's rules. gcc resolves the
+  same string differently, so `ArmMarch` applies each modifier under both rule
+  sets and `-flavor` picks one (`Rules` in the same file). Under gcc:
+  - COMPLEX, JCVT and FRINT are features (fcma, jscvt, frintts). `+nosimd` or
+    `+nofp` disables them permanently, and `+sve` enables fcma.
+  - `+nosimd` permanently disables SVE and everything above it, but keeps bf16
+    and fp16fml. Only their vector macros need simd.
+  - `+nofp` also drops bf16 and all the FP macros: FMA, `__FP_FAST_FMA*`,
+    fp16 format, and the IEC 559 macros, with `__GCC_IEC_559` set to 0.
+  - armv9 includes fp16fml.
+  - There is no MOPS or CSSC, and `+crypto` never adds SHA3/SM4. FAMINMAX and
+    LUT arrive at armv9.5.
+  - `__FLT_EVAL_METHOD__` is 16 with fp16, but 0 under strict `-std`.
+  - `__GCC_DESTRUCTIVE_SIZE` is 64 on armv9.
+  - SVE macros add `SVE_BITS` (0 when scalable) and `PREDICATE_OPERATORS`.
+    Both operator macros drop to 1 with a fixed vector length.
+
+  The macros `+nofp`/`+nosimd` can remove are stripped from the gcc snapshot
+  and emitted by the ISA. No flag here changes the aapcs64 ABI of
   anything slate lowers (GNU vectors, floats, HFAs); SVE only matters for
   sizeless types, which the parser doesn't accept.
 - Arm32 (`src/target/arm_isa.rs`): `-march=armv7-a|armv8-a` (no modifiers),
