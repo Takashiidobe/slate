@@ -73,11 +73,11 @@ main() {
 // DEFAULT-NEXT:             let %5 c: ptr<i16> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i16>>(%5, array_decay<ptr<i16>, length=Some(20)>(field0(%4)));
 // DEFAULT-NEXT:             asm "" [dialect=att] {
-// DEFAULT-NEXT:                 inlateout 0 "r" [reg] place<ptr<i16>>(%5) from read<ptr<i16>>(%5);
+// DEFAULT-NEXT:                 inlateout 0 "r" [reg] width 64 place<ptr<i16>>(%5) from read<ptr<i16>>(%5);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<i16>(deref(read<ptr<i16>>(%5)), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             asm "" [dialect=att] {
-// DEFAULT-NEXT:                 inlateout 0 "r" [reg] place<ptr<i16>>(%5) from read<ptr<i16>>(%5);
+// DEFAULT-NEXT:                 inlateout 0 "r" [reg] width 64 place<ptr<i16>>(%5) from read<ptr<i16>>(%5);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %8: i32 [synthetic] = read<i32>(%3);
 // DEFAULT-NEXT:             let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), widen<i32, reason=promotion>(read<i16>(deref(read<ptr<i16>>(%5)))));
@@ -88,11 +88,11 @@ main() {
 // DEFAULT-NEXT:             let %7 c: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i32>>(%7, array_decay<ptr<i32>, length=Some(10)>(field1(%6)));
 // DEFAULT-NEXT:             asm "" [dialect=att] {
-// DEFAULT-NEXT:                 inlateout 0 "r" [reg] place<ptr<i32>>(%7) from read<ptr<i32>>(%7);
+// DEFAULT-NEXT:                 inlateout 0 "r" [reg] width 64 place<ptr<i32>>(%7) from read<ptr<i32>>(%7);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%7)), const<i32>(1));
 // DEFAULT-NEXT:             asm "" [dialect=att] {
-// DEFAULT-NEXT:                 inlateout 0 "r" [reg] place<ptr<i32>>(%7) from read<ptr<i32>>(%7);
+// DEFAULT-NEXT:                 inlateout 0 "r" [reg] width 64 place<ptr<i32>>(%7) from read<ptr<i32>>(%7);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             let %10: i32 [synthetic] = read<i32>(%3);
 // DEFAULT-NEXT:             let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), read<i32>(deref(read<ptr<i32>>(%7))));

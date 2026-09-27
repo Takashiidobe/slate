@@ -40,46 +40,46 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:     fn %1 @classes(%2 x: i32, %3 c: i8, %4 v: vector<f32, 4>, %5 l: i64, %6 f: f80, %7 g: f80) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, scalar) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             lateout 0 "r" [reg] place<i32>(%2);
-// IR-NEXT:             lateout 1 "q" [reg] place<i8>(%3);
-// IR-NEXT:             lateout 2 "x" [xmm_reg] place<vector<f32, 4>>(%4);
-// IR-NEXT:             lateout 3 "a" [{ax}] place<i64>(%5);
+// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%2);
+// IR-NEXT:             lateout 1 "q" [reg] width 8 place<i8>(%3);
+// IR-NEXT:             lateout 2 "x" [xmm_reg] width 128 place<vector<f32, 4>>(%4);
+// IR-NEXT:             lateout 3 "a" [{ax}] width 64 place<i64>(%5);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             in 0 "i" [imm] const<i32>(42);
-// IR-NEXT:             in 1 "m" [mem] place<i32>(%2);
+// IR-NEXT:             in 0 "i" [imm] width 32 const<i32>(42);
+// IR-NEXT:             in 1 "m" [mem] width 32 place<i32>(%2);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             lateout 0 "Q" [reg_abcd] place<i8>(%3);
-// IR-NEXT:             lateout 1 "R" [reg_legacy] place<i32>(%2);
-// IR-NEXT:             in 2 "g" [reg | mem | imm] place<i32>(%2);
-// IR-NEXT:             in 3 "Yz" [{xmm0}] read<vector<f32, 4>>(%4);
+// IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%3);
+// IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%2);
+// IR-NEXT:             in 2 "g" [reg | mem | imm] width 32 place<i32>(%2);
+// IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%4);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3 %4" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3 " " %4;
-// IR-NEXT:             in 0 "b" [{bx}] read<i32>(%2);
-// IR-NEXT:             in 1 "c" [{cx}] read<i32>(%2);
-// IR-NEXT:             in 2 "d" [{dx}] read<i32>(%2);
-// IR-NEXT:             in 3 "S" [{si}] read<i64>(%5);
-// IR-NEXT:             in 4 "D" [{di}] read<i64>(%5);
+// IR-NEXT:             in 0 "b" [{bx}] width 32 read<i32>(%2);
+// IR-NEXT:             in 1 "c" [{cx}] width 32 read<i32>(%2);
+// IR-NEXT:             in 2 "d" [{dx}] width 32 read<i32>(%2);
+// IR-NEXT:             in 3 "S" [{si}] width 64 read<i64>(%5);
+// IR-NEXT:             in 4 "D" [{di}] width 64 read<i64>(%5);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             in 0 "t" [{st}] read<f80>(%6);
-// IR-NEXT:             in 1 "u" [{st(1)}] read<f80>(%7);
-// IR-NEXT:             in 2 "v" [zmm_reg] read<vector<f32, 4>>(%4);
-// IR-NEXT:             in 3 "X" [unresolved("X")] read<i32>(%2);
+// IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%6);
+// IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%7);
+// IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%4);
+// IR-NEXT:             in 3 "X" [unresolved("X")] width 32 read<i32>(%2);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             lateout 0 "r,m" [reg, mem] place<i32>(%2);
-// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] read<i64>(%5);
+// IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%2);
+// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] width 64 read<i64>(%5);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0" [dialect=att] {
 // IR-NEXT:             template: "# " %0;
-// IR-NEXT:             in 0 "r#m" [reg] read<i32>(%2);
+// IR-NEXT:             in 0 "r#m" [reg] width 32 read<i32>(%2);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

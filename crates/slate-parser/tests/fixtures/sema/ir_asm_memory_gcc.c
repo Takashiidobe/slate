@@ -42,9 +42,9 @@ void unaddressable(struct Pair *s, v4 v) {
 // IR-NEXT:         let %5 r: i32 [storage=automatic] = const<i32>(1);
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
-// IR-NEXT:             in 0 "rm" [reg | mem] read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type1>>(%3))));
-// IR-NEXT:             in 1 "m" [mem] read<i32>(lane(%4, const<i32>(1)));
-// IR-NEXT:             in 2 "rm" [reg | mem] read<i32>(%5);
+// IR-NEXT:             in 0 "rm" [reg | mem] width 32 read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type1>>(%3))));
+// IR-NEXT:             in 1 "m" [mem] width 32 read<i32>(lane(%4, const<i32>(1)));
+// IR-NEXT:             in 2 "rm" [reg | mem] width 32 read<i32>(%5);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

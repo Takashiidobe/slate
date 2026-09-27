@@ -900,13 +900,33 @@ template as opaque text with holes.
   constraint and gcc takes the register there; we follow gcc
   (permissive). Fixtures: `sema/ir_asm.c` `memory()`,
   `sema/ir_asm_memory_gcc.c`, `error/asm-memory-*.c`.
-- `x` is `xmm_reg` whatever the operand width; picking `ymm_reg`/`zmm_reg`
-  for wider vectors is the width work of `slate-parser-25m.14`. `v` is
+- `x` is `xmm_reg`, widened to `ymm_reg` or `zmm_reg` by a 256- or
+  512-bit operand (gcc and clang print `%ymm`/`%zmm` there). `v` is
   `zmm_reg` because only that Rust class reaches xmm16-31.
   Fixtures: `sema/**/ir_asm_classes.c`.
+- Each operand carries `width`, its type's storage size in bits (so
+  `long double` is 128 on x86-64, not 80). A width modifier resolves to an
+  `AsmRegisterView` on the piece: x86 `b` 8, `w` 16, `k` 32, `q` 64, `h`
+  high byte, `x`/`t`/`g` 128/256/512; AArch64 `b`/`h`/`s`/`d`/`q`
+  8-128 and `w`/`x` 32/64. Other modifiers (`c`, `n`, `P`, ...) keep only
+  the raw letter.
+- An unmodified x86 reference prints at the operand's width (`%dil` for a
+  `char`), but Rust's `{0}` prints the full register (`rdi`), so emission
+  must add a Rust modifier. An unmodified AArch64 reference prints the full
+  `x`/`v` register in both compilers, like Rust. The Rust modifier depends
+  on the class an alternative picks (`slate-parser-25m.15`), from the view
+  or else the width: x86 GPR classes 8 `l`, 16 `x`, 32 `e`, 64 `r`, high
+  byte `h`; x86 vector classes up to 128 `x`, 256 `y`, 512 `z`; AArch64
+  `reg` 32 `w`, 64 `x`, and `vreg` 8/16/32/64/128 `b`/`h`/`s`/`d`/`q`.
+  An explicit register can't appear in a Rust template, so emission names
+  it at that width instead (`eax`). No view maps to nothing on Arm.
+- A tied input folded into its output keeps its own width at its
+  reference sites on x86: gcc prints `"=r"(char) : "0"(int)` as `%dil`
+  and `%edi`, so `%1` becomes `%0(32)`. clang rejects size-mismatched
+  ties. Fixtures: `sema/**/ir_asm_widths.c`.
 - Registers carry the source spelling and, when the target register table
   recognized them, the canonical name. Width is dropped: a clobber clobbers
-  the whole register, and an operand's width is its IR type.
+  the whole register, and an operand carries its own `width`.
 - Side effects in operand expressions hoist ahead of the statement like any
   other operand, so the asm itself never contains an embedded effect.
   Fixture: `sema/ir_asm.c`.

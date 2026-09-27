@@ -30,15 +30,15 @@ void classes(int x, float f, double d) {
 // IR-NEXT:     fn %0 @classes(%1 x: i32, %2 f: f32, %3 d: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "@ %0 %1 %2" {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
-// IR-NEXT:             lateout 0 "r" [reg] place<i32>(%1);
-// IR-NEXT:             lateout 1 "t" [sreg] place<f32>(%2);
-// IR-NEXT:             lateout 2 "w" [dreg] place<f64>(%3);
+// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
+// IR-NEXT:             lateout 1 "t" [sreg] width 32 place<f32>(%2);
+// IR-NEXT:             lateout 2 "w" [dreg] width 64 place<f64>(%3);
 // IR-NEXT:         }
 // IR-NEXT:         asm "@ %0 %1 %2" {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
-// IR-NEXT:             in 0 "I" [imm] const<i32>(1);
-// IR-NEXT:             in 1 "Q" [mem] place<i32>(%1);
-// IR-NEXT:             in 2 "l" [unresolved("l")] read<i32>(%1);
+// IR-NEXT:             in 0 "I" [imm] width 32 const<i32>(1);
+// IR-NEXT:             in 1 "Q" [mem] width 32 place<i32>(%1);
+// IR-NEXT:             in 2 "l" [unresolved("l")] width 32 read<i32>(%1);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

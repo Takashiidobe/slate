@@ -20,10 +20,18 @@ pub enum AsmPiece {
     Operand {
         index: usize,
         modifier: Option<char>,
+        view: Option<AsmRegisterView>,
     },
     Label(usize),
     Percent,
     UniqueId,
+}
+
+// the register slice a width modifier prints, which overrides the operand's own width.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmRegisterView {
+    Bits(u64),
+    HighByte,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,6 +54,7 @@ pub struct AsmOperand {
     pub name: Option<String>,
     pub constraint: AsmConstraint,
     pub kind: AsmOperandKind,
+    pub width: Option<u64>,
 }
 
 #[derive(Debug, Clone)]
@@ -149,6 +158,7 @@ pub enum AsmRegisterClass {
     RegLegacy,
     VRegLow8,
     XmmReg,
+    YmmReg,
     ZmmReg,
     KReg,
     X87Reg,
@@ -167,6 +177,7 @@ impl AsmRegisterClass {
             Self::RegLegacy => "reg_legacy",
             Self::VRegLow8 => "vreg_low8",
             Self::XmmReg => "xmm_reg",
+            Self::YmmReg => "ymm_reg",
             Self::ZmmReg => "zmm_reg",
             Self::KReg => "kreg",
             Self::X87Reg => "x87_reg",
@@ -238,12 +249,20 @@ impl fmt::Display for AsmPiece {
             Self::Text(text) => write!(f, "{text:?}"),
             Self::Operand {
                 index,
-                modifier: None,
-            } => write!(f, "%{index}"),
-            Self::Operand {
-                index,
-                modifier: Some(modifier),
-            } => write!(f, "%{modifier}{index}"),
+                modifier,
+                view,
+            } => {
+                f.write_str("%")?;
+                if let Some(modifier) = modifier {
+                    write!(f, "{modifier}")?;
+                }
+                write!(f, "{index}")?;
+                match view {
+                    Some(AsmRegisterView::Bits(bits)) => write!(f, "({bits})"),
+                    Some(AsmRegisterView::HighByte) => f.write_str("(high8)"),
+                    None => Ok(()),
+                }
+            }
             Self::Label(index) => write!(f, "%l{index}"),
             Self::Percent => f.write_str("%%"),
             Self::UniqueId => f.write_str("%="),

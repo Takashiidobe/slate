@@ -99,7 +99,7 @@ main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @f3(%15 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%15);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%15);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %16 i1: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%15));
 // DEFAULT-NEXT:         let %17 i2: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%15));
@@ -108,15 +108,15 @@ main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @main(%23 argc: i32, %24 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" [reg] addr_of<ptr<volatile ptr<fn() -> i32>>>(%19);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 64 addr_of<ptr<volatile ptr<fn() -> i32>>>(%19);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" [reg] addr_of<ptr<volatile ptr<fn(i32, i32) -> i32>>>(%20);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 64 addr_of<ptr<volatile ptr<fn(i32, i32) -> i32>>>(%20);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" [reg] addr_of<ptr<volatile ptr<fn(i32) -> i32>>>(%21);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 64 addr_of<ptr<volatile ptr<fn(i32) -> i32>>>(%21);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(read<ptr<fn() -> i32>, volatile>(%19));

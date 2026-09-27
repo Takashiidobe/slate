@@ -236,6 +236,9 @@ impl DisplayModule<'_> {
                 write!(f, "{alternative}")?;
             }
             f.write_str("]")?;
+            if let Some(width) = operand.width {
+                write!(f, " width {width}")?;
+            }
             let (place, input) = match &operand.kind {
                 AsmOperandKind::In(value) => (None, Some(value)),
                 AsmOperandKind::InPlace(place) => (Some(place), None),

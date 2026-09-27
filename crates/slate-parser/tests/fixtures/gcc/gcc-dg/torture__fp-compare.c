@@ -56,7 +56,7 @@ main(void) {
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f64>(%0, const<f64>(0.0));
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "m" [mem] place<f64>(%0);
+// DEFAULT-NEXT:             inlateout 0 "m" [mem] width 64 place<f64>(%0);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%2, from_bool<i32, reason=arg>(gt<f64, exceptions=ignore>(read<f64>(%0), const<f64>(1.0))), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%2, from_bool<i32, reason=arg>(ge<f64, exceptions=ignore>(read<f64>(%0), const<f64>(1.0))), const<i32>(0));

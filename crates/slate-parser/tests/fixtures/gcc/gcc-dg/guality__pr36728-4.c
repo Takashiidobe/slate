@@ -90,25 +90,25 @@ main() {
 // DEFAULT-NEXT:         write<i32>(%9, const<i32>(2));
 // DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             lateout 0 "m" [mem] place<i32>(%9);
-// DEFAULT-NEXT:             in 1 "m" [mem] place<i32>(%9);
+// DEFAULT-NEXT:             lateout 0 "m" [mem] width 32 place<i32>(%9);
+// DEFAULT-NEXT:             in 1 "m" [mem] width 32 place<i32>(%9);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%8), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(25)));
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             lateout 0 "m" [mem] place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%8), const<i32>(0))));
-// DEFAULT-NEXT:             in 1 "m" [mem] place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%8), const<i32>(0))));
+// DEFAULT-NEXT:             lateout 0 "m" [mem] width 8 place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%8), const<i32>(0))));
+// DEFAULT-NEXT:             in 1 "m" [mem] width 8 place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(30)>(%8), const<i32>(0))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%9);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 l: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%11) from read<i32>(%11);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%11) from read<i32>(%11);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, i32, i32, i32, i32, i32) -> i32>(%0, add<i32, overflow=ub>(read<i32>(%11), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(3)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(4)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(5)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%11), const<i32>(30)));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" [reg] read<i32>(%11);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%11);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

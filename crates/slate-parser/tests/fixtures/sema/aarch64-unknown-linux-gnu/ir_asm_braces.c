@@ -30,7 +30,7 @@ void load(int *p) {
 // IR-NEXT:     fn %0 @load(%1 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile "ld1 {v0.16b}, [%0] {a|b}" {
 // IR-NEXT:             template: "ld1 {v0.16b}, [" %0 "] {a|b}";
-// IR-NEXT:             in 0 "r" [reg] read<ptr<i32>>(%1);
+// IR-NEXT:             in 0 "r" [reg] width 64 read<ptr<i32>>(%1);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

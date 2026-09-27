@@ -31,8 +31,8 @@ void classes(char c, int x) {
 // IR-NEXT:     fn %0 @classes(%1 c: i8, %2 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1" [dialect=att] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             lateout 0 "q" [reg_abcd] place<i8>(%1);
-// IR-NEXT:             lateout 1 "R" [reg] place<i32>(%2);
+// IR-NEXT:             lateout 0 "q" [reg_abcd] width 8 place<i8>(%1);
+// IR-NEXT:             lateout 1 "R" [reg] width 32 place<i32>(%2);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

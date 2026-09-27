@@ -47,10 +47,10 @@ foo ()
 // DEFAULT-NEXT:                 let %1 a: i32 [storage=automatic];
 // DEFAULT-NEXT:                 let %2 b: i8 [storage=automatic];
 // DEFAULT-NEXT:                 asm "" [dialect=att] {
-// DEFAULT-NEXT:                     lateout 0 "r" [reg] place<i32>(%1);
+// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 32 place<i32>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 asm "" [dialect=att] {
-// DEFAULT-NEXT:                     lateout 0 "r" [reg] place<i8>(%2);
+// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 8 place<i8>(%2);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 if ne<i8>(read<i8>(%2), const<i8>(0))
 // DEFAULT-NEXT:                     return read<i32>(%1);

@@ -67,7 +67,7 @@ main() {
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(3));
 // DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" [dialect=att] {
 // DEFAULT-NEXT:             template: "btsl $1, " %0 "; jc " %l0;
-// DEFAULT-NEXT:             in 0 "m" [mem] place<i32>(%3);
+// DEFAULT-NEXT:             in 0 "m" [mem] width 32 place<i32>(%3);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:             labels: %1;
 // DEFAULT-NEXT:         }
@@ -80,7 +80,7 @@ main() {
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(3));
 // DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" [dialect=att] {
 // DEFAULT-NEXT:             template: "btsl $1, " %0 "; jc " %l0;
-// DEFAULT-NEXT:             in 0 "m" [mem] place<i32>(%7);
+// DEFAULT-NEXT:             in 0 "m" [mem] width 32 place<i32>(%7);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:             labels: %5;
 // DEFAULT-NEXT:         }

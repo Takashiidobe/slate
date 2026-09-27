@@ -30,7 +30,7 @@ asm("%0" : : "i"(x));
 // IR-NEXT:     }
 // IR-NEXT:     asm "%0" [dialect=att] {
 // IR-NEXT:         template: %0;
-// IR-NEXT:         in 0 "i" [imm] read<i32>(%0);
+// IR-NEXT:         in 0 "i" [imm] width 32 read<i32>(%0);
 // IR-NEXT:     }
 // IR-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
 // IR-NEXT: }

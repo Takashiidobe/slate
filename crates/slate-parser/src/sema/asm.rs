@@ -31,7 +31,7 @@ impl Lowerer {
         let Some(operands) = &asm.operands else {
             return Ok(lowered);
         };
-        lower_pieces(&operands.pieces, dialect, &mut lowered.pieces);
+        lower_pieces(&operands.pieces, dialect, family, &mut lowered.pieces);
         for output in &operands.outputs {
             let constraint = constraint(&output.constraint.value, family);
             let place = self.place(&output.expr)?.place;
@@ -48,33 +48,46 @@ impl Lowerer {
                     early_clobber,
                 },
             };
-            lowered.operands.push(AsmOperand {
-                name: output.name.as_ref().map(|name| name.value.clone()),
-                constraint,
-                kind,
-            });
+            let name = output.name.as_ref().map(|name| name.value.clone());
+            lowered
+                .operands
+                .push(self.asm_operand(name, constraint, kind));
         }
-        let mut renumbered: Vec<usize> = (0..operands.outputs.len()).collect();
+        let mut renumbered: Vec<(usize, Option<AsmRegisterView>)> = (0..operands.outputs.len())
+            .map(|index| (index, None))
+            .collect();
         for input in &operands.inputs {
             if let Some(output) = input.constraint.value.tied_output() {
                 let value = self.expr(&input.expr)?.value;
+                let input_width = self.width(&value.ty);
                 let Some(AsmOperand {
                     kind:
                         AsmOperandKind::Out {
                             place,
                             early_clobber,
                         },
+                    width,
                     ..
                 }) = lowered.operands.get(output)
                 else {
                     return Err(ResolveError::Unsupported("asm input tied to a non-output"));
+                };
+                // x86 prints a tied input at its own width, not its output's.
+                let view = match input_width {
+                    Some(bits)
+                        if matches!(family, TargetFamily::X86 | TargetFamily::X86_64)
+                            && input_width != *width =>
+                    {
+                        Some(AsmRegisterView::Bits(bits))
+                    }
+                    _ => None,
                 };
                 lowered.operands[output].kind = AsmOperandKind::InOut {
                     place: place.clone(),
                     input: Some(value),
                     early_clobber: *early_clobber,
                 };
-                renumbered.push(output);
+                renumbered.push((output, view));
                 continue;
             }
             let constraint = constraint(&input.constraint.value, family);
@@ -83,16 +96,17 @@ impl Lowerer {
             } else {
                 AsmOperandKind::In(self.expr(&input.expr)?.value)
             };
-            renumbered.push(lowered.operands.len());
-            lowered.operands.push(AsmOperand {
-                name: input.name.as_ref().map(|name| name.value.clone()),
-                constraint,
-                kind,
-            });
+            renumbered.push((lowered.operands.len(), None));
+            let name = input.name.as_ref().map(|name| name.value.clone());
+            lowered
+                .operands
+                .push(self.asm_operand(name, constraint, kind));
         }
         for piece in &mut lowered.pieces {
-            if let AsmPiece::Operand { index, .. } = piece {
-                *index = renumbered[*index];
+            if let AsmPiece::Operand { index, view, .. } = piece {
+                let (target, tied) = renumbered[*index];
+                *index = target;
+                *view = view.or(tied);
             }
         }
         lowered.clobbers = operands
@@ -120,6 +134,50 @@ impl Lowerer {
 }
 
 impl Lowerer {
+    fn asm_operand(
+        &self,
+        name: Option<String>,
+        mut constraint: AsmConstraint,
+        kind: AsmOperandKind,
+    ) -> AsmOperand {
+        let ty = match &kind {
+            AsmOperandKind::In(value) => &value.ty,
+            AsmOperandKind::InPlace(place)
+            | AsmOperandKind::Out { place, .. }
+            | AsmOperandKind::InOut { place, .. } => &place.ty,
+        };
+        let width = self.width(ty);
+        let wide = match width {
+            Some(256) => Some(AsmRegisterClass::YmmReg),
+            Some(512) => Some(AsmRegisterClass::ZmmReg),
+            _ => None,
+        };
+        for alternative in &mut constraint.alternatives {
+            if let (Some(wide), AsmConstraintLocation::Letters { classes, .. }) =
+                (wide, &mut alternative.location)
+            {
+                for class in classes {
+                    if let AsmOperandClass::Register(register @ AsmRegisterClass::XmmReg) = class {
+                        *register = wide;
+                    }
+                }
+            }
+        }
+        AsmOperand {
+            name,
+            constraint,
+            kind,
+            width,
+        }
+    }
+
+    fn width(&self, ty: &Type) -> Option<u64> {
+        self.types
+            .storage(ty.clone())
+            .ok()
+            .map(|storage| storage.size_bytes * 8)
+    }
+
     fn memory_input(
         &mut self,
         expr: &ast::Expr,
@@ -164,6 +222,7 @@ impl Lowerer {
 fn lower_pieces(
     pieces: &[ast::AsmTemplatePiece],
     dialect: Option<AsmDialect>,
+    family: TargetFamily,
     lowered: &mut Vec<AsmPiece>,
 ) {
     for piece in pieces {
@@ -178,6 +237,7 @@ fn lower_pieces(
             ast::AsmTemplatePiece::Operand { index, modifier } => AsmPiece::Operand {
                 index: *index,
                 modifier: *modifier,
+                view: modifier.and_then(|modifier| view(modifier, family)),
             },
             ast::AsmTemplatePiece::Label(index) => AsmPiece::Label(*index),
             ast::AsmTemplatePiece::Percent => AsmPiece::Percent,
@@ -188,13 +248,35 @@ fn lower_pieces(
                     Some(AsmDialect::Att) | None => 0,
                 };
                 if let Some(alternative) = alternatives.get(selected) {
-                    lower_pieces(alternative, dialect, lowered);
+                    lower_pieces(alternative, dialect, family, lowered);
                 }
                 continue;
             }
         };
         lowered.push(piece);
     }
+}
+
+fn view(modifier: char, family: TargetFamily) -> Option<AsmRegisterView> {
+    let bits = match (family, modifier) {
+        (TargetFamily::X86 | TargetFamily::X86_64, 'h') => {
+            return Some(AsmRegisterView::HighByte);
+        }
+        (TargetFamily::X86 | TargetFamily::X86_64, 'b') => 8,
+        (TargetFamily::X86 | TargetFamily::X86_64, 'w') => 16,
+        (TargetFamily::X86 | TargetFamily::X86_64, 'k') => 32,
+        (TargetFamily::X86 | TargetFamily::X86_64, 'q') => 64,
+        (TargetFamily::X86 | TargetFamily::X86_64, 'x') => 128,
+        (TargetFamily::X86 | TargetFamily::X86_64, 't') => 256,
+        (TargetFamily::X86 | TargetFamily::X86_64, 'g') => 512,
+        (TargetFamily::AArch64, 'b') => 8,
+        (TargetFamily::AArch64, 'h') => 16,
+        (TargetFamily::AArch64, 'w' | 's') => 32,
+        (TargetFamily::AArch64, 'x' | 'd') => 64,
+        (TargetFamily::AArch64, 'q') => 128,
+        _ => return None,
+    };
+    Some(AsmRegisterView::Bits(bits))
 }
 
 fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConstraint {

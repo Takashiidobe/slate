@@ -39,7 +39,7 @@ void foo (void)
 // DEFAULT-NEXT:         let %5: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%1)));
 // DEFAULT-NEXT:         let %3 x: vla<vla<i64, %5>, %4> [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "r" [reg] array_decay<ptr<vla<i64, %5>>, length=None>(%3);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 64 array_decay<ptr<vla<i64, %5>>, length=None>(%3);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

@@ -122,24 +122,24 @@ main() {
 // DEFAULT-NEXT:         let %53: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%52), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%12, read<i32>(%53));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%1);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%2);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%3);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%4);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%1);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%2);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%3);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%4);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%5);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%6);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%7);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%8);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%5);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%6);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%7);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%8);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%9);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%10);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%11);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%12);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%9);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%10);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%11);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%12);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%1), read<i32>(%2)), read<i32>(%3)), read<i32>(%4)), read<i32>(%5)), read<i32>(%6)), read<i32>(%7)), read<i32>(%8)), read<i32>(%9)), read<i32>(%10)), read<i32>(%11)), read<i32>(%12));
@@ -182,24 +182,24 @@ main() {
 // DEFAULT-NEXT:         let %77: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%76), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%25, read<i32>(%77));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%14);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%15);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%16);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%17);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%14);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%15);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%16);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%17);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%18);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%19);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%20);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%21);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%18);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%19);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%20);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%21);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] addr_of<ptr<i32>>(%22);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] addr_of<ptr<i32>>(%23);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] addr_of<ptr<i32>>(%24);
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] addr_of<ptr<i32>>(%25);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%22);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%23);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%24);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] width 64 addr_of<ptr<i32>>(%25);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(2), read<i32>(%14)), read<i32>(%15)), read<i32>(%16)), read<i32>(%17)), read<i32>(%18)), read<i32>(%19)), read<i32>(%20)), read<i32>(%21)), read<i32>(%22)), read<i32>(%23)), read<i32>(%24)), read<i32>(%25));

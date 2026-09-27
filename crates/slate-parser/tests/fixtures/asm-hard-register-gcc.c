@@ -30,8 +30,8 @@ void f(int x, int y) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @f(%1 x: i32, %2 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             lateout 0 "{ax}" [{ax}] place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{rdi},r" [{di}, reg] read<i32>(%2);
+// DEFAULT-NEXT:             lateout 0 "{ax}" [{ax}] width 32 place<i32>(%1);
+// DEFAULT-NEXT:             in 1 "{rdi},r" [{di}, reg] width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

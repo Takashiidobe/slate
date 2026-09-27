@@ -242,20 +242,22 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
 asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
-                  ( value | asm_place )
+                  [ asm_width ] ( value | asm_place )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes asm_place
+                  asm_classes [ asm_width ] asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
-                  asm_classes asm_place [ " from" value ] ) ";" ;
+                  asm_classes [ asm_width ] asm_place [ " from" value ] ) ";" ;
+asm_width  = "width" integer ;
 asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
 asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
-asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "zmm_reg" | "kreg" | "x87_reg"
+asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_reg" | "zmm_reg" | "kreg" | "x87_reg"
            | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
            | "mem" | "imm" | "{" identifier "}" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
-asm_piece  = string | "%" [ letter ] integer | "%l" integer
+asm_piece  = string | "%" [ letter ] integer [ asm_view ] | "%l" integer
            | "%%" | "%=" ;
+asm_view   = "(" ( integer | "high8" ) ")" ;
 clobber    = "memory" | "cc" | "unwind" | register ;
 register   = string [ "as" identifier ] ;
 simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
@@ -286,6 +288,12 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   into the operand lines, and `%lN` is an index into the `labels:` list —
   neither is necessarily the number the source wrote, because a tied input
   is folded into its output and later operands renumber. An operand piece may carry a one-letter target modifier (`%a1`).
+  `(N)` after it is the register slice in bits the reference prints,
+  overriding the operand's own width: a width modifier (`%k0(32)`,
+  `%h0(high8)`), or on x86 a tied input narrower or wider than its
+  output (`%0(32)`).
+- `width N` is the operand's storage size in bits; absent when the type
+  has no fixed size (a VLA under `"m"`).
 - `[dialect=...]` is the assembler syntax the template is written in; it is
   present on x86 and absent on targets without a dialect choice. `template:`
   holds only the selected side of each `{att|intel}` alternation, so it
@@ -307,7 +315,7 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 - A clobbered or hard-coded register prints its source spelling, plus
   `as <canonical>` when the target's register table recognized it. The
   register's width is not carried: a clobber names the whole register, and
-  an operand's width is its own IR type.
+  an operand carries its own `width`.
 - `evaluation` is a loop condition or `for` increment with hoisted side
   effects: the statements run each time, then `yield` gives the value. An
   increment yields `void`.

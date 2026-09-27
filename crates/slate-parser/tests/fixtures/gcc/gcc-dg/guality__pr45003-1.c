@@ -59,7 +59,7 @@ main() {
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" [{di}] read<i32>(%2);
+// DEFAULT-NEXT:             in 0 "D" [{di}] width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
@@ -68,7 +68,7 @@ main() {
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "D" [{di}] read<u32>(%5);
+// DEFAULT-NEXT:             in 0 "D" [{di}] width 32 read<u32>(%5);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

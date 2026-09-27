@@ -101,7 +101,7 @@ main(void) {
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 l: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] place<i32>(%11) from const<i32>(7);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%11) from const<i32>(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%1), const<i32>(7))), const<i32>(112));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%1), add<i32, overflow=ub>(const<i32>(7), const<i32>(6)))), const<i32>(142));
