@@ -47,6 +47,14 @@ pub enum TargetEnvironment {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VaListKind {
+    CharPointer,
+    X86_64Sysv,
+    AArch64Aapcs,
+    ArmAapcs,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TargetFamily {
     X86_64,
     X86,
@@ -532,17 +540,27 @@ impl TargetInfo {
         }
     }
 
-    fn va_list_storage(&self) -> StorageLayout {
+    pub fn va_list_kind(&self) -> VaListKind {
         match (self.family, self.os) {
-            (TargetFamily::X86_64, TargetOs::Linux) => StorageLayout {
+            (_, TargetOs::Windows) | (TargetFamily::X86, _) => VaListKind::CharPointer,
+            (TargetFamily::AArch64, TargetOs::Darwin) => VaListKind::CharPointer,
+            (TargetFamily::X86_64, _) => VaListKind::X86_64Sysv,
+            (TargetFamily::AArch64, _) => VaListKind::AArch64Aapcs,
+            (TargetFamily::Arm32, _) => VaListKind::ArmAapcs,
+        }
+    }
+
+    fn va_list_storage(&self) -> StorageLayout {
+        match self.va_list_kind() {
+            VaListKind::X86_64Sysv => StorageLayout {
                 size_bytes: 24,
                 alignment_bytes: 8,
             },
-            (TargetFamily::AArch64, TargetOs::Linux) => StorageLayout {
+            VaListKind::AArch64Aapcs => StorageLayout {
                 size_bytes: 32,
                 alignment_bytes: 8,
             },
-            _ => self.pointer,
+            VaListKind::CharPointer | VaListKind::ArmAapcs => self.pointer,
         }
     }
 

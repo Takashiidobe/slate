@@ -2760,7 +2760,7 @@ impl Lowerer {
             }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
-                if list.ty != Type::VaList {
+                if !self.types.is_va_list(&list.ty) {
                     return Err(ResolveError::Unsupported("va_arg of non-va_list"));
                 }
                 let resolved = self.resolve_type_name(ty)?;
@@ -2894,7 +2894,7 @@ pub(super) fn va_builtin(callee: &Expr) -> Option<VaBuiltin> {
 impl Lowerer {
     fn va_list_place(&mut self, argument: &Expr) -> Result<Place, ResolveError> {
         let place = self.place(argument)?;
-        if place.ty != Type::VaList {
+        if !self.types.is_va_list(&place.ty) {
             return Err(ResolveError::Unsupported("va builtin on non-va_list"));
         }
         Ok(place.place)

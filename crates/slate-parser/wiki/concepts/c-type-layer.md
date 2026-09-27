@@ -191,7 +191,7 @@ because they ask a layout or representation question, not an identity one:
 | `numeric.rs`, `expression.rs::emit_cast` | `value.ty == to`, `ty == Type::Bool` | IR emission: has this value already got the representation we are about to build? `CastKind::Identity` relies on it, because a truth value has IR `Bool` and C type `int` |
 | `fold.rs` | operand vs value type | constant folding over IR values |
 | `effects.rs`, `atomic.rs` | `== Type::Void`, `== Type::Bool` | effect and atomic normalization over IR |
-| `expression.rs` | `!= Type::VaList` | `VaList` is an IR marker type with no C-level counterpart |
+| `expression.rs` via `types.rs::is_va_list` | lowered type equals the target's `va_list` | `VaList` is an IR marker type with no C-level counterpart; on `char *` va_list targets the place is `ptr<i8>` instead |
 | `types.rs::same_layout` | do two lowered types share a shape, ignoring integer signedness? | deliberately a layout question — it decides warning-vs-error for redeclarations, per MSVC's own C4142/C2371 rule |
 
 C23 same-scope tag redefinitions used to have an `ir::Type` pre-filter

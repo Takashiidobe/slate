@@ -185,9 +185,14 @@ which computes in the mathematical domain, stores the converted result through
 the destination place, and returns whether conversion overflowed. Fixture:
 `tests/fixtures/sema/ir_implicit_builtins.c`.
 
-`__builtin_va_list` lowers to the opaque `Type::VaList` (printed `va_list`),
-with per-target storage: 24/8 on x86_64 Linux, 32/8 on aarch64 Linux, pointer
-sized elsewhere. It does not model the array-to-pointer decay the x86_64 and
+`__builtin_va_list` follows clang's per-target `BuiltinVaListKind`
+(`TargetInfo::va_list_kind`). Where clang makes it `char *` (Windows, i386,
+aarch64 Darwin) it is exactly `char *`, and the va builtins take a `ptr<i8>`
+place: the MSVC CRT declares `typedef char* va_list` and clang's `vadefs.h`
+feeds it to `__builtin_va_start`. Elsewhere it lowers to the opaque
+`Type::VaList` (printed `va_list`), with storage 24/8 for the x86_64 SysV ABI
+(Linux, Darwin, Android, FreeBSD), 32/8 for AAPCS64 (non-Darwin aarch64) and
+pointer sized for 32-bit ARM. It does not model the array-to-pointer decay the x86_64 and
 aarch64 ABIs give a `va_list` parameter; it is passed as one scalar handle.
 `__builtin_va_arg(ap, T)` lowers to `va_arg<T>(place)`: a type-directed read
 that advances the list, so it counts as a side effect for hoisting like a call.

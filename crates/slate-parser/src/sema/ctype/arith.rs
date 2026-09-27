@@ -1,6 +1,6 @@
 use super::{CTypeKind, CTypes, FixedType, FloatKind, IntRank, QualType, layout::rank_width};
 use crate::sema::numeric::ResolveError;
-use crate::target_info::TargetInfo;
+use crate::target_info::{TargetInfo, VaListKind};
 
 #[derive(Clone, Copy)]
 struct Integer {
@@ -20,6 +20,16 @@ impl CTypes {
 
     pub fn size_type(&mut self, target: &TargetInfo) -> QualType {
         self.pointer_integer(target, false)
+    }
+
+    pub fn va_list_type(&mut self, target: &TargetInfo) -> QualType {
+        match target.va_list_kind() {
+            VaListKind::CharPointer => {
+                let char_type = self.qual(CTypeKind::Char);
+                self.pointer(char_type)
+            }
+            _ => self.qual(CTypeKind::VaList),
+        }
     }
 
     pub fn ptrdiff_type(&mut self, target: &TargetInfo) -> QualType {

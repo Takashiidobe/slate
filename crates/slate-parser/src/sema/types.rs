@@ -102,6 +102,11 @@ impl TypeResolver {
         self.ctypes.ir_type(q, &self.target)
     }
 
+    pub fn is_va_list(&mut self, ty: &Type) -> bool {
+        let va_list = self.ctypes.va_list_type(&self.target);
+        self.ir_type(va_list) == *ty
+    }
+
     pub fn layout(&self, q: QualType) -> Option<Type> {
         (!self.ctypes.is_void(q)).then(|| self.ir_type(q))
     }
@@ -1286,7 +1291,9 @@ impl TypeResolver {
                 signed: fixed.signed,
                 saturating: fixed.saturated,
             }),
-            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => CTypeKind::VaList,
+            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
+                return Ok(self.ctypes.va_list_type(&self.target));
+            }
             TypeSpecifier::TargetBuiltin(_) => {
                 return Err(ResolveError::Unsupported("target builtin type"));
             }
