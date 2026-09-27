@@ -1,3 +1,4 @@
+use crate::compiler_args::CompilerFlavor;
 use crate::target::aarch64_isa::ArmVersion;
 use crate::target_info::TargetEnvironment;
 use std::str::FromStr;
@@ -117,7 +118,15 @@ impl ArmIsa {
         self.float_abi == ArmFloatAbi::Hard
     }
 
-    pub fn predefines(self) -> Vec<String> {
+    pub fn predefines(self, flavor: CompilerFlavor) -> Vec<String> {
+        let gcc = flavor == CompilerFlavor::Gcc;
+        let number = |hex: u32| {
+            if gcc {
+                hex.to_string()
+            } else {
+                format!("{hex:#x}")
+            }
+        };
         let v8 = self.version >= ArmVersion::V8;
         let fpu = if self.float_abi == ArmFloatAbi::Soft {
             ArmFpu::None
@@ -125,10 +134,13 @@ impl ArmIsa {
             self.fpu
         };
         let vfp = fpu.vfp_version();
-        let mut defines = vec![
-            format!("__ARM_ARCH={}", if v8 { 8 } else { 7 }),
-            format!("__ARM_FEATURE_COPROC={}", if v8 { "0x5" } else { "0xf" }),
-        ];
+        let mut defines = vec![format!("__ARM_ARCH={}", if v8 { 8 } else { 7 })];
+        if !(gcc && v8) {
+            defines.push(format!(
+                "__ARM_FEATURE_COPROC={}",
+                number(if v8 { 0x5 } else { 0xf })
+            ));
+        }
         let mut define = |name: &str, present: bool| {
             if present {
                 defines.push(format!("{name}=1"));
@@ -136,27 +148,26 @@ impl ArmIsa {
         };
         define("__ARM_ARCH_7A__", !v8);
         define("__ARM_ARCH_8A__", v8);
-        for name in [
-            "__ARM_ARCH_EXT_IDIV__",
-            "__ARM_FEATURE_IDIV",
-            "__ARM_FEATURE_CRC32",
-            "__ARM_FEATURE_DIRECTED_ROUNDING",
+        define("__ARM_ARCH_EXT_IDIV__", v8);
+        define("__ARM_FEATURE_IDIV", v8);
+        define("__ARM_FEATURE_CRC32", v8 && !gcc);
+        define("__ARM_FEATURE_DIRECTED_ROUNDING", v8 && !gcc);
+        define(
             "__ARM_FEATURE_NUMERIC_MAXMIN",
-        ] {
-            define(name, v8);
-        }
+            v8 && (!gcc || (fpu.neon() && vfp >= 5)),
+        );
         for name in [
             "__ARM_FEATURE_AES",
             "__ARM_FEATURE_SHA2",
             "__ARM_FEATURE_CRYPTO",
         ] {
-            define(name, v8 && fpu == ArmFpu::CryptoNeonFpArmv8);
+            define(name, (v8 || gcc) && fpu == ArmFpu::CryptoNeonFpArmv8);
         }
         define("__ARM_FEATURE_FMA", vfp >= 4);
-        define("__ARM_VFPV2__", vfp >= 3);
-        define("__ARM_VFPV3__", vfp >= 3);
-        define("__ARM_VFPV4__", vfp >= 4);
-        define("__ARM_FPV5__", vfp >= 5);
+        define("__ARM_VFPV2__", vfp >= 3 && !gcc);
+        define("__ARM_VFPV3__", vfp >= 3 && !gcc);
+        define("__ARM_VFPV4__", vfp >= 4 && !gcc);
+        define("__ARM_FPV5__", vfp >= 5 && !gcc);
         define("__ARM_NEON", fpu.neon());
         define("__ARM_NEON__", fpu.neon());
         define("__ARM_PCS_VFP", self.float_abi == ArmFloatAbi::Hard);
@@ -168,14 +179,41 @@ impl ArmIsa {
         for name in ["__thumb__", "__thumb2__", "__THUMBEL__"] {
             define(name, self.thumb);
         }
+        define("__ARM_ASM_SYNTAX_UNIFIED__", gcc && self.thumb);
+        define("__ARM_PCS", gcc && self.float_abi != ArmFloatAbi::Hard);
         if vfp >= 3 {
-            defines.push(format!("__ARM_FP={}", if vfp >= 4 { "0xe" } else { "0xc" }));
+            defines.push(format!(
+                "__ARM_FP={}",
+                number(if vfp >= 4 { 0xe } else { 0xc })
+            ));
         }
         if fpu.neon() {
             defines.push(format!(
                 "__ARM_NEON_FP={}",
-                if vfp >= 4 { "0x6" } else { "0x4" }
+                number(if vfp >= 4 { 0x6 } else { 0x4 })
             ));
+        }
+        if gcc && vfp >= 4 {
+            for suffix in ["", "F", "F32", "F32x", "F64", "L"] {
+                defines.push(format!("__FP_FAST_FMA{suffix}=1"));
+            }
+        }
+        if gcc {
+            let iec = if self.float_abi == ArmFloatAbi::Soft {
+                0
+            } else {
+                2
+            };
+            defines.push(format!("__GCC_IEC_559={iec}"));
+            defines.push(format!("__GCC_IEC_559_COMPLEX={iec}"));
+            if iec > 0 {
+                defines.extend([
+                    "__STDC_IEC_559__=1".into(),
+                    "__STDC_IEC_559_COMPLEX__=1".into(),
+                    "__STDC_IEC_60559_BFP__=201404L".into(),
+                    "__STDC_IEC_60559_COMPLEX__=201404L".into(),
+                ]);
+            }
         }
         defines
     }

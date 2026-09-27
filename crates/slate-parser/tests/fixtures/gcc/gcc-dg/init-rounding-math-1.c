@@ -39,8 +39,8 @@ double d1 = -1ULL;
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 f1: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(neg<u64, overflow=wrap>(const<u64>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %1 f2: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.7976931348623157e308)) [linkage=external];
-// DEFAULT-NEXT:     global %2 f3: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.2250738585072014e-308)) [linkage=external];
+// DEFAULT-NEXT:     global %1 f2: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(1.79769313486231570815E+308))) [linkage=external];
+// DEFAULT-NEXT:     global %2 f3: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(2.22507385850720138309E-308))) [linkage=external];
 // DEFAULT-NEXT:     global %3 f4: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.1)) [linkage=external];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %4 f5: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%8)))) [linkage=external];

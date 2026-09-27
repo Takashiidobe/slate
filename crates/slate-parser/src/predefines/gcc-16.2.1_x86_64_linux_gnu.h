@@ -105,11 +105,9 @@
 #define __BFLT16_DIG__ 2
 #define __GNUC__ 16
 #define __pie__ 2
-#define __MMX__ 1
 #define __FLT_HAS_DENORM__ 1
 #define __SIZEOF_LONG_DOUBLE__ 16
 #define __LDBL_DIG__ 18
-#define __BIGGEST_ALIGNMENT__ 16
 #define __FLT64_MAX_10_EXP__ 308
 #define __BFLT16_IS_IEC_60559__ 0
 #define __FLT16_MAX_10_EXP__ 4
@@ -134,7 +132,6 @@
 #define __FLT32_MAX__ 3.40282346638528859811704183484516925e+38F32
 #define __DEC128_EPSILON__ 1E-33DL
 #define __FLT16_DECIMAL_DIG__ 5
-#define __SSE2_MATH__ 1
 #define __ATOMIC_HLE_RELEASE 131072
 #define __PTRDIFF_MAX__ 0x7fffffffffffffffL
 #define __amd64 1
@@ -220,8 +217,6 @@
 #define __UINTMAX_C(c) c ## UL
 #define __DEC64X_EPSILON__ 1E-33D64x
 #define __FLT16_DIG__ 3
-#define __SSE_MATH__ 1
-#define __k8 1
 #define __FLT32X_MIN__ 2.22507385850720138309023271733240406e-308F32x
 #define __SIG_ATOMIC_MAX__ 0x7fffffff
 #define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
@@ -290,7 +285,6 @@
 #define __GCC_ATOMIC_LONG_LOCK_FREE 2
 #define __DEC32_MANT_DIG__ 7
 #define __FLT16_MANT_DIG__ 11
-#define __k8__ 1
 #define __INTPTR_TYPE__ long int
 #define __UINT16_TYPE__ short unsigned int
 #define __WCHAR_TYPE__ int
@@ -318,7 +312,6 @@
 #define __UINT_LEAST32_TYPE__ unsigned int
 #define __SIZEOF_SHORT__ 2
 #define __FLT32_NORM_MAX__ 3.40282346638528859811704183484516925e+38F32
-#define __SSE__ 1
 #define __LDBL_MIN_EXP__ (-16381)
 #define __FLT64_MAX__ 1.79769313486231570814527423731704357e+308F64
 #define __DEC64X_MIN_EXP__ (-6142)
@@ -354,7 +347,6 @@
 #define __DBL_DECIMAL_DIG__ 17
 #define __STDC_UTF_32__ 1
 #define __INT_FAST8_WIDTH__ 8
-#define __FXSR__ 1
 #define __FLT32X_MAX__ 1.79769313486231570814527423731704357e+308F32x
 #define __DBL_NORM_MAX__ ((double)1.79769313486231570814527423731704357e+308L)
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
@@ -373,7 +365,6 @@
 #define __FLT32X_NORM_MAX__ 1.79769313486231570814527423731704357e+308F32x
 #define __CHAR32_TYPE__ unsigned int
 #define __FLT_MAX__ 3.40282346638528859811704183484516925e+38F
-#define __SSE2__ 1
 #define __INT32_TYPE__ int
 #define __SIZEOF_DOUBLE__ 8
 #define __FLT_MIN_10_EXP__ (-37)

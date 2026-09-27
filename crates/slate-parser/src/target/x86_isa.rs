@@ -326,10 +326,14 @@ impl X86Isa {
     }
 
     pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {
-        let mut defines: Vec<String> = self
-            .arch
-            .cpu_macros()
+        let gcc = flavor == CompilerFlavor::Gcc;
+        let cpu_macros = match self.arch {
+            X86Arch::X86_64V2 | X86Arch::X86_64V3 | X86Arch::X86_64V4 if gcc => &["__k8", "__k8__"],
+            arch => arch.cpu_macros(),
+        };
+        let mut defines: Vec<String> = cpu_macros
             .iter()
+            .filter(|name| !gcc || !name.starts_with("__tune_"))
             .map(|name| format!("{name}=1"))
             .collect();
         for feature in ALL_FEATURES {
@@ -342,16 +346,18 @@ impl X86Isa {
                 defines.push(format!("{}=1", feature.macro_name()));
             }
         }
+        // gcc defaults to -mfpmath=387 on 32-bit x86
+        let sse_math = !(gcc && family == TargetFamily::X86);
         for (feature, name) in [
             (X86Feature::Sse, "__SSE_MATH__"),
             (X86Feature::Sse2, "__SSE2_MATH__"),
         ] {
-            if self.features.contains(feature) {
+            if sse_math && self.features.contains(feature) {
                 defines.push(format!("{name}=1"));
             }
         }
-        if flavor == CompilerFlavor::Gcc {
-            if self.features.contains(X86Feature::Fma) {
+        if gcc {
+            if sse_math && self.features.contains(X86Feature::Fma) {
                 defines.extend([
                     "__FP_FAST_FMA=1".into(),
                     "__FP_FAST_FMAF=1".into(),
@@ -362,6 +368,9 @@ impl X86Isa {
             }
             if family == TargetFamily::X86_64 {
                 defines.push("__MMX_WITH_SSE__=1".into());
+            }
+            if self.features.contains(X86Feature::Avx512vl) {
+                defines.push("__EVEX256__=1".into());
             }
             defines.push(format!(
                 "__BIGGEST_ALIGNMENT__={}",

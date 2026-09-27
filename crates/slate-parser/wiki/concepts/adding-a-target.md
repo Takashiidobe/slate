@@ -11,8 +11,8 @@ A spec holds:
   `TargetEnvironment`, ISA baseline). `for_triple` fills in `triple` and
   `profile` from the spec, so constructors don't set them.
 - `profile.predefines`: one `Predefines` per group of flavors. A flavor
-  missing here is rejected at argument parsing. Linux entries currently give
-  every flavor clang's predefines.
+  missing here is rejected at argument parsing. Linux entries give the gcc
+  flavor gcc's own `-dM` snapshot and clang/msvc clang's.
 - `profile.sysroot`: `WindowsKits` or `Unix { multiarch }`, the directories
   `sysroot::include_paths_at` probes under the sysroot.
 - `profile.clang_headers`: `AppleFirst` prefers an `apple-clang-*` builtin
@@ -25,7 +25,15 @@ A spec holds:
 Steps:
 
 1. Capture predefines from the oracle (`clang --target=<triple> -dM -E -x c
-   /dev/null`, `tools/cl.exe` for the msvc flavor) into `src/predefines/`.
+   /dev/null`, the target's gcc, `tools/cl.exe` for the msvc flavor) into
+   `src/predefines/`. Delete every macro the ISA generator in `src/target/`
+   emits (arch, FPU, float-ABI, CPU macros) and the GNU-namespace ones
+   (`linux`, `unix`, `i386`), since those are regenerated per flag set.
+   Check the result with `tools/gcc_macro_diff.py '<cc> <flags>' '--flavor=...
+   -target=<triple> <flags>'`; only `__SLATE_*` should differ. The armv7 gcc
+   oracle is Arm's `arm-none-linux-gnueabihf` toolchain (on PATH as
+   `arm-linux-gnueabihf-gcc`); `arm-none-eabi-gcc` is bare-metal and has
+   different integer typedefs.
 2. Add the layout constructor and the `TargetSpec`.
 3. Add a `DEFINES`/`PREFIX-ARGS` pair per supported flavor to
    `tests/fixtures/sema/target_registry.c` and regenerate it. Fixtures under

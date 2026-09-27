@@ -59,11 +59,8 @@ pub fn lookup(triple: &str) -> Result<&'static TargetSpec, TargetError> {
         .ok_or_else(|| TargetError::UnsupportedTriple(triple.into()))
 }
 
-const ALL_FLAVORS: &[CompilerFlavor] = &[
-    CompilerFlavor::Gcc,
-    CompilerFlavor::Clang,
-    CompilerFlavor::Msvc,
-];
+const CLANG_AND_MSVC: &[CompilerFlavor] = &[CompilerFlavor::Clang, CompilerFlavor::Msvc];
+const GCC: &[CompilerFlavor] = &[CompilerFlavor::Gcc];
 const CLANG: &[CompilerFlavor] = &[CompilerFlavor::Clang];
 const MSVC: &[CompilerFlavor] = &[CompilerFlavor::Msvc];
 
@@ -80,7 +77,7 @@ const fn clang_only(name: &'static str, source: &'static str) -> Predefines {
 const LINUX_GNU_NAMESPACE: &str = include_str!("predefines/slate_gnu_namespace_linux.h");
 
 const X86_64_LINUX_GNU: Predefines = Predefines {
-    flavors: ALL_FLAVORS,
+    flavors: CLANG_AND_MSVC,
     name: "<clang-x86_64-linux-gnu-predefines>",
     source: include_str!("predefines/clang-22.1.8_x86_64_linux_gnu.h"),
     defaults: include_str!("predefines/slate_target_defaults.h"),
@@ -88,25 +85,54 @@ const X86_64_LINUX_GNU: Predefines = Predefines {
 };
 
 const I386_LINUX_GNU: Predefines = Predefines {
-    flavors: ALL_FLAVORS,
+    flavors: CLANG_AND_MSVC,
     name: "<clang-i386-linux-gnu-predefines>",
     source: include_str!("predefines/clang-22.1.8_i686_linux_gnu.h"),
     defaults: include_str!("predefines/slate_x86_linux_defaults.h"),
     gnu_namespace: include_str!("predefines/slate_gnu_namespace_i386_linux.h"),
 };
 
+const X86_64_LINUX_GNU_GCC: Predefines = Predefines {
+    flavors: GCC,
+    name: "<gcc-x86_64-linux-gnu-predefines>",
+    source: include_str!("predefines/gcc-16.2.1_x86_64_linux_gnu.h"),
+    ..X86_64_LINUX_GNU
+};
+
+const I386_LINUX_GNU_GCC: Predefines = Predefines {
+    flavors: GCC,
+    name: "<gcc-i386-linux-gnu-predefines>",
+    source: include_str!("predefines/gcc-16.2.1_i686_linux_gnu.h"),
+    ..I386_LINUX_GNU
+};
+
 const AARCH64_LINUX_GNU: Predefines = Predefines {
-    flavors: ALL_FLAVORS,
+    flavors: CLANG_AND_MSVC,
     name: "<clang-aarch64-linux-gnu-predefines>",
     source: include_str!("predefines/clang-22.1.8_aarch64_linux_gnu.h"),
     defaults: include_str!("predefines/slate_aarch64_linux_defaults.h"),
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
 
+const AARCH64_LINUX_GNU_GCC: Predefines = Predefines {
+    flavors: GCC,
+    name: "<gcc-aarch64-linux-gnu-predefines>",
+    source: include_str!("predefines/gcc-16.1.0_aarch64_linux_gnu.h"),
+    ..AARCH64_LINUX_GNU
+};
+
 const ARM32_LINUX_DEFAULTS: &str = include_str!("predefines/slate_arm32_linux_defaults.h");
 
+const ARM32_LINUX_GNU_GCC: Predefines = Predefines {
+    flavors: GCC,
+    name: "<gcc-armv7-linux-gnueabi-predefines>",
+    source: include_str!("predefines/gcc-15.2.1_armv7_linux_gnueabihf.h"),
+    defaults: ARM32_LINUX_DEFAULTS,
+    gnu_namespace: LINUX_GNU_NAMESPACE,
+};
+
 pub const X86_64_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
-    predefines: &[X86_64_LINUX_GNU],
+    predefines: &[X86_64_LINUX_GNU, X86_64_LINUX_GNU_GCC],
     sysroot: SysrootLayout::Unix {
         multiarch: Some("x86_64-linux-gnu"),
     },
@@ -117,7 +143,7 @@ pub const X86_64_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
 
 const fn i386_linux_gnu(multiarch: &'static str) -> TargetProfile {
     TargetProfile {
-        predefines: &[I386_LINUX_GNU],
+        predefines: &[I386_LINUX_GNU, I386_LINUX_GNU_GCC],
         sysroot: SysrootLayout::Unix {
             multiarch: Some(multiarch),
         },
@@ -184,7 +210,7 @@ pub const TARGETS: &[TargetSpec] = &[
         triple: "aarch64-unknown-linux-gnu",
         layout: TargetInfo::aarch64_linux,
         profile: TargetProfile {
-            predefines: &[AARCH64_LINUX_GNU],
+            predefines: &[AARCH64_LINUX_GNU, AARCH64_LINUX_GNU_GCC],
             sysroot: SysrootLayout::Unix {
                 multiarch: Some("aarch64-linux-gnu"),
             },
@@ -274,24 +300,30 @@ pub const TARGETS: &[TargetSpec] = &[
     TargetSpec {
         triple: "armv7-unknown-linux-gnueabi",
         layout: TargetInfo::arm32_linux_gnueabi,
-        profile: arm32_linux(&[Predefines {
-            flavors: ALL_FLAVORS,
-            name: "<clang-armv7-linux-gnueabi-predefines>",
-            source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
-            defaults: ARM32_LINUX_DEFAULTS,
-            gnu_namespace: LINUX_GNU_NAMESPACE,
-        }]),
+        profile: arm32_linux(&[
+            Predefines {
+                flavors: CLANG_AND_MSVC,
+                name: "<clang-armv7-linux-gnueabi-predefines>",
+                source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
+                defaults: ARM32_LINUX_DEFAULTS,
+                gnu_namespace: LINUX_GNU_NAMESPACE,
+            },
+            ARM32_LINUX_GNU_GCC,
+        ]),
     },
     TargetSpec {
         triple: "armv7-unknown-linux-gnueabihf",
         layout: TargetInfo::arm32_linux_gnueabihf,
-        profile: arm32_linux(&[Predefines {
-            flavors: ALL_FLAVORS,
-            name: "<clang-armv7-linux-gnueabihf-predefines>",
-            source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
-            defaults: ARM32_LINUX_DEFAULTS,
-            gnu_namespace: LINUX_GNU_NAMESPACE,
-        }]),
+        profile: arm32_linux(&[
+            Predefines {
+                flavors: CLANG_AND_MSVC,
+                name: "<clang-armv7-linux-gnueabihf-predefines>",
+                source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
+                defaults: ARM32_LINUX_DEFAULTS,
+                gnu_namespace: LINUX_GNU_NAMESPACE,
+            },
+            ARM32_LINUX_GNU_GCC,
+        ]),
     },
     TargetSpec {
         triple: "x86_64-pc-windows-msvc",

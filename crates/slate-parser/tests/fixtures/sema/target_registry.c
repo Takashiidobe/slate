@@ -97,7 +97,7 @@ struct pair record(struct pair value) { return value; }
 // X86-64-LINUX-GNU-GCC-NEXT:         field0 a: i32;
 // X86-64-LINUX-GNU-GCC-NEXT:         field1 b: i32;
 // X86-64-LINUX-GNU-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// X86-64-LINUX-GNU-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// X86-64-LINUX-GNU-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(16) [linkage=external];
 // X86-64-LINUX-GNU-GCC-NEXT:     global %1 sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
 // X86-64-LINUX-GNU-GCC-NEXT:     global %2 sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
 // X86-64-LINUX-GNU-GCC-NEXT:     global %3 sizeof_va_list: u64 [storage=static] = const<u64>(24) [linkage=external];
@@ -208,7 +208,7 @@ struct pair record(struct pair value) { return value; }
 // I386-LINUX-GNU-GCC-NEXT:         field0 a: i32;
 // I386-LINUX-GNU-GCC-NEXT:         field1 b: i32;
 // I386-LINUX-GNU-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// I386-LINUX-GNU-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// I386-LINUX-GNU-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(16) [linkage=external];
 // I386-LINUX-GNU-GCC-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
 // I386-LINUX-GNU-GCC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(12) [linkage=external];
 // I386-LINUX-GNU-GCC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
@@ -319,7 +319,7 @@ struct pair record(struct pair value) { return value; }
 // I686-LINUX-GNU-GCC-NEXT:         field0 a: i32;
 // I686-LINUX-GNU-GCC-NEXT:         field1 b: i32;
 // I686-LINUX-GNU-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// I686-LINUX-GNU-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// I686-LINUX-GNU-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(16) [linkage=external];
 // I686-LINUX-GNU-GCC-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
 // I686-LINUX-GNU-GCC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(12) [linkage=external];
 // I686-LINUX-GNU-GCC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
@@ -429,7 +429,7 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-LINUX-GNU-GCC-NEXT:         field0 a: i32;
 // AARCH64-LINUX-GNU-GCC-NEXT:         field1 b: i32;
 // AARCH64-LINUX-GNU-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// AARCH64-LINUX-GNU-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// AARCH64-LINUX-GNU-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(16) [linkage=external];
 // AARCH64-LINUX-GNU-GCC-NEXT:     global %1 sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
 // AARCH64-LINUX-GNU-GCC-NEXT:     global %2 sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
 // AARCH64-LINUX-GNU-GCC-NEXT:     global %3 sizeof_va_list: u64 [storage=static] = const<u64>(32) [linkage=external];
@@ -536,7 +536,7 @@ struct pair record(struct pair value) { return value; }
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:         field0 a: i32;
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:         field1 b: i32;
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// ARMV7-LINUX-GNUEABI-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// ARMV7-LINUX-GNUEABI-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(15) [linkage=external];
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
 // ARMV7-LINUX-GNUEABI-GCC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
@@ -641,7 +641,7 @@ struct pair record(struct pair value) { return value; }
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         field0 a: i32;
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         field1 b: i32;
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(15) [linkage=external];
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];

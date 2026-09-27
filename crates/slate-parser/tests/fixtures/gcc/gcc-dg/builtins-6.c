@@ -121,10 +121,10 @@ int main()
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%9)), const<f64>(9.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @test5(%11 x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11)), const<f64>(1.7976931348623157e308)));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11)), float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(1.79769313486231570815E+308))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @test6(%13 x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%13)), const<f64>(1.7976931348623157e308)));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%13)), float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(1.79769313486231570815E+308))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 x: f64 [storage=automatic];

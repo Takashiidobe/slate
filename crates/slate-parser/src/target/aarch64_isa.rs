@@ -1,3 +1,4 @@
+use crate::compiler_args::CompilerFlavor;
 use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -342,8 +343,9 @@ impl AArch64Isa {
         }
     }
 
-    pub fn predefines(self) -> Vec<String> {
+    pub fn predefines(self, flavor: CompilerFlavor) -> Vec<String> {
         use AArch64Feature::*;
+        let gcc = flavor == CompilerFlavor::Gcc;
         let has = |feature| self.features.contains(feature);
         let version = self.version;
         let mut defines = vec![format!("__ARM_ARCH={}", version.major)];
@@ -404,9 +406,9 @@ impl AArch64Isa {
             define(name, has(Crypto) && version.is_v8(4));
         }
         if has(Fp) {
-            defines.push("__ARM_FP=0xE".into());
+            defines.push(format!("__ARM_FP={}", if gcc { "14" } else { "0xE" }));
         }
-        if has(Simd) {
+        if has(Simd) && !gcc {
             defines.push("__ARM_NEON_FP=0xE".into());
         }
         if sve {

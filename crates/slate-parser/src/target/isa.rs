@@ -137,8 +137,8 @@ impl TargetIsa {
     pub fn predefines(self, family: TargetFamily, flavor: CompilerFlavor) -> Vec<String> {
         match self {
             Self::X86(isa) => isa.predefines(family, flavor),
-            Self::AArch64(isa) => isa.predefines(),
-            Self::Arm(isa) => isa.predefines(),
+            Self::AArch64(isa) => isa.predefines(flavor),
+            Self::Arm(isa) => isa.predefines(flavor),
         }
     }
 }

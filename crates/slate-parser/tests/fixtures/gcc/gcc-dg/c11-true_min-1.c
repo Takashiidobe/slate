@@ -48,7 +48,7 @@ int main(){
 // DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %0 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %1 f: volatile f32 [storage=automatic] = const<f32>(1e-45);
-// DEFAULT-NEXT:         let %2 d: volatile f64 [storage=automatic] = const<f64>(5e-324);
+// DEFAULT-NEXT:         let %2 d: volatile f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(4.94065645841246544177E-324));
 // DEFAULT-NEXT:         let %3 l: volatile f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(eq<f32, exceptions=observable>(read<f32, volatile>(%1), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))), eq<f64, exceptions=observable>(read<f64, volatile>(%2), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)))), eq<f80, exceptions=observable>(read<f80, volatile>(%3), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
