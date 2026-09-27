@@ -1395,7 +1395,7 @@ impl Lowerer {
                     name: label.value.clone(),
                     body: self.statements(std::slice::from_ref(body), return_type)?,
                 },
-                StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm(asm)?)),
+                StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm_statement(asm)?)),
                 StmtKind::Block(body) => {
                     Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
                 }

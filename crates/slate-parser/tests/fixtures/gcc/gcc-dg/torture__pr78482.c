@@ -106,7 +106,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %9 @bar(%10 x: ptr<const i8>, %11 y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm] -> reg width 64 place<ptr<const i8>>(%10);
 // DEFAULT-NEXT:             inlateout 1 "g" [reg | mem | imm] -> reg width 32 place<i32>(%11);
 // DEFAULT-NEXT:             clobbers: memory;

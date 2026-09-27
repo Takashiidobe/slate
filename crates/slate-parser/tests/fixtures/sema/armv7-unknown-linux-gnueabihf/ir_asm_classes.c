@@ -28,13 +28,13 @@ void classes(int x, float f, double d) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %0 @classes(%1 x: i32, %2 f: f32, %3 d: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         asm "@ %0 %1 %2" {
+// IR-NEXT:         asm "@ %0 %1 %2" [options=pure,nomem,nostack,preserves_flags] {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
 // IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
 // IR-NEXT:             lateout 1 "t" [sreg] width 32 place<f32>(%2);
 // IR-NEXT:             lateout 2 "w" [dreg] width 64 place<f64>(%3);
 // IR-NEXT:         }
-// IR-NEXT:         asm "@ %0 %1 %2" [alternative=none] {
+// IR-NEXT:         asm "@ %0 %1 %2" [options=nostack,preserves_flags] [alternative=none] {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
 // IR-NEXT:             in 0 "I" [imm] width 32 const<i32>(1);
 // IR-NEXT:             in 1 "Q" [mem] width 32 place<i32>(%1);

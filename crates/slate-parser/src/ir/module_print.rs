@@ -128,6 +128,9 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
     if let Some(dialect) = asm.dialect {
         write!(f, " [dialect={}]", dialect.as_str())?;
     }
+    if let Some(options) = asm.options {
+        write!(f, " [options={options}]")?;
+    }
     let alternatives = asm
         .operands
         .first()

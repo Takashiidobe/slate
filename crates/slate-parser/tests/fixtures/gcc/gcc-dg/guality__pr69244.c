@@ -71,7 +71,7 @@ main() {
 // DEFAULT-NEXT:     global %1 a: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 b: f32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<f32>>(%1);
 // DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<f32>>(%2);
 // DEFAULT-NEXT:             clobbers: memory;
@@ -87,7 +87,7 @@ main() {
 // DEFAULT-NEXT:         write<f32>(%6, read<f32>(%10));
 // DEFAULT-NEXT:         write<f32>(field0(%7), read<f32>(%10));
 // DEFAULT-NEXT:         let %8 c: i32 [storage=automatic] = sub<i32, overflow=ub>(read<i32>(field1(%7)), const<i32>(4));
-// DEFAULT-NEXT:         asm "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

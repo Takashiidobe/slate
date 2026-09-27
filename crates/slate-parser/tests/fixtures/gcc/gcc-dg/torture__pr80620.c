@@ -76,7 +76,7 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);

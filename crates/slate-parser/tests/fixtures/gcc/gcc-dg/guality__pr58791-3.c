@@ -69,11 +69,11 @@ main() {
 // DEFAULT-NEXT:         let %11 k: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         let %12 l: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         let %13 m: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%9), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

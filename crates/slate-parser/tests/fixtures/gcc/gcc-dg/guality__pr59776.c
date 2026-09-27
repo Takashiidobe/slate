@@ -89,20 +89,20 @@ main() {
 // DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(deref(read<ptr<@type0>>(%2)))));
 // DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(read<@type0>(%3)));
 // DEFAULT-NEXT:         write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(addr_of<ptr<f32>>(field0(%4)))), const<i32>(0));
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(read<@type0>(%3)));
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

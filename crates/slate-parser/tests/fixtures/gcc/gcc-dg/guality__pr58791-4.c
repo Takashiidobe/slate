@@ -99,11 +99,11 @@ main() {
 // DEFAULT-NEXT:         let %25 x: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%24));
 // DEFAULT-NEXT:         let %26 y: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%25));
 // DEFAULT-NEXT:         let %27 z: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%26), const<f64>(8.5));
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

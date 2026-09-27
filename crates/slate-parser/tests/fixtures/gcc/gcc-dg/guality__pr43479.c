@@ -75,18 +75,18 @@ main(void) {
 // DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%15));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%1);
 // DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%3);
 // DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%4);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 q: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:         asm "" [dialect=att] {
+// DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%9);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32) -> void>(%0, read<i32>(%9), add<i32, overflow=ub>(read<i32>(%9), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%9), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%9), const<i32>(3)));

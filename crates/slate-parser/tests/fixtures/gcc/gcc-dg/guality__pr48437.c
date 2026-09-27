@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:                     asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:                         template: "nop";
 // DEFAULT-NEXT:                         clobbers: memory;
 // DEFAULT-NEXT:                     }

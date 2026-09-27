@@ -46,8 +46,8 @@ void dialects(int x) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @operands(%1 x: i32, %2 y: i32, %3 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "basic %eax %0" [dialect=att];
-// DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [alternative=0] {
+// DEFAULT-NEXT:         asm "basic %eax %0" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [options=nostack,may_unwind] [alternative=0] {
 // DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
 // DEFAULT-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%1) from read<i32>(deref(read<ptr<i32>>(%3)));
 // DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%2);
@@ -55,12 +55,12 @@ void dialects(int x) {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @jumps(%7 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm goto "jmp %l[done] %l1 %2" [dialect=att] {
+// DEFAULT-NEXT:         asm goto "jmp %l[done] %l1 %2" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "jmp " %l0 " " %l0 " " %l1;
 // DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%7);
 // DEFAULT-NEXT:             labels: %5, %6;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm goto "jmp %l0" [dialect=att] {
+// DEFAULT-NEXT:         asm goto "jmp %l0" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "jmp " %l0;
 // DEFAULT-NEXT:             labels: %5;
 // DEFAULT-NEXT:         }
@@ -71,7 +71,7 @@ void dialects(int x) {
 // DEFAULT-NEXT:             write<i32>(%7, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @dialects(%9 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "mov{l|} {%0, %%eax|eax, %0} {a|b" [dialect=att] {
+// DEFAULT-NEXT:         asm "mov{l|} {%0, %%eax|eax, %0} {a|b" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "movl " %0 ", " %% "eax a";
 // DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%9);
 // DEFAULT-NEXT:         }

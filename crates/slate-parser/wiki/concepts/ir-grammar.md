@@ -234,6 +234,7 @@ statement  = simple { metadata } ";"
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                [ " [dialect=" ( "att" | "intel" ) "]" ]
+               [ " [options=" asm_options "]" ]
                [ " [alternative=" ( integer | "none" ) "]" ]
                ( { metadata } ";"
                | "{" { metadata }
@@ -250,6 +251,9 @@ asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
                   asm_classes [ asm_chosen ] [ asm_width ] asm_place
                   [ " from" value ] ) ";" ;
+asm_options = asm_option { "," asm_option } ;
+asm_option = "pure" | "nomem" | "readonly" | "nostack" | "preserves_flags"
+           | "may_unwind" ;
 asm_chosen = "->" asm_class ;
 asm_width  = "width" integer ;
 asm_reject = integer "(operand" integer ":" ( "unresolved(" string ")"
@@ -310,6 +314,9 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   present on x86 and absent on targets without a dialect choice. `template:`
   holds only the selected side of each `{att|intel}` alternation, so it
   never contains one.
+- `[options=...]` is the set of Rust `asm!` options derived during lowering,
+  in that fixed order, printed on every statement asm and never on
+  file-scope asm; `nomem` and `readonly` are exclusive.
 - An operand line starts with its Rust-facing direction. `=` and `+` and
   `&` are folded into it and no longer appear in the quoted constraint,
   which keeps `,`-separated alternatives, each with `%` or `-` and then a

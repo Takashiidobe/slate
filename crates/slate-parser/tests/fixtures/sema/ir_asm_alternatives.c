@@ -43,44 +43,44 @@ void alternatives(int x, int *p, long double f, struct Big big) {
 // IR-NEXT:         field2 c: i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // IR-NEXT:     fn %1 @alternatives(%2 x: i32, %3 p: ptr<i32>, %4 f: f80, %5 big: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, byval<align=8>) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=0] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%2);
 // IR-NEXT:             in 1 "r,m" [reg, mem] width 32 read<i32>(deref(read<ptr<i32>>(%3)));
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=0] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
 // IR-NEXT:             template: "# " %0 " " %0;
 // IR-NEXT:             inlateout 0 "r,m" [reg, mem] width 32 place<i32>(%2) from read<i32>(deref(read<ptr<i32>>(%3)));
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=1] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             lateout 0 "f,m" [x87_reg, mem] width 128 place<f80>(%4);
 // IR-NEXT:             in 1 "0,m" [0, mem] width 128 place<f80>(%4);
 // IR-NEXT:             rejected: 0 (operand 0: clobber-only);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "rm" [reg | mem] -> mem width 192 place<@type0>(%5);
 // IR-NEXT:             in 1 "rmi" [reg | mem | imm] -> reg width 32 add<i32, overflow=ub>(read<i32>(%2), const<i32>(1));
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "ri" [reg | imm] -> imm width 32 const<i32>(42);
 // IR-NEXT:             in 1 "g" [reg | mem | imm] -> imm width 64 const<u64>(24);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=1] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "i,r" [imm, reg] width 32 read<i32>(%2);
 // IR-NEXT:             in 1 "r,m" [reg, mem] width 32 place<i32>(%2);
 // IR-NEXT:             rejected: 0 (operand 0: not-constant);
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0 %1" [dialect=att] [alternative=1] {
+// IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "l,x" [unresolved("l"), xmm_reg] width 32 read<i32>(%2);
 // IR-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%2);
 // IR-NEXT:             rejected: 0 (operand 0: unresolved("l"));
 // IR-NEXT:         }
-// IR-NEXT:         asm "# %0" [dialect=att] [alternative=none] {
+// IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
 // IR-NEXT:             template: "# " %0;
 // IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%4);
 // IR-NEXT:             rejected: 0 (operand 0: clobber-only);

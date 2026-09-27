@@ -36,7 +36,7 @@ long foo()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %1 x: i64 [storage=automatic];
-// DEFAULT-NEXT:         asm "" [dialect=att] {
+// DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,readonly,nostack] {
 // DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%1);
 // DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<i64>(%1);
 // DEFAULT-NEXT:         }

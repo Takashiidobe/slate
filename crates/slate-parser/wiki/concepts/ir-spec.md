@@ -957,6 +957,30 @@ template as opaque text with holes.
   side (first for AT&T, second for Intel, empty when missing), so the
   backend never sees one; the raw template string keeps the source.
   `%{`/`%|`/`%}` are literal braces and bars, not alternation markers.
+- A statement asm carries `InlineAsm::options: Some(AsmOptions)`, Rust's
+  `asm!` options derived once during lowering; file-scope asm has `None`
+  (`global_asm!` takes none). Rules, verified against clang `-emit-llvm`
+  and gcc `-O2` / `-fdump-rtl-expand`:
+  - `memory` (`AsmMemory::{None, ReadOnly, Any}` = `nomem` / `readonly` /
+    neither) comes from the operands: a memory input (`InPlace`, or an `In`
+    whose selected class is `mem`) reads, a memory output writes. A
+    `"memory"` clobber or basic asm forces `Any` (gcc gives basic asm a
+    memory clobber). It depends on the flavor. Clang also forces `Any` for
+    any side-effecting asm (volatile, `goto`, or no outputs), because it
+    attaches `memory(none)`/`memory(read)` only to non-side-effecting asm.
+    Gcc keeps `nomem` for volatile extended asm: it removes a dead store
+    across `asm volatile("nop" :: "r"(x))`.
+  - `pure` = not volatile, not `goto`, has an output, and `memory` is not
+    `Any` (Rust requires `nomem` or `readonly` with `pure`).
+  - `nostack` is always set for GNU asm: neither compiler guarantees stack
+    alignment or the red zone to it (clang never emits `alignstack`).
+    MSVC `__asm` will differ.
+  - `preserves_flags` is never set on x86 (both compilers clobber
+    flags/dirflag/fpsr implicitly). Elsewhere it is set unless `"cc"` is
+    written (gcc aarch64 adds `(clobber (reg:CC cc))` only for `"cc"`).
+  - `may_unwind` = an `"unwind"` clobber.
+  Fixtures: `sema/ir_asm_options.c`, `sema/ir_asm_options_gcc.c`,
+  `sema/aarch64-unknown-linux-gnu/ir_asm_options.c`.
 
 File-scope `asm` lowers to `Module::asm`, a source-ordered list of the same
 `InlineAsm`, printed before the type definitions. It is a separate list rather

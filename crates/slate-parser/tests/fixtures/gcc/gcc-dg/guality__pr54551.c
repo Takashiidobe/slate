@@ -47,7 +47,7 @@ main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @bar() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att];
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: i32, %3 y: i32, %4 z: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), read<i32>(%4))

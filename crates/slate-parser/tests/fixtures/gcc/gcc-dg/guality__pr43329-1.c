@@ -84,14 +84,14 @@ main(void) {
 // DEFAULT-NEXT:     global %3 i: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @foo(%1 argx: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %2 varx: i32 [storage=automatic] = read<i32>(%1);
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @baz(%5 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%5);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
@@ -116,7 +116,7 @@ main(void) {
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, read<i32>(%3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%3) from const<i32>(0);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);

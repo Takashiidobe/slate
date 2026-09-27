@@ -14,6 +14,24 @@ pub struct InlineAsm {
     pub labels: Vec<BindingId>,
     pub alternative: Option<usize>,
     pub rejected: Vec<AsmRejection>,
+    pub options: Option<AsmOptions>,
+}
+
+// file-scope asm has none: `global_asm!` takes no options.
+#[derive(Debug, Clone, Copy)]
+pub struct AsmOptions {
+    pub memory: AsmMemory,
+    pub pure: bool,
+    pub nostack: bool,
+    pub preserves_flags: bool,
+    pub may_unwind: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AsmMemory {
+    None,
+    ReadOnly,
+    Any,
 }
 
 // `operand` is the source operand number, since a rejected tie may have been folded away.
@@ -359,6 +377,30 @@ impl fmt::Display for AsmOperandClass {
             Self::Immediate => f.write_str("imm"),
             Self::Unresolved(letters) => write!(f, "unresolved({letters:?})"),
         }
+    }
+}
+
+impl fmt::Display for AsmOptions {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let memory = match self.memory {
+            AsmMemory::Any => None,
+            AsmMemory::ReadOnly => Some("readonly"),
+            AsmMemory::None => Some("nomem"),
+        };
+        let names = [
+            self.pure.then_some("pure"),
+            memory,
+            self.nostack.then_some("nostack"),
+            self.preserves_flags.then_some("preserves_flags"),
+            self.may_unwind.then_some("may_unwind"),
+        ];
+        for (index, name) in names.into_iter().flatten().enumerate() {
+            if index > 0 {
+                f.write_str(",")?;
+            }
+            f.write_str(name)?;
+        }
+        Ok(())
     }
 }
 

@@ -58,7 +58,7 @@ main() {
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 f: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%11, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%2))));
 // DEFAULT-NEXT:         let %4 g: i64 [storage=automatic] = read<i64>(%3);
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<i64>(%3);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32, volatile>(%0);
@@ -70,7 +70,7 @@ main() {
 // DEFAULT-NEXT:     fn %5 @bar(%6 x: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 f: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%13, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%6))));
 // DEFAULT-NEXT:         let %8 g: i32 [storage=automatic] = read<i32>(%7);
-// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32, volatile>(%0);

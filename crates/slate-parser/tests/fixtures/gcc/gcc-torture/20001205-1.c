@@ -50,7 +50,7 @@ unsigned long osf_getsysinfo(unsigned long flags)
 // DEFAULT-NEXT:     fn %0 @rdfpcr() -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %1 tmp: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %2 ret: u64 [storage=automatic];
-// DEFAULT-NEXT:         asm "" [dialect=att] {
+// DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<u64>(%1);
 // DEFAULT-NEXT:             lateout 1 "r" [reg] width 64 place<u64>(%2);
 // DEFAULT-NEXT:         }

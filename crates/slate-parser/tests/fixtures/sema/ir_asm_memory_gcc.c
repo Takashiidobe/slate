@@ -40,7 +40,7 @@ void unaddressable(struct Pair *s, v4 v) {
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
 // IR-NEXT:     fn %2 @unaddressable(%3 s: ptr<@type1>, %4 v: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         let %5 r: i32 [storage=automatic] = const<i32>(1);
-// IR-NEXT:         asm "# %0 %1 %2" [dialect=att] {
+// IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=readonly,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
 // IR-NEXT:             in 0 "rm" [reg | mem] -> reg width 32 read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type1>>(%3))));
 // IR-NEXT:             in 1 "m" [mem] width 32 read<i32>(lane(%4, const<i32>(1)));

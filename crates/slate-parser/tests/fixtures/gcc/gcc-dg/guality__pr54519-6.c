@@ -58,8 +58,8 @@ main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @f1(%1 x: i32, %2 y: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack];
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @f2(%4 z: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%0, read<i32>(%4), const<i32>(0));

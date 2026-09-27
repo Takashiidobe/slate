@@ -76,11 +76,11 @@ main() {
 // DEFAULT-NEXT:         write<u32>(%8, add<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(%3), read<u32>(%2)), read<u32>(%1)));
 // DEFAULT-NEXT:         write<u32>(%7, add<u32, overflow=wrap>(read<u32>(%2), read<u32>(%1)));
 // DEFAULT-NEXT:         write<u32>(%11, sub<u32, overflow=wrap>(sub<u32, overflow=wrap>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(sub<u32, overflow=wrap>(read<u32>(%10), read<u32>(%9)), read<u32>(%8)), read<u32>(%7)), read<u32>(%5)), read<u32>(%3)));
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

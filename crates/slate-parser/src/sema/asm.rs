@@ -31,6 +31,7 @@ impl Lowerer {
             labels: Vec::new(),
             alternative: None,
             rejected: Vec::new(),
+            options: None,
         };
         let Some(operands) = &asm.operands else {
             return Ok(lowered);
@@ -174,6 +175,17 @@ impl Lowerer {
 }
 
 impl Lowerer {
+    pub(super) fn asm_statement(&mut self, asm: &ast::GnuAsm) -> Result<InlineAsm, ResolveError> {
+        let mut lowered = self.asm(asm)?;
+        lowered.options = Some(options(
+            &lowered,
+            asm.operands.is_none(),
+            self.context.target.family,
+            self.types.compiler_flavor(),
+        ));
+        Ok(lowered)
+    }
+
     fn source<'a>(
         &self,
         operand: &ast::AsmOperand,
@@ -305,7 +317,47 @@ enum Choice {
     Tie(usize),
 }
 
-// rust takes one class per operand, so the first alternative every operand can use wins.
+fn options(
+    asm: &InlineAsm,
+    basic: bool,
+    family: TargetFamily,
+    flavor: CompilerFlavor,
+) -> AsmOptions {
+    let outputs = asm
+        .operands
+        .iter()
+        .any(|operand| operand.direction() != AsmDirection::In);
+    let side_effects = asm.volatile || asm.goto || !outputs;
+    let clobbers = |wanted: fn(&AsmClobber) -> bool| asm.clobbers.iter().any(wanted);
+    let mut memory = AsmMemory::None;
+    for operand in &asm.operands {
+        let addresses = match &operand.selected {
+            Some(class) => matches!(class, AsmOperandClass::Memory),
+            None => operand.constraint.allows_memory(),
+        };
+        let access = match (&operand.kind, addresses) {
+            (AsmOperandKind::InPlace(_), _) | (AsmOperandKind::In(_), true) => AsmMemory::ReadOnly,
+            (AsmOperandKind::Out { .. } | AsmOperandKind::InOut { .. }, true) => AsmMemory::Any,
+            _ => AsmMemory::None,
+        };
+        memory = memory.max(access);
+    }
+    if basic
+        || clobbers(|clobber| matches!(clobber, AsmClobber::Memory))
+        || (side_effects && flavor != CompilerFlavor::Gcc)
+    {
+        memory = AsmMemory::Any;
+    }
+    AsmOptions {
+        memory,
+        pure: !side_effects && memory != AsmMemory::Any,
+        nostack: true,
+        preserves_flags: !matches!(family, TargetFamily::X86 | TargetFamily::X86_64)
+            && !clobbers(|clobber| matches!(clobber, AsmClobber::Cc)),
+        may_unwind: clobbers(|clobber| matches!(clobber, AsmClobber::Unwind)),
+    }
+}
+
 fn select(sources: &[Source<'_>], family: TargetFamily) -> (Option<usize>, Vec<AsmRejection>) {
     let count = sources
         .first()

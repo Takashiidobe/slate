@@ -48,7 +48,7 @@ int                                     main() {
 // DEFAULT-NEXT:     global %0 arr: array<i64, 6> [storage=static] [align=16] = aggregate<array<i64, 6>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(0)), index1 = widen<i64, reason=assign>(const<i32>(1)), index2 = widen<i64, reason=assign>(const<i32>(2)), index3 = widen<i64, reason=assign>(const<i32>(3)), index4 = widen<i64, reason=assign>(const<i32>(4)), index5 = widen<i64, reason=assign>(const<i32>(5))) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %2 @foo(%3 sum: i64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "" [dialect=att];
+// DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];

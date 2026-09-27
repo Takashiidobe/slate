@@ -80,7 +80,7 @@ int main() { n(); }
 // DEFAULT-NEXT:         return from_bool<i16, reason=return>(ge<i32>(read<i32>(%21), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(2), read<i32>(%21))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %22 @optimize_me_not() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm "" [dialect=att];
+// DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %23 @n() -> i16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %24 l_1127: i32 [storage=automatic] = xor<i32>(not<i32>(call<i32, signature=fn(i32) -> i32>(%18, from_bool<i32, reason=arg>(logical_or<bool>(ne<i32>(const<i32>(9), const<i32>(0)), ne<i32>(const<i32>(0), const<i32>(0)))))), const<i32>(65535));
