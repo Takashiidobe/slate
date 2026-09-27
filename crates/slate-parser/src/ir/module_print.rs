@@ -268,7 +268,9 @@ impl DisplayModule<'_> {
                 AsmOperandKind::In(value) => (None, Some(value)),
                 AsmOperandKind::InPlace(place) => (Some(place), None),
                 AsmOperandKind::Out { place, .. } => (Some(place), None),
-                AsmOperandKind::InOut { place, input, .. } => (Some(place), input.as_ref()),
+                AsmOperandKind::InOut { place, input, .. } => {
+                    (Some(place), input.as_ref().map(|input| &input.value))
+                }
             };
             if let Some(place) = place {
                 write!(

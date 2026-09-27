@@ -205,7 +205,19 @@ impl Hoister {
                         };
                         placed.push(AsmOperand { kind, ..operand });
                     }
-                    for operand in placed {
+                    asm.operands = placed;
+                    let order = asm.inputs_in_source_order();
+                    let mut operands = std::mem::take(&mut asm.operands)
+                        .into_iter()
+                        .map(Some)
+                        .collect::<Vec<_>>();
+                    for index in order {
+                        let Some(slot) = operands.get_mut(index) else {
+                            continue;
+                        };
+                        let Some(operand) = slot.take() else {
+                            continue;
+                        };
                         let kind = match operand.kind {
                             AsmOperandKind::In(value) => {
                                 AsmOperandKind::In(self.value(value, &mut out)?)
@@ -215,17 +227,21 @@ impl Hoister {
                             }
                             AsmOperandKind::InOut {
                                 place,
-                                input: Some(value),
+                                input: Some(input),
                                 early_clobber,
                             } => AsmOperandKind::InOut {
                                 place,
-                                input: Some(self.value(value, &mut out)?),
+                                input: Some(AsmTiedInput {
+                                    value: self.value(input.value, &mut out)?,
+                                    operand: input.operand,
+                                }),
                                 early_clobber,
                             },
                             kind => kind,
                         };
-                        asm.operands.push(AsmOperand { kind, ..operand });
+                        *slot = Some(AsmOperand { kind, ..operand });
                     }
+                    asm.operands = operands.into_iter().flatten().collect();
                     Statement::Asm(asm)
                 }
                 Statement::Label { id, name, body } => Statement::Label {

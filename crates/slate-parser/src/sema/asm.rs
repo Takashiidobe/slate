@@ -122,7 +122,10 @@ impl Lowerer {
                 };
                 lowered.operands[output].kind = AsmOperandKind::InOut {
                     place: place.clone(),
-                    input: Some(value.clone()),
+                    input: Some(AsmTiedInput {
+                        value: value.clone(),
+                        operand: index,
+                    }),
                     early_clobber: *early_clobber,
                 };
                 renumbered.push((output, view));

@@ -17,6 +17,44 @@ pub struct InlineAsm {
     pub options: Option<AsmOptions>,
 }
 
+impl InlineAsm {
+    pub fn inputs_in_source_order(&self) -> Vec<usize> {
+        let outputs = self
+            .operands
+            .iter()
+            .filter(|operand| operand.direction() != AsmDirection::In)
+            .count();
+        let mut tied = self
+            .operands
+            .iter()
+            .enumerate()
+            .filter_map(|(index, operand)| match &operand.kind {
+                AsmOperandKind::InOut {
+                    input: Some(input), ..
+                } => Some((input.operand, index)),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        tied.sort_unstable();
+        let mut tied = tied.into_iter().peekable();
+        let mut untied = outputs..self.operands.len();
+        let mut order = Vec::new();
+        let mut source = outputs;
+        loop {
+            let next = tied
+                .next_if(|(operand, _)| *operand == source)
+                .map(|(_, index)| index)
+                .or_else(|| untied.next())
+                .or_else(|| tied.next().map(|(_, index)| index));
+            let Some(index) = next else {
+                return order;
+            };
+            order.push(index);
+            source += 1;
+        }
+    }
+}
+
 // file-scope asm has none: `global_asm!` takes no options.
 #[derive(Debug, Clone, Copy)]
 pub struct AsmOptions {
@@ -118,12 +156,19 @@ pub enum AsmOperandKind {
         place: Place,
         early_clobber: bool,
     },
-    // `input` is a tied `"0"` operand's value; without one the place itself is read.
+    // `input` is a tied `"0"` operand; without one the place itself is read.
     InOut {
         place: Place,
-        input: Option<Value>,
+        input: Option<AsmTiedInput>,
         early_clobber: bool,
     },
+}
+
+#[derive(Debug, Clone)]
+pub struct AsmTiedInput {
+    pub value: Value,
+    // the source operand number, which folding into the output's slot otherwise loses.
+    pub operand: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

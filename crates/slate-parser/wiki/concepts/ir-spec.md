@@ -874,7 +874,7 @@ template as opaque text with holes.
   which is always safe to over-claim.
 - An input whose chosen alternative matches output `n` (`"0"`, `"0,m"`
   when alternative 0 is chosen, `"[out]"`) is folded into that output as
-  `InOut { input: Some(value) }` and removed, and template pieces are
+  `InOut { input: Some(tied) }` and removed, and template pieces are
   renumbered. With no alternative chosen, only a tie in every alternative
   folds. A `+` output is `InOut { input: None }`: the place itself is
   read.
@@ -901,10 +901,12 @@ template as opaque text with holes.
   has no operand form for, so `Pic` survives only on `Module::asm`. Under clang an
   input also may not match two different outputs, and any-alternative
   matches count as ties; gcc accepts both, so only full ties count there.
-- Effects hoist places first, then input values, in operand order. A tied
-  input's effects therefore hoist with its output's slot, ahead of untied
-  inputs written before it; clang evaluates inputs in source order. Only
-  observable when two inputs both have side effects.
+- Effects hoist output places first, in operand order, then input values
+  in source order, as clang and gcc evaluate them. A tied input sits in
+  its output's slot, so `InOut { input }` is an `AsmTiedInput` that keeps
+  the source operand number the fold would otherwise lose, and
+  `InlineAsm::inputs_in_source_order` rebuilds the source order from it.
+  Fixture: `tied_order` in `sema/ir_asm.c`.
 - Constraints keep the parsed alternative list (modifiers, hard register,
   matching operand number, or letters). The printer reconstructs the GNU
   spelling from it, so the printed text round-trips the parse rather than
