@@ -1007,8 +1007,18 @@ impl<'a> DeclaratorParser<'a> {
             while let Some(qualifier) = self.take_qualifier() {
                 set_qualifier(&mut qualifiers, qualifier);
             }
-            // __ptr64 is the native pointer width on every supported windows target
-            while self.matches(Token::Keyword(Keyword::Ptr64)) {}
+            while self.peek() == Some(&Token::Keyword(Keyword::Ptr64)) {
+                // on 32-bit targets clang makes __ptr64 a distinct 8-byte pointer (slate-parser-v74.1.6)
+                if self
+                    .context
+                    .is_some_and(|parser| parser.target.pointer_width != 64)
+                {
+                    return Err(DeclaratorError::Other(
+                        "`__ptr64` on a 32-bit target is not supported".into(),
+                    ));
+                }
+                self.pos += 1;
+            }
             attributes.extend(self.parse_attributes()?);
             if self.pos == start {
                 return Ok((qualifiers, attributes));

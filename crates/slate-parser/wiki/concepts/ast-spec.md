@@ -249,14 +249,17 @@ clang's `-fms-extensions`; elsewhere they are ordinary identifiers. `__int8`,
 a `long long` width, so clang-style `__int64 unsigned int` and `long __int64`
 parse. Under the same gate:
 - `__forceinline` sets `is_inline` and adds an `AlwaysInline` attribute.
-- `__ptr64` after `*` is dropped, since every supported Windows target is
-  64-bit.
+- `__ptr64` after `*` is dropped on 64-bit targets, where clang makes it the
+  plain pointer. On a 32-bit target (reachable with `--flavor=msvc` on
+  `i686`/`armv7`), clang makes it a distinct 8-byte pointer, so the parser
+  rejects it there.
 - `__unaligned` is `Qualifiers::is_unaligned`, a real qualifier for
   compatibility and discard warnings. It lowers the alignment of `_Alignof` and
   of declared objects to 1 but never changes record member layout. clang
   applies that to any type; cl.exe applies it only to pointer types.
 
-`__ptr32`, `__sptr` and `__uptr` are not supported yet.
+`__ptr32`, `__sptr` and `__uptr`, and `__ptr64` on 32-bit targets, are not
+supported yet (slate-parser-v74.1.6).
 
 `Vector` and `Mode` are not written as specifiers. The parser wraps the
 declaration's type specifier in one per `vector_size`, `ext_vector_type` or
