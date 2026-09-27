@@ -343,7 +343,14 @@ flavor.
   graphs differ. clang's avx512f implies AVX2, FMA and F16C. gcc's avx512f
   implies only AVX2, so `-mno-fma` and `-mno-f16c` keep it. gcc's AVX implies
   XSAVE as a real edge: `-mno-xsave` drops AVX, and `-mno-avx` leaves XSAVE
-  on. Under gcc, avx512f alone also defines `__FP_FAST_FMA*`. i686
+  on. Under gcc, avx512f alone also defines `__FP_FAST_FMA*`.
+
+  Without `-march`, i686 defaults to pentium4 under clang and to x86-64
+  (`__k8`) under gcc. Both have the same features: MMX, SSE2 and FXSR. gcc's
+  default depends on how the distro built it. The i686 gcc snapshot comes from
+  a multilib x86_64 gcc, whose `-m32` defaults to x86-64, so the CPU macros
+  follow that same compiler. Debian's `i686-linux-gnu-gcc` defaults to
+  `-march=i686` without SSE2, which slate rejects. i686
   always defines `__LAHF_SAHF__` and never
   `__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16`. GCC flavor also sets
   `__BIGGEST_ALIGNMENT__` to the widest vector register (16/32/64); clang keeps

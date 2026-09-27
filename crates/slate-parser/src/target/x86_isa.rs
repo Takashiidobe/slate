@@ -238,9 +238,10 @@ impl FromStr for X86Arch {
 }
 
 impl X86Arch {
-    fn default_for(family: TargetFamily) -> Self {
-        match family {
-            TargetFamily::X86 => Self::Pentium4,
+    fn default_for(family: TargetFamily, rules: Rules) -> Self {
+        match (family, rules) {
+            // gcc follows the multilib x86_64 build our i686 snapshot comes from, whose -m32 defaults to x86-64
+            (TargetFamily::X86, Rules::Clang) => Self::Pentium4,
             _ => Self::X86_64,
         }
     }
@@ -345,8 +346,9 @@ impl X86Isa {
         flavor: CompilerFlavor,
     ) -> Self {
         use X86Feature::*;
-        let arch = arch.unwrap_or(X86Arch::default_for(family));
-        let (enabled, disabled) = request.fold(Rules::from(flavor));
+        let rules = Rules::from(flavor);
+        let arch = arch.unwrap_or(X86Arch::default_for(family, rules));
+        let (enabled, disabled) = request.fold(rules);
         let mut features = arch.features().union(enabled).without(disabled);
         for (trigger, implied) in [(Sse42, Popcnt), (Sse42, Crc32), (Avx, Xsave)] {
             if features.contains(trigger) && !disabled.contains(implied) {
