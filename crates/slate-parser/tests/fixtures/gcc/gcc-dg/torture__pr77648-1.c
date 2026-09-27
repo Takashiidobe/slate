@@ -57,7 +57,7 @@ int main() {
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     fn %1 @foo(%2 s: ptr<@type0>) -> ptr<ptr<i32>> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 tem: i32 [storage=automatic];
-// DEFAULT-NEXT:         asm "" {
+// DEFAULT-NEXT:         asm "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "=g" place<i32>(%3);
 // DEFAULT-NEXT:             in 1 "g" read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:         }

@@ -56,7 +56,7 @@ int main() {
 // DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %4 f2: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=40..64>(%2), reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(24)), const<i32>(1))));
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %5: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=0..8, bits=40..64>(%2));

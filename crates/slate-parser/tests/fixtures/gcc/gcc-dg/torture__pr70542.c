@@ -96,7 +96,7 @@ main() {
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(113)>(%1), read<i64>(%7))), truncate<i32, reason=assign, fits=unknown>(read<i64>(%7)));
 // DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(113)>(%4), read<i64>(%7))), truncate<i16, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(7), sub<i64, overflow=ub>(sub<i64, overflow=ub>(const<i64>(2312631697), widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(113)>(%2), read<i64>(%7))))))), const<i64>(2312663500)))));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i16>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(113)>(%3), const<i32>(0)))), const<i16>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(113)>(%1), const<i32>(0)))), const<i32>(0))), ne<i16>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(113)>(%4), const<i32>(0)))), const<i16>(0)))

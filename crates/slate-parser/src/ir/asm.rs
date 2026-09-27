@@ -7,6 +7,7 @@ pub struct InlineAsm {
     pub volatile: bool,
     pub inline: bool,
     pub goto: bool,
+    pub dialect: Option<AsmDialect>,
     pub pieces: Vec<AsmPiece>,
     pub outputs: Vec<AsmOutput>,
     pub inputs: Vec<AsmInput>,
@@ -24,9 +25,21 @@ pub enum AsmPiece {
     Label(usize),
     Percent,
     UniqueId,
-    DialectStart,
-    DialectSeparator,
-    DialectEnd,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmDialect {
+    Att,
+    Intel,
+}
+
+impl AsmDialect {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Att => "att",
+            Self::Intel => "intel",
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -109,9 +122,6 @@ impl fmt::Display for AsmPiece {
             Self::Label(index) => write!(f, "%l{index}"),
             Self::Percent => f.write_str("%%"),
             Self::UniqueId => f.write_str("%="),
-            Self::DialectStart => f.write_str("%{"),
-            Self::DialectSeparator => f.write_str("%|"),
-            Self::DialectEnd => f.write_str("%}"),
         }
     }
 }

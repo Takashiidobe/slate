@@ -86,7 +86,7 @@ main() {
 // DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%16));
 // DEFAULT-NEXT:                 yield ne<i32>(read<i32>(%15), const<i32>(1));
 // DEFAULT-NEXT:             };
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "r" array_decay<ptr<f64>, length=Some(8)>(%3);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
@@ -106,7 +106,7 @@ main() {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0)))

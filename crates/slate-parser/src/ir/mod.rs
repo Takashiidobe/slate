@@ -10,7 +10,7 @@ mod numeric;
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use asm::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
-    AsmConstraintModifier, AsmInput, AsmOutput, AsmPiece, AsmRegister, InlineAsm,
+    AsmConstraintModifier, AsmDialect, AsmInput, AsmOutput, AsmPiece, AsmRegister, InlineAsm,
 };
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
 pub use declarations::{

@@ -91,11 +91,11 @@ main() {
 // DEFAULT-NEXT:                 write<bool>(%6, le<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%1))), const<i32>(31)));
 // DEFAULT-NEXT:                 write<i32>(%2, from_bool<i32, reason=assign>(read<bool>(%6)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

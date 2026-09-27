@@ -100,7 +100,7 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %11 l: i32 [storage=automatic];
-// DEFAULT-NEXT:         asm "" {
+// DEFAULT-NEXT:         asm "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "=r" place<i32>(%11);
 // DEFAULT-NEXT:             in 1 "0" const<i32>(7);
 // DEFAULT-NEXT:         }

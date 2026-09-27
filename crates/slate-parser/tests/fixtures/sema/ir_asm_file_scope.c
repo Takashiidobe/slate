@@ -38,8 +38,8 @@ int in_function(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     asm "top_basic";
-// IR-NEXT:     asm "concat";
+// IR-NEXT:     asm "top_basic" [dialect=att];
+// IR-NEXT:     asm "concat" [dialect=att];
 // IR-NEXT:     global %0 packed: i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %1 value: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-NEXT:     fn %2 @in_function() -> i32 [linkage=external] [fallthrough=ub_if_used] {

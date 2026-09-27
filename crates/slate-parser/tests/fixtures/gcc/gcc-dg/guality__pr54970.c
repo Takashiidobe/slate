@@ -91,29 +91,29 @@ main() {
 // DEFAULT-NEXT:         let %1 a: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3));
 // DEFAULT-NEXT:         let %2 p: ptr<i32> [storage=automatic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(2));
 // DEFAULT-NEXT:         let %3 q: ptr<i32> [storage=automatic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%1), const<i32>(1));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         let %9: ptr<i32> [synthetic] = read<ptr<i32>>(%2);
 // DEFAULT-NEXT:         let %10: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%9)));
 // DEFAULT-NEXT:         let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%9)), read<i32>(%11));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         let %12: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%12)));
 // DEFAULT-NEXT:         let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%12)), read<i32>(%14));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%7, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i32, 3>>>(%1)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(3)>(compound_literal %8 [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(5), index2 = const<i32>(6)))), const<u64>(12));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         let %15: ptr<i32> [synthetic] = read<ptr<i32>>(%2);
 // DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%15)));
 // DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(20));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%15)), read<i32>(%17));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         let %18: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
 // DEFAULT-NEXT:         let %19: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%18)));
 // DEFAULT-NEXT:         let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(20));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%18)), read<i32>(%20));
-// DEFAULT-NEXT:         asm volatile "nop";
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

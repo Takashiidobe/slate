@@ -61,7 +61,7 @@ main() {
 // DEFAULT-NEXT:     fn %14 @__builtin_memset(%11 <unnamed>: ptr<void>, %12 <unnamed>: i32, %13 <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %0 @bar(%1 p: ptr<i16>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%14, pointer_cast<ptr<void>, reason=arg>(read<ptr<i16>>(%1)), const<i32>(0), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(17))), const<u64>(2)));
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "r" read<ptr<i16>>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
@@ -81,7 +81,7 @@ main() {
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %9 j: volatile i32 [storage=automatic];
 // DEFAULT-NEXT:         let %10 i: i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "=r" place<i32>(%10);
 // DEFAULT-NEXT:             in 1 "0" read<i32>(%10);
 // DEFAULT-NEXT:         }

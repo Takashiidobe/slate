@@ -55,7 +55,7 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %5 x: u128 [storage=automatic] = call<u128, signature=fn(u128) -> u128>(%2, reinterpret<u128, reason=arg, fits=unknown>(widen<i128, reason=arg>(not<i64>(const<i64>(9223372036854775807)))));

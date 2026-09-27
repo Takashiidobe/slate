@@ -123,6 +123,13 @@ pub(super) fn metadata(
     Ok(())
 }
 
+fn asm_dialect(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
+    match asm.dialect {
+        Some(dialect) => write!(f, " [dialect={}]", dialect.as_str()),
+        None => Ok(()),
+    }
+}
+
 impl DisplayModule<'_> {
     fn table(&self) -> Option<&Metadata> {
         self.show_metadata.then_some(&self.module.metadata)
@@ -495,6 +502,7 @@ impl DisplayModule<'_> {
                         f.write_str(" goto")?;
                     }
                     write!(f, " {:?}", asm.template)?;
+                    asm_dialect(f, asm)?;
                     if !asm.has_sections() {
                         metadata(f, self.table(), statement.id)?;
                         writeln!(f, ";")?;
@@ -572,6 +580,7 @@ impl fmt::Display for DisplayModule<'_> {
         writeln!(f, "    }}")?;
         for asm in &self.module.asm {
             write!(f, "    asm {:?}", asm.template)?;
+            asm_dialect(f, asm)?;
             if asm.has_sections() {
                 f.write_str(" {")?;
                 metadata(f, self.table(), asm.id)?;

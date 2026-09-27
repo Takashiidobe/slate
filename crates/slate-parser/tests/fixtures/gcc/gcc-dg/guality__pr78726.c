@@ -78,13 +78,13 @@ main() {
 // DEFAULT-NEXT:         let %8 d4: u32 [storage=automatic] = mul<u32, overflow=wrap>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         let %9 d5: u32 [storage=automatic] = mul<u32, overflow=wrap>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         let %10 d6: u32 [storage=automatic] = mul<u32, overflow=wrap>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         asm "nop" {
+// DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "g" addr_of<ptr<u8>>(%0);
 // DEFAULT-NEXT:             in 1 "g" addr_of<ptr<u8>>(%1);
 // DEFAULT-NEXT:             clobbers: memory;

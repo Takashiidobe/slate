@@ -61,7 +61,7 @@ int baz(void)
 // DEFAULT-NEXT:     } [size=648, align=8, offsets=[0, 640]];
 // DEFAULT-NEXT:     global %6 b: array<@type1, 32> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo(%2 x: ptr<@type0>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+m" place<i64>(field0(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:             in 1 "r" read<ptr<@type0>>(%2);
 // DEFAULT-NEXT:             clobbers: memory, cc;

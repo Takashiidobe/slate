@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %8 @exit(%24 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %10 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

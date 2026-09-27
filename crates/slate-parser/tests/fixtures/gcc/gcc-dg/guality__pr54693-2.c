@@ -57,7 +57,7 @@ main() {
 // DEFAULT-NEXT:     global %0 v: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @bar(%2 i: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%0, read<i32>(%2));
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "r" read<i32>(%2);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

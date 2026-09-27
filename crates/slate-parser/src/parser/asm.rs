@@ -10,6 +10,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token};
 use crate::target::x86::decode_register;
+use crate::target_info::TargetFamily;
 
 pub(super) fn is_asm_keyword(token: Option<&Token>) -> bool {
     matches!(token, Some(Token::Ident(name)) if matches!(name.as_str(), "asm" | "__asm" | "__asm__"))
@@ -242,7 +243,8 @@ impl Parser {
         names.extend(operand_names(&inputs));
         let operand_count = names.len();
         names.extend(labels.iter().map(|label| Some(label.value.as_str())));
-        let pieces = analyze_template(&template.value, &names, operand_count)
+        let dialects = matches!(self.target.family, TargetFamily::X86 | TargetFamily::X86_64);
+        let pieces = analyze_template(&template.value, &names, operand_count, dialects)
             .map_err(|error| self.error_at_tokens(tokens, template_pos, error))?;
         let resolve = |operand: &RawOperand, direction: &str| {
             let constraint = decode_constraint(&operand.constraint.value, &output_names);
@@ -353,28 +355,56 @@ fn analyze_template(
     template: &str,
     names: &[Option<&str>],
     operand_count: usize,
+    dialects: bool,
 ) -> Result<Vec<AsmTemplatePiece>, String> {
     let mut pieces = Vec::new();
     let mut text = String::new();
+    let mut alternation: Option<(Vec<AsmTemplatePiece>, Vec<Vec<AsmTemplatePiece>>)> = None;
     let mut rest = template;
-    while let Some(percent) = rest.find('%') {
-        text.push_str(&rest[..percent]);
-        rest = &rest[percent + 1..];
+    let special = |c: char| c == '%' || dialects && matches!(c, '{' | '|' | '}');
+    while let Some(position) = rest.find(special) {
+        text.push_str(&rest[..position]);
+        let mut chars = rest[position..].chars();
+        let special = chars.next();
+        rest = chars.as_str();
+        match (special, &mut alternation) {
+            (Some('{'), Some(_)) => return Err("nested assembly dialect alternatives".into()),
+            (Some('{'), None) => {
+                flush_text(&mut text, &mut pieces);
+                alternation = Some((std::mem::take(&mut pieces), Vec::new()));
+                continue;
+            }
+            (Some('|'), Some((_, alternatives))) => {
+                flush_text(&mut text, &mut pieces);
+                alternatives.push(std::mem::take(&mut pieces));
+                continue;
+            }
+            (Some('}'), Some(_)) => {
+                flush_text(&mut text, &mut pieces);
+                pieces = close_alternation(alternation.take(), pieces);
+                continue;
+            }
+            (Some('|' | '}'), None) => {
+                text.extend(special);
+                continue;
+            }
+            _ => {}
+        }
         let mut chars = rest.chars();
         let escaped = chars
             .next()
             .ok_or("invalid % escape in inline assembly string")?;
+        if matches!(escaped, '{' | '|' | '}') {
+            text.push(escaped);
+            rest = chars.as_str();
+            continue;
+        }
         let simple = match escaped {
             '%' => Some(AsmTemplatePiece::Percent),
-            '{' => Some(AsmTemplatePiece::LBrace),
-            '|' => Some(AsmTemplatePiece::Pipe),
-            '}' => Some(AsmTemplatePiece::RBrace),
             '=' => Some(AsmTemplatePiece::UniqueId),
             _ => None,
         };
-        if !text.is_empty() {
-            pieces.push(AsmTemplatePiece::Text(std::mem::take(&mut text)));
-        }
+        flush_text(&mut text, &mut pieces);
         if let Some(piece) = simple {
             pieces.push(piece);
             rest = chars.as_str();
@@ -423,10 +453,26 @@ fn analyze_template(
         });
     }
     text.push_str(rest);
+    flush_text(&mut text, &mut pieces);
+    Ok(close_alternation(alternation, pieces))
+}
+
+fn flush_text(text: &mut String, pieces: &mut Vec<AsmTemplatePiece>) {
     if !text.is_empty() {
-        pieces.push(AsmTemplatePiece::Text(text));
+        pieces.push(AsmTemplatePiece::Text(std::mem::take(text)));
     }
-    Ok(pieces)
+}
+
+fn close_alternation(
+    alternation: Option<(Vec<AsmTemplatePiece>, Vec<Vec<AsmTemplatePiece>>)>,
+    current: Vec<AsmTemplatePiece>,
+) -> Vec<AsmTemplatePiece> {
+    let Some((mut outer, mut alternatives)) = alternation else {
+        return current;
+    };
+    alternatives.push(current);
+    outer.push(AsmTemplatePiece::DialectAlternatives(alternatives));
+    outer
 }
 
 fn decode_constraint(spelling: &str, output_names: &[Option<&str>]) -> AsmConstraint {

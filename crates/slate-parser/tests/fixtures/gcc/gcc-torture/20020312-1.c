@@ -60,7 +60,7 @@ int foo (B *x)
 // DEFAULT-NEXT:     type @type3 B = @type2;
 // DEFAULT-NEXT:     fn %4 @bar(%5 x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 r: u64 [storage=automatic];
-// DEFAULT-NEXT:         asm "" {
+// DEFAULT-NEXT:         asm "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "=r" place<u64>(%6);
 // DEFAULT-NEXT:             in 1 "0" read<u32>(%5);
 // DEFAULT-NEXT:         }

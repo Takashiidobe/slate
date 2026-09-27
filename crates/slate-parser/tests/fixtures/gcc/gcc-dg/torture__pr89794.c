@@ -70,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 x: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, u32, u16, u16) -> u32>(%7, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         asm "" {
+// DEFAULT-NEXT:         asm "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "r" read<u32>(%15);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);

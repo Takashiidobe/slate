@@ -59,11 +59,11 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo(%1 p: ptr<u16>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %2 a: i32 [storage=automatic] = widen<i32, reason=assign>(reinterpret<i16, reason=explicit, fits=unknown>(read<u16>(deref(read<ptr<u16>>(%1)))));
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             in 0 "D" reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             in 0 "D" reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u16>(deref(read<ptr<u16>>(%1)))));
 // DEFAULT-NEXT:         }
@@ -71,11 +71,11 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @bar(%4 p: ptr<i16>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 a: u32 [storage=automatic] = widen<u32, reason=assign>(reinterpret<u16, reason=explicit, fits=unknown>(read<i16>(deref(read<ptr<i16>>(%4)))));
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             in 0 "D" reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             in 0 "D" reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i16>(deref(read<ptr<i16>>(%4)))));
 // DEFAULT-NEXT:         }

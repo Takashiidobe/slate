@@ -417,7 +417,8 @@ AsmOperands = AsmOperands { pieces: vec<AsmTemplatePiece>,
 AsmTemplatePiece = "Text(" string ")"
                  | Operand { index: int, modifier?: Some(char) }
                  | "Label(" int ")"
-                 | "Percent" | "UniqueId" | "LBrace" | "Pipe" | "RBrace" ;
+                 | "Percent" | "UniqueId"
+                 | "DialectAlternatives(" vec<vec<AsmTemplatePiece>> ")" ;
 AsmOperand  = AsmOperand { name?: Some(span<string>),
                            constraint: span<AsmConstraint>, expr: expr } ;
 AsmConstraint            = AsmConstraint { alternatives: vec<AsmConstraintAlternative> } ;
@@ -445,6 +446,9 @@ AArch64Width = "Bits8" | "Bits16" | "Bits32" | "Bits64" | "Bits128"
 - `operands` is absent for basic asm (`asm("...")` without colons).
 - `pieces` is the template split into text and `%` references; `Label(N)`
   is a reference to a goto label, as an index into `labels`.
+- `DialectAlternatives` is a bare `{att|intel|...}` in an x86 template; the
+  escapes `%{`, `%|` and `%}` are literal text. On other targets braces and
+  `|` are always text.
 - `AsmLabel` is a declarator's `asm("name")`: a symbol name, or a register
   for a GNU register variable.
 

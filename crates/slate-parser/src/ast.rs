@@ -701,9 +701,7 @@ pub enum AsmTemplatePiece {
     Label(usize),
     Percent,
     UniqueId,
-    LBrace,
-    Pipe,
-    RBrace,
+    DialectAlternatives(Vec<Vec<AsmTemplatePiece>>),
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

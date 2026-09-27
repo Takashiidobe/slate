@@ -58,7 +58,7 @@ main() {
 // DEFAULT-NEXT:     global %2 a: array<i8, 8> [storage=static] [const] = code_units<array<i8, 8>>([97, 98, 99, 100, 101, 102, 103, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 b: ptr<const i8> [storage=automatic] = array_decay<ptr<const i8>, length=Some(8)>(%2);
-// DEFAULT-NEXT:         asm "nop" {
+// DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }

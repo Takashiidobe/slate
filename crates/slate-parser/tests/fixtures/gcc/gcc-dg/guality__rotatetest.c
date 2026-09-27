@@ -93,7 +93,7 @@ main() {
 // DEFAULT-NEXT:     fn %1 @f1(%2 x: u64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 f: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%2), const<i32>(12)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%2), sub<i32, overflow=ub>(const<i32>(64), const<i32>(12)))));
 // DEFAULT-NEXT:         let %4 g: i64 [storage=automatic] = read<i64>(%3);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<i64>(%3);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %30: i32 [synthetic] = read<i32, volatile>(%0);
@@ -104,7 +104,7 @@ main() {
 // DEFAULT-NEXT:     fn %5 @f2(%6 x: u64, %7 y: i32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 f: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%6), read<i32>(%7)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%6), sub<i32, overflow=ub>(const<i32>(64), read<i32>(%7)))));
 // DEFAULT-NEXT:         let %9 g: i64 [storage=automatic] = read<i64>(%8);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<i64>(%8);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %32: i32 [synthetic] = read<i32, volatile>(%0);
@@ -115,7 +115,7 @@ main() {
 // DEFAULT-NEXT:     fn %10 @f3(%11 x: u64, %12 y: i32) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %13 f: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(or<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%11), read<i32>(%12)), shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%11), sub<i32, overflow=ub>(const<i32>(64), read<i32>(%12)))));
 // DEFAULT-NEXT:         let %14 g: i64 [storage=automatic] = read<i64>(%13);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<i64>(%13);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %34: i32 [synthetic] = read<i32, volatile>(%0);
@@ -126,7 +126,7 @@ main() {
 // DEFAULT-NEXT:     fn %15 @f4(%16 x: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %17 f: u32 [storage=automatic] = or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%16), const<i32>(12)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%16), sub<i32, overflow=ub>(const<i32>(32), const<i32>(12))));
 // DEFAULT-NEXT:         let %18 g: u32 [storage=automatic] = read<u32>(%17);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<u32>(%17);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %36: i32 [synthetic] = read<i32, volatile>(%0);
@@ -137,7 +137,7 @@ main() {
 // DEFAULT-NEXT:     fn %19 @f5(%20 x: u32, %21 y: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %22 f: u32 [storage=automatic] = or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%20), read<i32>(%21)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%20), sub<i32, overflow=ub>(const<i32>(32), read<i32>(%21))));
 // DEFAULT-NEXT:         let %23 g: u32 [storage=automatic] = read<u32>(%22);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<u32>(%22);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %38: i32 [synthetic] = read<i32, volatile>(%0);
@@ -148,7 +148,7 @@ main() {
 // DEFAULT-NEXT:     fn %24 @f6(%25 x: u32, %26 y: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %27 f: u32 [storage=automatic] = or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%25), read<i32>(%26)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%25), sub<i32, overflow=ub>(const<i32>(32), read<i32>(%26))));
 // DEFAULT-NEXT:         let %28 g: u32 [storage=automatic] = read<u32>(%27);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "+r" place<u32>(%27);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %40: i32 [synthetic] = read<i32, volatile>(%0);

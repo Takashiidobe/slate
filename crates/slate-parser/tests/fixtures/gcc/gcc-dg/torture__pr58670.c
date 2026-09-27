@@ -65,7 +65,7 @@ main() {
 // DEFAULT-NEXT:     fn %0 @foo(%2 a: i32, %3 b: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(3));
-// DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" {
+// DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" [dialect=att] {
 // DEFAULT-NEXT:             template: "btsl $1, " %0 "; jc " %l0;
 // DEFAULT-NEXT:             in 0 "m" read<i32>(%3);
 // DEFAULT-NEXT:             clobbers: memory;
@@ -78,7 +78,7 @@ main() {
 // DEFAULT-NEXT:     fn %4 @bar(%6 a: i32, %7 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(3));
-// DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" {
+// DEFAULT-NEXT:         asm volatile goto "btsl $1, %0; jc %l[lab]" [dialect=att] {
 // DEFAULT-NEXT:             template: "btsl $1, " %0 "; jc " %l0;
 // DEFAULT-NEXT:             in 0 "m" read<i32>(%7);
 // DEFAULT-NEXT:             clobbers: memory;

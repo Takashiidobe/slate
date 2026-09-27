@@ -28,7 +28,7 @@ void f(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         asm goto "";
+// DEFAULT-NEXT:         asm goto "" [dialect=att];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

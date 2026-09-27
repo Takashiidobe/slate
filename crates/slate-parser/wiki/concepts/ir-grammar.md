@@ -233,6 +233,7 @@ statement  = simple { metadata } ";"
            | asm
            | "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
+               [ " [dialect=" ( "att" | "intel" ) "]" ]
                ( { metadata } ";"
                | "{" { metadata }
                    [ "template:" { asm_piece } ";" ]
@@ -243,7 +244,7 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
 asm_piece  = string | "%" [ letter ] integer | "%l" integer
-           | "%%" | "%=" | "%{" | "%|" | "%}" ;
+           | "%%" | "%=" ;
 clobber    = "memory" | "cc" | "unwind" | register ;
 register   = string [ "as" identifier ] ;
 simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
@@ -274,6 +275,10 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   into outputs-then-inputs, matching the `out N` / `in N` lines, and `%lN`
   is an index into the `labels:` list — not the operand number the source
   wrote. An operand piece may carry a one-letter target modifier (`%a1`).
+- `[dialect=...]` is the assembler syntax the template is written in; it is
+  present on x86 and absent on targets without a dialect choice. `template:`
+  holds only the selected side of each `{att|intel}` alternation, so it
+  never contains one.
 - An operand's quoted constraint is the GNU spelling reconstructed from the
   parsed constraint: `,`-separated alternatives, each with its modifier
   characters (`=` `+` `&` `%` `-`) and then a hard register `{reg}`, a

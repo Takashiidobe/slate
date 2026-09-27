@@ -852,6 +852,15 @@ template as opaque text with holes.
 - Side effects in operand expressions hoist ahead of the statement like any
   other operand, so the asm itself never contains an embedded effect.
   Fixture: `sema/ir_asm.c`.
+- Each asm carries its dialect (`AsmDialect::{Att, Intel}`) on x86 and
+  `None` elsewhere. It is per statement, not per module, because MSVC
+  `__asm` (Intel) and GNU asm (AT&T) can share a translation unit. The
+  target arch is not copied onto the node; it is `Module::target.family`.
+  GNU asm is always AT&T until `-masm` is supported.
+- A `{att|intel}` alternation is resolved during lowering to the dialect's
+  side (first for AT&T, second for Intel, empty when missing), so the
+  backend never sees one; the raw template string keeps the source.
+  `%{`/`%|`/`%}` are literal braces and bars, not alternation markers.
 
 File-scope `asm` lowers to `Module::asm`, a source-ordered list of the same
 `InlineAsm`, printed before the type definitions. It is a separate list rather

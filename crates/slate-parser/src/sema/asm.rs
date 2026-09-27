@@ -2,6 +2,7 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use crate::ast;
 use crate::ir::*;
+use crate::target_info::TargetFamily;
 
 impl Lowerer {
     pub(super) fn asm(&mut self, asm: &ast::GnuAsm) -> Result<InlineAsm, ResolveError> {
@@ -10,11 +11,16 @@ impl Lowerer {
                 .iter()
                 .any(|qualifier| qualifier.value == wanted)
         };
+        let dialect = match self.context.target.family {
+            TargetFamily::X86 | TargetFamily::X86_64 => Some(AsmDialect::Att),
+            TargetFamily::AArch64 | TargetFamily::Arm32 => None,
+        };
         let mut lowered = InlineAsm {
             template: asm.template.value.clone(),
             volatile: qualifier(ast::AsmQualifier::Volatile),
             inline: qualifier(ast::AsmQualifier::Inline),
             goto: qualifier(ast::AsmQualifier::Goto),
+            dialect,
             pieces: Vec::new(),
             outputs: Vec::new(),
             inputs: Vec::new(),
@@ -24,7 +30,7 @@ impl Lowerer {
         let Some(operands) = &asm.operands else {
             return Ok(lowered);
         };
-        lowered.pieces = operands.pieces.iter().map(piece).collect();
+        lower_pieces(&operands.pieces, dialect, &mut lowered.pieces);
         for output in &operands.outputs {
             let place = self.place(&output.expr)?;
             lowered.outputs.push(AsmOutput {
@@ -65,19 +71,39 @@ impl Lowerer {
     }
 }
 
-fn piece(piece: &ast::AsmTemplatePiece) -> AsmPiece {
-    match piece {
-        ast::AsmTemplatePiece::Text(text) => AsmPiece::Text(text.clone()),
-        ast::AsmTemplatePiece::Operand { index, modifier } => AsmPiece::Operand {
-            index: *index,
-            modifier: *modifier,
-        },
-        ast::AsmTemplatePiece::Label(index) => AsmPiece::Label(*index),
-        ast::AsmTemplatePiece::Percent => AsmPiece::Percent,
-        ast::AsmTemplatePiece::UniqueId => AsmPiece::UniqueId,
-        ast::AsmTemplatePiece::LBrace => AsmPiece::DialectStart,
-        ast::AsmTemplatePiece::Pipe => AsmPiece::DialectSeparator,
-        ast::AsmTemplatePiece::RBrace => AsmPiece::DialectEnd,
+fn lower_pieces(
+    pieces: &[ast::AsmTemplatePiece],
+    dialect: Option<AsmDialect>,
+    lowered: &mut Vec<AsmPiece>,
+) {
+    for piece in pieces {
+        let piece = match piece {
+            ast::AsmTemplatePiece::Text(text) => {
+                if let Some(AsmPiece::Text(previous)) = lowered.last_mut() {
+                    previous.push_str(text);
+                    continue;
+                }
+                AsmPiece::Text(text.clone())
+            }
+            ast::AsmTemplatePiece::Operand { index, modifier } => AsmPiece::Operand {
+                index: *index,
+                modifier: *modifier,
+            },
+            ast::AsmTemplatePiece::Label(index) => AsmPiece::Label(*index),
+            ast::AsmTemplatePiece::Percent => AsmPiece::Percent,
+            ast::AsmTemplatePiece::UniqueId => AsmPiece::UniqueId,
+            ast::AsmTemplatePiece::DialectAlternatives(alternatives) => {
+                let selected = match dialect {
+                    Some(AsmDialect::Intel) => 1,
+                    Some(AsmDialect::Att) | None => 0,
+                };
+                if let Some(alternative) = alternatives.get(selected) {
+                    lower_pieces(alternative, dialect, lowered);
+                }
+                continue;
+            }
+        };
+        lowered.push(piece);
     }
 }
 

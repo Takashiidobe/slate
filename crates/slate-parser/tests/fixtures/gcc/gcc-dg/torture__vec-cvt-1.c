@@ -815,7 +815,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%77), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77))), read<f32, volatile>(%78));
 // DEFAULT-NEXT:                     else
@@ -890,7 +890,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%86), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%86, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%86), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%86), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%86), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i32, reason=promotion>(reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%86)))))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77)))), read<f32, volatile>(%78))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%77))), read<f32, volatile>(%78));
@@ -947,7 +947,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%88), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))), truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(127)), const<i32>(1)), read<i32>(%88))));
 // DEFAULT-NEXT:                     else
@@ -1007,7 +1007,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%91), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%91, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%91), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%91), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%2), read<i32>(%88))), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u64>(%91))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
@@ -1137,7 +1137,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%93), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93))), read<f32, volatile>(%94));
 // DEFAULT-NEXT:                     else
@@ -1212,7 +1212,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%102), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%102, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%102), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%102), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%102), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(truncate<u16, reason=explicit, fits=unknown>(read<u64>(%102)))))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93)))), read<f32, volatile>(%94))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%93))), read<f32, volatile>(%94));
@@ -1269,7 +1269,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%104), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))), truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(32767)), const<i32>(1)), read<i32>(%104))));
 // DEFAULT-NEXT:                     else
@@ -1329,7 +1329,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%107), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%107, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%107), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%107), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(1024)>(%3), read<i32>(%104))), reinterpret<i16, reason=assign, fits=unknown>(truncate<u16, reason=assign, fits=unknown>(read<u64>(%107))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%16);
@@ -1459,7 +1459,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%109), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109))), read<f32, volatile>(%110));
 // DEFAULT-NEXT:                     else
@@ -1534,7 +1534,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%118), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%118, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%118), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%118), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%118), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%118))))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109)))), read<f32, volatile>(%110))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%109))), read<f32, volatile>(%110));
@@ -1591,7 +1591,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%120), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), read<i32>(%120)));
 // DEFAULT-NEXT:                     else
@@ -1651,7 +1651,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%123), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%123, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%123), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%123), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1024)>(%4), read<i32>(%120))), reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(read<u64>(%123))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%20);
@@ -1781,7 +1781,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%125), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125))), read<f32, volatile>(%126));
 // DEFAULT-NEXT:                     else
@@ -1856,7 +1856,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%134), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%134, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%134), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%134), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%134), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%134)))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125)))), read<f32, volatile>(%126))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%125))), read<f32, volatile>(%126));
@@ -1913,7 +1913,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%136), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))), add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)), widen<i64, reason=usual_arith>(read<i32>(%136))));
 // DEFAULT-NEXT:                     else
@@ -1973,7 +1973,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%139), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%139, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%139), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%139), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<i64>(deref(ptr_offset<ptr<i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<i64>, length=Some(1024)>(%5), read<i32>(%136))), reinterpret<i64, reason=assign, fits=unknown>(read<u64>(%139)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%24);
@@ -2103,7 +2103,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%141), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141))), read<f32, volatile>(%142));
 // DEFAULT-NEXT:                     else
@@ -2178,7 +2178,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%150), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%150, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%150), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%150), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%150), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%150)))))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141)))), read<f32, volatile>(%142))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%141))), read<f32, volatile>(%142));
@@ -2235,7 +2235,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%152), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(0), read<i32>(%152)))));
 // DEFAULT-NEXT:                     else
@@ -2295,7 +2295,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%155), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%155, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%155), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%155), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1024)>(%6), read<i32>(%152))), truncate<u8, reason=assign, fits=unknown>(read<u64>(%155)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%28);
@@ -2425,7 +2425,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%157), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157))), read<f32, volatile>(%158));
 // DEFAULT-NEXT:                     else
@@ -2500,7 +2500,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%166), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%166, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%166), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%166), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%166), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u16, reason=explicit, fits=unknown>(read<u64>(%166)))))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157)))), read<f32, volatile>(%158))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%157))), read<f32, volatile>(%158));
@@ -2557,7 +2557,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%168), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(0), read<i32>(%168)))));
 // DEFAULT-NEXT:                     else
@@ -2617,7 +2617,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%171), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%171, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%171), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%171), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(1024)>(%7), read<i32>(%168))), truncate<u16, reason=assign, fits=unknown>(read<u64>(%171)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%32);
@@ -2747,7 +2747,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%173), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173))), read<f32, volatile>(%174));
 // DEFAULT-NEXT:                     else
@@ -2822,7 +2822,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%182), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%182, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%182), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%182), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%182), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%182)))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173)))), read<f32, volatile>(%174))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%173))), read<f32, volatile>(%174));
@@ -2879,7 +2879,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%184), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))), reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(0), read<i32>(%184))));
 // DEFAULT-NEXT:                     else
@@ -2939,7 +2939,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%187), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%187, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%187), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%187), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1024)>(%8), read<i32>(%184))), truncate<u32, reason=assign, fits=unknown>(read<u64>(%187)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%36);
@@ -3069,7 +3069,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%189), const<i32>(0))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189))), read<f32, volatile>(%190));
 // DEFAULT-NEXT:                     else
@@ -3144,7 +3144,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%198), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%198, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%198), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%198), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189))), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%198), const<i32>(59))), const<f32>(32.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(%198))));
 // DEFAULT-NEXT:                     if lt<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189)))), read<f32, volatile>(%190))
 // DEFAULT-NEXT:                         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(1024)>(%10), read<i32>(%189))), read<f32, volatile>(%190));
@@ -3201,7 +3201,7 @@ main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     if lt<i32>(read<i32>(%200), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(1024), const<i32>(4)))
 // DEFAULT-NEXT:                         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(const<i32>(0), read<i32>(%200)))));
 // DEFAULT-NEXT:                     else
@@ -3261,7 +3261,7 @@ main() {
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%203), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
 // DEFAULT-NEXT:                     write<u64>(%203, xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%203), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0)))));
 // DEFAULT-NEXT:                     xor<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%203), const<i32>(21)), widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn() -> i32>(%0))));
-// DEFAULT-NEXT:                     asm "";
+// DEFAULT-NEXT:                     asm "" [dialect=att];
 // DEFAULT-NEXT:                     write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(1024)>(%9), read<i32>(%200))), read<u64>(%203));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%40);

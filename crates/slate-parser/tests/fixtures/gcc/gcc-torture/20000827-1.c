@@ -46,10 +46,10 @@ foo ()
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %1 a: i32 [storage=automatic];
 // DEFAULT-NEXT:                 let %2 b: i8 [storage=automatic];
-// DEFAULT-NEXT:                 asm "" {
+// DEFAULT-NEXT:                 asm "" [dialect=att] {
 // DEFAULT-NEXT:                     out 0 "=r" place<i32>(%1);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 asm "" {
+// DEFAULT-NEXT:                 asm "" [dialect=att] {
 // DEFAULT-NEXT:                     out 0 "=r" place<i8>(%2);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 if ne<i8>(read<i8>(%2), const<i8>(0))

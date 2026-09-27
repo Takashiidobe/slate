@@ -92,13 +92,13 @@ main() {
 // DEFAULT-NEXT:         let %9 x: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%7)))));
 // DEFAULT-NEXT:         let %10 y: i32 [storage=automatic] [align=32];
 // DEFAULT-NEXT:         write<i32>(%10, const<i32>(2));
-// DEFAULT-NEXT:         asm "nop" {
+// DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             out 0 "=m" place<i32>(%10);
 // DEFAULT-NEXT:             in 1 "m" read<i32>(%10);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))), truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(25), read<i32>(%8))));
-// DEFAULT-NEXT:         asm volatile "nop" {
+// DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             out 0 "=m" place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))));
 // DEFAULT-NEXT:             in 1 "m" read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))));
@@ -107,12 +107,12 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 l: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             out 0 "=r" place<i32>(%12);
 // DEFAULT-NEXT:             in 1 "0" read<i32>(%12);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> i32>(%0, add<i32, overflow=ub>(read<i32>(%12), const<i32>(1)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(2)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(3)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(4)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(5)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(6)), add<i32, overflow=ub>(read<i32>(%12), const<i32>(30)), const<i32>(7));
-// DEFAULT-NEXT:         asm volatile "" {
+// DEFAULT-NEXT:         asm volatile "" [dialect=att] {
 // DEFAULT-NEXT:             in 0 "r" read<i32>(%12);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return const<i32>(0);

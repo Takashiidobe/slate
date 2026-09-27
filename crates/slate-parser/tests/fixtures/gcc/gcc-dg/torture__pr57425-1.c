@@ -72,12 +72,12 @@ main() {
 // DEFAULT-NEXT:             let %4 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:             let %5 c: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i32>>(%5, array_decay<ptr<i32>, length=Some(20)>(field0(%4)));
-// DEFAULT-NEXT:             asm "" {
+// DEFAULT-NEXT:             asm "" [dialect=att] {
 // DEFAULT-NEXT:                 out 0 "=r" place<ptr<i32>>(%5);
 // DEFAULT-NEXT:                 in 1 "0" read<ptr<i32>>(%5);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%5)), const<i32>(0));
-// DEFAULT-NEXT:             asm "" {
+// DEFAULT-NEXT:             asm "" [dialect=att] {
 // DEFAULT-NEXT:                 out 0 "=r" place<ptr<i32>>(%5);
 // DEFAULT-NEXT:                 in 1 "0" read<ptr<i32>>(%5);
 // DEFAULT-NEXT:             }
@@ -89,12 +89,12 @@ main() {
 // DEFAULT-NEXT:             let %6 a: @type0 [storage=automatic];
 // DEFAULT-NEXT:             let %7 c: ptr<i64> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<i64>>(%7, array_decay<ptr<i64>, length=Some(10)>(field1(%6)));
-// DEFAULT-NEXT:             asm "" {
+// DEFAULT-NEXT:             asm "" [dialect=att] {
 // DEFAULT-NEXT:                 out 0 "=r" place<ptr<i64>>(%7);
 // DEFAULT-NEXT:                 in 1 "0" read<ptr<i64>>(%7);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             write<i64>(deref(read<ptr<i64>>(%7)), widen<i64, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:             asm "" {
+// DEFAULT-NEXT:             asm "" [dialect=att] {
 // DEFAULT-NEXT:                 out 0 "=r" place<ptr<i64>>(%7);
 // DEFAULT-NEXT:                 in 1 "0" read<ptr<i64>>(%7);
 // DEFAULT-NEXT:             }
