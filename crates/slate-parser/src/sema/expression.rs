@@ -2578,7 +2578,7 @@ impl Lowerer {
                             error
                         }
                     })?;
-                let layout = self.types.typedef_storage(resolved, layout)?;
+                let layout = self.types.declared_storage(resolved, layout)?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -2626,7 +2626,7 @@ impl Lowerer {
                             error
                         }
                     })?;
-                let layout = self.types.typedef_storage(c, layout)?;
+                let layout = self.types.declared_storage(c, layout)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {

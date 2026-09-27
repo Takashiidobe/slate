@@ -119,7 +119,8 @@ DeclarationSpecifiers = DeclarationSpecifiers {
                           is_constexpr?: true,
                           attributes?: vec<span<Attribute>> } ;
 Qualifiers   = Qualifiers { is_const?: true, is_volatile?: true,
-                            is_restrict?: true, is_atomic?: true } ;
+                            is_restrict?: true, is_atomic?: true,
+                            is_unaligned?: true } ;
 StorageClass = "Typedef" | "Extern" | "Static" | "Auto" | "Register" ;
 TypeName     = TypeName { specifiers: DeclarationSpecifiers,
                           declarator: Declarator } ;

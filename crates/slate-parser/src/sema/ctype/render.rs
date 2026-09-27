@@ -26,6 +26,7 @@ impl CTypeMetadata {
             (self.qualifiers.is_volatile, "c_volatile"),
             (self.qualifiers.is_restrict, "c_restrict"),
             (self.qualifiers.is_atomic, "c_atomic"),
+            (self.qualifiers.is_unaligned, "c_unaligned"),
         ] {
             if present {
                 entries.push((key.into(), "true".into()));
@@ -293,6 +294,7 @@ fn words(quals: Qualifiers) -> Vec<&'static str> {
         (quals.is_volatile, "volatile"),
         (quals.is_restrict, "restrict"),
         (quals.is_atomic, "_Atomic"),
+        (quals.is_unaligned, "__unaligned"),
     ]
     .into_iter()
     .filter_map(|(present, word)| present.then_some(word))

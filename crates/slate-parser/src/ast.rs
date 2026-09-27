@@ -1070,6 +1070,8 @@ pub struct Qualifiers {
     pub is_restrict: bool,
     #[debug(skip_if = is_false)]
     pub is_atomic: bool,
+    #[debug(skip_if = is_false)]
+    pub is_unaligned: bool,
 }
 
 impl Qualifiers {

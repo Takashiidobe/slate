@@ -328,7 +328,7 @@ printed. The expression and name dump modes are separate diagnostic views.
 prints type aliases and function signatures without lowering function bodies.
 Each resolved declaration carries `c`,
 `c_canon` when different, and `typedef_chain` metadata; qualifiers are kept
-as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. All of these
+as `c_const`, `c_volatile`, `c_restrict`, `c_atomic` and `c_unaligned` metadata. All of these
 are rendered from the interned C type (`src/sema/ctype/`), never assembled
 from strings: `c` is the written spelling, `c_canon` desugars typedefs and
 `typeof` (keeping `_Atomic(T)`) and prints function types with adjusted

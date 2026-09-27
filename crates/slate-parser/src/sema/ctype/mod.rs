@@ -21,6 +21,7 @@ pub struct Qualifiers {
     pub is_volatile: bool,
     pub is_restrict: bool,
     pub is_atomic: bool,
+    pub is_unaligned: bool,
 }
 
 impl Qualifiers {
@@ -29,6 +30,7 @@ impl Qualifiers {
         is_volatile: false,
         is_restrict: false,
         is_atomic: false,
+        is_unaligned: false,
     };
 
     pub const CONST: Self = Self {
@@ -57,6 +59,7 @@ impl Qualifiers {
             is_volatile: self.is_volatile || other.is_volatile,
             is_restrict: self.is_restrict || other.is_restrict,
             is_atomic: self.is_atomic || other.is_atomic,
+            is_unaligned: self.is_unaligned || other.is_unaligned,
         }
     }
 
@@ -66,6 +69,7 @@ impl Qualifiers {
             is_volatile: self.is_volatile && !other.is_volatile,
             is_restrict: self.is_restrict && !other.is_restrict,
             is_atomic: self.is_atomic && !other.is_atomic,
+            is_unaligned: self.is_unaligned && !other.is_unaligned,
         }
     }
 
@@ -85,6 +89,7 @@ impl From<crate::ast::Qualifiers> for Qualifiers {
             is_volatile: qualifiers.is_volatile,
             is_restrict: qualifiers.is_restrict,
             is_atomic: qualifiers.is_atomic,
+            is_unaligned: qualifiers.is_unaligned,
         }
     }
 }

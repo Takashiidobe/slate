@@ -247,7 +247,16 @@ The MS sized-integer keywords (`__intN` and `_intN`) are keywords only under
 clang's `-fms-extensions`; elsewhere they are ordinary identifiers. `__int8`,
 `__int16` and `__int32` are aliases of `char`, `short` and `int`; `__int64` is
 a `long long` width, so clang-style `__int64 unsigned int` and `long __int64`
-parse.
+parse. Under the same gate:
+- `__forceinline` sets `is_inline` and adds an `AlwaysInline` attribute.
+- `__ptr64` after `*` is dropped, since every supported Windows target is
+  64-bit.
+- `__unaligned` is `Qualifiers::is_unaligned`, a real qualifier for
+  compatibility and discard warnings. It lowers the alignment of `_Alignof` and
+  of declared objects to 1 but never changes record member layout. clang
+  applies that to any type; cl.exe applies it only to pointer types.
+
+`__ptr32`, `__sptr` and `__uptr` are not supported yet.
 
 `Vector` and `Mode` are not written as specifiers. The parser wraps the
 declaration's type specifier in one per `vector_size`, `ext_vector_type` or

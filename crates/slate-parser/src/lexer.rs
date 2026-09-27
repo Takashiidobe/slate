@@ -52,6 +52,9 @@ pub enum Keyword {
     Auto,
     Register,
     Inline,
+    ForceInline,
+    Unaligned,
+    Ptr64,
     Int128,
     Int64,
     Noreturn,
@@ -89,6 +92,7 @@ impl Keyword {
                 | Keyword::Register
                 | Keyword::ThreadLocal
                 | Keyword::Inline
+                | Keyword::ForceInline
                 | Keyword::Noreturn
                 | Keyword::Constexpr
         )
@@ -130,6 +134,9 @@ impl From<Keyword> for &'static str {
             Keyword::Auto => "auto",
             Keyword::Register => "register",
             Keyword::Inline => "inline",
+            Keyword::ForceInline => "__forceinline",
+            Keyword::Unaligned => "__unaligned",
+            Keyword::Ptr64 => "__ptr64",
             Keyword::Int128 => "__int128",
             Keyword::Int64 => "__int64",
             Keyword::Noreturn => "_Noreturn",
@@ -960,6 +967,9 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "auto" => Token::Keyword(Keyword::Auto),
         "register" => Token::Keyword(Keyword::Register),
         "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
+        "__forceinline" if features.microsoft_extensions => Token::Keyword(Keyword::ForceInline),
+        "__unaligned" if features.microsoft_extensions => Token::Keyword(Keyword::Unaligned),
+        "__ptr64" if features.microsoft_extensions => Token::Keyword(Keyword::Ptr64),
         "inline" if features.keyword_inline.is_accepted() => Token::Keyword(Keyword::Inline),
         "__int128" => Token::Keyword(Keyword::Int128),
         "__int8" | "_int8" if features.microsoft_extensions => Token::Keyword(Keyword::Char),

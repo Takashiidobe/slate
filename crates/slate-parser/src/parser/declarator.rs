@@ -934,6 +934,15 @@ impl<'a> DeclaratorParser<'a> {
                 specifiers.is_inline = true;
                 continue;
             }
+            if self.matches(Token::Keyword(Keyword::ForceInline)) {
+                specifiers.is_inline = true;
+                specifiers.attributes.push(span_tokens(
+                    Attribute::AlwaysInline,
+                    &self.tokens[self.pos - 1..self.pos],
+                    self.context,
+                ));
+                continue;
+            }
             if self.matches(Token::Keyword(Keyword::Noreturn)) {
                 specifiers.is_noreturn = true;
                 continue;
@@ -998,6 +1007,8 @@ impl<'a> DeclaratorParser<'a> {
             while let Some(qualifier) = self.take_qualifier() {
                 set_qualifier(&mut qualifiers, qualifier);
             }
+            // __ptr64 is the native pointer width on every supported windows target
+            while self.matches(Token::Keyword(Keyword::Ptr64)) {}
             attributes.extend(self.parse_attributes()?);
             if self.pos == start {
                 return Ok((qualifiers, attributes));
@@ -1023,6 +1034,7 @@ impl<'a> DeclaratorParser<'a> {
                 Keyword::Volatile => qualifiers.is_volatile = true,
                 Keyword::Restrict => qualifiers.is_restrict = true,
                 Keyword::Atomic => qualifiers.is_atomic = true,
+                Keyword::Unaligned => qualifiers.is_unaligned = true,
                 _ => return qualifiers,
             }
         }
@@ -1039,7 +1051,11 @@ impl<'a> DeclaratorParser<'a> {
         }
         if !matches!(
             keyword,
-            Keyword::Const | Keyword::Volatile | Keyword::Restrict | Keyword::Atomic
+            Keyword::Const
+                | Keyword::Volatile
+                | Keyword::Restrict
+                | Keyword::Atomic
+                | Keyword::Unaligned
         ) {
             return None;
         }

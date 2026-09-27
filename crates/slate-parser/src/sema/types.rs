@@ -447,7 +447,7 @@ impl TypeResolver {
                         }
                         error => error,
                     })?;
-                let layout = self.typedef_storage(ty, layout)?;
+                let layout = self.declared_storage(ty, layout)?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -523,7 +523,7 @@ impl TypeResolver {
                         }
                         error => error,
                     })?;
-                let layout = self.typedef_storage(resolved, layout)?;
+                let layout = self.declared_storage(resolved, layout)?;
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -1935,13 +1935,14 @@ impl TypeResolver {
         .then(|| self.target.large_array_alignment())
         .flatten();
         let typedef_aligned = declared.is_some_and(|q| self.ctypes.typedef_alignment(q).is_some());
-        if requested.is_none() && large_array.is_none() && !typedef_aligned {
+        let unaligned = declared.is_some_and(|q| self.is_unaligned(q));
+        if requested.is_none() && large_array.is_none() && !typedef_aligned && !unaligned {
             return Ok(None);
         }
         let storage = self.storage(ty.clone())?;
         let natural = u64::from(storage.alignment_bytes);
         let typed = match declared {
-            Some(q) => u64::from(self.typedef_storage(q, storage)?.alignment_bytes),
+            Some(q) => u64::from(self.declared_storage(q, storage)?.alignment_bytes),
             None => natural,
         };
         let effective = match (requested, large_array) {
@@ -1974,6 +1975,28 @@ impl TypeResolver {
                 .map_err(|_| ResolveError::Unsupported("typedef alignment overflow"))?,
             ..layout
         })
+    }
+
+    // unlike an aligned typedef, __unaligned leaves record member layout alone
+    pub(super) fn declared_storage(
+        &self,
+        q: QualType,
+        layout: StorageLayout,
+    ) -> Result<StorageLayout, ResolveError> {
+        let layout = self.typedef_storage(q, layout)?;
+        if self.is_unaligned(q) {
+            return Ok(StorageLayout {
+                alignment_bytes: 1,
+                ..layout
+            });
+        }
+        Ok(layout)
+    }
+
+    // cl.exe only honours __unaligned on pointer types
+    fn is_unaligned(&self, q: QualType) -> bool {
+        self.ctypes.quals(q).is_unaligned
+            && (self.flavor != CompilerFlavor::Msvc || self.ctypes.is_pointer(q))
     }
 
     pub(super) fn qualified_storage(

@@ -2119,6 +2119,7 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Enum
                 | Keyword::Const
                 | Keyword::Volatile
+                | Keyword::Unaligned
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Int128
