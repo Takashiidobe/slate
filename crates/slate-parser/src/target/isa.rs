@@ -23,7 +23,7 @@ impl FromStr for March {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct IsaRequest {
     pub march: Option<March>,
     pub x86: X86IsaRequest,
@@ -68,7 +68,7 @@ impl TargetIsa {
                     Some(March::X86(arch)) => Some(arch),
                     Some(March::Arm(_)) => return Err("expected an x86 architecture".into()),
                 };
-                let isa = X86Isa::resolve(family, arch, request.x86);
+                let isa = X86Isa::resolve(family, arch, &request.x86, flavor);
                 if isa.features.contains(X86Feature::Sse2) {
                     Ok(Self::X86(isa))
                 } else {

@@ -336,7 +336,14 @@ flavor.
   `-march=x86-64[-v2|-v3|-v4]`. `-march` sets the base, then the `-m` flags
   apply in order: enabling a feature enables what it implies (`-mavx2` → AVX →
   SSE4.2 → ...), disabling one disables everything that implies it. POPCNT and
-  CRC32 follow SSE4.2, and XSAVE follows AVX, unless explicitly disabled. i686
+  CRC32 follow SSE4.2, and XSAVE follows AVX, unless explicitly disabled. A
+  `-mfoo` followed later by `-mno-foo` is dropped outright, as both drivers do
+  (`-mavx -mno-avx` leaves SSE4.2 off). The flags are recorded in order and
+  folded at `TargetIsa::resolve` with the flavor, because the implication
+  graphs differ. clang's avx512f implies AVX2, FMA and F16C. gcc's avx512f
+  implies only AVX2, so `-mno-fma` and `-mno-f16c` keep it. gcc's AVX implies
+  XSAVE as a real edge: `-mno-xsave` drops AVX, and `-mno-avx` leaves XSAVE
+  on. Under gcc, avx512f alone also defines `__FP_FAST_FMA*`. i686
   always defines `__LAHF_SAHF__` and never
   `__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16`. GCC flavor also sets
   `__BIGGEST_ALIGNMENT__` to the widest vector register (16/32/64); clang keeps
