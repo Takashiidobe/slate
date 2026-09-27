@@ -907,6 +907,20 @@ template as opaque text with holes.
   indices do not, and a thread-local does only under gcc (clang rejects
   it). Functions are accepted although both compilers reject them under
   PIE, which slate does not model. Fixtures: `sema/ir_asm_symbols*.c`.
+- An input that selects `Immediate` is `In(const<ty>(n))`: its value is
+  replaced by the folded integer, since Rust's `const` operand needs a
+  constant expression and cannot read a C object. The fold follows clang's
+  evaluator: besides integer constant expressions it reads const,
+  non-volatile objects of any storage duration through their initializers
+  (`static const int k = 2;` gives `$2`, as do a const local, `table[1]`,
+  `*(table + 2)`, `s.field`, a string element, a zero-filled element, a
+  bit-field wrapped to its width, `*pointer` to a const, and `(int)2.5`),
+  so `"g"(k)` also picks the immediate. gcc folds only direct reads at
+  `-O0` and the rest from `-O1`, and additionally reads a const tentative
+  definition as zero, which slate models for the gcc flavor only. The same
+  fold scales symbol indices (`&arr[k]`). Volatile, non-const and extern
+  objects, and initializers that are not constant, stay unfolded. Fixtures:
+  `sema/ir_asm_const_objects*.c`.
 - The parser rejects what both compilers reject and the fold relies on: an
   output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
   or to a `+` output, and two inputs tied to one output. `-` is rejected

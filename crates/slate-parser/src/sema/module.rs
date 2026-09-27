@@ -1025,6 +1025,28 @@ impl Lowerer {
                     "variable length array with static storage duration",
                 ));
             }
+            if variable.is_const && !variable.access.volatile {
+                match &variable.initializer {
+                    Some(value) => self.types.entities.record_constant(id, value.clone()),
+                    None if storage != StorageDuration::Automatic
+                        && storage_class != StorageClass::Extern
+                        && self.types.compiler_flavor() == CompilerFlavor::Gcc =>
+                    {
+                        let zero = ValueKind::Aggregate {
+                            members: Vec::new(),
+                            zero_fill: true,
+                        };
+                        self.types.entities.record_tentative_constant(
+                            id,
+                            Value {
+                                ty: variable.ty.clone(),
+                                node: declarator.derive(zero),
+                            },
+                        );
+                    }
+                    None => {}
+                }
+            }
             if linked {
                 let declared_linkage = if storage_class == StorageClass::Register {
                     Linkage::External

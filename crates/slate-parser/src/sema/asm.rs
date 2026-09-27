@@ -1,11 +1,12 @@
 use super::expression::Lowerer;
-use super::fold::integer_constant;
+use super::fold::{integer_number, integer_with_objects, read_with_objects};
 use super::numeric::ResolveError;
 use super::operand::Lvalue;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
 use crate::target_info::TargetFamily;
+use num_bigint::BigInt;
 
 impl Lowerer {
     pub(super) fn asm(&mut self, asm: &ast::GnuAsm) -> Result<InlineAsm, ResolveError> {
@@ -85,7 +86,7 @@ impl Lowerer {
                 None => source.constraint.allows_memory(),
             };
             let source_width = source.width;
-            let kind = match source.candidate {
+            let mut kind = match source.candidate {
                 Candidate::Output(kind) => kind,
                 Candidate::Value(_)
                     if let (Some(AsmOperandClass::Symbol), Some(symbol)) =
@@ -103,6 +104,11 @@ impl Lowerer {
                 }
                 Candidate::Value(value) => AsmOperandKind::In(value),
             };
+            if let (Some(AsmOperandClass::Immediate), Some(constant), AsmOperandKind::In(value)) =
+                (&selected, source.constant, &mut kind)
+            {
+                value.node.value = ValueKind::Constant(integer_number(&value.ty, constant));
+            }
             if let (Some(output), AsmOperandKind::In(value)) = (tie, &kind) {
                 let input_width = self.width(&value.ty);
                 let Some(AsmOperand {
@@ -235,12 +241,17 @@ impl Lowerer {
                 }
             }
         }
+        let flavor = self.types.compiler_flavor();
+        let objects = self.types.entities.constants();
         let (constant, symbol) = match &candidate {
             Candidate::Value(value) => (
-                integer_constant(value, self.types.compiler_flavor()).is_some(),
+                integer_with_objects(value, flavor, objects),
                 self.symbol(value),
             ),
-            Candidate::Output(_) | Candidate::Lvalue { .. } => (false, None),
+            Candidate::Lvalue { lvalue, .. } => {
+                (read_with_objects(&lvalue.place, flavor, objects), None)
+            }
+            Candidate::Output(_) => (None, None),
         };
         let decays = ty.is_some_and(|ty| {
             matches!(
@@ -368,7 +379,12 @@ impl Lowerer {
     }
 
     fn scaled(&self, amount: &Value, element: &Type) -> Option<i64> {
-        let amount = i64::try_from(integer_constant(amount, self.types.compiler_flavor())?).ok()?;
+        let amount = integer_with_objects(
+            amount,
+            self.types.compiler_flavor(),
+            self.types.entities.constants(),
+        )?;
+        let amount = i64::try_from(amount).ok()?;
         let size = i64::try_from(self.types.storage(element.clone()).ok()?.size_bytes).ok()?;
         amount.checked_mul(size)
     }
@@ -415,7 +431,7 @@ struct Source<'a> {
     constraint: AsmConstraint,
     candidate: Candidate<'a>,
     width: Option<u64>,
-    constant: bool,
+    constant: Option<BigInt>,
     symbol: Option<AsmSymbol>,
 }
 
@@ -539,7 +555,7 @@ fn rank(
     family: TargetFamily,
 ) -> Result<u8, AsmRejectReason> {
     match class {
-        AsmOperandClass::Immediate if !output && source.constant => Ok(0),
+        AsmOperandClass::Immediate if !output && source.constant.is_some() => Ok(0),
         AsmOperandClass::Symbol if !output && source.symbol.is_some() => Ok(0),
         AsmOperandClass::Immediate | AsmOperandClass::Symbol => Err(AsmRejectReason::NotConstant),
         AsmOperandClass::Register(AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg) => {

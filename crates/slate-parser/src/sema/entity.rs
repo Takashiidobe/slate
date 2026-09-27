@@ -1,6 +1,7 @@
 use super::ctype::QualType;
+use super::fold::Objects;
 use super::numeric::ResolveError;
-use crate::ir::{BindingId, Linkage, StorageDuration, SymbolAttributes};
+use crate::ir::{BindingId, Linkage, StorageDuration, SymbolAttributes, Value};
 use std::collections::HashMap;
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -30,6 +31,7 @@ pub(super) struct Entity {
 #[derive(Debug, Default)]
 pub(super) struct Entities {
     entities: HashMap<BindingId, Entity>,
+    constants: Objects,
 }
 
 impl Entities {
@@ -132,6 +134,18 @@ impl Entities {
         self.entities
             .get(&id)
             .is_some_and(|entity| entity.definition)
+    }
+
+    pub(super) fn record_constant(&mut self, id: BindingId, value: Value) {
+        self.constants.insert(id, value);
+    }
+
+    pub(super) fn record_tentative_constant(&mut self, id: BindingId, value: Value) {
+        self.constants.entry(id).or_insert(value);
+    }
+
+    pub(super) fn constants(&self) -> &Objects {
+        &self.constants
     }
 
     pub(super) fn symbol(&self, id: BindingId) -> Option<&SymbolAttributes> {

@@ -1,7 +1,8 @@
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
-    ArithOp, ArithSema, CompareOp, ConversionKind, FloatType, LogicalOp, Number, NumericType,
-    Overflow, ShiftFill, Type, UnaryArithOp, Value, ValueKind,
+    AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
+    LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill, Type, UnaryArithOp,
+    Value, ValueKind,
 };
 use num_bigint::{BigInt, BigUint, Sign};
 use rustc_apfloat::{
@@ -9,6 +10,7 @@ use rustc_apfloat::{
     ieee::{BFloat, Double, Half, Quad, Single, X87DoubleExtended},
 };
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 const MAX_WIDTH: u32 = 65_536;
 const MAX_DEPTH: usize = 256;
@@ -16,11 +18,175 @@ const MAX_DEPTH: usize = 256;
 /// Evaluate the executed, side-effect-free integer portion of typed IR.
 /// This is not a check of C's syntactic integer-constant-expression rules.
 pub(super) fn integer(value: &Value) -> Option<BigInt> {
-    evaluate(value, MAX_DEPTH, None)
+    evaluate(value, MAX_DEPTH, Env::default())
 }
 
 pub(super) fn integer_constant(value: &Value, flavor: CompilerFlavor) -> Option<BigInt> {
-    evaluate(value, MAX_DEPTH, Some(flavor))
+    evaluate(value, MAX_DEPTH, Env::constant(flavor, None))
+}
+
+pub(super) fn integer_with_objects(
+    value: &Value,
+    flavor: CompilerFlavor,
+    objects: &Objects,
+) -> Option<BigInt> {
+    evaluate(value, MAX_DEPTH, Env::constant(flavor, Some(objects)))
+}
+
+pub(super) fn read_with_objects(
+    place: &Place,
+    flavor: CompilerFlavor,
+    objects: &Objects,
+) -> Option<BigInt> {
+    read(place, MAX_DEPTH, Env::constant(flavor, Some(objects)))
+}
+
+pub(super) fn integer_number(ty: &Type, value: BigInt) -> Number {
+    if *ty == Type::Bool {
+        return Number::Bool(value.sign() != Sign::NoSign);
+    }
+    match value.to_biguint() {
+        Some(value) => Number::Integer(value),
+        None => Number::SignedInteger(value),
+    }
+}
+
+pub(super) type Objects = HashMap<BindingId, Value>;
+
+#[derive(Clone, Copy, Default)]
+struct Env<'a> {
+    flavor: Option<CompilerFlavor>,
+    objects: Option<&'a Objects>,
+}
+
+impl<'a> Env<'a> {
+    fn constant(flavor: CompilerFlavor, objects: Option<&'a Objects>) -> Self {
+        Self {
+            flavor: Some(flavor),
+            objects,
+        }
+    }
+}
+
+enum Stored<'a> {
+    Value(&'a Value),
+    Integer(BigInt),
+}
+
+fn read(place: &Place, depth: usize, env: Env) -> Option<BigInt> {
+    let (width, signed) = integer_type(&place.ty)?;
+    let value = match stored(place, depth, env)? {
+        Stored::Value(value) => evaluate(value, depth, env)?,
+        Stored::Integer(value) => value,
+    };
+    Some(normalize(value, width, signed))
+}
+
+fn read_floating(place: &Place, depth: usize, env: Env) -> Option<Quad> {
+    match stored(place, depth, env)? {
+        Stored::Value(value) if value.ty == place.ty => floating(value, depth, env),
+        Stored::Integer(value) if value.sign() == Sign::NoSign => Some(Quad::ZERO),
+        _ => None,
+    }
+}
+
+fn stored<'a>(place: &Place, depth: usize, env: Env<'a>) -> Option<Stored<'a>> {
+    let depth = depth.checked_sub(1)?;
+    match &place.kind {
+        PlaceKind::Binding(binding) => {
+            let value = env.objects?.get(binding)?;
+            Some(match &value.node.value {
+                ValueKind::Aggregate {
+                    members,
+                    zero_fill: true,
+                } if members.is_empty() => Stored::Integer(BigInt::from(0u8)),
+                _ => Stored::Value(value),
+            })
+        }
+        PlaceKind::Field { base, index, bits } => {
+            let found = member(stored(base, depth, env)?, AggregateTarget::Field(*index))?;
+            let Some(bits) = bits else {
+                return Some(found);
+            };
+            let (_, signed) = integer_type(&place.ty)?;
+            let value = match found {
+                Stored::Value(value) => evaluate(value, depth, env)?,
+                Stored::Integer(value) => value,
+            };
+            Some(Stored::Integer(normalize(value, bits.width, signed)))
+        }
+        PlaceKind::Index { base, index } => {
+            let index = evaluate(index, depth, env)?;
+            element(base, index, depth, env)
+        }
+        PlaceKind::Deref(pointer) => element(pointer, BigInt::from(0u8), depth, env),
+        _ => None,
+    }
+}
+
+fn element<'a>(pointer: &Value, index: BigInt, depth: usize, env: Env<'a>) -> Option<Stored<'a>> {
+    let depth = depth.checked_sub(1)?;
+    match &pointer.node.value {
+        ValueKind::ArrayDecay { place, .. } => {
+            let index = u64::try_from(index).ok()?;
+            member(stored(place, depth, env)?, AggregateTarget::Index(index))
+        }
+        ValueKind::AddressOf(place) if index.sign() == Sign::NoSign => stored(place, depth, env),
+        ValueKind::PointerOffset {
+            pointer,
+            amount,
+            subtract,
+            ..
+        } => {
+            let amount = evaluate(amount, depth, env)?;
+            let index = if *subtract {
+                index - amount
+            } else {
+                index + amount
+            };
+            element(pointer, index, depth, env)
+        }
+        ValueKind::Read {
+            place,
+            ordering: None,
+        } => match stored(place, depth, env)? {
+            Stored::Value(pointer) => element(pointer, index, depth, env),
+            Stored::Integer(_) => None,
+        },
+        _ => None,
+    }
+}
+
+fn member(aggregate: Stored<'_>, target: AggregateTarget) -> Option<Stored<'_>> {
+    let aggregate = match aggregate {
+        Stored::Integer(value) => return Some(Stored::Integer(value)),
+        Stored::Value(value) => value,
+    };
+    match &aggregate.node.value {
+        ValueKind::Aggregate { members, zero_fill } => {
+            let found = members
+                .iter()
+                .rev()
+                .find(|member| match (member.target, target) {
+                    (AggregateTarget::Range { start, end }, AggregateTarget::Index(index)) => {
+                        (start..=end).contains(&index)
+                    }
+                    (found, target) => found == target,
+                });
+            match found {
+                Some(member) => Some(Stored::Value(&member.value)),
+                None => zero_fill.then(|| Stored::Integer(BigInt::from(0u8))),
+            }
+        }
+        ValueKind::CodeUnits(units) => {
+            let AggregateTarget::Index(index) = target else {
+                return None;
+            };
+            let unit = units.get(usize::try_from(index).ok()?)?;
+            Some(Stored::Integer(BigInt::from(*unit)))
+        }
+        _ => None,
+    }
 }
 
 pub(super) fn fold_msvc_static_divisions(value: &mut Value) {
@@ -75,7 +241,7 @@ pub(super) fn fold_msvc_static_divisions(value: &mut Value) {
     }
 }
 
-fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Option<BigInt> {
+fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     let depth = depth.checked_sub(1)?;
     let (width, signed) = integer_type(&value.ty)?;
     let result = match &value.node.value {
@@ -96,7 +262,7 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             kind: ConversionKind::FloatToInt,
             operand,
             ..
-        } => float_to_integer(floating(operand, depth, flavor)?, width, signed, flavor)?,
+        } => float_to_integer(floating(operand, depth, env)?, width, signed, env.flavor)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
                 ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
@@ -107,21 +273,21 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             if !matches!(value.ty, Type::Numeric(NumericType::Integer { .. })) {
                 return None;
             }
-            evaluate(operand, depth, flavor)?
+            evaluate(operand, depth, env)?
         }
         ValueKind::Unary {
             op,
             operand,
             semantics,
         } => {
-            let operand = evaluate(operand, depth, flavor)?;
+            let operand = evaluate(operand, depth, env)?;
             match (op, semantics) {
                 (UnaryArithOp::Not, ArithSema::Exact) if value.ty == Type::Bool => {
                     BigInt::from(u8::from(operand.sign() == Sign::NoSign))
                 }
                 (UnaryArithOp::Not, ArithSema::Exact) => !operand,
                 (UnaryArithOp::Neg, ArithSema::Integer { overflow }) => {
-                    arithmetic_result(-operand, width, signed, *overflow, flavor.is_some())?
+                    arithmetic_result(-operand, width, signed, *overflow, env.flavor.is_some())?
                 }
                 _ => return None,
             }
@@ -135,15 +301,14 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             if !matches!(value.ty, Type::Numeric(NumericType::Integer { .. })) {
                 return None;
             }
-            let left = evaluate(left, depth, flavor)?;
-            let right = evaluate(right, depth, flavor)?;
-            arithmetic(*op, *semantics, left, right, width, signed, flavor)?
+            let left = evaluate(left, depth, env)?;
+            let right = evaluate(right, depth, env)?;
+            arithmetic(*op, *semantics, left, right, width, signed, env.flavor)?
         }
         ValueKind::Compare {
             op, left, right, ..
         } if matches!(left.ty, Type::Numeric(NumericType::Float(_))) => {
-            let order =
-                floating(left, depth, flavor)?.partial_cmp(&floating(right, depth, flavor)?);
+            let order = floating(left, depth, env)?.partial_cmp(&floating(right, depth, env)?);
             BigInt::from(u8::from(match op {
                 CompareOp::Eq => order == Some(Ordering::Equal),
                 CompareOp::Ne => order != Some(Ordering::Equal),
@@ -156,8 +321,8 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
         ValueKind::Compare {
             op, left, right, ..
         } => {
-            let left = evaluate(left, depth, flavor)?;
-            let right = evaluate(right, depth, flavor)?;
+            let left = evaluate(left, depth, env)?;
+            let right = evaluate(right, depth, env)?;
             BigInt::from(u8::from(match op {
                 CompareOp::Eq => left == right,
                 CompareOp::Ne => left != right,
@@ -168,10 +333,10 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             }))
         }
         ValueKind::Logical { op, left, right } => {
-            let left = evaluate(left, depth, flavor)?.sign() != Sign::NoSign;
+            let left = evaluate(left, depth, env)?.sign() != Sign::NoSign;
             let result = match op {
-                LogicalOp::And => left && evaluate(right, depth, flavor)?.sign() != Sign::NoSign,
-                LogicalOp::Or => left || evaluate(right, depth, flavor)?.sign() != Sign::NoSign,
+                LogicalOp::And => left && evaluate(right, depth, env)?.sign() != Sign::NoSign,
+                LogicalOp::Or => left || evaluate(right, depth, env)?.sign() != Sign::NoSign,
             };
             BigInt::from(u8::from(result))
         }
@@ -180,7 +345,7 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             then_value,
             else_value,
         } => {
-            let condition = evaluate(condition, depth, flavor)?;
+            let condition = evaluate(condition, depth, env)?;
             evaluate(
                 if condition.sign() != Sign::NoSign {
                     then_value
@@ -188,13 +353,17 @@ fn evaluate(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
                     else_value
                 },
                 depth,
-                flavor,
+                env,
             )?
         }
         ValueKind::Sequence { left, right } => {
-            evaluate(left, depth, flavor)?;
-            evaluate(right, depth, flavor)?
+            evaluate(left, depth, env)?;
+            evaluate(right, depth, env)?
         }
+        ValueKind::Read {
+            place,
+            ordering: None,
+        } if env.objects.is_some() => read(place, depth, env)?,
         _ => return None,
     };
     Some(normalize(result, width, signed))
@@ -233,7 +402,7 @@ macro_rules! in_format {
     };
 }
 
-fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Option<Quad> {
+fn floating(value: &Value, depth: usize, env: Env) -> Option<Quad> {
     let depth = depth.checked_sub(1)?;
     let Type::Numeric(NumericType::Float(format)) = value.ty else {
         return None;
@@ -246,12 +415,12 @@ fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             op: UnaryArithOp::Neg,
             operand,
             ..
-        } => Some(-floating(operand, depth, flavor)?),
+        } => Some(-floating(operand, depth, env)?),
         ValueKind::Arith {
             op, left, right, ..
         } => {
-            let left = floating(left, depth, flavor)?;
-            let right = floating(right, depth, flavor)?;
+            let left = floating(left, depth, env)?;
+            let right = floating(right, depth, env)?;
             in_format!(format, F => {
                 let (left, right) = (narrow::<F>(left), narrow::<F>(right));
                 let result = match op {
@@ -269,7 +438,7 @@ fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             operand,
             ..
         } => {
-            let integer = evaluate(operand, depth, flavor)?;
+            let integer = evaluate(operand, depth, env)?;
             in_format!(format, F => {
                 let converted = match i128::try_from(&integer) {
                     Ok(integer) => F::from_i128(integer),
@@ -284,7 +453,7 @@ fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             operand,
             ..
         } => {
-            let operand = floating(operand, depth, flavor)?;
+            let operand = floating(operand, depth, env)?;
             in_format!(format, F => Some(widen(narrow::<F>(operand))))
         }
         ValueKind::Conditional {
@@ -292,7 +461,7 @@ fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
             then_value,
             else_value,
         } => {
-            let condition = evaluate(condition, depth, flavor)?;
+            let condition = evaluate(condition, depth, env)?;
             floating(
                 if condition.sign() != Sign::NoSign {
                     then_value
@@ -300,9 +469,13 @@ fn floating(value: &Value, depth: usize, flavor: Option<CompilerFlavor>) -> Opti
                     else_value
                 },
                 depth,
-                flavor,
+                env,
             )
         }
+        ValueKind::Read {
+            place,
+            ordering: None,
+        } if env.objects.is_some() => read_floating(place, depth, env),
         _ => None,
     }
 }
