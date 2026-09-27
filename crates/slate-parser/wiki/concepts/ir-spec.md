@@ -1676,6 +1676,11 @@ File-scope redeclarations before or after a definition participate in resolving
 `ProvideDef`: any declaration without `inline`, or with `extern`, requires an
 external definition. Static inline bodies retain internal linkage and a definition.
 These rules follow [GCC's inline documentation](https://gcc.gnu.org/onlinedocs/gcc/Inline.html).
+On a windows-msvc target (the Microsoft ABI, under any flavor) neither mode
+applies unless the function is `gnu_inline`: clang gives every C inline
+definition a comdat of its own — `weak_odr` when `dllexport` or any
+redeclaration is `extern`, otherwise `linkonce_odr`, emitted on first use —
+so none is inline-only (`sema/x86_64-pc-windows-msvc/ir_inline.c`).
 
 `always_inline` and `noinline` resolve into the preference enum independently of
 emission; contradictory preferences are diagnosed. `_Noreturn`, `[[noreturn]]`,

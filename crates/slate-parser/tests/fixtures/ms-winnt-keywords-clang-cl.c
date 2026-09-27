@@ -82,13 +82,13 @@ int use_forced(void) { return forced() + forced_static() + forced_after(); }
 // DEFAULT-NEXT:         write<ptr<u16>>(%10, pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%11)));
 // DEFAULT-NEXT:         write<ptr<i32>>(%11, read<ptr<i32>>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @forced() -> i32 [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %13 @forced() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @forced_static() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @forced_after() -> i32 [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %15 @forced_after() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @use_forced() -> i32 [linkage=external] [fallthrough=ub_if_used] {

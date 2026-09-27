@@ -31,7 +31,7 @@
 // DEFAULT-NEXT:     fn %1 @gnu_plain_inline() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(5);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @exported_inline() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @exported_inline() -> i32 [linkage=external] [dllexport] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

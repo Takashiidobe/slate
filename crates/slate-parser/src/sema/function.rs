@@ -5,6 +5,7 @@ use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClas
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects};
+use crate::target_info::TargetEnvironment;
 
 #[derive(Default)]
 pub(super) struct FunctionDeclarations {
@@ -166,20 +167,25 @@ impl Lowerer {
         for (id, attributes) in retained_attributes {
             rendered_attributes.push((id, self.render_c_attributes(attributes.iter())?));
         }
+        let microsoft_abi = self.context.target.environment == TargetEnvironment::Msvc;
         for function in &mut self.module.functions {
             let Some(state) = self.function_declarations.get(&function.value.id) else {
                 continue;
             };
-            let mode = state.semantics_override.unwrap_or(mode);
+            let mode = match state.semantics_override {
+                None if microsoft_abi => None,
+                semantics => Some(semantics.unwrap_or(mode)),
+            };
             function.value.semantics = FunctionSemantics {
                 inlining: state.inlining,
                 inline_only: function.body.is_some()
                     && matches!(function.linkage, Linkage::External)
                     && match (&state.definition, mode) {
-                        (Some(DefinitionSpecifiers::ExternInline), InlineSemantics::SupressDef) => {
-                            true
-                        }
-                        (Some(DefinitionSpecifiers::Inline), InlineSemantics::ProvideDef) => {
+                        (
+                            Some(DefinitionSpecifiers::ExternInline),
+                            Some(InlineSemantics::SupressDef),
+                        ) => true,
+                        (Some(DefinitionSpecifiers::Inline), Some(InlineSemantics::ProvideDef)) => {
                             !state.has_external_declaration
                         }
                         _ => false,
