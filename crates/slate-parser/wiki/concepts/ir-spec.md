@@ -788,7 +788,14 @@ to repeat name lookup to discover dependencies.
 
 The current parser calls `filter_translation_unit` before resolution, and
 `src/reachability.rs` indexes declarations by string names. Moving that
-filter after resolution is required for this design.
+filter after resolution is required for this design. Its roots today are
+every declaration in the main file or a `-include` file, declarations with
+a retention attribute, and — from any file — every definition clang would
+emit: non-`static`, non-`inline` function definitions, file-scope object
+definitions without `extern` (tentative ones included), and `extern`
+objects with an initializer. The last group is what keeps a gcc-style
+`#include "other.c"` test from lowering to an empty module
+(`tests/fixtures/reachable_from_include.c`).
 
 ## Module shape
 

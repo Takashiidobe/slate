@@ -1,8 +1,4 @@
-/* PR middle-end/71626 */
-/* { dg-additional-options "-fpic" { target fpic } } */
-
-#include "pr71626-1.c"
-
+#include "reachable_from_include.h"
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
@@ -29,17 +25,10 @@
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<i64, 1>;
-// DEFAULT-NEXT:     fn %1 @foo() -> vector<i64, 1> [linkage=external] [inline=never] [definition=emitted] [abi=sysv64() -> coerce<f64>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 v: vector<i64, 1> [storage=automatic] = aggregate<vector<i64, 1>, zero_fill=false>(index0 = ptr_to_int<i64, reason=explicit>(function_decay<ptr<fn() -> vector<i64, 1>>>(%1)));
-// DEFAULT-NEXT:         return read<vector<i64, 1>>(%2);
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 v: vector<i64, 1> [storage=automatic] = call<vector<i64, 1>, signature=fn() -> vector<i64, 1>, abi=sysv64() -> coerce<f64>>(%1);
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(lane(%4, const<i32>(0))), ptr_to_int<i64, reason=explicit>(function_decay<ptr<fn() -> vector<i64, 1>>>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         return const<i32>(0);
+// DEFAULT-NEXT:     global %0 tentative_object: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %1 initialized_extern: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     fn %2 @external_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

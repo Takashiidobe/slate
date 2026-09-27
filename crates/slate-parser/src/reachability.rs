@@ -84,12 +84,9 @@ impl<'a> Reachability<'a> {
                     .then_some(id)
             })
             .collect::<Vec<_>>();
-        roots.extend(
-            self.nodes
-                .iter()
-                .enumerate()
-                .filter_map(|(id, decl)| self.has_retention_attribute(decl).then_some(id)),
-        );
+        roots.extend(self.nodes.iter().enumerate().filter_map(|(id, decl)| {
+            (self.has_retention_attribute(decl) || defines_external_symbol(decl)).then_some(id)
+        }));
         for id in roots {
             self.mark(id);
         }
@@ -516,5 +513,29 @@ impl<'a> Reachability<'a> {
                 _ => {}
             }
         }
+    }
+}
+
+// clang emits these whatever file they come from, so an included .c must keep them.
+fn defines_external_symbol(decl: &Decl) -> bool {
+    match &decl.value {
+        DeclKind::Function(function) => {
+            function.specifiers.storage != StorageClass::Static && !function.specifiers.is_inline
+        }
+        DeclKind::Declaration(declaration) => match declaration.specifiers.storage {
+            StorageClass::None => declaration
+                .declarators
+                .iter()
+                .any(|declarator| declarator.declarator.function_parameters().is_none()),
+            StorageClass::Extern => declaration
+                .declarators
+                .iter()
+                .any(|declarator| declarator.initializer.is_some()),
+            _ => false,
+        },
+        DeclKind::Comment(_)
+        | DeclKind::StaticAssert(_)
+        | DeclKind::Asm(_)
+        | DeclKind::Pragma(_) => false,
     }
 }
