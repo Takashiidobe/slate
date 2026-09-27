@@ -67,15 +67,17 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:     fn %3 @Int64ShllMod32(%4 Value: u64, %5 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%0) "\nmov eax, " addr<dword>(%1) "\nmov edx, " addr<dword>(%1 + 4) "\nshld edx, eax, cl\nshl eax, cl";
-// DEFAULT-NEXT:             in 0 [ShiftCount] mem<readwrite> place<u32>(%5);
-// DEFAULT-NEXT:             in 1 [Value] mem<readwrite> place<u64>(%4);
+// DEFAULT-NEXT:             in 0 [ShiftCount] mem<read> place<u32>(%5);
+// DEFAULT-NEXT:             in 1 [Value] mem<read> place<u64>(%4);
+// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edx" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @Int64ShraMod32(%7 Value: i64, %8 ShiftCount: u32) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%0) "\nmov eax, " addr<dword>(%1) "\nmov edx, " addr<dword>(%1 + 4) "\nshrd eax, edx, cl\nsar edx, cl";
-// DEFAULT-NEXT:             in 0 [ShiftCount] mem<readwrite> place<u32>(%8);
-// DEFAULT-NEXT:             in 1 [Value] mem<readwrite> place<i64>(%7);
+// DEFAULT-NEXT:             in 0 [ShiftCount] mem<read> place<u32>(%8);
+// DEFAULT-NEXT:             in 1 [Value] mem<read> place<i64>(%7);
+// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edx" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @DbgRaiseAssertionFailure() -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {

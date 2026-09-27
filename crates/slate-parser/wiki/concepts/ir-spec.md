@@ -1044,9 +1044,8 @@ template as opaque text with holes.
   statement rebuilt from the AST. Operands have no constraint:
   - each C object is one `AsmOperandKind::Memory { place, access }`, however
     often the asm names it; the asm receives its address, and `access`
-    (`AsmAccess::{Read, Write, ReadWrite}`) says what the asm may do there.
-    It is `ReadWrite` until the effects table (slate-parser-25m.6.4)
-    refines it;
+    (`AsmAccess::{Read, Write, ReadWrite}`) says what the asm may do there,
+    joined over every reference (`src/sema/ms_asm_effects.rs`);
   - a function is a `Symbol` operand, and `offset x` an `In` of
     `AddressOf(x)`.
   Each reference to an object is an `AsmPiece::Address { operand,
@@ -1055,9 +1054,13 @@ template as opaque text with holes.
   `PTR`, or, where MASM infers it from the C type (no register operand, or
   `movzx`/`movsx`, shifts and rotates, `shld`/`shrd`), the size of the
   innermost element type. That matches the `dword ptr`/`qword ptr` clang
-  inserts. Asm labels are `AsmPiece::LocalLabel(name)`, lowercased. Clobbers
-  and the implicit EAX/EDX:EAX return are separate children
-  (25m.6.4, 25m.6.5). Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
+  inserts. Asm labels are `AsmPiece::LocalLabel(name)`, lowercased.
+  `clobbers` are `AsmClobber::Register`s from that effects table:
+  written registers widened to their 32-bit name (`al` gives `eax`),
+  implicit defs, `st`..`st(7)` for any x87 instruction, and `eax`/`ecx`/
+  `edx` for `call`. `esp` is never listed (`nostack` is off) and neither are
+  flags (`preserves_flags` is off). The implicit EAX/EDX:EAX return is
+  25m.6.5. Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
 
 A naked function (`__attribute__((naked))` on any of its declarations) sets
 `FunctionSemantics::naked`, so the backend picks `naked_asm!` from the function

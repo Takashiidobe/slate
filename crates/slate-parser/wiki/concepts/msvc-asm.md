@@ -175,7 +175,7 @@ Inline asm, for the node and `ir-grammar.md` for how it prints).
   asm receives the object's address, one operand per object however often
   it is named. In Rust the operand is always `in(reg) &raw ... x` (or `sym`
   for a global), so `access` only decides `mut`-ness and whether the local
-  has to be `mut`. It is `ReadWrite` until the effects table lands.
+  has to be `mut`. It is the join of every reference's access (below).
 - A function name is a `Symbol` operand (`call f`); `offset x` is an `In`
   of `x`'s address, which works for locals and globals alike.
 - `AsmPiece::Address { operand, displacement, base, index, size }` at each
@@ -200,22 +200,37 @@ Inline asm, for the node and `ir-grammar.md` for how it prints).
 
 ### Effects table
 
-Hand-curated and conservative, since reading a read as a write only costs a
-spurious `mut` or clobber:
+`src/sema/ms_asm_effects.rs`, hand-curated and conservative, since reading a
+read as a write only costs a spurious `mut` or clobber. Per instruction:
 
-- operand 0 is read+write unless the mnemonic is on a read-only list (`cmp`,
-  `test`, `bt`, `push`, `comis*`/`ucomis*`, `ptest`, ...); `xchg`/`xadd`
-  write both;
-- implicit defs: `mul`/`imul` (1-operand)/`div`/`idiv`, `cbw`/`cwde`/`cwd`/
-  `cdq`, `cpuid`, `rdtsc`/`rdtscp`, `xgetbv`, `rdmsr`, string ops and their
-  `rep` forms (`esi`/`edi`/`ecx`), `loop*` (`ecx`), `xlat`,
-  `cmpxchg`/`cmpxchg8b`, `in`/`out`, `fstsw ax`, `lahf`,
-  `push`/`pop`/`pushad`/`popad`/`pushfd`/`popfd`/`enter`/`leave`;
-- any `f*` mnemonic clobbers the x87 stack;
-- every explicitly mentioned register that is written is clobbered;
-- `esp` writes are not clobbers; `nostack = false` covers them.
+- operand 0 is read+write, except on a read-only list (`cmp`, `test`, `bt`,
+  `push`, `j*`, `call`, `out`, one-operand `mul`/`imul`/`div`/`idiv`,
+  `comis*`/`ucomis*`, `ptest`, `ldmxcsr`, `prefetch*`, ...) or a write-only
+  list (`mov`, `lea`, `pop`, `set*`, `in`, `movd`/`movq`/`movdq*`/`movap*`/
+  ..., `cvt*`, `stmxcsr`). An x87 (`f*`) operand is a read unless the
+  mnemonic stores (`fst`, `fstp`, `fist*`, `fbstp`, `f(n)stsw`, `f(n)stcw`,
+  `f(n)stenv`, `f(n)save`, `fxsave`). Later operands are reads, except that
+  `xchg`/`xadd` write both;
+- a written register operand is clobbered, widened to its 32-bit name
+  (`al`, `ah` and `ax` all give `eax`); `esp` is never a clobber because
+  `nostack = false` covers it, and flags are never listed because
+  `preserves_flags = false` covers them;
+- implicit defs: `mul`/`div`/`idiv`/one-operand `imul`, `cwd`/`cdq`,
+  `rdtsc`/`rdpmc`/`rdmsr`/`xgetbv`, `cmpxchg8b` (EDX:EAX); `cbw`/`cwde`,
+  `lahf`, `xlat`, `cmpxchg` (EAX); `rdtscp`; `cpuid`; `loop*` (ECX);
+  `enter`/`leave` (EBP); `popa(d)`; operand-less string ops (`movs*`/
+  `cmps*`: ESI/EDI, `stos*`/`scas*`/`ins*`: EDI, `lods*`: EAX/ESI, `outs*`:
+  ESI), plus ECX under any `rep` prefix; `emms`/`femms` (`mm0`..`mm7`);
+- any `f*` mnemonic or `emms` clobbers `st`..`st(7)`;
+- `call` clobbers EAX, ECX and EDX, the caller-saved registers of every
+  i686 convention.
 
-Flags are always clobbered on x86 regardless.
+Against clang (`sema/i686-pc-windows-msvc/ms_asm_effects.c` and
+the example file) the lists are equal or supersets. clang, from LLVM's
+instruction defs, misses: ECX for `rep`/`loop`, EAX for `xlat`, EBP for
+`enter`, the write of `x` in `xchg eax, x`, the x87 stack for `f*`, and
+caller-saved registers for `call`; it marks `push x` as a write and lists
+`rdtsc` as `rax`/`rdx` on i686.
 
 ### Implicit return
 
@@ -237,7 +252,5 @@ in `st(0)`) returns are deferred.
 
 ## Open decisions
 
-- Effects table: hand-curated (recommended, about 60 entries) versus
-  generated from LLVM's X86 tablegen.
 - MSVC-only jumps between C labels and asm labels: deferred; reject until
   then.

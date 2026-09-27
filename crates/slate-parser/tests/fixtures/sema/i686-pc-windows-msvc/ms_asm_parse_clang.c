@@ -76,28 +76,31 @@ int syntax(int x, struct pair p) {
 // DEFAULT-NEXT:         let %9 d: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "mov eax, 1\nxor ecx, ecx\ncpuid\nmov a, eax\nmov d, edx" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1\nxor ecx, ecx\ncpuid\nmov " addr(%0) ", eax\nmov " addr(%1) ", edx";
-// DEFAULT-NEXT:             in 0 [a] mem<readwrite> place<i32>(%6);
-// DEFAULT-NEXT:             in 1 [d] mem<readwrite> place<i32>(%9);
+// DEFAULT-NEXT:             in 0 [a] mem<write> place<i32>(%6);
+// DEFAULT-NEXT:             in 1 [d] mem<write> place<i32>(%9);
+// DEFAULT-NEXT:             clobbers: "eax" as ax, "ebx" as bx, "ecx" as cx, "edx" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         asm volatile "mov eax, x\nadd eax, 1" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, " addr(%0) "\nadd eax, 1";
-// DEFAULT-NEXT:             in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:             in 0 [x] mem<read> place<i32>(%4);
+// DEFAULT-NEXT:             clobbers: "eax" as ax;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "mov x, eax" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov " addr(%0) ", eax";
-// DEFAULT-NEXT:             in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:             in 0 [x] mem<write> place<i32>(%4);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "mov ecx, p.hi\nmov eax, table[4]\nmov ecx, type table\nmov edx, dword ptr [esp + 12]\nmov eax, es:[edi]\nrep movsb\nlock xadd [ecx], eax\nfld st(1)\n_emit 144\nmov eax, 256 + 2 * 15 - 8\ncall callee\njmp short done\ndone: int 3" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov ecx, " addr(%0 + 4) "\nmov eax, " addr(%1 + 4) "\nmov ecx, 4\nmov edx, dword ptr [esp + 12]\nmov eax, es:[edi]\nrep movsb\nlock xadd [ecx], eax\nfld st(1)\n.byte 144\nmov eax, 278\ncall " %2 "\njmp short " label(done) "\n" label(done) ": int 3";
-// DEFAULT-NEXT:             in 0 [p] mem<readwrite> place<@type0>(%5);
-// DEFAULT-NEXT:             in 1 [table] mem<readwrite> place<array<i32, 4>>(%1);
+// DEFAULT-NEXT:             in 0 [p] mem<read> place<@type0>(%5);
+// DEFAULT-NEXT:             in 1 [table] mem<read> place<array<i32, 4>>(%1);
 // DEFAULT-NEXT:             in 2 sym<offset=0>(%2);
+// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edi" as di, "edx" as dx, "esi" as si, "st" as st, "st(1)" as st(1), "st(2)" as st(2), "st(3)" as st(3), "st(4)" as st(4), "st(5)" as st(5), "st(6)" as st(6), "st(7)" as st(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
 // DEFAULT-NEXT:             asm volatile "mov x, 2" [dialect=intel] {
 // DEFAULT-NEXT:                 template: "mov " addr<dword>(%0) ", 2";
-// DEFAULT-NEXT:                 in 0 [x] mem<readwrite> place<i32>(%4);
+// DEFAULT-NEXT:                 in 0 [x] mem<write> place<i32>(%4);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }

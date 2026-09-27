@@ -1,4 +1,6 @@
+use super::asm::register;
 use super::expression::Lowerer;
+use super::ms_asm_effects::{X87_STACK, clobbered, effects, union, writes};
 use super::numeric::ResolveError;
 use super::operand::Lvalue;
 use super::types::Ordinary;
@@ -6,11 +8,12 @@ use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
 use crate::ir::{
-    AsmAccess, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind, AsmOptions,
-    AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type, TypeDefinitionKind,
-    ValueKind,
+    AsmAccess, AsmClobber, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind,
+    AsmOptions, AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type,
+    TypeDefinitionKind, ValueKind,
 };
-use std::collections::HashMap;
+use crate::target::x86::decode_register;
+use std::collections::{BTreeSet, HashMap};
 use std::fmt::Write;
 
 enum MsAsmOperand {
@@ -124,6 +127,7 @@ impl Value {
 impl Lowerer {
     pub(super) fn ms_asm(&mut self, asm: &ast::MsAsm) -> Result<InlineAsm, ResolveError> {
         let mut lowered = Lowered::default();
+        let mut clobbers = BTreeSet::new();
         for (line, instruction) in asm.instructions.iter().enumerate() {
             let instruction = &instruction.value;
             if line > 0 {
@@ -160,9 +164,24 @@ impl Lowerer {
                 &mnemonic.value
             });
             let sized = needs_size(&lower, &operands);
+            let effects = effects(&lower, &instruction.prefixes, operands.len());
+            clobbers.extend(effects.implicit);
+            if effects.x87 {
+                clobbers.extend(X87_STACK);
+            }
             for (index, operand) in operands.into_iter().enumerate() {
+                let access = if index == 0 {
+                    effects.first
+                } else {
+                    effects.rest
+                };
+                if writes(access)
+                    && let MsAsmOperand::Register(register) = &operand
+                {
+                    clobbers.extend(clobbered(register));
+                }
                 lowered.text(if index == 0 { " " } else { ", " });
-                self.ms_asm_operand(operand, sized, &mut lowered)?;
+                self.ms_asm_operand(operand, sized, access, &mut lowered)?;
             }
         }
         let options = (!self.in_naked_function).then_some(AsmOptions {
@@ -180,7 +199,10 @@ impl Lowerer {
             dialect: Some(AsmDialect::Intel),
             pieces: lowered.pieces,
             operands: lowered.operands,
-            clobbers: Vec::new(),
+            clobbers: clobbers
+                .into_iter()
+                .map(|name| AsmClobber::Register(register(&decode_register(name))))
+                .collect(),
             labels: Vec::new(),
             alternative: None,
             rejected: Vec::new(),
@@ -192,6 +214,7 @@ impl Lowerer {
         &mut self,
         operand: MsAsmOperand,
         sized: bool,
+        access: AsmAccess,
         lowered: &mut Lowered,
     ) -> Result<(), ResolveError> {
         let reference = match operand {
@@ -277,15 +300,18 @@ impl Lowerer {
                     _ => return Err(ResolveError::Unsupported("`__asm` non-variable object")),
                 };
                 let operand = match lowered.objects.get(&binding) {
-                    Some(index) => *index,
+                    Some(index) => {
+                        if let AsmOperandKind::Memory {
+                            access: previous, ..
+                        } = &mut lowered.operands[*index].kind
+                        {
+                            *previous = union(*previous, access);
+                        }
+                        *index
+                    }
                     None => {
-                        let index = lowered.operand(
-                            Some(name),
-                            AsmOperandKind::Memory {
-                                place,
-                                access: AsmAccess::ReadWrite,
-                            },
-                        );
+                        let index =
+                            lowered.operand(Some(name), AsmOperandKind::Memory { place, access });
                         lowered.objects.insert(binding, index);
                         index
                     }

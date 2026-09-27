@@ -14,6 +14,7 @@ pub(crate) mod function;
 mod initializer;
 mod module;
 mod ms_asm;
+mod ms_asm_effects;
 pub mod names;
 pub mod numeric;
 mod operand;
