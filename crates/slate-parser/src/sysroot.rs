@@ -18,7 +18,7 @@ pub fn include_paths(target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
 }
 
 pub fn include_paths_at(sysroot: &Path, target: &str, flavor: CompilerFlavor) -> Vec<PathBuf> {
-    let candidates = if flavor == CompilerFlavor::Msvc {
+    let candidates = if flavor == CompilerFlavor::Msvc || target.ends_with("-windows-msvc") {
         vec![
             sysroot.join("crt/include"),
             sysroot.join("sdk/include/ucrt"),
