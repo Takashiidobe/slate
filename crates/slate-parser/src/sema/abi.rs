@@ -555,7 +555,7 @@ fn record_field_chunks(fields: &[Span<Field>], pointer_width: u32) -> Option<Vec
                     Some(AbiChunk::Integer(*width))
                 }
                 Type::Bool => Some(AbiChunk::Integer(8)),
-                Type::Pointer { .. } => Some(AbiChunk::Integer(pointer_width)),
+                Type::Pointer { space, .. } => Some(AbiChunk::Integer(space.width(pointer_width))),
                 _ => None,
             }
         })
@@ -591,11 +591,12 @@ fn sysv_record_chunks(fields: &[Span<Field>], offsets: &[u64], size: u64) -> Opt
                 integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + *width);
             }
             Type::Bool => integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + 8),
-            Type::Pointer { .. } => {
-                if offset % 8 != 0 {
+            Type::Pointer { space, .. } => {
+                let width = space.width(64);
+                if offset % u64::from(width / 8) != 0 {
                     return None;
                 }
-                integers[slot] = 64;
+                integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + width);
             }
             _ => return None,
         }

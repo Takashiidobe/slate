@@ -2082,6 +2082,49 @@ Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
 is shown in the type (`ptr<const T>`) since Rust distinguishes it.
 
+### MS mixed-size pointers
+
+Under MS extensions, `__ptr32`, `__ptr64`, `__sptr` and `__uptr` give a pointer
+a representation other than the target's own. `Type::Pointer` carries it as
+`space: PointerSpace`, printed as a trailing `ptr<T, space>` argument and
+named after clang's address spaces:
+
+| space        | clang addrspace | width | widened to 64 bits |
+| ------------ | --------------- | ----- | ------------------ |
+| `ptr32_sptr` | 270             | 32    | sign-extended      |
+| `ptr32_uptr` | 271             | 32    | zero-extended      |
+| `ptr64`      | 272             | 64    | n/a                |
+
+Which space a declaration gets follows clang's rule on the target pointer
+width. On 64-bit targets, `__ptr32` gives `ptr32_uptr` with `__uptr` and
+`ptr32_sptr` otherwise, and `__ptr64` is the plain pointer. On 32-bit targets,
+`__ptr64` gives `ptr64`, `__uptr` gives `ptr32_uptr` even without `__ptr32`,
+and `__ptr32 [__sptr]` is the plain pointer. Anything else is the default
+space. A modifier on a non-pointer, `__ptr32` with `__ptr64`, and `__sptr`
+with `__uptr` are errors. Through a typedef, a modifier applies to the
+typedef's pointer (`P __ptr32`).
+
+A non-default space is part of the C type, so it matters for `_Generic`,
+redeclarations and composite types. Converting between spaces is implicit,
+without a diagnostic, and lowers to `address_space_cast`: it truncates when
+narrowing and extends when widening, zero-extending from `ptr32_uptr` and
+sign-extending otherwise. Comparisons convert the right operand to the left
+operand's pointer type, and `?:` produces the default space, both like
+clang. `ptr_to_int` from a narrow pointer zero-extends, like LLVM
+`ptrtoint`. Storage and ABI chunks use the space's width
+(`TargetInfo::pointer_storage`).
+
+In the msvc flavor, `__sptr`/`__uptr` is not part of type identity: cl.exe
+selects `int *__ptr32` for an `int *__ptr32 __uptr` in `_Generic` and accepts
+redeclaring one as the other. `CTypes::ptr32_extension_is_qualifier` makes the
+two ptr32 spaces compatible there. The conversion between them still lowers
+to `address_space_cast`.
+
+Fixtures: `tests/fixtures/sema/x86_64-pc-windows-msvc/ms_mixed_pointers.c`,
+`ms_mixed_pointers_msvc.c`, `tests/fixtures/sema/ms_mixed_pointers_32_bit.c`,
+and `tests/fixtures/error/ms-*-conflict.c` and
+`tests/fixtures/error/ms-pointer-modifier-non-pointer.c`.
+
 ### Qualified access
 
 Each qualifier lives where its meaning does, following CIR's

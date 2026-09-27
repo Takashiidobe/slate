@@ -1,4 +1,5 @@
 use super::{CTypeKind, CTypes, Extent, QualType};
+use crate::ir::PointerSpace;
 
 impl CTypes {
     pub fn compatible(&self, a: QualType, b: QualType) -> bool {
@@ -20,7 +21,9 @@ impl CTypes {
             return true;
         }
         match (self.kind(a.ty), self.kind(b.ty)) {
-            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => self.compatible(*a, *b),
+            (CTypeKind::Pointer(a, a_space), CTypeKind::Pointer(b, b_space)) => {
+                self.same_pointer_space(*a_space, *b_space) && self.compatible(*a, *b)
+            }
             (
                 CTypeKind::Array {
                     element: a,
@@ -63,7 +66,9 @@ impl CTypes {
             return true;
         }
         match (self.kind(a.ty), self.kind(b.ty)) {
-            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => self.same_or_enum_underlying(*a, *b),
+            (CTypeKind::Pointer(a, a_space), CTypeKind::Pointer(b, b_space)) => {
+                self.same_pointer_space(*a_space, *b_space) && self.same_or_enum_underlying(*a, *b)
+            }
             (
                 CTypeKind::Array {
                     element: a,
@@ -159,10 +164,15 @@ impl CTypes {
             return Some(a.local_unqualified().with(quals));
         }
         let composite = match (self.kind(canonical_a.ty), self.kind(canonical_b.ty)) {
-            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => {
+            (CTypeKind::Pointer(a, a_space), CTypeKind::Pointer(b, b_space)) => {
                 let (a, b) = (*a, *b);
+                let space = if self.same_pointer_space(*a_space, *b_space) {
+                    *a_space
+                } else {
+                    PointerSpace::Default
+                };
                 let pointee = self.composite(a, b)?;
-                self.pointer(pointee)
+                self.qual(CTypeKind::Pointer(pointee, space))
             }
             (
                 CTypeKind::Array {

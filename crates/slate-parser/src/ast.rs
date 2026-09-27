@@ -1072,6 +1072,14 @@ pub struct Qualifiers {
     pub is_atomic: bool,
     #[debug(skip_if = is_false)]
     pub is_unaligned: bool,
+    #[debug(skip_if = is_false)]
+    pub is_ptr32: bool,
+    #[debug(skip_if = is_false)]
+    pub is_ptr64: bool,
+    #[debug(skip_if = is_false)]
+    pub is_sptr: bool,
+    #[debug(skip_if = is_false)]
+    pub is_uptr: bool,
 }
 
 impl Qualifiers {

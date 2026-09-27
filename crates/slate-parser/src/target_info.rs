@@ -564,6 +564,17 @@ impl TargetInfo {
         }
     }
 
+    pub fn pointer_storage(&self, space: crate::ir::PointerSpace) -> StorageLayout {
+        let width = space.width(self.pointer_width);
+        if width == self.pointer_width {
+            return self.pointer;
+        }
+        StorageLayout {
+            size_bytes: (width / 8).into(),
+            alignment_bytes: width / 8,
+        }
+    }
+
     pub fn storage_of(&self, ty: Type) -> Result<StorageLayout, LayoutError> {
         if let Type::Complex(component) = &ty {
             let component = self.storage_of(Type::Numeric(*component))?;
@@ -607,7 +618,7 @@ impl TargetInfo {
             Type::Numeric(NumericType::Float(format)) | Type::Imaginary(format) => {
                 ScalarKey::Float(format)
             }
-            Type::Pointer { .. } => return Ok(self.pointer),
+            Type::Pointer { space, .. } => return Ok(self.pointer_storage(space)),
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
             | Type::Vector { .. }

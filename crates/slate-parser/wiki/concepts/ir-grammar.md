@@ -82,7 +82,7 @@ type          = "void" | "bool" | "va_list" | numeric
               | "imaginary<" float_type ">"
               | "vector<" numeric ", " int ">"
               | [ "sat_" ] "fixed<" int_type ", " int ">"
-              | "ptr<" [ "const " ] [ access_prefix ] type ">"
+              | "ptr<" [ "const " ] [ access_prefix ] type [ ", " ptr_space ] ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
               | "vla<" type ", " ( binding | "*" ) ">"
               | fn_type
@@ -92,6 +92,7 @@ int_type      = ( "i" | "u" ) digits [ "b" ] ;
 float_type    = "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
               | "d32" | "d64" | "d128" ;
 access_prefix = "volatile " | "atomic " | "volatile atomic " ;
+ptr_space     = "ptr32_sptr" | "ptr32_uptr" | "ptr64" ;
 fn_type       = "fn(" [ fn_params ] ") -> " type ;
 fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 ```
@@ -505,7 +506,8 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ```ebnf
 conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "int_to_float" | "float_widen" | "float_narrow" | "float_convert"
-           | "float_to_int" | "pointer_cast" | "ptr_to_int" | "int_to_ptr"
+           | "float_to_int" | "pointer_cast" | "address_space_cast"
+           | "ptr_to_int" | "int_to_ptr"
            | "enum_to_int" | "int_to_enum"
            | "real_to_complex" | "complex_to_real" | "complex_to_imag"
            | "complex_convert"

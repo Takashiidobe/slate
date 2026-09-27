@@ -10,8 +10,8 @@ use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, Enumerator, Field, Number,
-    NumericType, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value,
-    ValueKind,
+    NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind,
+    TypeId, Value, ValueKind,
 };
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
@@ -134,6 +134,7 @@ impl TypeResolver {
     pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
         let mut resolver = Self::new(target);
         resolver.flavor = unit.flavor;
+        resolver.ctypes.ptr32_extension_is_qualifier = unit.flavor == CompilerFlavor::Msvc;
         resolver.features = StandardFeatures::new(unit.standard);
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
@@ -1065,9 +1066,8 @@ impl TypeResolver {
                 "mode attribute only supported for integer and floating-point types",
             ));
         }
-        let base = self
-            .base(&specifiers.ty)?
-            .with(specifiers.qualifiers.into());
+        let base = self.base(&specifiers.ty)?;
+        let base = self.qualify(base, &specifiers.qualifiers)?;
         let resolved = self.derive(declarator, base)?;
         Ok(if specifiers.is_constexpr {
             resolved.with(Qualifiers::CONST)
@@ -1322,7 +1322,8 @@ impl TypeResolver {
             Declarator::Pointer {
                 inner, qualifiers, ..
             } => {
-                let q = self.ctypes.pointer(q).with((*qualifiers).into());
+                let pointer = self.ctypes.pointer(q);
+                let q = self.qualify(pointer, qualifiers)?;
                 self.derive(inner, q)
             }
             Declarator::Array { .. } => {
@@ -1347,7 +1348,7 @@ impl TypeResolver {
                     });
                     core = inner;
                 }
-                let (core, mut q) = self.apply_pointers(core, q);
+                let (core, mut q) = self.apply_pointers(core, q)?;
                 for extent in extents {
                     if self.ctypes.is_void(q) {
                         return Err(ResolveError::Unsupported("void array element"));
@@ -1389,7 +1390,7 @@ impl TypeResolver {
                     ParameterList::Empty => self.features.empty_parens_are_prototype,
                     ParameterList::Prototype { .. } | ParameterList::Void => true,
                 };
-                let (core, ret) = self.apply_pointers(inner, q);
+                let (core, ret) = self.apply_pointers(inner, q)?;
                 let q = self.ctypes.qual(CTypeKind::Function {
                     ret,
                     params,
@@ -1462,15 +1463,68 @@ impl TypeResolver {
         &mut self,
         mut core: &'d Declarator,
         mut q: QualType,
-    ) -> (&'d Declarator, QualType) {
+    ) -> Result<(&'d Declarator, QualType), ResolveError> {
         while let Declarator::Pointer {
             inner, qualifiers, ..
         } = core
         {
-            q = self.ctypes.pointer(q).with((*qualifiers).into());
+            let pointer = self.ctypes.pointer(q);
+            q = self.qualify(pointer, qualifiers)?;
             core = inner;
         }
-        (core, q)
+        Ok((core, q))
+    }
+
+    fn qualify(
+        &mut self,
+        q: QualType,
+        qualifiers: &crate::ast::Qualifiers,
+    ) -> Result<QualType, ResolveError> {
+        let q = q.with((*qualifiers).into());
+        let Some(space) = self.pointer_space(qualifiers)? else {
+            return Ok(q);
+        };
+        if space == PointerSpace::Default && self.ctypes.is_pointer(q) {
+            return Ok(q);
+        }
+        self.ctypes
+            .pointer_in(q, space)
+            .ok_or(ResolveError::Invalid(
+                "__ptr32, __ptr64, __sptr and __uptr only apply to pointers",
+            ))
+    }
+
+    fn pointer_space(
+        &self,
+        qualifiers: &crate::ast::Qualifiers,
+    ) -> Result<Option<PointerSpace>, ResolveError> {
+        let crate::ast::Qualifiers {
+            is_ptr32,
+            is_ptr64,
+            is_sptr,
+            is_uptr,
+            ..
+        } = *qualifiers;
+        if !(is_ptr32 || is_ptr64 || is_sptr || is_uptr) {
+            return Ok(None);
+        }
+        if is_ptr32 && is_ptr64 {
+            return Err(ResolveError::Invalid(
+                "'__ptr32' and '__ptr64' attributes are not compatible",
+            ));
+        }
+        if is_sptr && is_uptr {
+            return Err(ResolveError::Invalid(
+                "'__sptr' and '__uptr' attributes are not compatible",
+            ));
+        }
+        Ok(Some(match self.target.pointer_width {
+            32 if is_ptr64 => PointerSpace::Ptr64,
+            32 if is_uptr => PointerSpace::Ptr32Uptr,
+            64 if is_ptr32 && is_uptr => PointerSpace::Ptr32Uptr,
+            64 if is_ptr32 => PointerSpace::Ptr32Sptr,
+            _ => PointerSpace::Default,
+        }))
     }
 
     /// C11 6.7.2.3p8: `struct S;` alone declares an incomplete tag in the
@@ -2032,7 +2086,7 @@ impl TypeResolver {
                 } => self.qualified_storage(underlying.clone(), atomic),
                 _ => Err(ResolveError::Unsupported("incomplete field type")),
             },
-            Type::Pointer { .. } => Ok(promote(self.target.pointer)),
+            Type::Pointer { space, .. } => Ok(promote(self.target.pointer_storage(space))),
             Type::Array {
                 element,
                 length: Some(length),
@@ -2492,13 +2546,15 @@ pub(super) fn same_layout(a: &Type, b: &Type) -> bool {
                 pointee: a,
                 is_const: a_const,
                 access: a_access,
+                space: a_space,
             },
             Type::Pointer {
                 pointee: b,
                 is_const: b_const,
                 access: b_access,
+                space: b_space,
             },
-        ) => a_const == b_const && a_access == b_access && same_layout(a, b),
+        ) => a_const == b_const && a_access == b_access && a_space == b_space && same_layout(a, b),
         (
             Type::Array {
                 element: a,

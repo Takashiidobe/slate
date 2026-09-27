@@ -31,8 +31,8 @@ use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ComplexRange, Contraction, ConversionKind, ConversionReason,
     ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest,
-    FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding, ShiftFill,
-    Type, UbPolicy, UnaryArithOp, VariableExtent,
+    FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, PointerSpace, Rounding,
+    ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,

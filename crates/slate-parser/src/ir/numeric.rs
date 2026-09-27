@@ -19,6 +19,7 @@ pub enum Type {
         pointee: Box<Type>,
         is_const: bool,
         access: super::Access,
+        space: PointerSpace,
     },
     Array {
         element: Box<Type>,
@@ -34,6 +35,35 @@ pub enum Type {
         variadic: bool,
         prototyped: bool,
     },
+}
+
+/// the MS mixed-size pointer representations, named after clang's address spaces
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub enum PointerSpace {
+    #[default]
+    Default,
+    Ptr32Sptr,
+    Ptr32Uptr,
+    Ptr64,
+}
+
+impl PointerSpace {
+    pub fn width(self, default_width: u32) -> u32 {
+        match self {
+            Self::Default => default_width,
+            Self::Ptr32Sptr | Self::Ptr32Uptr => 32,
+            Self::Ptr64 => 64,
+        }
+    }
+
+    fn suffix(self) -> &'static str {
+        match self {
+            Self::Default => "",
+            Self::Ptr32Sptr => ", ptr32_sptr",
+            Self::Ptr32Uptr => ", ptr32_uptr",
+            Self::Ptr64 => ", ptr64",
+        }
+    }
 }
 
 impl fmt::Display for Type {
@@ -52,11 +82,13 @@ impl fmt::Display for Type {
                 pointee,
                 is_const,
                 access,
+                space,
             } => write!(
                 f,
-                "ptr<{}{}{pointee}>",
+                "ptr<{}{}{pointee}{}>",
                 if *is_const { "const " } else { "" },
-                access.prefix()
+                access.prefix(),
+                space.suffix()
             ),
             Self::Array { element, length } => match length {
                 Some(length) => write!(f, "array<{element}, {length}>"),
@@ -538,6 +570,7 @@ pub enum ConversionKind {
     FloatConvert,
     FloatToInt,
     PointerCast,
+    AddressSpaceCast,
     RealToComplex,
     ComplexToReal,
     ComplexToImag,
@@ -574,6 +607,7 @@ impl fmt::Display for ConversionKind {
             Self::FloatConvert => "float_convert",
             Self::FloatToInt => "float_to_int",
             Self::PointerCast => "pointer_cast",
+            Self::AddressSpaceCast => "address_space_cast",
             Self::RealToComplex => "real_to_complex",
             Self::ComplexToReal => "complex_to_real",
             Self::ComplexToImag => "complex_to_imag",

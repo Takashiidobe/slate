@@ -1,7 +1,7 @@
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
 use super::types::TypeResolver;
 use crate::compiler_args::CompilerFlavor;
-use crate::ir::{ArithOp, CompareOp, FloatClassTest, MemoryEffects};
+use crate::ir::{ArithOp, CompareOp, FloatClassTest, MemoryEffects, PointerSpace};
 use crate::target_info::TargetInfo;
 
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
@@ -329,7 +329,7 @@ impl TypeResolver {
             }
             BuiltinType::Pointer(pointee) => {
                 let pointee = self.builtin_param(pointee, target)?;
-                CTypeKind::Pointer(pointee)
+                CTypeKind::Pointer(pointee, PointerSpace::Default)
             }
             BuiltinType::SizeT => return Some(self.ctypes.size_type(target)),
             BuiltinType::PtrdiffT => return Some(self.ctypes.ptrdiff_type(target)),

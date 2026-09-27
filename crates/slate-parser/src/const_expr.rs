@@ -2120,6 +2120,10 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Const
                 | Keyword::Volatile
                 | Keyword::Unaligned
+                | Keyword::Ptr32
+                | Keyword::Ptr64
+                | Keyword::Sptr
+                | Keyword::Uptr
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Int128

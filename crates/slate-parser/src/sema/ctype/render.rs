@@ -2,7 +2,7 @@ use super::{
     CTypeKind, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank, QualType,
     Qualifiers,
 };
-use crate::ir::TypeDefinition;
+use crate::ir::{PointerSpace, TypeDefinition};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CTypeMetadata {
@@ -127,7 +127,7 @@ impl CTypes {
                     *underlying
                 }
                 CTypeKind::TypeOf { underlying, .. } => *underlying,
-                CTypeKind::AtomicSpecifier(inner) | CTypeKind::Pointer(inner) => *inner,
+                CTypeKind::AtomicSpecifier(inner) | CTypeKind::Pointer(inner, _) => *inner,
                 CTypeKind::Array { element, .. } => *element,
                 CTypeKind::Function { ret, .. } => *ret,
                 _ => return chain,
@@ -154,10 +154,15 @@ impl Printer<'_> {
                     declarator,
                 )
             }
-            CTypeKind::Pointer(pointee) => {
-                let mut text = format!("*{}", words(q.quals).join(" "));
+            CTypeKind::Pointer(pointee, space) => {
+                let words = space_words(*space)
+                    .iter()
+                    .copied()
+                    .chain(words(q.quals))
+                    .collect::<Vec<_>>();
+                let mut text = format!("*{}", words.join(" "));
                 if !declarator.text.is_empty() {
-                    if !q.quals.is_empty() && !declarator.suffix {
+                    if !words.is_empty() && !declarator.suffix {
                         text.push(' ');
                     }
                     text.push_str(&declarator.text);
@@ -246,7 +251,7 @@ impl Printer<'_> {
                 tag_name(if *union { "union" } else { "struct" }, self.tag(*id))
             }
             CTypeKind::Enum(id) => tag_name("enum", self.tag(*id)),
-            CTypeKind::Pointer(_)
+            CTypeKind::Pointer(..)
             | CTypeKind::Array { .. }
             | CTypeKind::Function { .. }
             | CTypeKind::Typedef { .. }
@@ -285,6 +290,15 @@ fn suffixed(declarator: Declarator, suffix: &str) -> Declarator {
     Declarator {
         text,
         suffix: !grouped,
+    }
+}
+
+fn space_words(space: PointerSpace) -> &'static [&'static str] {
+    match space {
+        PointerSpace::Default => &[],
+        PointerSpace::Ptr32Sptr => &["__ptr32"],
+        PointerSpace::Ptr32Uptr => &["__ptr32", "__uptr"],
+        PointerSpace::Ptr64 => &["__ptr64"],
     }
 }
 

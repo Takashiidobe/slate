@@ -129,6 +129,13 @@ rediscover.
 - `src/sema/expression.rs` — `type_class`, the `__builtin_classify_type` code.
   Returning `None` is a legitimate answer for a family gcc has no code for.
 
+**Pointer width**
+
+- `Type::Pointer` carries a `PointerSpace` (MS `__ptr32`/`__ptr64`), so a
+  pointer's size is not always the target's. Take pointer storage from
+  `TargetInfo::pointer_storage(space)` or `storage_of`, and ABI widths from
+  `space.width(..)`, never from `target.pointer` or `target.pointer_width`.
+
 **Printing the new policies**
 
 - `src/ir/mod.rs` — `format_semantics` prints `ArithSema`, and the

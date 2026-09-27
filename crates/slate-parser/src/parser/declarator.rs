@@ -1007,18 +1007,6 @@ impl<'a> DeclaratorParser<'a> {
             while let Some(qualifier) = self.take_qualifier() {
                 set_qualifier(&mut qualifiers, qualifier);
             }
-            while self.peek() == Some(&Token::Keyword(Keyword::Ptr64)) {
-                // on 32-bit targets clang makes __ptr64 a distinct 8-byte pointer (slate-parser-v74.1.6)
-                if self
-                    .context
-                    .is_some_and(|parser| parser.target.pointer_width != 64)
-                {
-                    return Err(DeclaratorError::Other(
-                        "`__ptr64` on a 32-bit target is not supported".into(),
-                    ));
-                }
-                self.pos += 1;
-            }
             attributes.extend(self.parse_attributes()?);
             if self.pos == start {
                 return Ok((qualifiers, attributes));
@@ -1039,14 +1027,7 @@ impl<'a> DeclaratorParser<'a> {
     pub(crate) fn take_qualifiers(&mut self) -> Qualifiers {
         let mut qualifiers = Qualifiers::default();
         while let Some(qualifier) = self.take_qualifier() {
-            match qualifier {
-                Keyword::Const => qualifiers.is_const = true,
-                Keyword::Volatile => qualifiers.is_volatile = true,
-                Keyword::Restrict => qualifiers.is_restrict = true,
-                Keyword::Atomic => qualifiers.is_atomic = true,
-                Keyword::Unaligned => qualifiers.is_unaligned = true,
-                _ => return qualifiers,
-            }
+            set_qualifier(&mut qualifiers, qualifier);
         }
         qualifiers
     }
@@ -1066,6 +1047,10 @@ impl<'a> DeclaratorParser<'a> {
                 | Keyword::Restrict
                 | Keyword::Atomic
                 | Keyword::Unaligned
+                | Keyword::Ptr32
+                | Keyword::Ptr64
+                | Keyword::Sptr
+                | Keyword::Uptr
         ) {
             return None;
         }

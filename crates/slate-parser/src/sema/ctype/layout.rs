@@ -1,7 +1,9 @@
 use super::{
     CTypeKind, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank, QualType,
 };
-use crate::ir::{Access, FixedPointType, FloatType, NumericType, Type, VariableExtent};
+use crate::ir::{
+    Access, FixedPointType, FloatType, NumericType, PointerSpace, Type, VariableExtent,
+};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 impl CTypes {
@@ -27,12 +29,13 @@ impl CTypes {
             },
             CTypeKind::VaList => Type::VaList,
             CTypeKind::Record { id, .. } | CTypeKind::Enum(id) => Type::Defined(*id),
-            CTypeKind::Pointer(pointee) => {
+            CTypeKind::Pointer(pointee, space) => {
                 let quals = self.quals(*pointee);
                 Type::Pointer {
                     pointee: Box::new(self.ir_type(*pointee, target)),
                     is_const: quals.is_const,
                     access: self.access(*pointee),
+                    space: *space,
                 }
             }
             CTypeKind::Array { element, extent } => {
@@ -85,6 +88,7 @@ impl CTypes {
             pointee: Box::new(self.ir_type(pointee, target)),
             is_const: self.quals(pointee).is_const,
             access: self.access(pointee),
+            space: PointerSpace::Default,
         }
     }
 
@@ -119,7 +123,7 @@ impl CTypes {
             | CTypeKind::VaList
             | CTypeKind::Record { .. }
             | CTypeKind::Enum(_)
-            | CTypeKind::Pointer(_)
+            | CTypeKind::Pointer(..)
             | CTypeKind::Array { .. }
             | CTypeKind::Function { .. }
             | CTypeKind::Typedef { .. }

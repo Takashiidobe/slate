@@ -937,9 +937,14 @@ impl Lowerer {
             CastKind::NullPointer => Ok(self.value(&value.node, ty, ValueKind::Null)),
             CastKind::PtrToBool => self.condition(value, Some(reason)),
             CastKind::Pointer | CastKind::PtrToInt | CastKind::IntToPtr => {
-                let kind = match kind {
-                    CastKind::PtrToInt => ConversionKind::PtrToInt,
-                    CastKind::IntToPtr => ConversionKind::IntToPtr,
+                let kind = match (kind, &value.ty, &ty) {
+                    (CastKind::PtrToInt, ..) => ConversionKind::PtrToInt,
+                    (CastKind::IntToPtr, ..) => ConversionKind::IntToPtr,
+                    (_, Type::Pointer { space: from, .. }, Type::Pointer { space: to, .. })
+                        if from != to =>
+                    {
+                        ConversionKind::AddressSpaceCast
+                    }
                     _ => ConversionKind::PointerCast,
                 };
                 let node = value.node.clone();
@@ -1921,6 +1926,7 @@ impl Lowerer {
                         pointee: Box::new(ty),
                         is_const: false,
                         access: Access::default(),
+                        space: PointerSpace::Default,
                     },
                     ValueKind::AddressOf(lvalue.place),
                 );
@@ -2994,7 +3000,7 @@ fn type_class(ctypes: &CTypes, q: QualType) -> Option<u32> {
         | CTypeKind::Int { .. }
         | CTypeKind::Enum(_) => 1,
         CTypeKind::Bool => 4,
-        CTypeKind::Pointer(_) => 5,
+        CTypeKind::Pointer(..) => 5,
         CTypeKind::Float(_) | CTypeKind::Imaginary(_) => 8,
         CTypeKind::Complex(_) => 9,
         CTypeKind::Record { union: false, .. } => 12,

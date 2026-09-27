@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 pub(super) use layout::rank_width;
 
-use crate::ir::{BindingId, TypeId};
+use crate::ir::{BindingId, PointerSpace, TypeId};
 
 pub use render::CTypeMetadata;
 
@@ -208,7 +208,7 @@ pub enum CTypeKind {
         union: bool,
     },
     Enum(TypeId),
-    Pointer(QualType),
+    Pointer(QualType, PointerSpace),
     Array {
         element: QualType,
         extent: Extent,
@@ -251,9 +251,19 @@ pub struct CTypes {
     ids: HashMap<CTypeKind, CTypeId>,
     enum_underlying: HashMap<TypeId, QualType>,
     tag_classes: HashMap<TypeId, TypeId>,
+    // cl.exe keeps __sptr/__uptr out of type identity; clang makes them distinct address spaces
+    pub ptr32_extension_is_qualifier: bool,
 }
 
 impl CTypes {
+    pub fn same_pointer_space(&self, a: PointerSpace, b: PointerSpace) -> bool {
+        a == b
+            || (self.ptr32_extension_is_qualifier
+                && [a, b].iter().all(|space| {
+                    matches!(space, PointerSpace::Ptr32Sptr | PointerSpace::Ptr32Uptr)
+                }))
+    }
+
     pub fn join_tag_class(&mut self, id: TypeId, existing: TypeId) {
         let class = self.tag_class(existing);
         self.tag_classes.insert(id, class);
@@ -308,9 +318,9 @@ impl CTypes {
             CTypeKind::AtomicSpecifier(inner) => {
                 Some(self.canonical(*inner).with(Qualifiers::ATOMIC))
             }
-            CTypeKind::Pointer(pointee) => {
-                let canonical = self.canonical(*pointee);
-                (canonical != *pointee).then(|| self.qual(CTypeKind::Pointer(canonical)))
+            CTypeKind::Pointer(pointee, space) => {
+                let (canonical, space) = (self.canonical(*pointee), *space);
+                (canonical != *pointee).then(|| self.qual(CTypeKind::Pointer(canonical, space)))
             }
             CTypeKind::Array { element, extent } => {
                 let canonical = self.canonical(*element);
@@ -437,13 +447,28 @@ impl CTypes {
     }
 
     pub fn pointer(&mut self, pointee: QualType) -> QualType {
-        self.qual(CTypeKind::Pointer(pointee))
+        self.qual(CTypeKind::Pointer(pointee, PointerSpace::Default))
+    }
+
+    pub fn pointer_in(&mut self, q: QualType, space: PointerSpace) -> Option<QualType> {
+        let pointee = self.pointee(q)?;
+        Some(
+            self.qual(CTypeKind::Pointer(pointee, space))
+                .with(self.quals(q)),
+        )
     }
 
     pub fn pointee(&self, q: QualType) -> Option<QualType> {
         match self.kind(self.desugar(q).ty) {
-            CTypeKind::Pointer(pointee) => Some(*pointee),
+            CTypeKind::Pointer(pointee, _) => Some(*pointee),
             _ => None,
+        }
+    }
+
+    pub fn pointer_space(&self, q: QualType) -> PointerSpace {
+        match self.kind(self.desugar(q).ty) {
+            CTypeKind::Pointer(_, space) => *space,
+            _ => PointerSpace::Default,
         }
     }
 
@@ -480,7 +505,7 @@ impl CTypes {
     }
 
     pub fn is_pointer(&self, q: QualType) -> bool {
-        matches!(self.canonical_kind(q), CTypeKind::Pointer(_))
+        matches!(self.canonical_kind(q), CTypeKind::Pointer(..))
     }
 
     pub fn adjust_parameter(&mut self, q: QualType) -> QualType {
