@@ -8,10 +8,10 @@ use crate::const_expr::{
     IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
 };
 use crate::ir::{
-    AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, Contraction, ConversionKind,
-    ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType, FixedRounding,
-    FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy, UnaryArithOp,
-    Value, ValueKind,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, Contraction,
+    ConversionKind, ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType,
+    FixedRounding, FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy,
+    UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -57,6 +57,7 @@ pub struct Context {
     pub signed_overflow: Overflow,
     pub pointer_wrap: bool,
     pub region: FloatingRegion,
+    pub asm_dialect: AsmDialect,
 }
 
 type Resolved = (Type, ValueKind);
@@ -67,6 +68,7 @@ impl Context {
         self.signed_overflow = options.operations.signed_overflow;
         self.pointer_wrap = options.operations.pointer_wrap;
         self.region.floating = options.operations.floating;
+        self.asm_dialect = options.asm_dialect;
         self
     }
     pub fn with_contraction(mut self, contract: Contraction) -> Self {
@@ -85,6 +87,7 @@ impl Context {
             signed_overflow: Overflow::Undefined,
             pointer_wrap: false,
             region: FloatingRegion::default(),
+            asm_dialect: AsmDialect::Att,
         }
     }
 

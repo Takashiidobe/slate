@@ -1,6 +1,6 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::DiagnosticOptions;
-use crate::ir::{Exceptions, FloatingSemantics, Overflow, Rounding};
+use crate::ir::{AsmDialect, Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,6 +12,7 @@ pub struct CompilerOptions {
     pub arguments: Vec<String>,
     pub common: bool,
     pub explicit_standard: bool,
+    pub asm_dialect: AsmDialect,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,6 +59,7 @@ impl Default for CompilerOptions {
             arguments: Vec::new(),
             common: false,
             explicit_standard: false,
+            asm_dialect: AsmDialect::Att,
         }
     }
 }

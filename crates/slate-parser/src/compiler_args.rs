@@ -1,7 +1,7 @@
 use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
-use crate::ir::Overflow;
+use crate::ir::{AsmDialect, Overflow};
 use crate::pp::{MacroOption, PreprocessorInputs};
 use crate::rules::{Rule, Rules};
 use crate::target::isa::{IsaRequest, TargetIsa};
@@ -169,6 +169,7 @@ struct ParsedCompilerArgs {
     gnu89_inline: Option<bool>,
     common: Option<bool>,
     long_double: Option<LongDoubleFormat>,
+    asm_dialect: Option<AsmDialect>,
     isa: IsaRequest,
     diagnostics: DiagnosticOptions,
     present: BTreeSet<Opt>,
@@ -200,6 +201,7 @@ enum Opt {
     Gnu89Inline,
     Common,
     LongDouble,
+    AsmDialect,
     IsaFeature,
     Arch,
     FloatAbi,
@@ -237,6 +239,7 @@ impl std::fmt::Display for Opt {
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
             Self::LongDouble => "long-double",
+            Self::AsmDialect => "masm",
             Self::IsaFeature => "m<feature>",
             Self::Arch => "march",
             Self::FloatAbi => "mfloat-abi",
@@ -328,6 +331,7 @@ impl CompilerArgParser {
             }
         });
         options.common = raw.common.unwrap_or(false);
+        options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
         Ok(CompilerArgs {
             options,
@@ -505,6 +509,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "long double format",
+            )?);
+        } else if let Some(value) = option_value(argument, "masm") {
+            parsed.present.insert(Opt::AsmDialect);
+            parsed.asm_dialect = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "asm dialect",
             )?);
         } else if let Some(value) = option_value(argument, "march") {
             parsed.present.insert(Opt::Arch);
@@ -731,6 +742,15 @@ fn flavor_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 
 fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
     Rules::pipeline([
+        Rule::validate("GCC asm dialect", move |args: &ParsedCompilerArgs| {
+            if args.asm_dialect.is_some()
+                && !matches!(target.family, TargetFamily::X86 | TargetFamily::X86_64)
+            {
+                Err(format!("asm dialect is unsupported for {}", target.triple))
+            } else {
+                Ok(())
+            }
+        }),
         Rule::validate("GCC stack alignment", |args: &ParsedCompilerArgs| {
             if args.stack_alignment.is_some() {
                 Err("stack alignment is a Clang option".into())
@@ -793,7 +813,7 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 16] = [
+    const UNSUPPORTED: [Opt; 17] = [
         Opt::Gnu89Inline,
         Opt::Common,
         Opt::Wrapv,
@@ -804,6 +824,7 @@ fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
         Opt::LongDouble,
         Opt::PreferredStackBoundary,
         Opt::StackAlignment,
+        Opt::AsmDialect,
         Opt::IsaFeature,
         Opt::Arch,
         Opt::FloatAbi,

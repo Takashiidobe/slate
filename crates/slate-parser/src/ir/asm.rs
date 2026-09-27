@@ -72,10 +72,23 @@ pub enum AsmRegisterView {
     HighByte,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum AsmDialect {
+    #[default]
     Att,
     Intel,
+}
+
+impl std::str::FromStr for AsmDialect {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "att" => Ok(Self::Att),
+            "intel" => Ok(Self::Intel),
+            _ => Err(format!("unknown asm dialect: {value}")),
+        }
+    }
 }
 
 impl AsmDialect {

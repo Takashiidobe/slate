@@ -23,6 +23,12 @@ with either value form. C90 and ISO 9899 aliases normalize to the corresponding
 language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
 and otherwise C89 language rules. Unknown triples and standard names are errors.
 
+`-masm=att|intel` sets the dialect that x86 GNU asm lowers with: it picks the
+side of a `{att|intel}` template alternation and is recorded as the asm's
+`dialect`. The GCC flavor rejects it off x86, as gcc does. Clang accepts it
+everywhere, and on other targets it has no effect (clang only warns that the
+argument is unused). MSVC rejects it.
+
 `CompilerArgs::search_paths` constructs the shared include search order.
 Quoted includes search the including file's directory, `-iquote`, `-I`, then
 system directories. Angled includes start at `-I`. System directories search

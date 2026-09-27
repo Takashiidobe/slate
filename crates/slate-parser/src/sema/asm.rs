@@ -16,7 +16,7 @@ impl Lowerer {
         };
         let family = self.context.target.family;
         let dialect = match family {
-            TargetFamily::X86 | TargetFamily::X86_64 => Some(AsmDialect::Att),
+            TargetFamily::X86 | TargetFamily::X86_64 => Some(self.context.asm_dialect),
             TargetFamily::AArch64 | TargetFamily::Arm32 => None,
         };
         let mut lowered = InlineAsm {
