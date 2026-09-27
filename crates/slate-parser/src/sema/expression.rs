@@ -122,7 +122,8 @@ impl Lowerer {
             .references
             .iter()
             .any(|reference| reference.id == callee.id && reference.kind == BindingKind::Function)
-            && self.declares_builtin(binding, builtin)
+            && (self.types.entities.ty(&binding).is_none()
+                || self.declares_builtin(binding, builtin))
         {
             return Some((builtin, Some(binding)));
         }

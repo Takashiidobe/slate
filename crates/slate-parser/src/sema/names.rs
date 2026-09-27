@@ -51,6 +51,7 @@ struct Resolver {
     display_counts: HashMap<String, u32>,
     unit_tags: HashMap<AstTagId, Span<crate::ast::TagDefinition>>,
     linked: HashMap<String, Entry>,
+    implicit_builtin_calls: HashMap<&'static str, Vec<Span<()>>>,
     flavor: CompilerFlavor,
     next_id: u32,
 }
@@ -76,6 +77,7 @@ impl Resolver {
                 .map(|tag| (tag.value.id, tag.clone()))
                 .collect(),
             linked: HashMap::new(),
+            implicit_builtin_calls: HashMap::new(),
             flavor: unit.flavor,
             next_id: 0,
         }
@@ -349,13 +351,22 @@ impl Resolver {
                 // in scope, so bind the prefixed spelling to it.
                 if let (Some(builtin), ExprKind::Identifier(name)) =
                     (implicit_builtin, &callee.value)
-                    && builtin.name != name
-                    && let Some(entry) = self
-                        .lookup_ordinary(builtin.name)
+                {
+                    let visible = (builtin.name != name)
+                        .then(|| self.lookup_ordinary(builtin.name))
+                        .flatten();
+                    match visible
+                        .or_else(|| self.linked.get(builtin.name))
                         .filter(|entry| entry.kind == BindingKind::Function)
                         .cloned()
-                {
-                    self.push_reference(builtin.name, entry, callee);
+                    {
+                        Some(entry) => self.push_reference(builtin.name, entry, callee),
+                        None => self
+                            .implicit_builtin_calls
+                            .entry(builtin.name)
+                            .or_default()
+                            .push(copy_span(callee, ())),
+                    }
                 }
                 if implicit_builtin.is_none()
                     && !super::expression::specially_lowered(callee, arguments)
@@ -646,6 +657,13 @@ impl Resolver {
         };
         if linked {
             self.linked.insert(name.into(), entry.clone());
+            if kind == BindingKind::Function
+                && let Some(calls) = self.implicit_builtin_calls.remove(name)
+            {
+                for call in calls {
+                    self.push_reference(name, entry.clone(), &call);
+                }
+            }
         }
         self.ordinary
             .last_mut()

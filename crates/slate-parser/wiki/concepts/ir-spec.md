@@ -106,7 +106,13 @@ like functions, as clang's lazily created builtin `FunctionDecl`s do: a builtin
 used without a declaration gets one implicit `fn` per spelling
 (`fn %9 @__builtin_abort() -> void [linkage=external] [noreturn]`) with unnamed
 parameters and the registry prototype, and every function that is a builtin
-carries `c_builtin` metadata. The builtin's `NoReturn` attribute becomes the
+carries `c_builtin` metadata. As in clang, that implicit declaration is a
+redeclaration of any function of the same name with linkage, so a builtin
+called without a visible declaration binds to an earlier block-scope `extern`
+declaration or to a later one at any scope (`__builtin_exit` included), and
+the unit gets one `fn` for it
+(`tests/fixtures/sema/ir_implicit_builtin_redeclared.c`); calls lowered before
+the later declaration still use the builtin's signature. The builtin's `NoReturn` attribute becomes the
 function's `[noreturn]` (`tests/fixtures/sema/ir_builtin_noreturn.c`), and
 `Const`/`Pure` become `[memory=none]`/`[memory=read]`, exactly as GNU
 `__attribute__((const))`/`((pure))` on a declaration do (`const` wins when both
