@@ -827,6 +827,9 @@ impl fmt::Display for DisplayModule<'_> {
             if function.semantics.noreturn {
                 f.write_str(" [noreturn]")?;
             }
+            if function.semantics.naked {
+                f.write_str(" [naked]")?;
+            }
             match function.semantics.memory {
                 Some(MemoryEffects::None) => f.write_str(" [memory=none]")?,
                 Some(MemoryEffects::Read) => f.write_str(" [memory=read]")?,

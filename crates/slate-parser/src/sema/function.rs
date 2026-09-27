@@ -13,6 +13,7 @@ pub(super) struct FunctionDeclarations {
     definition: Option<DefinitionSpecifiers>,
     has_external_declaration: bool,
     noreturn: bool,
+    naked: bool,
     memory: Option<MemoryEffects>,
     attributes: Vec<Attribute>,
 }
@@ -107,6 +108,7 @@ impl Lowerer {
                     state.inlining = Some(preference);
                 }
                 Attribute::NoReturn => state.noreturn = true,
+                Attribute::Naked => state.naked = true,
                 Attribute::Const => state.restrict_memory(MemoryEffects::None),
                 Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
                 _ => {}
@@ -116,6 +118,12 @@ impl Lowerer {
             }
         }
         Ok(())
+    }
+
+    pub(super) fn is_naked(&self, id: BindingId) -> bool {
+        self.function_declarations
+            .get(&id)
+            .is_some_and(|state| state.naked)
     }
 
     pub(super) fn finish_functions(&mut self, mode: InlineSemantics) -> Result<(), ResolveError> {
@@ -177,9 +185,11 @@ impl Lowerer {
                         _ => false,
                     },
                 noreturn: state.noreturn,
+                naked: state.naked,
                 memory: state.memory,
             };
-            if state.noreturn && function.body.is_some() {
+            // a naked function has no epilogue: clang ends its body in `unreachable`.
+            if (state.noreturn || state.naked) && function.body.is_some() {
                 function.value.fallthrough = Some(Fallthrough::Undefined);
             }
             if let Some(Some(metadata)) = rendered_attributes

@@ -177,6 +177,9 @@ impl Lowerer {
 impl Lowerer {
     pub(super) fn asm_statement(&mut self, asm: &ast::GnuAsm) -> Result<InlineAsm, ResolveError> {
         let mut lowered = self.asm(asm)?;
+        if self.in_naked_function {
+            return Ok(lowered);
+        }
         lowered.options = Some(options(
             &lowered,
             asm.operands.is_none(),

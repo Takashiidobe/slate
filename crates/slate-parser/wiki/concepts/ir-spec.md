@@ -958,9 +958,9 @@ template as opaque text with holes.
   backend never sees one; the raw template string keeps the source.
   `%{`/`%|`/`%}` are literal braces and bars, not alternation markers.
 - A statement asm carries `InlineAsm::options: Some(AsmOptions)`, Rust's
-  `asm!` options derived once during lowering; file-scope asm has `None`
-  (`global_asm!` takes none). Rules, verified against clang `-emit-llvm`
-  and gcc `-O2` / `-fdump-rtl-expand`:
+  `asm!` options derived once during lowering; file-scope asm and asm in a
+  naked function have `None` (`global_asm!` and `naked_asm!` take none).
+  Rules, verified against clang `-emit-llvm` and gcc `-O2` / `-fdump-rtl-expand`:
   - `memory` (`AsmMemory::{None, ReadOnly, Any}` = `nomem` / `readonly` /
     neither) comes from the operands: a memory input (`InPlace`, or an `In`
     whose selected class is `mem`) reads, a memory output writes. A
@@ -984,6 +984,20 @@ template as opaque text with holes.
   `sema/armv7-unknown-linux-gnueabihf/ir_asm_options.c`. On 32-bit ARM,
   gcc (`arm-none-eabi-gcc` 16.2, `-fdump-rtl-expand`) adds a CC clobber
   only for `"cc"` in ARM, Thumb-2 and Thumb-1 (armv6-m) alike.
+
+A naked function (`__attribute__((naked))` on any of its declarations) sets
+`FunctionSemantics::naked`, so the backend picks `naked_asm!` from the function
+rather than sniffing its body. It is keyed on the attribute alone, not on the
+body shape: clang accepts any number of asm statements, basic or extended with
+operands that reference no parameter (`"i"(42)`), plus null statements, and
+all of them fit one `naked_asm!` (templates joined, `const`/`sym` operands).
+Keying on "a single basic asm" would turn every other naked function into an
+ordinary one with a prologue. Clang rejects other statements and parameter
+references; gcc accepts anything. We accept anything too (permissive), so a
+backend must still check the body is asm-only. Fallthrough is `ub` (clang ends
+the body in `unreachable`), and asm statements inside carry
+`options: None`, since `naked_asm!` takes no options. Fixture:
+`sema/ir_naked.c`.
 
 File-scope `asm` lowers to `Module::asm`, a source-ordered list of the same
 `InlineAsm`, printed before the type definitions. It is a separate list rather

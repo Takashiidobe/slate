@@ -173,6 +173,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
+              [ "[naked]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
               [ "[abi=" abi_signature "]" ]
               [ "[fallthrough=" fallthrough "]" ] { metadata }
@@ -194,6 +195,8 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 - Inlining preference and definition emission are independent. Inline bodies
   print whether they supply a linkable definition; `inline_only` bodies do not.
   `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
+- `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
+  epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
 - `memory=none` (GNU `const`) reads and writes no memory beyond the arguments;
   `memory=read` (`pure`) may read but not write. Absent means unrestricted.
 
@@ -315,8 +318,8 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   holds only the selected side of each `{att|intel}` alternation, so it
   never contains one.
 - `[options=...]` is the set of Rust `asm!` options derived during lowering,
-  in that fixed order, printed on every statement asm and never on
-  file-scope asm; `nomem` and `readonly` are exclusive.
+  in that fixed order, printed on every statement asm except inside a
+  naked function, and never on file-scope asm; `nomem` and `readonly` are exclusive.
 - An operand line starts with its Rust-facing direction. `=` and `+` and
   `&` are folded into it and no longer appear in the quoted constraint,
   which keeps `,`-separated alternatives, each with `%` or `-` and then a

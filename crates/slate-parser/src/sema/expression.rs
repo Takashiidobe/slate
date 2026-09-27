@@ -29,6 +29,7 @@ pub(super) struct Lowerer {
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, QualType)>,
     pub in_function: bool,
+    pub in_naked_function: bool,
     pub function_name: Option<String>,
     pub pretty_function_name: Option<String>,
     pub files: crate::files::Files,

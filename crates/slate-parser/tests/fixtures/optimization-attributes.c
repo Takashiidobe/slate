@@ -31,7 +31,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @cold_function() -> i32 [linkage=external] [inline=never];
 // DEFAULT-NEXT:     fn %1 @hot_function() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @optimized_function() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @optimized_function() -> i32 [linkage=external] [naked];
 // DEFAULT-NEXT:     fn %3 @split_function() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %4 @returns_twice_function() -> i32 [linkage=external];
 // DEFAULT-NEXT: }

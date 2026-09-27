@@ -95,7 +95,7 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 // IR-WARN-NEXT:     fn %2 @opaque() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT:     fn %3 @overloaded(%15 <unnamed>: i32) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %4 @bare() -> void [linkage=external];
+// IR-WARN-NEXT:     fn %4 @bare() -> void [linkage=external] [naked];
 // IR-WARN-NEXT:     fn %7 @clang_scoped(%16 <unnamed>: i32) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %8 @msvc_scoped() -> void [linkage=external] [inline=never];
 // IR-WARN-NEXT:     fn %14 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {

@@ -50,6 +50,7 @@ pub fn resolve_module(
         continue_targets: Vec::new(),
         switches: Vec::new(),
         in_function: false,
+        in_naked_function: false,
         function_name: None,
         pretty_function_name: None,
         files: files.clone(),
@@ -133,6 +134,7 @@ pub fn resolve_module(
                 }
                 let mut prologue = Vec::new();
                 lower.in_function = true;
+                lower.in_naked_function = lower.is_naked(id);
                 lower.function_name = Some(name.to_string());
                 lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
                 lower.return_type = return_type.as_ref().map(|_| return_c);
@@ -145,6 +147,7 @@ pub fn resolve_module(
                     Ok((parameters, prologue))
                 });
                 lower.in_function = false;
+                lower.in_naked_function = false;
                 lower.function_name = None;
                 lower.pretty_function_name = None;
                 lower.return_type = None;
