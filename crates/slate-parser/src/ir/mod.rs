@@ -12,7 +12,7 @@ pub use asm::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmMemory, AsmOperand, AsmOperandClass,
     AsmOperandKind, AsmOptions, AsmPiece, AsmRegister, AsmRegisterClass, AsmRegisterView,
-    AsmRejectReason, AsmRejection, AsmTiedInput, InlineAsm,
+    AsmRejectReason, AsmRejection, AsmSymbol, AsmTiedInput, InlineAsm,
 };
 pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
 pub use declarations::{

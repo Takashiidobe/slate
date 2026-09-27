@@ -2,8 +2,11 @@
 // SLATE-FILECHECK-DEFINES IR
 // SLATE-FILECHECK-ARGS --dump-ir
 // SLATE-FILECHECK-STD IR c23
-int x;
-asm("%0" : : "i"(x));
+_Thread_local int t;
+
+void thread_local_symbol(void) {
+    asm("# %0" : : "i"(&t));
+}
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
@@ -28,11 +31,12 @@ asm("%0" : : "i"(x));
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     asm "%0" [dialect=att] [alternative=none] {
-// IR-NEXT:         template: %0;
-// IR-NEXT:         in 0 "i" [imm | sym] width 32 read<i32>(%0);
-// IR-NEXT:         rejected: 0 (operand 0: not-constant);
+// IR-NEXT:     global %0 t: i32 [storage=thread] [linkage=external];
+// IR-NEXT:     fn %1 @thread_local_symbol() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         asm "# %0" [dialect=att] [options=nomem,nostack] {
+// IR-NEXT:             template: "# " %0;
+// IR-NEXT:             in 0 "i" [imm | sym] -> sym width 64 sym<offset=0>(%0);
+// IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

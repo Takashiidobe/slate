@@ -888,12 +888,25 @@ template as opaque text with holes.
   without a pointer. A class is unusable when it is unresolved, x87/MMX/AMX
   (clobber-only in Rust, including `t`/`u`/`{st}`), a register the width
   doesn't fit (a 24-byte struct under `r`, i64 on i386), an immediate
-  whose value isn't an integer constant (`"i"(&x)` needs a Rust `sym`
-  operand), or a match on an output. The chosen alternative is
+  whose value isn't an integer constant, a symbol that isn't a link-time
+  address, or a match on an output. The chosen alternative is
   `InlineAsm::alternative`, each operand's class is
   `AsmOperand::selected`, and the ruled-out alternatives are kept as
   `AsmRejection`s. When nothing fits, `alternative` is `None` and the
   operands lower as if unselected. Fixture: `sema/ir_asm_alternatives.c`.
+- `i` (and so `g`) offers `Symbol` beside `Immediate`; `n` and the
+  target immediate letters offer only `Immediate`, since both compilers
+  reject a symbol there. An input selects `Symbol` when its value folds to
+  a static-storage object or function plus a constant byte offset, through
+  address-of, array/function decay, field and constant index projections,
+  constant pointer arithmetic, and casts that keep pointer width
+  (`(long)&g`, not `(int)(long)&g` on x86-64). It becomes
+  `AsmOperandKind::Symbol(AsmSymbol { binding, offset })`, ranked with an
+  immediate, so `"g"(&g)` prints `$g` as both compilers do. String literals
+  qualify (their synthetic global), automatic objects and non-constant
+  indices do not, and a thread-local does only under gcc (clang rejects
+  it). Functions are accepted although both compilers reject them under
+  PIE, which slate does not model. Fixtures: `sema/ir_asm_symbols*.c`.
 - The parser rejects what both compilers reject and the fold relies on: an
   output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
   or to a `+` output, and two inputs tied to one output. `-` is rejected

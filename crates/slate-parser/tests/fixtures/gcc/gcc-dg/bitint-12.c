@@ -64,7 +64,7 @@ baz (_BitInt(575) x, _BitInt(575) y)
 // DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<i37b>(%3);
 // DEFAULT-NEXT:             in 1 "r" [reg] width 64 read<i37b>(%1);
 // DEFAULT-NEXT:             in 2 "r" [reg] width 64 add<i37b, overflow=ub>(read<i37b>(%1), read<i37b>(%2));
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] -> imm width 64 const<i37b>(68719476735);
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm | sym] -> imm width 64 const<i37b>(68719476735);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i37b>(%3);
 // DEFAULT-NEXT:     }
@@ -72,10 +72,10 @@ baz (_BitInt(575) x, _BitInt(575) y)
 // DEFAULT-NEXT:         let %7 w: i125b [storage=automatic];
 // DEFAULT-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// DEFAULT-NEXT:             lateout 0 "g" [reg | mem | imm] -> mem width 128 place<i125b>(%7);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] -> mem width 128 place<i125b>(%5);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] -> mem width 128 add<i125b, overflow=ub>(read<i125b>(%5), read<i125b>(%6));
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] -> imm width 128 const<i125b>(21267647932558653966460912964485513215);
+// DEFAULT-NEXT:             lateout 0 "g" [reg | mem | imm | sym] -> mem width 128 place<i125b>(%7);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm | sym] -> mem width 128 place<i125b>(%5);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm | sym] -> mem width 128 add<i125b, overflow=ub>(read<i125b>(%5), read<i125b>(%6));
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm | sym] -> imm width 128 const<i125b>(21267647932558653966460912964485513215);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i125b>(%7);
 // DEFAULT-NEXT:     }
@@ -83,10 +83,10 @@ baz (_BitInt(575) x, _BitInt(575) y)
 // DEFAULT-NEXT:         let %11 w: i575b [storage=automatic];
 // DEFAULT-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// DEFAULT-NEXT:             lateout 0 "g" [reg | mem | imm] -> mem width 576 place<i575b>(%11);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] -> mem width 576 place<i575b>(%9);
-// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm] -> mem width 576 add<i575b, overflow=ub>(read<i575b>(%9), read<i575b>(%10));
-// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm] -> imm width 576 const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783);
+// DEFAULT-NEXT:             lateout 0 "g" [reg | mem | imm | sym] -> mem width 576 place<i575b>(%11);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm | sym] -> mem width 576 place<i575b>(%9);
+// DEFAULT-NEXT:             in 2 "g" [reg | mem | imm | sym] -> mem width 576 add<i575b, overflow=ub>(read<i575b>(%9), read<i575b>(%10));
+// DEFAULT-NEXT:             in 3 "g" [reg | mem | imm | sym] -> imm width 576 const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i575b>(%11);
 // DEFAULT-NEXT:     }

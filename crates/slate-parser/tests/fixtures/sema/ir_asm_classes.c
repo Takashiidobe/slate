@@ -47,14 +47,14 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             in 0 "i" [imm] width 32 const<i32>(42);
+// IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(42);
 // IR-NEXT:             in 1 "m" [mem] width 32 place<i32>(%2);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%3);
 // IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%2);
-// IR-NEXT:             in 2 "g" [reg | mem | imm] -> reg width 32 read<i32>(%2);
+// IR-NEXT:             in 2 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%2);
 // IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%4);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3 %4" [dialect=att] [options=nostack] {

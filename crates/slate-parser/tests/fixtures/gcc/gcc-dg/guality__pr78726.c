@@ -85,8 +85,8 @@ main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<u8>>(%0);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] -> reg width 64 addr_of<ptr<u8>>(%1);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm | sym] -> sym width 64 sym<offset=0>(%0);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm | sym] -> sym width 64 sym<offset=0>(%1);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);

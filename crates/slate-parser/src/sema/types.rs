@@ -969,6 +969,24 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn field_offset(&self, ty: &Type, index: usize) -> Option<u64> {
+        let Type::Defined(id) = ty else {
+            return None;
+        };
+        let Some(TypeDefinition {
+            kind:
+                TypeDefinitionKind::Record {
+                    layout: Some(layout),
+                    ..
+                },
+            ..
+        }) = self.definitions.get(id.0 as usize)
+        else {
+            return None;
+        };
+        layout.offsets.get(index).copied()
+    }
+
     fn offsetof_field(&self, ty: Type, name: &str) -> Result<(Type, u64), ResolveError> {
         let Type::Defined(id) = ty else {
             return Err(ResolveError::Unsupported("offsetof field of non-record"));

@@ -184,7 +184,7 @@ void memory(int x, int *p, struct Pair *s) {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
 // IR-NEXT:             inlateout 0 "m" [mem] width 32 place<i32>(%26);
 // IR-NEXT:             in 1 "rm" [reg | mem] -> reg width 32 add<i32, overflow=ub>(read<i32>(%26), const<i32>(1));
-// IR-NEXT:             in 2 "g" [reg | mem | imm] -> reg width 32 read<i32>(field1(deref(read<ptr<@type0>>(%28))));
+// IR-NEXT:             in 2 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(field1(deref(read<ptr<@type0>>(%28))));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %0;

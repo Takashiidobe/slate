@@ -84,8 +84,15 @@ impl Lowerer {
                 Some(class) => matches!(class, AsmOperandClass::Memory),
                 None => source.constraint.allows_memory(),
             };
+            let source_width = source.width;
             let kind = match source.candidate {
                 Candidate::Output(kind) => kind,
+                Candidate::Value(_)
+                    if let (Some(AsmOperandClass::Symbol), Some(symbol)) =
+                        (&selected, source.symbol) =>
+                {
+                    AsmOperandKind::Symbol(symbol)
+                }
                 Candidate::Lvalue {
                     lvalue,
                     addressable: true,
@@ -134,6 +141,7 @@ impl Lowerer {
             renumbered.push((lowered.operands.len(), None));
             let width = match &kind {
                 AsmOperandKind::In(value) => self.width(&value.ty),
+                AsmOperandKind::Symbol(_) => source_width,
                 AsmOperandKind::InPlace(place)
                 | AsmOperandKind::Out { place, .. }
                 | AsmOperandKind::InOut { place, .. } => self.width(&place.ty),
@@ -208,6 +216,7 @@ impl Lowerer {
                 Some(&value.ty)
             }
             Candidate::Lvalue { lvalue, .. } => Some(&lvalue.place.ty),
+            Candidate::Output(AsmOperandKind::Symbol(_)) => None,
         };
         let width = ty.and_then(|ty| self.width(ty));
         let wide = match width {
@@ -226,11 +235,12 @@ impl Lowerer {
                 }
             }
         }
-        let constant = match &candidate {
-            Candidate::Value(value) => {
-                integer_constant(value, self.types.compiler_flavor()).is_some()
-            }
-            Candidate::Output(_) | Candidate::Lvalue { .. } => false,
+        let (constant, symbol) = match &candidate {
+            Candidate::Value(value) => (
+                integer_constant(value, self.types.compiler_flavor()).is_some(),
+                self.symbol(value),
+            ),
+            Candidate::Output(_) | Candidate::Lvalue { .. } => (false, None),
         };
         let decays = ty.is_some_and(|ty| {
             matches!(
@@ -244,6 +254,7 @@ impl Lowerer {
             candidate,
             width: if decays { None } else { width },
             constant,
+            symbol,
         }
     }
 
@@ -271,6 +282,95 @@ impl Lowerer {
             lvalue,
             addressable,
         })
+    }
+
+    fn symbol(&self, value: &Value) -> Option<AsmSymbol> {
+        match &value.node.value {
+            ValueKind::AddressOf(place)
+            | ValueKind::ArrayDecay { place, .. }
+            | ValueKind::FunctionDecay { place } => self.symbol_place(place),
+            ValueKind::Convert {
+                kind:
+                    ConversionKind::PointerCast
+                    | ConversionKind::PtrToInt
+                    | ConversionKind::IntToPtr
+                    | ConversionKind::Reinterpret
+                    | ConversionKind::BitCast
+                    | ConversionKind::Widen
+                    | ConversionKind::Truncate,
+                operand,
+                ..
+            } if self.width(&value.ty) == Some(u64::from(self.context.target.pointer_width)) => {
+                self.symbol(operand)
+            }
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract,
+                element,
+                ..
+            } => {
+                let symbol = self.symbol(pointer)?;
+                let bytes = self.scaled(amount, element)?;
+                let offset = if *subtract {
+                    symbol.offset.checked_sub(bytes)
+                } else {
+                    symbol.offset.checked_add(bytes)
+                }?;
+                Some(AsmSymbol { offset, ..symbol })
+            }
+            _ => None,
+        }
+    }
+
+    fn symbol_place(&self, place: &Place) -> Option<AsmSymbol> {
+        match &place.kind {
+            PlaceKind::Binding(binding) => {
+                let storage = self.types.entities.storage(*binding).or_else(|| {
+                    self.module
+                        .globals
+                        .iter()
+                        .find(|global| global.value.variable.id == *binding)
+                        .map(|global| global.value.variable.storage)
+                });
+                let linked = match storage {
+                    Some(StorageDuration::Static) => true,
+                    // gcc prints a thread-local's symbol; clang rejects it as not a link-time address.
+                    Some(StorageDuration::Thread) => {
+                        self.types.compiler_flavor() == CompilerFlavor::Gcc
+                    }
+                    Some(StorageDuration::Automatic) => false,
+                    None => matches!(place.ty, Type::Function { .. }),
+                };
+                linked.then_some(AsmSymbol {
+                    binding: *binding,
+                    offset: 0,
+                })
+            }
+            PlaceKind::Deref(pointer) => self.symbol(pointer),
+            PlaceKind::Field {
+                base,
+                index,
+                bits: None,
+            } => {
+                let symbol = self.symbol_place(base)?;
+                let field = self.types.field_offset(&base.ty, *index)?;
+                let offset = symbol.offset.checked_add(i64::try_from(field).ok()?)?;
+                Some(AsmSymbol { offset, ..symbol })
+            }
+            PlaceKind::Index { base, index } => {
+                let symbol = self.symbol(base)?;
+                let offset = symbol.offset.checked_add(self.scaled(index, &place.ty)?)?;
+                Some(AsmSymbol { offset, ..symbol })
+            }
+            _ => None,
+        }
+    }
+
+    fn scaled(&self, amount: &Value, element: &Type) -> Option<i64> {
+        let amount = i64::try_from(integer_constant(amount, self.types.compiler_flavor())?).ok()?;
+        let size = i64::try_from(self.types.storage(element.clone()).ok()?.size_bytes).ok()?;
+        amount.checked_mul(size)
     }
 
     fn width(&self, ty: &Type) -> Option<u64> {
@@ -316,6 +416,7 @@ struct Source<'a> {
     candidate: Candidate<'a>,
     width: Option<u64>,
     constant: bool,
+    symbol: Option<AsmSymbol>,
 }
 
 enum Choice {
@@ -439,7 +540,8 @@ fn rank(
 ) -> Result<u8, AsmRejectReason> {
     match class {
         AsmOperandClass::Immediate if !output && source.constant => Ok(0),
-        AsmOperandClass::Immediate => Err(AsmRejectReason::NotConstant),
+        AsmOperandClass::Symbol if !output && source.symbol.is_some() => Ok(0),
+        AsmOperandClass::Immediate | AsmOperandClass::Symbol => Err(AsmRejectReason::NotConstant),
         AsmOperandClass::Register(AsmRegisterClass::X87Reg | AsmRegisterClass::MmxReg) => {
             Err(AsmRejectReason::ClobberOnly)
         }
@@ -593,12 +695,17 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (_, "?" | "!" | "*" | "^" | "$") => continue,
             (_, "r") => AsmOperandClass::Register(AsmRegisterClass::Reg),
             (_, "m" | "o") => AsmOperandClass::Memory,
-            (_, "i" | "n") => AsmOperandClass::Immediate,
+            (_, "n") => AsmOperandClass::Immediate,
+            (_, "i") => {
+                classes.extend([AsmOperandClass::Immediate, AsmOperandClass::Symbol]);
+                continue;
+            }
             (_, "g") => {
                 classes.extend([
                     AsmOperandClass::Register(AsmRegisterClass::Reg),
                     AsmOperandClass::Memory,
                     AsmOperandClass::Immediate,
+                    AsmOperandClass::Symbol,
                 ]);
                 continue;
             }

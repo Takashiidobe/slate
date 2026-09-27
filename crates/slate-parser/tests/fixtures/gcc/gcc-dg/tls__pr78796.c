@@ -71,8 +71,8 @@ main ()
 // DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: ptr<i32>, %5 y: ptr<i32>) -> void [linkage=external] [used] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 64 read<ptr<i32>>(%4);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] -> reg width 64 read<ptr<i32>>(%5);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm | sym] -> reg width 64 read<ptr<i32>>(%4);
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm | sym] -> reg width 64 read<ptr<i32>>(%5);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(read<ptr<i32>>(%4))), const<i32>(1)), ne<i32>(read<i32>(deref(read<ptr<i32>>(%5))), const<i32>(2)))

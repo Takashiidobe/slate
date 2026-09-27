@@ -284,7 +284,7 @@ fn25 (void)
 // DEFAULT-NEXT:     fn %39 @fn22() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%34, const<i32>(7));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm] -> reg width 32 place<i32>(%34);
+// DEFAULT-NEXT:             inlateout 0 "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%34);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         let %40 a: i32 [storage=automatic] = read<i32>(%34);

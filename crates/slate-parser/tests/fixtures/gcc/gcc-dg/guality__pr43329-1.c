@@ -87,7 +87,7 @@ main(void) {
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "nop";
-// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm] -> reg width 32 read<i32>(%2);
+// DEFAULT-NEXT:             in 0 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @baz(%5 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {

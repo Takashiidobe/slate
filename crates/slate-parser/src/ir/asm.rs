@@ -156,12 +156,20 @@ pub enum AsmOperandKind {
         place: Place,
         early_clobber: bool,
     },
+    // a link-time constant address, which Rust expresses as a `sym` operand.
+    Symbol(AsmSymbol),
     // `input` is a tied `"0"` operand; without one the place itself is read.
     InOut {
         place: Place,
         input: Option<AsmTiedInput>,
         early_clobber: bool,
     },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AsmSymbol {
+    pub binding: BindingId,
+    pub offset: i64,
 }
 
 #[derive(Debug, Clone)]
@@ -184,7 +192,9 @@ impl AsmOperand {
     // without `&` the allocator may reuse an input's register, which is Rust's late form.
     pub fn direction(&self) -> AsmDirection {
         match self.kind {
-            AsmOperandKind::In(_) | AsmOperandKind::InPlace(_) => AsmDirection::In,
+            AsmOperandKind::In(_) | AsmOperandKind::InPlace(_) | AsmOperandKind::Symbol(_) => {
+                AsmDirection::In
+            }
             AsmOperandKind::Out {
                 early_clobber: true,
                 ..
@@ -244,6 +254,7 @@ pub enum AsmOperandClass {
     Explicit(AsmRegister),
     Memory,
     Immediate,
+    Symbol,
     Unresolved(String),
 }
 
@@ -433,6 +444,7 @@ impl fmt::Display for AsmOperandClass {
             Self::Explicit(register) => write!(f, "{{{}}}", register.spelling),
             Self::Memory => f.write_str("mem"),
             Self::Immediate => f.write_str("imm"),
+            Self::Symbol => f.write_str("sym"),
             Self::Unresolved(letters) => write!(f, "unresolved({letters:?})"),
         }
     }

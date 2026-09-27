@@ -267,6 +267,10 @@ impl DisplayModule<'_> {
             let (place, input) = match &operand.kind {
                 AsmOperandKind::In(value) => (None, Some(value)),
                 AsmOperandKind::InPlace(place) => (Some(place), None),
+                AsmOperandKind::Symbol(symbol) => {
+                    writeln!(f, " sym<offset={}>(%{});", symbol.offset, symbol.binding.0)?;
+                    continue;
+                }
                 AsmOperandKind::Out { place, .. } => (Some(place), None),
                 AsmOperandKind::InOut { place, input, .. } => {
                     (Some(place), input.as_ref().map(|input| &input.value))

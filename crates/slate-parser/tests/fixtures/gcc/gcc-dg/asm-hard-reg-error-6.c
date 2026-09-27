@@ -84,7 +84,7 @@ test (void)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=none] {
 // DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}i" [unresolved("{") | unresolved("0") | unresolved("}") | imm] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             in 1 "{0}i" [unresolved("{") | unresolved("0") | unresolved("}") | imm | sym] width 32 read<i32>(%1);
 // DEFAULT-NEXT:             rejected: 0 (operand 1: unresolved("{"));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {

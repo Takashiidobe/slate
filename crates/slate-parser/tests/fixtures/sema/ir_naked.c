@@ -58,7 +58,7 @@ int normal(int x) {
 // IR-NEXT:     fn %3 @constant() -> void [linkage=external] [naked] [fallthrough=ub] {
 // IR-NEXT:         asm volatile "mov %0, %%eax\\n\\tret" [dialect=att] {
 // IR-NEXT:             template: "mov " %0 ", " %% "eax\\n\\tret";
-// IR-NEXT:             in 0 "i" [imm] width 32 const<i32>(42);
+// IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(42);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %4 @declared_naked() -> void [linkage=external] [naked] [fallthrough=ub] {

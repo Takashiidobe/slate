@@ -52,11 +52,11 @@ int main()
 // DEFAULT-NEXT:         let %3 z: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "test0 X%0Y%[arg]Z" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             template: "test0 X" %0 "Y" %0 "Z";
-// DEFAULT-NEXT:             lateout 0 [arg] "g" [reg | mem | imm] -> reg width 32 place<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 [arg] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%1);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test1 X%[out]Y%[in]Z" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             template: "test1 X" %0 "Y" %0 "Z";
-// DEFAULT-NEXT:             inlateout 0 [out] "g" [reg | mem | imm] -> reg width 32 place<i32>(%2) from read<i32>(%2);
+// DEFAULT-NEXT:             inlateout 0 [out] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%2) from read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test2 X%a0Y%a[arg]Z" [dialect=att] [options=nomem,nostack] [alternative=none] {
 // DEFAULT-NEXT:             template: "test2 X" %a0 "Y" %a0 "Z";
@@ -65,8 +65,8 @@ int main()
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test3 %[in]" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             template: "test3 " %1;
-// DEFAULT-NEXT:             inlateout 0 [inout] "g" [reg | mem | imm] -> reg width 32 place<i32>(%1) from read<i32>(%1);
-// DEFAULT-NEXT:             in 1 [in] "g" [reg | mem | imm] -> reg width 32 read<i32>(%2);
+// DEFAULT-NEXT:             inlateout 0 [inout] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%1) from read<i32>(%1);
+// DEFAULT-NEXT:             in 1 [in] "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%2);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

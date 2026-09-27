@@ -249,7 +249,7 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
 asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
-                  [ asm_chosen ] [ asm_width ] ( value | asm_place )
+                  [ asm_chosen ] [ asm_width ] ( value | asm_place | asm_symbol )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
                   asm_classes [ asm_chosen ] [ asm_width ] asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
@@ -267,8 +267,9 @@ asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
 asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "ymm_reg" | "zmm_reg" | "kreg" | "x87_reg"
            | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
-           | "mem" | "imm" | "{" identifier "}" | "unresolved(" string ")" ;
+           | "mem" | "imm" | "sym" | "{" identifier "}" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
+asm_symbol = "sym<offset=" [ "-" ] integer ">(" binding ")" ;
 asm_piece  = string | "%" [ letter ] integer [ asm_view ] | "%l" integer
            | "%%" | "%=" ;
 asm_view   = "(" ( integer | "high8" ) ")" ;
@@ -333,6 +334,8 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   resolve prints as `unresolved("l")`.
 - An `in` with an `asm_place` is a memory-capable input naming its object;
   the asm may address it in place, so no load precedes the statement.
+- An `in` with an `asm_symbol` selected `sym`: a link-time address, the
+  binding's symbol plus a byte offset, which Rust takes as a `sym` operand.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus

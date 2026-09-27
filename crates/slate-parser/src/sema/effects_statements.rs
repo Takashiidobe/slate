@@ -201,7 +201,9 @@ impl Hoister {
                                 input,
                                 early_clobber,
                             },
-                            kind @ (AsmOperandKind::In(_) | AsmOperandKind::InPlace(_)) => kind,
+                            kind @ (AsmOperandKind::In(_)
+                            | AsmOperandKind::InPlace(_)
+                            | AsmOperandKind::Symbol(_)) => kind,
                         };
                         placed.push(AsmOperand { kind, ..operand });
                     }
