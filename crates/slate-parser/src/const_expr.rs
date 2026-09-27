@@ -383,6 +383,7 @@ pub enum FloatSuffix {
     F32x,
     F64x,
     Q,
+    W,
     DecimalF32,
     DecimalF64,
     DecimalF128,
@@ -427,8 +428,8 @@ pub enum FloatValue {
 }
 
 // scanned in order by ends_with, so bf16 must precede f16
-const FLOAT_SUFFIXES: [&str; 13] = [
-    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
+const FLOAT_SUFFIXES: [&str; 14] = [
+    "bf16", "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q", "w",
 ];
 
 fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
@@ -444,6 +445,7 @@ fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
         "f32x" => FloatSuffix::F32x,
         "f64x" => FloatSuffix::F64x,
         "q" => FloatSuffix::Q,
+        "w" => FloatSuffix::W,
         "df" => FloatSuffix::DecimalF32,
         "dd" => FloatSuffix::DecimalF64,
         _ => FloatSuffix::DecimalF128,
@@ -563,7 +565,7 @@ pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprE
         FloatSuffix::F128 | FloatSuffix::Q => {
             FloatValue::Quad(token.float_value_f128().ok_or_else(invalid)?)
         }
-        FloatSuffix::L | FloatSuffix::F64x => {
+        FloatSuffix::L | FloatSuffix::F64x | FloatSuffix::W => {
             FloatValue::LongDouble(token.float_value_f80().ok_or_else(invalid)?)
         }
         FloatSuffix::DecimalF32 => FloatValue::Decimal32(digits),
@@ -2102,7 +2104,13 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Float
                 | Keyword::Float16
                 | Keyword::Fp16
+                | Keyword::Float32
+                | Keyword::Float64
+                | Keyword::Float32x
+                | Keyword::Float64x
+                | Keyword::Float128
                 | Keyword::Float128Ext
+                | Keyword::Float80
                 | Keyword::Decimal32
                 | Keyword::Decimal64
                 | Keyword::Decimal128

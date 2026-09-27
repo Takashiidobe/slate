@@ -160,9 +160,6 @@ impl Context {
                         node: expression.derive(ValueKind::Constant(number)),
                     });
                 }
-                if literal.suffix == FloatSuffix::F64x {
-                    return Err(ResolveError::Unsupported("target-dependent f64x literals"));
-                }
                 let (format, number) = match resolve_float_literal(literal, &self.target)?.value {
                     FloatValue::BFloat16(bits) => {
                         (FloatType::BF16, Number::FloatBits(u128::from(bits)))
@@ -1432,13 +1429,21 @@ pub(super) fn resolve_float_literal(
     target: &TargetInfo,
 ) -> Result<ResolvedFloat, crate::const_expr::ConstExprError> {
     let mut literal = literal.clone();
-    if literal.suffix == FloatSuffix::L {
-        literal.suffix = match target.long_double {
-            crate::target_info::LongDoubleFormat::Binary64 => FloatSuffix::F64,
-            crate::target_info::LongDoubleFormat::X87 => FloatSuffix::L,
-            crate::target_info::LongDoubleFormat::Binary128 => FloatSuffix::F128,
-        };
-    }
+    let format = match literal.suffix {
+        FloatSuffix::L | FloatSuffix::W => Some(match target.long_double {
+            crate::target_info::LongDoubleFormat::Binary64 => FloatType::F64,
+            crate::target_info::LongDoubleFormat::X87 => FloatType::F80,
+            crate::target_info::LongDoubleFormat::Binary128 => FloatType::F128,
+        }),
+        FloatSuffix::F64x => target.float64x_format(),
+        _ => None,
+    };
+    literal.suffix = match format {
+        Some(FloatType::F64) => FloatSuffix::F64,
+        Some(FloatType::F80) => FloatSuffix::L,
+        Some(FloatType::F128) => FloatSuffix::F128,
+        _ => literal.suffix,
+    };
     resolve_float(&literal)
 }
 

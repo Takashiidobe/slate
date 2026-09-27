@@ -58,16 +58,26 @@ A new `TypeSpecifier` variant fails at `src/sema/types.rs` `base()`, the
 [[ast-enum-touchpoints]].
 
 A new `ir::FloatType` variant — a float *format*, not a family — fails at only
-one site, `src/sema/fold.rs` `float_to_integer`. Everything else it needs is a
-non-exhaustive list you have to find: `Display`, `exact_integer_bits` and
-`exponent_bits` in `src/ir/numeric.rs`, the storage table in
+two sites, `src/sema/fold.rs` `float_to_integer` and `float_rank` in
+`src/sema/ctype/arith.rs` (which ranks by format first). Everything else it
+needs is a non-exhaustive list you have to find: `Display`, `exact_integer_bits`
+and `exponent_bits` in `src/ir/numeric.rs`, the storage table in
 `src/target_info.rs`, the constant printer's `format_apfloat` dispatch in
-`src/ir/mod.rs`, `float_rank` in `src/sema/ctype/arith.rs`, and the hardcoded
+`src/ir/mod.rs`, and the hardcoded
 `storage` header list in `src/ir/module_print.rs` (which omits the decimal
 formats and bf16). `FloatType` derives `Ord`, but `widens_from` deliberately
 does **not** use it: it compares mantissa and exponent width, because bf16 and
 f16 are incomparable and declaration order would call one a widening of the
 other.
+
+A new `FloatKind` (a C floating *type* over an existing format, like
+`_Float32` over f32) fails at `float_type` and `float_name` in `sema/ctype`,
+and at `float_rank`'s tie class: between equal formats C23 prefers `_FloatN`
+over a standard type over `_FloatNx`, so every kind must say which it is.
+Default argument promotion (`default_promotion`) and prototype compatibility
+(`promotes_to_itself`) deliberately name only `float`; a new kind is not
+promoted. Target-dependent formats (`_Float64x`, `_Float128`) are decided by
+`TargetInfo::float64x_format` / `has_float128`, checked in `types.rs` `base()`.
 
 Handling those makes a declaration lower. It does **not** make any operation on
 the type correct.

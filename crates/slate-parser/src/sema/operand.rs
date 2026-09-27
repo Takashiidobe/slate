@@ -159,20 +159,24 @@ impl TypeResolver {
                     let kind = match literal.suffix {
                         FloatSuffix::BF16 => FloatKind::BFloat16,
                         FloatSuffix::F16 => FloatKind::Float16,
-                        FloatSuffix::F | FloatSuffix::F32 => FloatKind::Float,
-                        FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => {
-                            FloatKind::Double
+                        FloatSuffix::F => FloatKind::Float,
+                        FloatSuffix::None => FloatKind::Double,
+                        FloatSuffix::L | FloatSuffix::W => FloatKind::LongDouble,
+                        FloatSuffix::F32 => FloatKind::Float32,
+                        FloatSuffix::F64 => FloatKind::Float64,
+                        FloatSuffix::F32x => FloatKind::Float32x,
+                        FloatSuffix::F64x if self.target_info().float64x_format().is_some() => {
+                            FloatKind::Float64x
                         }
-                        FloatSuffix::L => FloatKind::LongDouble,
+                        FloatSuffix::F64x => {
+                            return Err(ResolveError::Invalid(
+                                "floating type is not supported on this target",
+                            ));
+                        }
                         FloatSuffix::F128 | FloatSuffix::Q => FloatKind::Float128,
                         FloatSuffix::DecimalF32 => FloatKind::Decimal32,
                         FloatSuffix::DecimalF64 => FloatKind::Decimal64,
                         FloatSuffix::DecimalF128 => FloatKind::Decimal128,
-                        FloatSuffix::F64x => {
-                            return Err(ResolveError::Unsupported(
-                                "target-dependent f64x literals",
-                            ));
-                        }
                     };
                     let component = CTypeKind::Float(kind);
                     if literal.imaginary {

@@ -295,6 +295,18 @@ implementation's choice. The input is assumed to have compiled with the
 real compiler, so whether it's usable is Slate's decision, not the
 front end's. IR lowering does not handle them yet.
 
+Under `--flavor=gcc` (every standard mode, like gcc) `_Float32`, `_Float64`,
+`_Float32x`, `_Float64x` and `_Float128` are keywords, and `__float80` is one
+on x86. Elsewhere they stay identifiers, which glibc relies on to typedef
+them for clang. `_Float32`/`_Float64`/`_Float32x`/`_Float64x` are distinct
+types from `float`/`double`/`long double`; `_Float128` is the same type as
+`__float128`; `__float80` is `long double` where that is x87. `_Float64x` is
+f80 on x86 and f128 on aarch64; it and `_Float128` are errors on targets
+without such a format (armv7). Literal suffixes `f32`/`f64`/`f32x`/`f64x`
+give those types, `w` gives `__float80`. Separately, gcc's strict `-std=cNN`
+implies `-fno-asm`, so under the gcc flavor `_Fract`/`_Accum`/`_Sat` are
+identifiers there and keywords only in `gnu` modes.
+
 ### `Declarator`
 
 Read inside-out from the name. Each layer derives a type from the one
@@ -577,7 +589,7 @@ IntegerLiteral {
 FloatLiteral {
     spelling: String,
     radix: Decimal | Hex,
-    suffix: None | F | L | F16 | F32 | F64 | F128 | F32x | F64x | Q | DecimalF32 | DecimalF64 | DecimalF128,
+    suffix: None | F | L | F16 | F32 | F64 | F128 | F32x | F64x | Q | W | DecimalF32 | DecimalF64 | DecimalF128,
     fixed_suffix: Option<{ kind: Fract | Accum, rank: Short | Default | Long | LongLong, unsigned: bool }>,
     imaginary: bool,
 }

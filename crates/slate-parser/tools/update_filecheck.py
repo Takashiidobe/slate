@@ -430,7 +430,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             configuration_defines(source, prefix),
             isystem,
             configuration_std_args(source, prefix),
-            configuration_show_ids_args(source, prefix),
+            configuration_show_ids_args(source, prefix) + configuration_prefix_args(source, prefix),
         )
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
@@ -446,7 +446,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             configuration_defines(source, prefix),
             isystem,
             configuration_std_args(source, prefix),
-            configuration_show_ids_args(source, prefix),
+            configuration_show_ids_args(source, prefix) + configuration_prefix_args(source, prefix),
         )
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
@@ -465,7 +465,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             configuration_defines(source, prefix),
             isystem,
             configuration_std_args(source, prefix),
-            ["--dump-ir"],
+            ["--dump-ir"] + configuration_prefix_args(source, prefix),
         )
         blocks.extend([f"// SLATE-FILECHECK-BEGIN {prefix}"])
         blocks.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)

@@ -1,4 +1,8 @@
-use super::{CTypeKind, CTypes, FixedType, FloatKind, IntRank, QualType, layout::rank_width};
+use super::{
+    CTypeKind, CTypes, FixedType, FloatKind, IntRank, QualType,
+    layout::{float_type, rank_width},
+};
+use crate::ir::FloatType;
 use crate::sema::numeric::ResolveError;
 use crate::target_info::{TargetInfo, VaListKind};
 
@@ -208,7 +212,7 @@ impl CTypes {
         if af.is_some() || bf.is_some() {
             return Ok(match (af, bf) {
                 (Some(af), Some(bf)) => {
-                    if float_rank(af) >= float_rank(bf) {
+                    if float_rank(af, target) >= float_rank(bf, target) {
                         a
                     } else {
                         b
@@ -248,13 +252,29 @@ impl CTypes {
     }
 }
 
-fn float_rank(kind: FloatKind) -> u32 {
-    match kind {
-        FloatKind::BFloat16 => 0,
-        FloatKind::Fp16 | FloatKind::Float16 => 1,
-        FloatKind::Float | FloatKind::Decimal32 => 2,
-        FloatKind::Double | FloatKind::Decimal64 => 3,
-        FloatKind::LongDouble => 4,
-        FloatKind::Float128 | FloatKind::Decimal128 => 5,
-    }
+// c23 6.3.1.8: between equal formats _FloatN beats a standard type, which beats _FloatNx
+fn float_rank(kind: FloatKind, target: &TargetInfo) -> (u32, u32) {
+    let format = match float_type(kind, target) {
+        FloatType::BF16 => 0,
+        FloatType::F16 => 1,
+        FloatType::F32 | FloatType::D32 => 2,
+        FloatType::F64 | FloatType::D64 => 3,
+        FloatType::F80 => 4,
+        FloatType::F128 | FloatType::D128 => 5,
+    };
+    let tie = match kind {
+        FloatKind::Float32x | FloatKind::Float64x => 0,
+        FloatKind::Fp16 | FloatKind::Float => 1,
+        FloatKind::Double => 2,
+        FloatKind::LongDouble => 3,
+        FloatKind::BFloat16
+        | FloatKind::Float16
+        | FloatKind::Float32
+        | FloatKind::Float64
+        | FloatKind::Float128
+        | FloatKind::Decimal32
+        | FloatKind::Decimal64
+        | FloatKind::Decimal128 => 4,
+    };
+    (format, tie)
 }

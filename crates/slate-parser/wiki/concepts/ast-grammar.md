@@ -153,8 +153,9 @@ IntegerType  = Char { signed: opt<bool> }
              | Ranked { rank: IntegerRank, signed: bool }
              | BitInt { width: expr, signed: bool } ;
 IntegerRank  = "Short" | "Int" | "Long" | "LongLong" | "Int128" ;
-FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16" | "Float64x"
-             | "Double" | "LongDouble" | "Float128" | "Float128Ext"
+FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16"
+             | "Float32" | "Float64" | "Float32x" | "Float64x"
+             | "Double" | "LongDouble" | "Float128" | "Float128Ext" | "Float80"
              | "Decimal32" | "Decimal64" | "Decimal128" ;
 
 VectorType     = VectorType { element: TypeSpecifier, size: VectorSize } ;
@@ -349,7 +350,7 @@ FixedPointLiteralSuffix = FixedPointLiteralSuffix { kind: ( "Fract" | "Accum" ),
                                                    rank: FixedPointRank,
                                                    unsigned: bool } ;
 FloatSuffix  = "None" | "F" | "L" | "BF16" | "F16" | "F32" | "F64" | "F128"
-             | "F32x" | "F64x" | "Q"
+             | "F32x" | "F64x" | "Q" | "W"
              | "DecimalF32" | "DecimalF64" | "DecimalF128" ;
 
 CharLiteral   = CharLiteral { encoding: Encoding, code_units: vec<int>,

@@ -27,7 +27,13 @@ pub enum Keyword {
     Float,
     Float16,
     Fp16,
+    Float32,
+    Float64,
+    Float32x,
+    Float64x,
+    Float128,
     Float128Ext,
+    Float80,
     Decimal32,
     Decimal64,
     Decimal128,
@@ -112,7 +118,13 @@ impl From<Keyword> for &'static str {
             Keyword::Float => "float",
             Keyword::Float16 => "_Float16",
             Keyword::Fp16 => "__fp16",
+            Keyword::Float32 => "_Float32",
+            Keyword::Float64 => "_Float64",
+            Keyword::Float32x => "_Float32x",
+            Keyword::Float64x => "_Float64x",
+            Keyword::Float128 => "_Float128",
             Keyword::Float128Ext => "__float128",
+            Keyword::Float80 => "__float80",
             Keyword::Decimal32 => "_Decimal32",
             Keyword::Decimal64 => "_Decimal64",
             Keyword::Decimal128 => "_Decimal128",
@@ -939,10 +951,13 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         "float" => Token::Keyword(Keyword::Float),
         "_Float16" if features.keyword_float16.is_accepted() => Token::Keyword(Keyword::Float16),
         "__fp16" => Token::Keyword(Keyword::Fp16),
-        "_Float32" | "_Float64" | "_Float32x" | "_Float64x" | "_Float128" | "_Float128x" => {
-            return None;
-        }
+        "_Float32" if features.gnu_floating_keywords => Token::Keyword(Keyword::Float32),
+        "_Float64" if features.gnu_floating_keywords => Token::Keyword(Keyword::Float64),
+        "_Float32x" if features.gnu_floating_keywords => Token::Keyword(Keyword::Float32x),
+        "_Float64x" if features.gnu_floating_keywords => Token::Keyword(Keyword::Float64x),
+        "_Float128" if features.gnu_floating_keywords => Token::Keyword(Keyword::Float128),
         "__float128" => Token::Keyword(Keyword::Float128Ext),
+        "__float80" if features.keyword_float80 => Token::Keyword(Keyword::Float80),
         "_Decimal32" if features.decimal_floating_point.is_accepted() => {
             Token::Keyword(Keyword::Decimal32)
         }
@@ -992,9 +1007,9 @@ pub fn keyword_token(word: &str, features: &StandardFeatures) -> Option<Token> {
         }
         "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
         "_BitInt" => Token::Keyword(Keyword::BitInt),
-        "_Accum" => Token::Keyword(Keyword::Accum),
-        "_Fract" => Token::Keyword(Keyword::Fract),
-        "_Sat" => Token::Keyword(Keyword::Saturated),
+        "_Accum" if features.fixed_point_keywords => Token::Keyword(Keyword::Accum),
+        "_Fract" if features.fixed_point_keywords => Token::Keyword(Keyword::Fract),
+        "_Sat" if features.fixed_point_keywords => Token::Keyword(Keyword::Saturated),
         "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
         "typeof" if features.keyword_typeof.is_accepted() => Token::Keyword(Keyword::Typeof),
         "__typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),

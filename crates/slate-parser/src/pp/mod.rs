@@ -366,6 +366,16 @@ impl<'a> Preprocessor<'a> {
         self.features = self
             .features
             .with_microsoft_extensions(microsoft_extensions_enabled(flavor, &target));
+        if flavor == CompilerFlavor::Gcc {
+            self.features = self.features.with_gcc_keywords(
+                self.standard,
+                matches!(
+                    target.family,
+                    crate::target_info::TargetFamily::X86_64
+                        | crate::target_info::TargetFamily::X86
+                ),
+            );
+        }
         self.seed_builtin_macros(&target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;

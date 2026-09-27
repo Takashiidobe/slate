@@ -13,9 +13,7 @@ use crate::ir::{
     NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind,
     TypeId, Value, ValueKind,
 };
-use crate::target_info::{
-    LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
-};
+use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
 
 use super::attributes::{Subject, Use};
@@ -257,19 +255,12 @@ impl TypeResolver {
             }
             CTypeKind::Float(_) => {
                 let long_double = self.target.long_double;
-                // TF is __float128 where long double is narrower; msvc has no __float128
                 CTypeKind::Float(match name {
                     "SF" => FloatKind::Float,
                     "DF" => FloatKind::Double,
                     "XF" if long_double == LongDoubleFormat::X87 => FloatKind::LongDouble,
                     "TF" if long_double == LongDoubleFormat::Binary128 => FloatKind::LongDouble,
-                    "TF" if matches!(
-                        self.target.family,
-                        TargetFamily::X86_64 | TargetFamily::X86
-                    ) && self.target.environment != TargetEnvironment::Msvc =>
-                    {
-                        FloatKind::Float128
-                    }
+                    "TF" if self.target.has_float128() => FloatKind::Float128,
                     "XF" | "TF" => {
                         return Err(ResolveError::Invalid("unsupported machine mode"));
                     }
@@ -1224,11 +1215,25 @@ impl TypeResolver {
                 FloatingType::Float => FloatKind::Float,
                 FloatingType::Double => FloatKind::Double,
                 FloatingType::LongDouble => FloatKind::LongDouble,
-                FloatingType::Float128 | FloatingType::Float128Ext => FloatKind::Float128,
+                FloatingType::Float32 => FloatKind::Float32,
+                FloatingType::Float64 => FloatKind::Float64,
+                FloatingType::Float32x => FloatKind::Float32x,
+                FloatingType::Float64x if self.target.float64x_format().is_some() => {
+                    FloatKind::Float64x
+                }
+                FloatingType::Float128 if self.target.has_float128() => FloatKind::Float128,
+                FloatingType::Float128Ext => FloatKind::Float128,
+                FloatingType::Float80 if self.target.long_double == LongDoubleFormat::X87 => {
+                    FloatKind::LongDouble
+                }
                 FloatingType::Decimal32 => FloatKind::Decimal32,
                 FloatingType::Decimal64 => FloatKind::Decimal64,
                 FloatingType::Decimal128 => FloatKind::Decimal128,
-                _ => return Err(ResolveError::Unsupported("floating type")),
+                FloatingType::Float64x | FloatingType::Float128 | FloatingType::Float80 => {
+                    return Err(ResolveError::Invalid(
+                        "floating type is not supported on this target",
+                    ));
+                }
             }),
             TypeSpecifier::Mode(mode) => {
                 let base = self.base(&mode.base)?;

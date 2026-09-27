@@ -567,8 +567,10 @@ fn run_expected_failure_fixture(
     } else {
         fixture_args(fixture)
     };
+    let original = decode_source_bytes(&std::fs::read(fixture).expect("read failing fixture"));
     let output = command
         .args(args)
+        .args(prefix_args(&original, prefix))
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -905,11 +907,15 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
             FloatingType::Float => "float".into(),
             FloatingType::Float16 => "_Float16".into(),
             FloatingType::Fp16 => "__fp16".into(),
+            FloatingType::Float32 => "_Float32".into(),
+            FloatingType::Float64 => "_Float64".into(),
+            FloatingType::Float32x => "_Float32x".into(),
             FloatingType::Float64x => "_Float64x".into(),
             FloatingType::Double => "double".into(),
             FloatingType::LongDouble => "long double".into(),
             FloatingType::Float128 => "_Float128".into(),
             FloatingType::Float128Ext => "__float128".into(),
+            FloatingType::Float80 => "__float80".into(),
             FloatingType::Decimal32 => "_Decimal32".into(),
             FloatingType::Decimal64 => "_Decimal64".into(),
             FloatingType::Decimal128 => "_Decimal128".into(),

@@ -45,6 +45,9 @@ pub struct StandardFeatures {
     pub valueless_return_in_nonvoid: bool,
     pub inline_semantics: InlineSemantics,
     pub microsoft_extensions: bool,
+    pub gnu_floating_keywords: bool,
+    pub keyword_float80: bool,
+    pub fixed_point_keywords: bool,
 }
 
 impl StandardFeatures {
@@ -99,11 +102,22 @@ impl StandardFeatures {
                 InlineSemantics::ProvideDef
             },
             microsoft_extensions: false,
+            gnu_floating_keywords: false,
+            keyword_float80: false,
+            fixed_point_keywords: true,
         }
     }
 
     pub fn with_microsoft_extensions(mut self, enabled: bool) -> Self {
         self.microsoft_extensions = enabled;
+        self
+    }
+
+    pub fn with_gcc_keywords(mut self, standard: LanguageStandard, x86: bool) -> Self {
+        self.gnu_floating_keywords = true;
+        self.keyword_float80 = x86;
+        // gcc's -std=cNN implies -fno-asm, which unreserves the fixed-point keywords
+        self.fixed_point_keywords = standard.is_gnu();
         self
     }
 }

@@ -105,6 +105,15 @@ impl<'a> DeclaratorParser<'a> {
         self.matches(Token::Keyword(Keyword::Long)) || self.matches(Token::Keyword(Keyword::Int64))
     }
 
+    fn complex_tail(&mut self, float: FloatingType) -> TypeSpecifier {
+        let float = TypeSpecifier::Floating(float);
+        if self.matches(Token::Keyword(Keyword::Complex)) {
+            TypeSpecifier::Complex(Box::new(float))
+        } else {
+            float
+        }
+    }
+
     pub(crate) fn parse_base_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         if self.fixed_point_ahead() {
             return self.parse_fixed_point();
@@ -139,11 +148,15 @@ impl<'a> DeclaratorParser<'a> {
                     TypeSpecifier::Floating(FloatingType::Float)
                 }
             }
-            Token::Keyword(Keyword::Float16) => TypeSpecifier::Floating(FloatingType::Float16),
+            Token::Keyword(Keyword::Float16) => self.complex_tail(FloatingType::Float16),
             Token::Keyword(Keyword::Fp16) => TypeSpecifier::Floating(FloatingType::Fp16),
-            Token::Keyword(Keyword::Float128Ext) => {
-                TypeSpecifier::Floating(FloatingType::Float128Ext)
-            }
+            Token::Keyword(Keyword::Float32) => self.complex_tail(FloatingType::Float32),
+            Token::Keyword(Keyword::Float64) => self.complex_tail(FloatingType::Float64),
+            Token::Keyword(Keyword::Float32x) => self.complex_tail(FloatingType::Float32x),
+            Token::Keyword(Keyword::Float64x) => self.complex_tail(FloatingType::Float64x),
+            Token::Keyword(Keyword::Float128) => self.complex_tail(FloatingType::Float128),
+            Token::Keyword(Keyword::Float128Ext) => self.complex_tail(FloatingType::Float128Ext),
+            Token::Keyword(Keyword::Float80) => self.complex_tail(FloatingType::Float80),
             Token::Keyword(Keyword::Decimal32) => TypeSpecifier::Floating(FloatingType::Decimal32),
             Token::Keyword(Keyword::Decimal64) => TypeSpecifier::Floating(FloatingType::Decimal64),
             Token::Keyword(Keyword::Decimal128) => {
@@ -366,7 +379,13 @@ impl<'a> DeclaratorParser<'a> {
                             | Keyword::Unsigned
                             | Keyword::Float16
                             | Keyword::BFloat16
+                            | Keyword::Float32
+                            | Keyword::Float64
+                            | Keyword::Float32x
+                            | Keyword::Float64x
+                            | Keyword::Float128
                             | Keyword::Float128Ext
+                            | Keyword::Float80
                     ))
                 ) {
                     self.parse_base_type()?

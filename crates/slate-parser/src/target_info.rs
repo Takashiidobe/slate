@@ -274,6 +274,22 @@ pub enum LayoutError {
 }
 
 impl TargetInfo {
+    // msvc has no __float128
+    pub fn has_float128(&self) -> bool {
+        self.long_double == LongDoubleFormat::Binary128
+            || (matches!(self.family, TargetFamily::X86_64 | TargetFamily::X86)
+                && self.environment != TargetEnvironment::Msvc)
+    }
+
+    // gcc's _Float64x: the narrowest format wider than double
+    pub fn float64x_format(&self) -> Option<FloatType> {
+        match self.long_double {
+            LongDoubleFormat::X87 => Some(FloatType::F80),
+            LongDoubleFormat::Binary128 => Some(FloatType::F128),
+            LongDoubleFormat::Binary64 => self.has_float128().then_some(FloatType::F128),
+        }
+    }
+
     pub fn for_triple(triple: &str) -> Result<Self, TargetError> {
         let spec = crate::target_registry::lookup(triple)?;
         Ok(Self {
