@@ -93,7 +93,7 @@ MSVC `__asm` is the one frontend that must read instructions, because it
 supplies no constraints and reads/writes/clobbers have to be inferred. Even
 there the job is identifier resolution (which tokens are C places), the set of
 registers mentioned, and a flags/implicit-def table — not a typed instruction
-IR. It feeds this same operand model. See `msvc-asm-design.md`.
+IR. It feeds this same operand model. See `wiki/concepts/msvc-asm.md`.
 
 Out of scope: the MASM/`ml64` PROC/directive/unwind layer. That is a standalone
 assembler file format, not C.
