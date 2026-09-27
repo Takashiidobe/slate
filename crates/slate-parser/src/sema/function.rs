@@ -30,7 +30,7 @@ enum DefinitionSpecifiers {
     ExternInline,
 }
 
-pub(super) fn attributes<'a>(
+pub(crate) fn attributes<'a>(
     specifiers: &'a DeclarationSpecifiers,
     declarator: &'a Declarator,
     trailing: &'a [Span<Attribute>],

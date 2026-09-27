@@ -10,7 +10,7 @@ mod effects_statements;
 mod entity;
 mod expression;
 mod fold;
-mod function;
+pub(crate) mod function;
 mod initializer;
 mod module;
 pub mod names;

@@ -1,4 +1,7 @@
 use crate::ast::*;
+use crate::compiler_options::InlineSemantics;
+use crate::sema::function::attributes;
+use crate::target_info::TargetEnvironment;
 use std::collections::{HashMap, HashSet};
 
 pub fn filter_translation_unit(
@@ -85,7 +88,7 @@ impl<'a> Reachability<'a> {
             })
             .collect::<Vec<_>>();
         roots.extend(self.nodes.iter().enumerate().filter_map(|(id, decl)| {
-            (self.has_retention_attribute(decl) || defines_external_symbol(decl)).then_some(id)
+            (self.has_retention_attribute(decl) || self.defines_external_symbol(decl)).then_some(id)
         }));
         for id in roots {
             self.mark(id);
@@ -103,6 +106,10 @@ impl<'a> Reachability<'a> {
             | DeclKind::Pragma(_) => {}
             DeclKind::Function(function) => self.mark_function(function),
             DeclKind::Declaration(declaration) => self.mark_declaration(declaration),
+        }
+        let nodes = self.nodes;
+        for name in nodes[id].names() {
+            self.mark_name(name);
         }
     }
 
@@ -514,28 +521,136 @@ impl<'a> Reachability<'a> {
             }
         }
     }
-}
 
-// clang emits these whatever file they come from, so an included .c must keep them.
-fn defines_external_symbol(decl: &Decl) -> bool {
-    match &decl.value {
-        DeclKind::Function(function) => {
-            function.specifiers.storage != StorageClass::Static && !function.specifiers.is_inline
+    // clang emits these whatever file they come from, so an included .c must keep them.
+    fn defines_external_symbol(&self, decl: &Decl) -> bool {
+        match &decl.value {
+            DeclKind::Function(function) => {
+                function.specifiers.storage != StorageClass::Static
+                    && (!function.specifiers.is_inline || self.emits_inline_definition(function))
+            }
+            DeclKind::Declaration(declaration) => match declaration.specifiers.storage {
+                StorageClass::None => declaration.declarators.iter().any(|declarator| {
+                    !self.declares_function(&declaration.specifiers.ty, &declarator.declarator)
+                }),
+                StorageClass::Extern => declaration
+                    .declarators
+                    .iter()
+                    .any(|declarator| declarator.initializer.is_some()),
+                _ => false,
+            },
+            DeclKind::Comment(_)
+            | DeclKind::StaticAssert(_)
+            | DeclKind::Asm(_)
+            | DeclKind::Pragma(_) => false,
         }
-        DeclKind::Declaration(declaration) => match declaration.specifiers.storage {
-            StorageClass::None => declaration
-                .declarators
+    }
+
+    // mirrors clang's GVA linkage for inline functions (basicGVALinkageForFunction).
+    fn emits_inline_definition(&self, definition: &FunctionDefinition) -> bool {
+        let Some(name) = definition.declarator.name() else {
+            return false;
+        };
+        let redeclarations = self.function_redeclarations(name);
+        let has_attribute = |wanted: fn(&Attribute) -> bool| {
+            redeclarations
                 .iter()
-                .any(|declarator| declarator.declarator.function_parameters().is_none()),
-            StorageClass::Extern => declaration
-                .declarators
-                .iter()
-                .any(|declarator| declarator.initializer.is_some()),
-            _ => false,
-        },
-        DeclKind::Comment(_)
-        | DeclKind::StaticAssert(_)
-        | DeclKind::Asm(_)
-        | DeclKind::Pragma(_) => false,
+                .flat_map(|(_, attributes)| attributes)
+                .any(|attribute| wanted(&attribute.value))
+        };
+        let semantics = if has_attribute(|attribute| matches!(attribute, Attribute::GnuInline)) {
+            InlineSemantics::SupressDef
+        } else if self.tu.target.environment == TargetEnvironment::Msvc {
+            return has_attribute(|attribute| matches!(attribute, Attribute::DllExport))
+                || redeclarations
+                    .iter()
+                    .any(|(specifiers, _)| specifiers.storage == StorageClass::Extern);
+        } else {
+            self.tu.options.effective_inline_semantics(self.tu.standard)
+        };
+        let is_extern = definition.specifiers.storage == StorageClass::Extern;
+        match semantics {
+            InlineSemantics::SupressDef => !is_extern,
+            InlineSemantics::ProvideDef => {
+                is_extern
+                    || redeclarations.iter().any(|(specifiers, _)| {
+                        !specifiers.is_inline || specifiers.storage == StorageClass::Extern
+                    })
+            }
+        }
+    }
+
+    fn function_redeclarations(
+        &self,
+        name: &str,
+    ) -> Vec<(&'a DeclarationSpecifiers, Vec<&'a Span<Attribute>>)> {
+        let nodes = self.nodes;
+        let mut redeclarations = Vec::new();
+        for id in self.symbols.get(name).into_iter().flatten() {
+            match &nodes[*id].value {
+                DeclKind::Function(function) if function.declarator.name() == Some(name) => {
+                    redeclarations.push((
+                        &function.specifiers,
+                        attributes(
+                            &function.specifiers,
+                            &function.declarator,
+                            &function.attributes,
+                        ),
+                    ))
+                }
+                DeclKind::Declaration(declaration)
+                    if declaration.specifiers.storage != StorageClass::Typedef =>
+                {
+                    for declarator in &declaration.declarators {
+                        if declarator.declarator.name() == Some(name) {
+                            redeclarations.push((
+                                &declaration.specifiers,
+                                attributes(
+                                    &declaration.specifiers,
+                                    &declarator.declarator,
+                                    &declarator.attributes,
+                                ),
+                            ));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        redeclarations
+    }
+
+    fn declares_function(&self, ty: &TypeSpecifier, declarator: &Declarator) -> bool {
+        if declarator.function_parameters().is_some() {
+            return true;
+        }
+        if declarator.is_derived() {
+            return false;
+        }
+        let TypeSpecifier::Named(name) = ty else {
+            return false;
+        };
+        self.symbols
+            .get(name)
+            .into_iter()
+            .flatten()
+            .filter_map(|id| match &self.nodes[*id].value {
+                DeclKind::Declaration(typedef)
+                    if typedef.specifiers.storage == StorageClass::Typedef
+                        && typedef.specifiers.ty != *ty =>
+                {
+                    Some(typedef)
+                }
+                _ => None,
+            })
+            .flat_map(|typedef| {
+                typedef
+                    .declarators
+                    .iter()
+                    .map(move |declarator| (&typedef.specifiers.ty, &declarator.declarator))
+            })
+            .any(|(ty, declarator)| {
+                declarator.name() == Some(name) && self.declares_function(ty, declarator)
+            })
     }
 }

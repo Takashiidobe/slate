@@ -791,11 +791,21 @@ The current parser calls `filter_translation_unit` before resolution, and
 filter after resolution is required for this design. Its roots today are
 every declaration in the main file or a `-include` file, declarations with
 a retention attribute, and — from any file — every definition clang would
-emit: non-`static`, non-`inline` function definitions, file-scope object
-definitions without `extern` (tentative ones included), and `extern`
-objects with an initializer. The last group is what keeps a gcc-style
-`#include "other.c"` test from lowering to an empty module
-(`tests/fixtures/reachable_from_include.c`).
+emit: non-`static` function definitions, file-scope object definitions
+without `extern` (tentative ones included, declarations of a function
+typedef excluded), and `extern` objects with an initializer. That last group
+is what keeps a gcc-style `#include "other.c"` test from lowering to an
+empty module (`tests/fixtures/reachable_from_include.c`). An `inline`
+definition counts only when clang gives it a non-discardable linkage,
+judged over every file-scope declaration of the name: `gnu_inline` or
+gnu89 keeps plain `inline` and drops `extern inline`, C99 keeps
+`extern inline` or an `inline` with any non-`inline` redeclaration, and a
+windows-msvc target keeps only `dllexport` or an `extern` redeclaration.
+Everything else there is `linkonce_odr` in clang, emitted only if used,
+even though clang sometimes emits an unused one depending on declaration
+order (`tests/fixtures/reachable_inline_from_include*.c`). Keeping a
+declaration also keeps every other declaration of its name, since
+redeclarations change emission and attributes.
 
 ## Module shape
 
