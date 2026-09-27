@@ -3,6 +3,7 @@ mod attributes;
 mod decl;
 mod declarator;
 mod input;
+mod ms_asm;
 mod stmt;
 
 use crate::ast::*;

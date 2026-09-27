@@ -361,6 +361,7 @@ pub enum StmtKind {
     },
     LocalLabelDecl(Vec<Span<String>>),
     Asm(GnuAsm),
+    MsAsm(MsAsm),
     Goto(Span<String>),
     ComputedGoto(Expr),
     NestedFunction(Box<FunctionDefinition>),
@@ -784,6 +785,104 @@ pub enum AsmClobber {
     Cc,
     Unwind,
     Register(Register),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MsAsm {
+    pub instructions: Vec<Span<MsAsmInstruction>>,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct MsAsmInstruction {
+    #[debug(skip_if = Option::is_none)]
+    pub label: Option<Span<String>>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub prefixes: Vec<Span<String>>,
+    #[debug(skip_if = Option::is_none)]
+    pub mnemonic: Option<Span<String>>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub operands: Vec<Span<MsAsmExpr>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum MsAsmExpr {
+    Register(Register),
+    SegmentRegister(MsAsmSegment),
+    St(u8),
+    Number(u64),
+    Name(String),
+    Member {
+        base: Box<Span<MsAsmExpr>>,
+        field: Span<String>,
+    },
+    Index {
+        base: Box<Span<MsAsmExpr>>,
+        index: Box<Span<MsAsmExpr>>,
+    },
+    Bracket(Box<Span<MsAsmExpr>>),
+    Binary {
+        op: MsAsmBinaryOp,
+        lhs: Box<Span<MsAsmExpr>>,
+        rhs: Box<Span<MsAsmExpr>>,
+    },
+    Negate(Box<Span<MsAsmExpr>>),
+    Ptr {
+        size: MsAsmSize,
+        operand: Box<Span<MsAsmExpr>>,
+    },
+    Segment {
+        segment: MsAsmSegment,
+        operand: Box<Span<MsAsmExpr>>,
+    },
+    Operator {
+        operator: MsAsmOperator,
+        operand: Box<Span<MsAsmExpr>>,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsAsmSegment {
+    Es,
+    Cs,
+    Ss,
+    Ds,
+    Fs,
+    Gs,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsAsmBinaryOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsAsmSize {
+    Byte,
+    Word,
+    Dword,
+    Fword,
+    Qword,
+    Tbyte,
+    Mmword,
+    Xmmword,
+    Ymmword,
+    Zmmword,
+    Oword,
+    Real4,
+    Real8,
+    Real10,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MsAsmOperator {
+    Offset,
+    Type,
+    Length,
+    Size,
+    Short,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

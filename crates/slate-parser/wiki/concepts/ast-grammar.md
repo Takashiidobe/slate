@@ -263,6 +263,7 @@ StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
          | "Goto(" span<string> ")"
          | "ComputedGoto(" expr ")"
          | "Asm(" GnuAsm ")"
+         | "MsAsm(" MsAsm ")"
          | "NestedFunction(" FunctionDefinition ")"
          | "Pragma(" Pragma ")" ;
 SwitchLabel = "Case(" expr ")"
@@ -456,6 +457,43 @@ AArch64Width = "Bits8" | "Bits16" | "Bits32" | "Bits64" | "Bits128"
   `|` are always text.
 - `AsmLabel` is a declarator's `asm("name")`: a symbol name, or a register
   for a GNU register variable.
+
+```ebnf
+MsAsm            = MsAsm { instructions: vec<span<MsAsmInstruction>> } ;
+MsAsmInstruction = MsAsmInstruction { label?: Some(span<string>),
+                                      prefixes?: vec<span<string>>,
+                                      mnemonic?: Some(span<string>),
+                                      operands?: vec<span<MsAsmExpr>> } ;
+MsAsmExpr = "Register(" Register ")"
+          | "SegmentRegister(" MsAsmSegment ")"
+          | "St(" int ")"
+          | "Number(" int ")"
+          | "Name(" string ")"
+          | Member { base: span<MsAsmExpr>, field: span<string> }
+          | Index { base: span<MsAsmExpr>, index: span<MsAsmExpr> }
+          | "Bracket(" span<MsAsmExpr> ")"
+          | Binary { op: MsAsmBinaryOp, lhs: span<MsAsmExpr>, rhs: span<MsAsmExpr> }
+          | "Negate(" span<MsAsmExpr> ")"
+          | Ptr { size: MsAsmSize, operand: span<MsAsmExpr> }
+          | Segment { segment: MsAsmSegment, operand: span<MsAsmExpr> }
+          | Operator { operator: MsAsmOperator, operand: span<MsAsmExpr> } ;
+MsAsmSegment  = "Es" | "Cs" | "Ss" | "Ds" | "Fs" | "Gs" ;
+MsAsmBinaryOp = "Add" | "Sub" | "Mul" | "Div" ;
+MsAsmSize     = "Byte" | "Word" | "Dword" | "Fword" | "Qword" | "Tbyte"
+              | "Mmword" | "Xmmword" | "Ymmword" | "Zmmword" | "Oword"
+              | "Real4" | "Real8" | "Real10" ;
+MsAsmOperator = "Offset" | "Type" | "Length" | "Size" | "Short" ;
+```
+
+- `MsAsm` is one MSVC `__asm` statement, after merging (see
+  [MSVC inline asm](msvc-asm.md)). An instruction with only `label` is a
+  label on its own line; `a: b: nop` gives a label-only instruction for `a`.
+- `Register` is always `X86`, and `spelling` keeps the source case. `St(n)`
+  is `st(n)`; a bare `st` is `St(0)`. `Name` is anything else: a C name, an
+  asm label or a field, resolved by sema.
+- `Number` is already folded from its MASM radix suffix or C spelling.
+- `Index` is MASM's `x[4]`, a byte offset, not a C subscript. A `(...)`
+  group prints as its contents.
 
 ## Attributes
 

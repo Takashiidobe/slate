@@ -430,6 +430,7 @@ impl Walk<'_> {
             | StmtKind::Attribute(_)
             | StmtKind::LocalLabelDecl(_)
             | StmtKind::Asm(_)
+            | StmtKind::MsAsm(_)
             | StmtKind::Goto(_)
             | StmtKind::ComputedGoto(_)
             | StmtKind::Break

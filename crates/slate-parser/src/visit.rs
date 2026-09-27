@@ -183,6 +183,7 @@ pub fn walk_stmt<V: Visitor + ?Sized>(visitor: &mut V, stmt: &Stmt) -> Result<()
         | StmtKind::Null
         | StmtKind::ReturnVoid
         | StmtKind::LocalLabelDecl(_)
+        | StmtKind::MsAsm(_)
         | StmtKind::Goto(_)
         | StmtKind::Pragma(_)
         | StmtKind::Break

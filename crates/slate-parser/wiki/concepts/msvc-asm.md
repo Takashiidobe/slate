@@ -47,7 +47,7 @@ everything below unless noted.
 | `arr[4]` | **byte** offset 4, not element 4 (MSVC `_arr+4`, clang `$6[$$4]`). |
 | `s.b` | field byte offset (MSVC `_s$[ebp+4]`). |
 | `TYPE arr` / `LENGTH arr` / `SIZE arr` | folded from the C type: element size, element count, total size (4 / 4 / 16 for `int[4]`). |
-| `100h`, `0Ch`, `0x2c` | MASM radix suffixes and C hex both accepted; both compilers print decimal. |
+| `100h`, `0Ch`, `0x2c`, `10b`, `17o`, `010`, `1u` | MASM radix suffixes (`h`, `b`, `o`/`q`, `d`) and C integer spellings (`0x`, leading-`0` octal, `u`/`l` suffixes) are both accepted; both compilers print decimal. clang also takes `t` and `y`, MSVC rejects them ("bad suffix on number"). |
 | `mov result, 1`, `fld a`, `mul b` | size from the C type; clang inserts `dword ptr` / `qword ptr` only where the instruction is size-ambiguous. An explicit `dword ptr [Value]` on a 64-bit variable wins. |
 | `call g` | direct call to the function symbol (clang `${8:P}`), not a memory operand. |
 | `done:` / `jz done` | asm-local label, uniqued per asm (`L__MSASMLABEL_.${:uid}__done`). |
@@ -62,8 +62,10 @@ Statement boundaries:
   (`READ_CPUID` in the example file);
 - `;` starts a comment to end of line, and a `}` inside it is ignored
   (`__asm { mov x, eax ; } comment` closes on the next line);
-- clang merges single-line `__asm` statements on consecutive lines into one
-  asm; MSVC's listing is indistinguishable, so merge.
+- a single-line `__asm` continues through further `__asm` on the same line,
+  and through a following line that starts with `__asm` but not `__asm {`;
+  a braced block ends at its `}` (clang; MSVC's listing is
+  indistinguishable). `__asm` then `{` on the next line is a braced block.
 
 Acceptance:
 
@@ -85,8 +87,9 @@ Lexing: an apostrophe in a `;` comment (`; don't`) is only a clang warning
 
 ### Recognition and gating
 
-In statement position, `__asm`/`_asm` (and `asm` under the Clang flavor) not
-followed by `(` or a GNU qualifier starts an MS asm statement.
+In statement position, `__asm`/`_asm` not followed by `(` or a GNU qualifier
+starts an MS asm statement. clang's `asm {` is not modeled: `asm` is a plain
+identifier outside GNU modes, and nothing real spells MS asm that way.
 
 - MSVC flavor: x86 (i686) only; other arches error like `C4235`.
 - Clang flavor: any `*-windows-msvc` x86 triple, x86_64 included, matching
@@ -114,7 +117,14 @@ MsAsmExpr = Register | Number(u64) | Name(String)
 ```
 
 - Line breaks come from the expansion `Loc` plus the file line tables; `Span`
-  carries no start-of-line flag.
+  carries no start-of-line flag. `Parser::mark_ms_asm_lines` rewrites the
+  token stream once, before any brace matching: inside each MS asm region it
+  drops `;` comments (so a `}` in a comment cannot close a function body)
+  and inserts `Token::Newline` at every instruction boundary and after a
+  single-line statement. `parse_ms_asm_stmt` then only reads tokens.
+- The MSVC flavor off x86 errors at the statement (`C4235`); the Clang
+  flavor off `*-windows-msvc` leaves `__asm` to the GNU parser, which
+  rejects it like clang without `-fasm-blocks`.
 - Mnemonics must accept C keyword tokens (`int 3`, `jmp short`).
 - Registers, `PTR`, size names and operators are case-insensitive; C names
   are not.

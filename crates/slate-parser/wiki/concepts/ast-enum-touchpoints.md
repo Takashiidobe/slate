@@ -61,6 +61,11 @@ an empty statement without introducing a compound scope.
   `mark_unreachable_in` and `always_terminates` (dead-code marking, a
   separate concern) use wildcard arms and only need touching if the new
   statement always transfers control, like `Goto`.
+- `StmtKind::MsAsm` holds no `Expr`: its C names are `MsAsmExpr::Name`
+  strings, so every walker above treats it as a leaf. Name resolution
+  (`src/sema/names.rs`) and reachability (`src/reachability.rs`) must learn
+  to read those names (slate-parser-25m.6.2), or a header global referenced
+  only from `__asm` gets pruned.
 - `StmtKind::Attribute` is a standalone GNU or C23 attribute statement.
   `StmtKind::Attributed { attributes, body }` attaches attributes to a nested
   statement; all body walkers must recurse through it without adding a scope.

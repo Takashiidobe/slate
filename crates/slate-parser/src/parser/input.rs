@@ -146,6 +146,19 @@ impl ParserInput {
         result
     }
 
+    pub fn replace_tokens(&mut self, tokens: Vec<Span<Token>>, positions: &[usize]) {
+        let annotations = std::mem::take(self.annotations.get_mut());
+        let remapped = self.annotations.get_mut();
+        for (position, entries) in annotations {
+            remapped
+                .entry(positions[position])
+                .or_default()
+                .extend(entries);
+        }
+        self.tokens = tokens;
+        self.span_ranges = SpanRangeIndex::new(&self.tokens);
+    }
+
     pub fn take_remaining(&self) -> Vec<Span<Annotation>> {
         std::mem::take(&mut *self.annotations.borrow_mut())
             .into_values()

@@ -305,6 +305,7 @@ impl Resolver {
                 }
                 Ok(())
             }
+            StmtKind::MsAsm(_) => Ok(()),
             StmtKind::Goto(label) => self.reference_label(label),
             StmtKind::NestedFunction(_) if self.collecting_labels => Ok(()),
             StmtKind::NestedFunction(function) => {

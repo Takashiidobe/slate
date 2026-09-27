@@ -1421,6 +1421,9 @@ impl Lowerer {
                     body: self.statements(std::slice::from_ref(body), return_type)?,
                 },
                 StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm_statement(asm)?)),
+                StmtKind::MsAsm(_) => {
+                    return Err(ResolveError::Unsupported("MSVC `__asm` statement"));
+                }
                 StmtKind::Block(body) => {
                     Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
                 }

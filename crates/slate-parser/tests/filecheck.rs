@@ -747,6 +747,7 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::Labeled { .. }
                     | StmtKind::LocalLabelDecl(_)
                     | StmtKind::Asm(_)
+                    | StmtKind::MsAsm(_)
                     | StmtKind::Pragma(_)
                     | StmtKind::Goto(_)
                     | StmtKind::ComputedGoto(_)

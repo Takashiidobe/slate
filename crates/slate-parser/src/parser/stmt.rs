@@ -321,6 +321,10 @@ impl Parser {
             }
         }
 
+        if let Some(asm) = self.parse_ms_asm_stmt(cursor)? {
+            return Ok(StmtKind::MsAsm(asm));
+        }
+
         if let Some(asm) = self.parse_asm_stmt(cursor)? {
             return Ok(StmtKind::Asm(asm));
         }

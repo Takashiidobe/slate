@@ -491,6 +491,7 @@ StmtKind =
     | Attribute(Vec<Span<Attribute>>)          // standalone [[fallthrough]];
     | Attributed { attributes, body: Box<Stmt> } // attributes on a non-null statement
     | Asm(GnuAsm)
+    | MsAsm(MsAsm)                              // MSVC __asm { ... } / __asm ...
 
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ```
@@ -636,6 +637,16 @@ not register for the target (`src/attribute_support.rs`), such as
 _placement_ is preserved: specifiers, declarators, init-declarators, tag
 definitions, statements. `GnuAsm` holds the parsed
 template, operands with constraints, clobbers and labels.
+
+`MsAsm` is an MSVC `__asm` statement: a list of instructions, each an
+optional label, prefixes, a mnemonic and MASM operand expressions. Registers,
+numbers and operators are decoded at parse time; names are left for sema,
+because only scope decides whether `x` is a local, a global, a function or
+an asm label. It is a separate variant from `GnuAsm` because the two share
+nothing until IR. Since the token stream records no line ends, the parser
+first rewrites each MS asm region: it drops `;` comments and inserts
+`Newline` tokens at instruction boundaries (`Parser::mark_ms_asm_lines`).
+See [MSVC inline asm](msvc-asm.md).
 
 ## Validation (`sema.rs`)
 

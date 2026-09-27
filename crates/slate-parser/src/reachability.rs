@@ -277,6 +277,7 @@ impl<'a> Reachability<'a> {
             | StmtKind::StaticAssert(_)
             | StmtKind::LocalLabelDecl(_)
             | StmtKind::Asm(_)
+            | StmtKind::MsAsm(_)
             | StmtKind::Goto(_)
             | StmtKind::Break
             | StmtKind::Continue
