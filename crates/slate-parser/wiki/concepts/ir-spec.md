@@ -873,12 +873,18 @@ template as opaque text with holes.
   explicit register, memory, immediate), keeping the raw letters beside
   them. `g` is reg, mem and imm. Per-target facts checked against the
   compilers: `q` is `reg_abcd` on i386 but any register on x86-64, and `R`
-  is `reg` on i386 but the legacy eight on x86-64 (unresolved there).
+  is `reg` on i386 but the legacy eight on x86-64 (`reg_legacy`).
   x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars) and Arm `U` are
   multi-letter constraints. `?`, `!`, `*`, `^` and `$` are preference
   hints and are skipped, and `#` ends the alternative. Anything else,
-  including constrained forms Rust has no class for (`l`, `X`, `s`, `p`,
-  AArch64 `y`), is `Unresolved` with its letters rather than a guess.
+  including `l`, `X`, `s` and `p`, is `Unresolved` with its letters rather
+  than a guess.
+- `reg_legacy` (x86-64 `R`) and `vreg_low8` (AArch64 `y`, v0-v7) are
+  register subsets with no Rust class. None of their usable members is
+  reserved, so emission pins the operand to a free explicit register from
+  the set (`in("v7")`, `in("rsi")`), avoiding the asm's other explicit
+  operands and clobbers. No save/restore is needed; that trick is only for
+  reserved registers such as `rbx`.
 - `x` is `xmm_reg` whatever the operand width; picking `ymm_reg`/`zmm_reg`
   for wider vectors is the width work of `slate-parser-25m.14`. `v` is
   `zmm_reg` because only that Rust class reaches xmm16-31.

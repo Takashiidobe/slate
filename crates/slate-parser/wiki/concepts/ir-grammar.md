@@ -249,7 +249,7 @@ asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes value
 asm_classes = "[" asm_alt { ", " asm_alt } "]" ;
 asm_alt    = "{" identifier "}" | integer
            | [ asm_class { " | " asm_class } ] ;
-asm_class  = "reg" | "reg_abcd" | "xmm_reg" | "zmm_reg" | "kreg" | "x87_reg"
+asm_class  = "reg" | "reg_abcd" | "reg_legacy" | "vreg_low8" | "xmm_reg" | "zmm_reg" | "kreg" | "x87_reg"
            | "mmx_reg" | "vreg" | "vreg_low16" | "sreg" | "dreg"
            | "mem" | "imm" | "{" identifier "}" | "unresolved(" string ")" ;
 asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
@@ -296,8 +296,9 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 - The bracket after the constraint resolves it, one entry per alternative:
   a hard register or explicit-register letter (`a` is `{ax}`) as its
   canonical name, a matching operand number, or the letters' classes joined
-  by `|`. Class names are Rust's; a letter with no Rust class prints as
-  `unresolved("l")`.
+  by `|`. Class names are Rust's, except `reg_legacy` and `vreg_low8`,
+  subsets that emission pins to an explicit register; a letter we cannot
+  resolve prints as `unresolved("l")`.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus

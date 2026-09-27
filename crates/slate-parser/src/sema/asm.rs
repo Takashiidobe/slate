@@ -206,6 +206,7 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
             (TargetFamily::X86, "q") => AsmOperandClass::Register(AsmRegisterClass::RegAbcd),
             (TargetFamily::X86, "R") => AsmOperandClass::Register(AsmRegisterClass::Reg),
             (TargetFamily::X86_64, "q") => AsmOperandClass::Register(AsmRegisterClass::Reg),
+            (TargetFamily::X86_64, "R") => AsmOperandClass::Register(AsmRegisterClass::RegLegacy),
             (_, "Q") if x86 => AsmOperandClass::Register(AsmRegisterClass::RegAbcd),
             (_, "a") if x86 => explicit("ax"),
             (_, "b") if x86 => explicit("bx"),
@@ -225,6 +226,7 @@ fn classes(letters: &str, family: TargetFamily) -> Vec<AsmOperandClass> {
                 AsmOperandClass::Immediate
             }
             (TargetFamily::AArch64, "w") => AsmOperandClass::Register(AsmRegisterClass::VReg),
+            (TargetFamily::AArch64, "y") => AsmOperandClass::Register(AsmRegisterClass::VRegLow8),
             (TargetFamily::AArch64, "x") => AsmOperandClass::Register(AsmRegisterClass::VRegLow16),
             (TargetFamily::AArch64, "I" | "J" | "K" | "L" | "M" | "N" | "Z") => {
                 AsmOperandClass::Immediate
