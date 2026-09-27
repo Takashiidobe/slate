@@ -44,6 +44,7 @@ struct Resolver {
     labels: HashMap<String, Entry>,
     local_labels: Vec<HashMap<String, Entry>>,
     local_label_declarations: HashMap<crate::ast::NodeId, Entry>,
+    ms_asm_labels: HashSet<String>,
     defined_labels: HashSet<BindingId>,
     collecting_labels: bool,
     collected_tags: HashSet<AstTagId>,
@@ -66,6 +67,7 @@ impl Resolver {
             labels: HashMap::new(),
             local_labels: vec![HashMap::new()],
             local_label_declarations: HashMap::new(),
+            ms_asm_labels: HashSet::new(),
             defined_labels: HashSet::new(),
             collecting_labels: false,
             collected_tags: HashSet::new(),
@@ -105,6 +107,7 @@ impl Resolver {
                 let outer_labels = std::mem::take(&mut self.labels);
                 let outer_local_labels =
                     std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
+                let outer_ms_asm_labels = std::mem::take(&mut self.ms_asm_labels);
                 self.collect_labels(&function.body)?;
                 self.push_scope();
                 if let Some(parameters) = function.declarator.function_parameters() {
@@ -122,6 +125,7 @@ impl Resolver {
                 self.pop_scope();
                 self.labels = outer_labels;
                 self.local_labels = outer_local_labels;
+                self.ms_asm_labels = outer_ms_asm_labels;
                 Ok(())
             }
         }
@@ -305,7 +309,7 @@ impl Resolver {
                 }
                 Ok(())
             }
-            StmtKind::MsAsm(_) => Ok(()),
+            StmtKind::MsAsm(asm) => self.ms_asm(asm),
             StmtKind::Goto(label) => self.reference_label(label),
             StmtKind::NestedFunction(_) if self.collecting_labels => Ok(()),
             StmtKind::NestedFunction(function) => {
@@ -837,6 +841,53 @@ impl Resolver {
             })?;
         self.push_reference(name, entry, label);
         Ok(())
+    }
+
+    fn ms_asm(&mut self, asm: &crate::ast::MsAsm) -> Result<(), ResolveError> {
+        for instruction in &asm.instructions {
+            if self.collecting_labels {
+                if let Some(label) = &instruction.value.label {
+                    self.ms_asm_labels.insert(label.value.to_lowercase());
+                }
+                continue;
+            }
+            for operand in &instruction.value.operands {
+                self.ms_asm_expr(operand)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn ms_asm_expr(&mut self, expr: &Span<crate::ast::MsAsmExpr>) -> Result<(), ResolveError> {
+        use crate::ast::MsAsmExpr;
+        match &expr.value {
+            MsAsmExpr::Name(name) if self.lookup_ordinary(name).is_some() => {
+                self.reference_ordinary(name, expr)
+            }
+            MsAsmExpr::Name(name) if self.ms_asm_labels.contains(&name.to_lowercase()) => Ok(()),
+            MsAsmExpr::Name(name) => Err(ResolveError::Unresolved {
+                namespace: "label",
+                name: name.clone(),
+            }),
+            MsAsmExpr::Register(_)
+            | MsAsmExpr::SegmentRegister(_)
+            | MsAsmExpr::St(_)
+            | MsAsmExpr::Number(_) => Ok(()),
+            MsAsmExpr::Member { base, .. } => self.ms_asm_expr(base),
+            MsAsmExpr::Index { base, index } => {
+                self.ms_asm_expr(base)?;
+                self.ms_asm_expr(index)
+            }
+            MsAsmExpr::Binary { lhs, rhs, .. } => {
+                self.ms_asm_expr(lhs)?;
+                self.ms_asm_expr(rhs)
+            }
+            MsAsmExpr::Bracket(operand)
+            | MsAsmExpr::Negate(operand)
+            | MsAsmExpr::Ptr { operand, .. }
+            | MsAsmExpr::Segment { operand, .. }
+            | MsAsmExpr::Operator { operand, .. } => self.ms_asm_expr(operand),
+        }
     }
 
     fn push_reference<T>(&mut self, name: &str, entry: Entry, span: &Span<T>) {

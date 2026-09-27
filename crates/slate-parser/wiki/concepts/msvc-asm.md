@@ -46,7 +46,9 @@ everything below unless noted.
 | `mov eax, x` | `x` is a memory operand: the asm gets the variable's address. clang `*m` for a read, `=*m` for a write. |
 | `arr[4]` | **byte** offset 4, not element 4 (MSVC `_arr+4`, clang `$6[$$4]`). |
 | `s.b` | field byte offset (MSVC `_s$[ebp+4]`). |
-| `TYPE arr` / `LENGTH arr` / `SIZE arr` | folded from the C type: element size, element count, total size (4 / 4 / 16 for `int[4]`). |
+| `TYPE arr` / `LENGTH arr` / `SIZE arr` | folded from the C type: element size, element count, total size (4 / 4 / 16 for `int[4]`). Only the first array level counts: `int m[2][3]` gives 12 / 2 / 24. |
+| `[eax]T.f` | `T` a typedef of a struct: `[eax + offsetof(T, f)]`. A struct tag does not work in clang. |
+| `jmp x` with a C name `x` and an asm label `x` | the C name wins. |
 | `100h`, `0Ch`, `0x2c`, `10b`, `17o`, `010`, `1u` | MASM radix suffixes (`h`, `b`, `o`/`q`, `d`) and C integer spellings (`0x`, leading-`0` octal, `u`/`l` suffixes) are both accepted; both compilers print decimal. clang also takes `t` and `y`, MSVC rejects them ("bad suffix on number"). |
 | `mov result, 1`, `fld a`, `mul b` | size from the C type; clang inserts `dword ptr` / `qword ptr` only where the instruction is size-ambiguous. An explicit `dword ptr [Value]` on a 64-bit variable wins. |
 | `call g` | direct call to the function symbol (clang `${8:P}`), not a memory operand. |
@@ -134,12 +136,35 @@ MsAsmExpr = Register | Number(u64) | Name(String)
 
 ### Sema: names and folding
 
-Each `Name` resolves to exactly one of: a local or parameter (place), a
-global (usable as a `sym`), a function (`sym`), an enumerator (constant), or
-an asm label. Undeclared names are errors in both compilers.
+`src/sema/names.rs` resolves each `Name` in the ordinary namespace first:
+an object or parameter, a function, an enumerator or a typedef. Otherwise it
+must be an asm label defined anywhere in the same function, in any `__asm`
+statement, compared case-insensitively. Anything else is "unresolved label
+name", which is also how both compilers word it. Asm labels live apart from
+C labels (clang; MSVC shares one namespace and rejects `lbl:` in both), and
+duplicates are not diagnosed (clang accepts them, MSVC rejects). Reachability
+marks the same names, so header declarations used only from `__asm` survive
+pruning.
 
-Fold member and index byte displacements, `TYPE`/`LENGTH`/`SIZE`, and
-constant arithmetic. Referencing a local marks it used and address-taken.
+`src/sema/ms_asm.rs` then folds each operand, MASM style, into a linear
+value (one symbol, a displacement, up to two registers with one scale, a
+bracket flag, `PTR` size, segment, `OFFSET`, `SHORT`) and classifies it as a
+register, an immediate, or a reference (`MsAsmReference`). Objects become
+`Place`s through the ordinary `place()` path; functions and labels stay
+symbols; enumerators and `TYPE`/`LENGTH`/`SIZE` become constants. `.field`
+needs a typed operand (an object or typedef) and adds the field offset.
+`x[i]` and `x + i` both add bytes. The lowering child consumes the result;
+until then the statement still fails as unsupported.
+
+Where the compilers disagree, this follows clang:
+
+- MSVC binds `TYPE` tighter than `.`: `TYPE s.f` is `TYPE s + offsetof(f)`.
+  clang gives the field's size.
+- MSVC accepts and clang rejects: `[eax].f` (field looked up across all
+  structs), `.f` on a pointer or scalar (warning C4537, offset ignored),
+  `TYPE int`, `TYPE T` on a typedef, and two symbols in one operand. We
+  accept `TYPE T` and reject the rest.
+- clang accepts and MSVC rejects: `offset local` (C2415). We accept.
 
 ### IR
 

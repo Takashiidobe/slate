@@ -493,7 +493,8 @@ MsAsmOperator = "Offset" | "Type" | "Length" | "Size" | "Short" ;
   asm label or a field, resolved by sema.
 - `Number` is already folded from its MASM radix suffix or C spelling.
 - `Index` is MASM's `x[4]`, a byte offset, not a C subscript. A `(...)`
-  group prints as its contents.
+  group prints as its contents. `[eax]T.f` prints as `Binary` `Add` of the
+  bracket and `T.f`.
 
 ## Attributes
 

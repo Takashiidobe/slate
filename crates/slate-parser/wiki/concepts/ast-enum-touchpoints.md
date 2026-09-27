@@ -62,10 +62,11 @@ an empty statement without introducing a compound scope.
   separate concern) use wildcard arms and only need touching if the new
   statement always transfers control, like `Goto`.
 - `StmtKind::MsAsm` holds no `Expr`: its C names are `MsAsmExpr::Name`
-  strings, so every walker above treats it as a leaf. Name resolution
-  (`src/sema/names.rs`) and reachability (`src/reachability.rs`) must learn
-  to read those names (slate-parser-25m.6.2), or a header global referenced
-  only from `__asm` gets pruned.
+  strings, so most walkers treat it as a leaf. The exceptions walk
+  `MsAsmExpr` themselves: name resolution (`src/sema/names.rs`, which also
+  collects asm labels), reachability (`src/reachability.rs`, or a header
+  global referenced only from `__asm` gets pruned) and `src/sema/ms_asm.rs`.
+  A new `MsAsmExpr` variant needs all three.
 - `StmtKind::Attribute` is a standalone GNU or C23 attribute statement.
   `StmtKind::Attributed { attributes, body }` attaches attributes to a nested
   statement; all body walkers must recurse through it without adding a scope.

@@ -13,6 +13,7 @@ mod fold;
 pub(crate) mod function;
 mod initializer;
 mod module;
+mod ms_asm;
 pub mod names;
 pub mod numeric;
 mod operand;

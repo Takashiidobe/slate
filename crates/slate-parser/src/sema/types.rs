@@ -373,7 +373,7 @@ impl TypeResolver {
         }
     }
 
-    fn lookup(&self, name: &str) -> Option<&Ordinary> {
+    pub(super) fn lookup(&self, name: &str) -> Option<&Ordinary> {
         self.ordinary.iter().rev().find_map(|scope| scope.get(name))
     }
 
@@ -987,7 +987,7 @@ impl TypeResolver {
         layout.offsets.get(index).copied()
     }
 
-    fn offsetof_field(&self, ty: Type, name: &str) -> Result<(Type, u64), ResolveError> {
+    pub(super) fn offsetof_field(&self, ty: Type, name: &str) -> Result<(Type, u64), ResolveError> {
         let Type::Defined(id) = ty else {
             return Err(ResolveError::Unsupported("offsetof field of non-record"));
         };

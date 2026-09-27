@@ -266,6 +266,13 @@ impl<'a> Reachability<'a> {
                 self.mark_stmt(body);
             }
             StmtKind::NestedFunction(function) => self.mark_function(function),
+            StmtKind::MsAsm(asm) => {
+                for instruction in &asm.instructions {
+                    for operand in &instruction.value.operands {
+                        self.mark_ms_asm_expr(operand);
+                    }
+                }
+            }
             StmtKind::Attribute(attributes) => self.mark_attributes(attributes),
             StmtKind::Attributed { attributes, body } => {
                 self.mark_attributes(attributes);
@@ -277,7 +284,6 @@ impl<'a> Reachability<'a> {
             | StmtKind::StaticAssert(_)
             | StmtKind::LocalLabelDecl(_)
             | StmtKind::Asm(_)
-            | StmtKind::MsAsm(_)
             | StmtKind::Goto(_)
             | StmtKind::Break
             | StmtKind::Continue
@@ -373,6 +379,30 @@ impl<'a> Reachability<'a> {
             | ExprKind::LabelAddress(_)
             | ExprKind::BoolLiteral(_)
             | ExprKind::NullPtrLiteral => {}
+        }
+    }
+
+    fn mark_ms_asm_expr(&mut self, expr: &Span<MsAsmExpr>) {
+        match &expr.value {
+            MsAsmExpr::Name(name) => self.mark_name(name),
+            MsAsmExpr::Register(_)
+            | MsAsmExpr::SegmentRegister(_)
+            | MsAsmExpr::St(_)
+            | MsAsmExpr::Number(_) => {}
+            MsAsmExpr::Member { base, .. } => self.mark_ms_asm_expr(base),
+            MsAsmExpr::Index {
+                base: lhs,
+                index: rhs,
+            }
+            | MsAsmExpr::Binary { lhs, rhs, .. } => {
+                self.mark_ms_asm_expr(lhs);
+                self.mark_ms_asm_expr(rhs);
+            }
+            MsAsmExpr::Bracket(operand)
+            | MsAsmExpr::Negate(operand)
+            | MsAsmExpr::Ptr { operand, .. }
+            | MsAsmExpr::Segment { operand, .. }
+            | MsAsmExpr::Operator { operand, .. } => self.mark_ms_asm_expr(operand),
         }
     }
 

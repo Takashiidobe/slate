@@ -460,6 +460,19 @@ impl<'p, 'a> OperandParser<'p, 'a> {
                     );
                     base = self.node(MsAsmExpr::Member { base, field }, start);
                 }
+                Some(Token::Ident(_))
+                    if matches!(self.tokens[self.pos - 1].value, Token::RBracket) =>
+                {
+                    let rhs = self.postfix()?;
+                    return Ok(self.node(
+                        MsAsmExpr::Binary {
+                            op: MsAsmBinaryOp::Add,
+                            lhs: base,
+                            rhs,
+                        },
+                        start,
+                    ));
+                }
                 _ => return Ok(base),
             }
         }
