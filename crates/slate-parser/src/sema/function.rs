@@ -2,6 +2,7 @@ use super::builtins::BuiltinAttribute;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClass};
+use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects};
 
@@ -129,6 +130,12 @@ impl Lowerer {
             .collect();
         for (node, id, builtin) in named_builtins {
             if !self.declares_builtin(id, builtin) {
+                if self.types.flavor == CompilerFlavor::Clang
+                    && builtin.has(BuiltinAttribute::NoReturn)
+                    && matches!(self.types.entities.linkage(id), Some(Linkage::External))
+                {
+                    self.function_declarations.entry(id).or_default().noreturn = true;
+                }
                 continue;
             }
             self.module

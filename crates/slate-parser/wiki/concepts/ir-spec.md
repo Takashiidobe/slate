@@ -145,7 +145,14 @@ a missing `noreturn` still match); calls then go to that declaration with the
 builtin's signature, and the declaration picks up the builtin's `noreturn` and
 `c_builtin`. An incompatible or `static` declaration shadows the
 builtin and its calls go to the declared function
-(`tests/fixtures/sema/ir_redeclared_builtins.c`). Header provenance plays no
+(`tests/fixtures/sema/ir_redeclared_builtins.c`). An incompatible one with
+external linkage still inherits a builtin's `noreturn`, because clang keeps
+noreturn in the function type it merges with the implicit builtin
+declaration (`int exit(long);` is `[noreturn]`); `Const`/`Pure` are
+attributes tied to builtin status and are not inherited. This is the clang
+flavor only: GCC (`void _Exit(long);` in
+`tests/fixtures/builtin_prefixed_library_gcc.c`) and MSVC keep compiling
+code after such a call. Header provenance plays no
 part: it decides libc identity for the Rust handoff, not builtin semantics.
 
 Builtins whose result cannot come from a prototype are dispatched by their

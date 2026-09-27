@@ -23,6 +23,10 @@ int block_scope(const char *a, const char *b) {
     return strcmp(a, b);
 }
 size_t undeclared(const char *s) { return __builtin_strlen(s); }
+int exit(long);
+int incompatible_noreturn(void) { return exit(2); }
+static void _Exit(int code) { for (;;); }
+void internal_noreturn(void) { _Exit(1); }
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
@@ -48,16 +52,16 @@ size_t undeclared(const char *s) { return __builtin_strlen(s); }
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     type @type0 size_t = u64;
-// IR-NEXT:     fn %1 @strlen(%32 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// IR-NEXT:     fn %1 @strlen(%37 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // IR-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // IR-NEXT:     fn %3 @abs(unprototyped) -> i32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %4 @malloc(%33 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %5 @fabs(%34 <unnamed>: f64 [const]) -> f64 [linkage=external] [memory=none];
-// IR-NEXT:     fn %6 @memcpy(%35 <unnamed>: ptr<void> [restrict], %36 <unnamed>: ptr<const void> [restrict], %37 <unnamed>: u64) -> ptr<void> [linkage=external];
+// IR-NEXT:     fn %4 @malloc(%38 <unnamed>: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %5 @fabs(%39 <unnamed>: f64 [const]) -> f64 [linkage=external] [memory=none];
+// IR-NEXT:     fn %6 @memcpy(%40 <unnamed>: ptr<void> [restrict], %41 <unnamed>: ptr<const void> [restrict], %42 <unnamed>: u64) -> ptr<void> [linkage=external];
 // IR-NEXT:     fn %7 @labs(%8 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i32>(%8);
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @__builtin_popcount(%38 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// IR-NEXT:     fn %9 @__builtin_popcount(%43 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
 // IR-NEXT:     fn %10 @matching(%11 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%1, read<ptr<const i8>>(%11));
 // IR-NEXT:     }
@@ -82,13 +86,28 @@ size_t undeclared(const char *s) { return __builtin_strlen(s); }
 // IR-NEXT:     fn %24 @reserved(%25 x: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(u32) -> i32>(%9, read<u32>(%25));
 // IR-NEXT:     }
-// IR-NEXT:     fn %29 @strcmp(%39 <unnamed>: ptr<const i8>, %40 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// IR-NEXT:     fn %29 @strcmp(%44 <unnamed>: ptr<const i8>, %45 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
 // IR-NEXT:     fn %26 @block_scope(%27 a: ptr<const i8>, %28 b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%29, read<ptr<const i8>>(%27), read<ptr<const i8>>(%28));
 // IR-NEXT:     }
-// IR-NEXT:     fn %42 @__builtin_strlen(%41 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// IR-NEXT:     fn %47 @__builtin_strlen(%46 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
 // IR-NEXT:     fn %30 @undeclared(%31 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%42, read<ptr<const i8>>(%31));
+// IR-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%47, read<ptr<const i8>>(%31));
+// IR-NEXT:     }
+// IR-NEXT:     fn %32 @exit(%48 <unnamed>: i64) -> i32 [linkage=external] [noreturn];
+// IR-NEXT:     fn %33 @incompatible_noreturn() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<i32, signature=fn(i64) -> i32>(%32, widen<i64, reason=arg>(const<i32>(2)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %34 @_Exit(%35 code: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// IR-NEXT:         for %49
+// IR-NEXT:             init:
+// IR-NEXT:             condition: omitted
+// IR-NEXT:             increment: omitted
+// IR-NEXT:             body:
+// IR-NEXT:                 ;
+// IR-NEXT:     }
+// IR-NEXT:     fn %36 @internal_noreturn() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn(i32) -> void>(%34, const<i32>(1));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR
