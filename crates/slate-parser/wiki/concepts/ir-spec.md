@@ -1041,7 +1041,7 @@ template as opaque text with holes.
   design in `wiki/concepts/msvc-asm.md`): volatile, `dialect = Intel`, and
   options with `memory = Any` and nothing else set (no `nostack`, since the
   asm may `push`/`pop`), or `None` in a naked function. `template` is the
-  statement rebuilt from the AST. Operands have no constraint:
+  statement rebuilt from the AST. Source operands have no constraint:
   - each C object is one `AsmOperandKind::Memory { place, access }`, however
     often the asm names it; the asm receives its address, and `access`
     (`AsmAccess::{Read, Write, ReadWrite}`) says what the asm may do there,
@@ -1059,8 +1059,20 @@ template as opaque text with holes.
   written registers widened to their 32-bit name (`al` gives `eax`),
   implicit defs, `st`..`st(7)` for any x87 instruction, and `eax`/`ecx`/
   `edx` for `call`. `esp` is never listed (`nostack` is off) and neither are
-  flags (`preserves_flags` is off). The implicit EAX/EDX:EAX return is
-  25m.6.5. Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
+  flags (`preserves_flags` is off).
+  On 32-bit x86, integer and pointer results of at most 8 bytes add explicit
+  EAX (and EDX for results larger than 4 bytes) `Out` operands to every MS
+  asm. These write shared synthetic `u32` locals. A written return register
+  is an early output and is removed from the clobber list; an unwritten one
+  is a late output. `Fallthrough::Return(Value)` reads the captures only at
+  the function end, combining the halves as `u64(eax) | (u64(edx) << 32)`
+  before conversion to the return type. It prints as `fallthrough=ret(value)`.
+  Narrow results truncate; `_Bool` uses the low bit, matching clang's return
+  slot load. Explicit returns bypass this value. C99 `main` initializes its
+  capture to zero; other captures are uninitialized until an asm writes them.
+  Naked functions have no captures, and noreturn functions retain `ub`
+  fallthrough. Float, aggregate, wider integer, and x86_64 implicit returns
+  remain outside this lowering. Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
 
 A naked function (`__attribute__((naked))` on any of its declarations) sets
 `FunctionSemantics::naked`, so the backend picks `naked_asm!` from the function

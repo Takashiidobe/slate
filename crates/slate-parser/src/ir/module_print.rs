@@ -852,17 +852,22 @@ impl fmt::Display for DisplayModule<'_> {
             if function.abi.has_nontrivial_pass() {
                 write!(f, " [abi={}]", function.abi)?;
             }
-            if let Some(fallthrough) = function.fallthrough {
-                write!(
-                    f,
-                    " [fallthrough={}]",
-                    match fallthrough {
-                        Fallthrough::Undefined => "ub",
-                        Fallthrough::ReturnZero => "ret_zero",
-                        Fallthrough::ReturnVoid => "ret_void",
-                        Fallthrough::UndefinedIfUsed => "ub_if_used",
-                    }
-                )?;
+            if let Some(fallthrough) = &function.fallthrough {
+                f.write_str(" [fallthrough=")?;
+                match fallthrough {
+                    Fallthrough::Return(value) => write!(
+                        f,
+                        "ret({})",
+                        value
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?,
+                    Fallthrough::Undefined => f.write_str("ub")?,
+                    Fallthrough::ReturnZero => f.write_str("ret_zero")?,
+                    Fallthrough::ReturnVoid => f.write_str("ret_void")?,
+                    Fallthrough::UndefinedIfUsed => f.write_str("ub_if_used")?,
+                }
+                f.write_str("]")?;
             }
             metadata(f, self.table(), function.id)?;
             if let Some(body) = &function.body {

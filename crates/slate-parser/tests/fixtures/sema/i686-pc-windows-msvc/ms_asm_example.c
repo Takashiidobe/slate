@@ -464,42 +464,49 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @round_x87(%1 value: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @round_x87(%1 value: f64) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%57)))] {
+// DEFAULT-NEXT:         let %57: u32 [synthetic];
 // DEFAULT-NEXT:         let %2 result: i32 [storage=automatic];
-// DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] {
-// DEFAULT-NEXT:             template: "fld " addr<qword>(%0) "\nfistp " addr<dword>(%1);
-// DEFAULT-NEXT:             in 0 [value] mem<read> place<f64>(%1);
-// DEFAULT-NEXT:             in 1 [result] mem<write> place<i32>(%2);
+// DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "fld " addr<qword>(%1) "\nfistp " addr<dword>(%2);
+// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%57);
+// DEFAULT-NEXT:             in 1 [value] mem<read> place<f64>(%1);
+// DEFAULT-NEXT:             in 2 [result] mem<write> place<i32>(%2);
 // DEFAULT-NEXT:             clobbers: "st" as st, "st(1)" as st(1), "st(2)" as st(2), "st(3)" as st(3), "st(4)" as st(4), "st(5)" as st(5), "st(6)" as st(6), "st(7)" as st(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @have_cpuid() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @have_cpuid() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%58)))] {
+// DEFAULT-NEXT:         let %58: u32 [synthetic];
 // DEFAULT-NEXT:         let %4 result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         asm volatile "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz done\nmov result, 1\ndone:" [dialect=intel] {
-// DEFAULT-NEXT:             template: "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz " label(done) "\nmov " addr<dword>(%0) ", 1\n" label(done) ":";
-// DEFAULT-NEXT:             in 0 [result] mem<write> place<i32>(%4);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx;
+// DEFAULT-NEXT:         asm volatile "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz done\nmov result, 1\ndone:" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "pushfd\npop eax\nmov ecx, eax\nxor eax, 2097152\npush eax\npopfd\npushfd\npop eax\nxor eax, ecx\njz " label(done) "\nmov " addr<dword>(%1) ", 1\n" label(done) ":";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%58);
+// DEFAULT-NEXT:             in 1 [result] mem<write> place<i32>(%4);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @asm_round_x87(%6 value: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @asm_round_x87(%6 value: f64) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%59)))] {
+// DEFAULT-NEXT:         let %59: u32 [synthetic];
 // DEFAULT-NEXT:         let %7 result: i32 [storage=automatic];
-// DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] {
-// DEFAULT-NEXT:             template: "fld " addr<qword>(%0) "\nfistp " addr<dword>(%1);
-// DEFAULT-NEXT:             in 0 [value] mem<read> place<f64>(%6);
-// DEFAULT-NEXT:             in 1 [result] mem<write> place<i32>(%7);
+// DEFAULT-NEXT:         asm volatile "fld value\nfistp result" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "fld " addr<qword>(%1) "\nfistp " addr<dword>(%2);
+// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%59);
+// DEFAULT-NEXT:             in 1 [value] mem<read> place<f64>(%6);
+// DEFAULT-NEXT:             in 2 [result] mem<write> place<i32>(%7);
 // DEFAULT-NEXT:             clobbers: "st" as st, "st(1)" as st(1), "st(2)" as st(2), "st(3)" as st(3), "st(4)" as st(4), "st(5)" as st(5), "st(6)" as st(6), "st(7)" as st(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%7);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @asm_local_and_label(%9 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %8 @asm_local_and_label(%9 value: i32) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%60)))] {
+// DEFAULT-NEXT:         let %60: u32 [synthetic];
 // DEFAULT-NEXT:         let %10 result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         asm volatile "mov eax, value\ntest eax, eax\njz zero_case\nadd eax, 10\nmov result, eax\njmp done\nzero_case:\nmov result, 4660\ndone:" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov eax, " addr(%0) "\ntest eax, eax\njz " label(zero_case) "\nadd eax, 10\nmov " addr(%1) ", eax\njmp " label(done) "\n" label(zero_case) ":\nmov " addr<dword>(%1) ", 4660\n" label(done) ":";
-// DEFAULT-NEXT:             in 0 [value] mem<read> place<i32>(%9);
-// DEFAULT-NEXT:             in 1 [result] mem<write> place<i32>(%10);
-// DEFAULT-NEXT:             clobbers: "eax" as ax;
+// DEFAULT-NEXT:         asm volatile "mov eax, value\ntest eax, eax\njz zero_case\nadd eax, 10\nmov result, eax\njmp done\nzero_case:\nmov result, 4660\ndone:" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\ntest eax, eax\njz " label(zero_case) "\nadd eax, 10\nmov " addr(%2) ", eax\njmp " label(done) "\n" label(zero_case) ":\nmov " addr<dword>(%2) ", 4660\n" label(done) ":";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%60);
+// DEFAULT-NEXT:             in 1 [value] mem<read> place<i32>(%9);
+// DEFAULT-NEXT:             in 2 [result] mem<write> place<i32>(%10);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%10);
 // DEFAULT-NEXT:     }
@@ -586,23 +593,27 @@ void asm_increment_pointer(int *ptr)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<f64>(%48);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @asm_register_widths(%50 value: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %49 @asm_register_widths(%50 value: u32) -> u32 [linkage=external] [fallthrough=ret(read<u32>(%61))] {
+// DEFAULT-NEXT:         let %61: u32 [synthetic];
 // DEFAULT-NEXT:         let %51 result: u32 [storage=automatic];
-// DEFAULT-NEXT:         asm volatile "mov eax, value\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov result, ecx" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov eax, " addr(%0) "\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov " addr(%1) ", ecx";
-// DEFAULT-NEXT:             in 0 [value] mem<read> place<u32>(%50);
-// DEFAULT-NEXT:             in 1 [result] mem<write> place<u32>(%51);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx;
+// DEFAULT-NEXT:         asm volatile "mov eax, value\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov result, ecx" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\nxor ah, ah\nadd al, 127\nmovzx ecx, ax\nxor ecx, 4660\nmov " addr(%2) ", ecx";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%61);
+// DEFAULT-NEXT:             in 1 [value] mem<read> place<u32>(%50);
+// DEFAULT-NEXT:             in 2 [result] mem<write> place<u32>(%51);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<u32>(%51);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @asm_load_pointer(%53 ptr: ptr<const i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %52 @asm_load_pointer(%53 ptr: ptr<const i32>) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%62)))] {
+// DEFAULT-NEXT:         let %62: u32 [synthetic];
 // DEFAULT-NEXT:         let %54 result: i32 [storage=automatic];
-// DEFAULT-NEXT:         asm volatile "mov ecx, ptr\nmov eax, dword ptr [ecx]\nmov result, eax" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov ecx, " addr(%0) "\nmov eax, dword ptr [ecx]\nmov " addr(%1) ", eax";
-// DEFAULT-NEXT:             in 0 [ptr] mem<read> place<ptr<const i32>>(%53);
-// DEFAULT-NEXT:             in 1 [result] mem<write> place<i32>(%54);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx;
+// DEFAULT-NEXT:         asm volatile "mov ecx, ptr\nmov eax, dword ptr [ecx]\nmov result, eax" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov ecx, " addr(%1) "\nmov eax, dword ptr [ecx]\nmov " addr(%2) ", eax";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%62);
+// DEFAULT-NEXT:             in 1 [ptr] mem<read> place<ptr<const i32>>(%53);
+// DEFAULT-NEXT:             in 2 [result] mem<write> place<i32>(%54);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%54);
 // DEFAULT-NEXT:     }

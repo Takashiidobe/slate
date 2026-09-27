@@ -34,6 +34,7 @@ pub(super) struct Lowerer {
     pub pretty_function_name: Option<String>,
     pub files: crate::files::Files,
     pub return_type: Option<QualType>,
+    pub ms_asm_return: Vec<BindingId>,
     pub floating_pragmas: super::pragmas::FloatingPragmas,
     pub compound_start: bool,
 }

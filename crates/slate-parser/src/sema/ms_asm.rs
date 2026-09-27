@@ -126,7 +126,10 @@ impl Value {
 
 impl Lowerer {
     pub(super) fn ms_asm(&mut self, asm: &ast::MsAsm) -> Result<InlineAsm, ResolveError> {
-        let mut lowered = Lowered::default();
+        let mut lowered = Lowered {
+            operands: self.ms_asm_return_operands()?,
+            ..Lowered::default()
+        };
         let mut clobbers = BTreeSet::new();
         for (line, instruction) in asm.instructions.iter().enumerate() {
             let instruction = &instruction.value;
@@ -182,6 +185,13 @@ impl Lowerer {
                 }
                 lowered.text(if index == 0 { " " } else { ", " });
                 self.ms_asm_operand(operand, sized, access, &mut lowered)?;
+            }
+        }
+        for operand in &mut lowered.operands {
+            if let AsmOperandKind::Out { early_clobber, .. } = &mut operand.kind
+                && let Some(crate::ir::AsmOperandClass::Explicit(register)) = &operand.selected
+            {
+                *early_clobber = clobbers.remove(register.spelling.as_str());
             }
         }
         let options = (!self.in_naked_function).then_some(AsmOptions {

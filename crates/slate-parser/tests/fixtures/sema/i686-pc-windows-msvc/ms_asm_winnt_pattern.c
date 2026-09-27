@@ -64,20 +64,28 @@ ULONGLONG shift(ULONGLONG value, DWORD count) {
 // DEFAULT-NEXT:     type @type0 ULONGLONG = u64;
 // DEFAULT-NEXT:     type @type1 LONGLONG = i64;
 // DEFAULT-NEXT:     type @type2 DWORD = u32;
-// DEFAULT-NEXT:     fn %3 @Int64ShllMod32(%4 Value: u64, %5 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov ecx, " addr(%0) "\nmov eax, " addr<dword>(%1) "\nmov edx, " addr<dword>(%1 + 4) "\nshld edx, eax, cl\nshl eax, cl";
-// DEFAULT-NEXT:             in 0 [ShiftCount] mem<read> place<u32>(%5);
-// DEFAULT-NEXT:             in 1 [Value] mem<read> place<u64>(%4);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edx" as dx;
+// DEFAULT-NEXT:     fn %3 @Int64ShllMod32(%4 Value: u64, %5 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%13)), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%14)), const<u32>(32))))] {
+// DEFAULT-NEXT:         let %13: u32 [synthetic];
+// DEFAULT-NEXT:         let %14: u32 [synthetic];
+// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshld edx, eax, cl\nshl eax, cl";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%13);
+// DEFAULT-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%14);
+// DEFAULT-NEXT:             in 2 [ShiftCount] mem<read> place<u32>(%5);
+// DEFAULT-NEXT:             in 3 [Value] mem<read> place<u64>(%4);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @Int64ShraMod32(%7 Value: i64, %8 ShiftCount: u32) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov ecx, " addr(%0) "\nmov eax, " addr<dword>(%1) "\nmov edx, " addr<dword>(%1 + 4) "\nshrd eax, edx, cl\nsar edx, cl";
-// DEFAULT-NEXT:             in 0 [ShiftCount] mem<read> place<u32>(%8);
-// DEFAULT-NEXT:             in 1 [Value] mem<read> place<i64>(%7);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edx" as dx;
+// DEFAULT-NEXT:     fn %6 @Int64ShraMod32(%7 Value: i64, %8 ShiftCount: u32) -> i64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret(reinterpret<i64, reason=return, fits=unknown>(or<u64>(widen<u64, reason=return>(read<u32>(%15)), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%16)), const<u32>(32)))))] {
+// DEFAULT-NEXT:         let %15: u32 [synthetic];
+// DEFAULT-NEXT:         let %16: u32 [synthetic];
+// DEFAULT-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshrd eax, edx, cl\nsar edx, cl" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshrd eax, edx, cl\nsar edx, cl";
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%15);
+// DEFAULT-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%16);
+// DEFAULT-NEXT:             in 2 [ShiftCount] mem<read> place<u32>(%8);
+// DEFAULT-NEXT:             in 3 [Value] mem<read> place<i64>(%7);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @DbgRaiseAssertionFailure() -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {

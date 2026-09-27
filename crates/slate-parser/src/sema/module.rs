@@ -55,6 +55,7 @@ pub fn resolve_module(
         pretty_function_name: None,
         files: files.clone(),
         return_type: None,
+        ms_asm_return: Vec::new(),
         floating_pragmas: FloatingPragmas::new(unit.flavor, context.region),
         compound_start: false,
         context,
@@ -151,8 +152,18 @@ pub fn resolve_module(
                 lower.function_name = None;
                 lower.pretty_function_name = None;
                 lower.return_type = None;
-                let (parameters, body) = body?;
-                let fallthrough = if name == "main"
+                let (parameters, mut body) = body?;
+                let asm_return = lower.finish_ms_asm_return(
+                    &declaration.derive(()),
+                    return_type.as_ref(),
+                    &mut body,
+                    name == "main"
+                        && return_type == Some(lower.context.int_type())
+                        && features.main_implicit_return_zero,
+                )?;
+                let fallthrough = if let Some(value) = asm_return {
+                    Fallthrough::Return(Box::new(value))
+                } else if name == "main"
                     && return_type == Some(lower.context.int_type())
                     && features.main_implicit_return_zero
                 {

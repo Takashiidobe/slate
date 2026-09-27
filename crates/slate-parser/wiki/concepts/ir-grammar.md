@@ -184,7 +184,8 @@ param       = binding ( c_identifier | "<unnamed>" ) ":" [ access_prefix ] type
               [ "[restrict]" ] [ "[const]" ] [ array_param ] { metadata } ;
 array_param = "[array=" ( "static" [ " " extent ] | extent ) "]" ;
 extent      = integer | binding | "*" ;
-fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
+fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
+            | "ret(" value ")" ;
 ```
 
 - One `fn` per function: the body and parameters come from the definition,
@@ -192,7 +193,8 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 - `[abi=...]` is printed only when some argument or the result is not passed
   as a plain scalar.
 - `fallthrough` is present only on definitions and says what reaching the end
-  of the body means.
+  of the body means. `ret(value)` evaluates the value only when control reaches
+  that point; its local bindings belong to the function body.
 - Inlining preference and definition emission are independent. Inline bodies
   print whether they supply a linkable definition; `inline_only` bodies do not.
   `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.

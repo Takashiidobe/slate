@@ -96,29 +96,32 @@ int names(int param, struct outer *pointer) {
 // DEFAULT-NEXT:     global %19 function_static: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %3 @header_function() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %12 @callee(%20 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @names(%14 param: i32, %15 pointer: ptr<@type2>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %13 @names(%14 param: i32, %15 pointer: ptr<@type2>) -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%21)))] {
+// DEFAULT-NEXT:         let %21: u32 [synthetic];
 // DEFAULT-NEXT:         let %16 local: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %17 local_array: array<i32, 3> [storage=automatic];
 // DEFAULT-NEXT:         let %18 s: @type2 [storage=automatic];
-// DEFAULT-NEXT:         asm volatile "mov eax, param\nmov local, eax\nmov eax, local_array[4]\nmov eax, local_array[ebx * 4 + 4]\nmov eax, s.in.b\nmov eax, s.arr[8]\nmov eax, global_outer.in.b\nmov eax, file_static + 4\nmov eax, [function_static]\nmov eax, SEVEN[eax]\nmov eax, 2 * SEVEN + 3\nmov ecx, type matrix\nmov ecx, length matrix\nmov ecx, size matrix\nmov ecx, type s.in\nmov eax, pointer\nmov al, [eax] + outer_t.in\nmov eax, offset file_static\npush 1\ncall callee\nadd esp, 4\nmov eax, header_global\nmov eax, HEADER_ENUM\ncall header_function\njmp short later" [dialect=intel] {
-// DEFAULT-NEXT:             template: "mov eax, " addr(%0) "\nmov " addr(%1) ", eax\nmov eax, " addr(%2 + 4) "\nmov eax, " addr(%2 + ebx*4 + 4) "\nmov eax, " addr(%3 + 8) "\nmov eax, " addr(%3 + 20) "\nmov eax, " addr(%4 + 8) "\nmov eax, " addr(%5 + 4) "\nmov eax, " addr(%6) "\nmov eax, [eax + 7]\nmov eax, 17\nmov ecx, 12\nmov ecx, 2\nmov ecx, 24\nmov ecx, 8\nmov eax, " addr(%7) "\nmov al, [eax + 4]\nmov eax, " %8 "\npush 1\ncall " %9 "\nadd esp, 4\nmov eax, " addr(%10) "\nmov eax, 3\ncall " %11 "\njmp short " label(later);
-// DEFAULT-NEXT:             in 0 [param] mem<read> place<i32>(%14);
-// DEFAULT-NEXT:             in 1 [local] mem<write> place<i32>(%16);
-// DEFAULT-NEXT:             in 2 [local_array] mem<read> place<array<i32, 3>>(%17);
-// DEFAULT-NEXT:             in 3 [s] mem<read> place<@type2>(%18);
-// DEFAULT-NEXT:             in 4 [global_outer] mem<read> place<@type2>(%10);
-// DEFAULT-NEXT:             in 5 [file_static] mem<read> place<i32>(%11);
-// DEFAULT-NEXT:             in 6 [function_static] mem<read> place<i32>(%19);
-// DEFAULT-NEXT:             in 7 [pointer] mem<read> place<ptr<@type2>>(%15);
-// DEFAULT-NEXT:             in 8 [file_static] addr_of<ptr<i32>>(%11);
-// DEFAULT-NEXT:             in 9 sym<offset=0>(%12);
-// DEFAULT-NEXT:             in 10 [header_global] mem<read> place<i32>(%0);
-// DEFAULT-NEXT:             in 11 sym<offset=0>(%3);
-// DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edx" as dx;
+// DEFAULT-NEXT:         asm volatile "mov eax, param\nmov local, eax\nmov eax, local_array[4]\nmov eax, local_array[ebx * 4 + 4]\nmov eax, s.in.b\nmov eax, s.arr[8]\nmov eax, global_outer.in.b\nmov eax, file_static + 4\nmov eax, [function_static]\nmov eax, SEVEN[eax]\nmov eax, 2 * SEVEN + 3\nmov ecx, type matrix\nmov ecx, length matrix\nmov ecx, size matrix\nmov ecx, type s.in\nmov eax, pointer\nmov al, [eax] + outer_t.in\nmov eax, offset file_static\npush 1\ncall callee\nadd esp, 4\nmov eax, header_global\nmov eax, HEADER_ENUM\ncall header_function\njmp short later" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: "mov eax, " addr(%1) "\nmov " addr(%2) ", eax\nmov eax, " addr(%3 + 4) "\nmov eax, " addr(%3 + ebx*4 + 4) "\nmov eax, " addr(%4 + 8) "\nmov eax, " addr(%4 + 20) "\nmov eax, " addr(%5 + 8) "\nmov eax, " addr(%6 + 4) "\nmov eax, " addr(%7) "\nmov eax, [eax + 7]\nmov eax, 17\nmov ecx, 12\nmov ecx, 2\nmov ecx, 24\nmov ecx, 8\nmov eax, " addr(%8) "\nmov al, [eax + 4]\nmov eax, " %9 "\npush 1\ncall " %10 "\nadd esp, 4\nmov eax, " addr(%11) "\nmov eax, 3\ncall " %12 "\njmp short " label(later);
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%21);
+// DEFAULT-NEXT:             in 1 [param] mem<read> place<i32>(%14);
+// DEFAULT-NEXT:             in 2 [local] mem<write> place<i32>(%16);
+// DEFAULT-NEXT:             in 3 [local_array] mem<read> place<array<i32, 3>>(%17);
+// DEFAULT-NEXT:             in 4 [s] mem<read> place<@type2>(%18);
+// DEFAULT-NEXT:             in 5 [global_outer] mem<read> place<@type2>(%10);
+// DEFAULT-NEXT:             in 6 [file_static] mem<read> place<i32>(%11);
+// DEFAULT-NEXT:             in 7 [function_static] mem<read> place<i32>(%19);
+// DEFAULT-NEXT:             in 8 [pointer] mem<read> place<ptr<@type2>>(%15);
+// DEFAULT-NEXT:             in 9 [file_static] addr_of<ptr<i32>>(%11);
+// DEFAULT-NEXT:             in 10 sym<offset=0>(%12);
+// DEFAULT-NEXT:             in 11 [header_global] mem<read> place<i32>(%0);
+// DEFAULT-NEXT:             in 12 sym<offset=0>(%3);
+// DEFAULT-NEXT:             clobbers: "ecx" as cx, "edx" as dx;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         asm volatile "later:\nmov local, eax" [dialect=intel] {
-// DEFAULT-NEXT:             template: label(later) ":\nmov " addr(%0) ", eax";
-// DEFAULT-NEXT:             in 0 [local] mem<write> place<i32>(%16);
+// DEFAULT-NEXT:         asm volatile "later:\nmov local, eax" [dialect=intel] [alternative=none] {
+// DEFAULT-NEXT:             template: label(later) ":\nmov " addr(%1) ", eax";
+// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%21);
+// DEFAULT-NEXT:             in 1 [local] mem<write> place<i32>(%16);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%16);
 // DEFAULT-NEXT:     }

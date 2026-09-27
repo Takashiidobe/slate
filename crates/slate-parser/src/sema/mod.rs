@@ -15,6 +15,7 @@ mod initializer;
 mod module;
 mod ms_asm;
 mod ms_asm_effects;
+mod ms_asm_return;
 pub mod names;
 pub mod numeric;
 mod operand;

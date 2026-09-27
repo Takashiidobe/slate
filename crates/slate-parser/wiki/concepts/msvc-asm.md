@@ -234,12 +234,36 @@ caller-saved registers for `call`; it marks `push x` as a write and lists
 
 ### Implicit return
 
-When the function's end is reachable, the function contains MS asm, and the
-return type fits EAX or EDX:EAX (integer or pointer up to 8 bytes), lowering
-adds a synthetic return local. Every MS asm in that function gets an `Out`
-into it on explicit `eax` (and `edx`), and the fall-off point becomes
-`return local`. This mirrors clang's return-slot store. x87 (`float`/`double`
-in `st(0)`) returns are deferred.
+On 32-bit x86, every MS asm in a non-naked function returning an integer
+or pointer of at most 8 bytes captures EAX, plus EDX for results larger than
+4 bytes. This follows clang even when a later explicit return makes the
+function end unreachable. Float and aggregate returns are outside this task;
+x87 (`float`/`double` in `st(0)`) returns remain deferred. Clang's x86_64 MS
+asm does not capture a return register.
+
+`src/sema/ms_asm_return.rs` allocates shared synthetic `u32` locals lazily
+at the first asm. Each asm gets explicit-register `Out` operands before its
+source operands. The effects table marks a written return register as an
+early output and removes its clobber; otherwise it is a late output. Each
+half has its own direction, whereas clang's single `A` constraint marks the
+whole pair early if either half is written.
+
+The function's `Fallthrough::Return` reads the locals and constructs
+`u64(eax) | (u64(edx) << 32)` for a two-register result, then converts to the
+return type. Narrow integers truncate, `_Bool` keeps the low bit, enums
+convert through their underlying type, and pointers use `IntToPtr`.
+This value is evaluated only when control reaches the end, so explicit
+returns and infinite loops need no rewriting or separate reachability pass.
+Noreturn still overrides fallthrough with `ub`. C99 `main` initializes its
+capture to zero for paths that execute no asm.
+
+Oracle: clang 22.1.8, `-target i686-pc-windows-msvc -fms-extensions -S
+-emit-llvm`, on `sema/i686-pc-windows-msvc/ms_asm_return.h`. The three
+`Int64Sh*Mod32` helpers return the asm's `i64` `=&A` output; narrow integers
+truncate the `i32` output, pointers load its bits from the return slot,
+and every block in a multiple-asm function stores a fresh register result.
+Both flavors have generated fixtures; an x86_64 clang fixture checks that
+no implicit register outputs are added.
 
 ## Rust-side notes for Slate
 
