@@ -59,7 +59,7 @@ int main() {
 // DEFAULT-NEXT:         let %3 tem: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] {
 // DEFAULT-NEXT:             lateout 0 "g" [reg | mem | imm] place<i32>(%3);
-// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%2))));
+// DEFAULT-NEXT:             in 1 "g" [reg | mem | imm] place<ptr<i32>>(field0(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return addr_of<ptr<ptr<i32>>>(field1(deref(read<ptr<@type0>>(%2))));
 // DEFAULT-NEXT:     }

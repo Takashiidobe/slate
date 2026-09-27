@@ -238,6 +238,7 @@ impl DisplayModule<'_> {
             f.write_str("]")?;
             let (place, input) = match &operand.kind {
                 AsmOperandKind::In(value) => (None, Some(value)),
+                AsmOperandKind::InPlace(place) => (Some(place), None),
                 AsmOperandKind::Out { place, .. } => (Some(place), None),
                 AsmOperandKind::InOut { place, input, .. } => (Some(place), input.as_ref()),
             };

@@ -51,6 +51,8 @@ pub struct AsmOperand {
 #[derive(Debug, Clone)]
 pub enum AsmOperandKind {
     In(Value),
+    // a memory-capable input names its object: the asm may address it instead of a pre-asm load.
+    InPlace(Place),
     Out {
         place: Place,
         early_clobber: bool,
@@ -76,7 +78,7 @@ impl AsmOperand {
     // without `&` the allocator may reuse an input's register, which is Rust's late form.
     pub fn direction(&self) -> AsmDirection {
         match self.kind {
-            AsmOperandKind::In(_) => AsmDirection::In,
+            AsmOperandKind::In(_) | AsmOperandKind::InPlace(_) => AsmDirection::In,
             AsmOperandKind::Out {
                 early_clobber: true,
                 ..
@@ -189,6 +191,36 @@ pub enum AsmClobber {
 pub struct AsmRegister {
     pub spelling: String,
     pub canonical: Option<&'static str>,
+}
+
+impl AsmConstraint {
+    pub fn allows_memory(&self) -> bool {
+        self.alternatives.iter().any(|alternative| {
+            alternative
+                .classes()
+                .any(|class| matches!(class, AsmOperandClass::Memory))
+        })
+    }
+
+    pub fn memory_only(&self) -> bool {
+        self.alternatives.iter().all(|alternative| {
+            alternative.classes().next().is_some()
+                && alternative
+                    .classes()
+                    .all(|class| matches!(class, AsmOperandClass::Memory))
+        })
+    }
+}
+
+impl AsmConstraintAlternative {
+    fn classes(&self) -> impl Iterator<Item = &AsmOperandClass> {
+        match &self.location {
+            AsmConstraintLocation::Letters { classes, .. } => classes.iter(),
+            AsmConstraintLocation::HardRegister(_) | AsmConstraintLocation::Matching(_) => {
+                [].iter()
+            }
+        }
+    }
 }
 
 impl InlineAsm {

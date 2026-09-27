@@ -241,7 +241,8 @@ asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                    [ "clobbers:" clobber { "," clobber } ";" ]
                    [ "labels:" binding { "," binding } ";" ]
                  "}" ) ;
-asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes value
+asm_operand = ( "in" integer [ "[" c_identifier "]" ] string asm_classes
+                  ( value | asm_place )
               | ( "out" | "lateout" ) integer [ "[" c_identifier "]" ] string
                   asm_classes asm_place
               | ( "inout" | "inlateout" ) integer [ "[" c_identifier "]" ] string
@@ -299,6 +300,8 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   by `|`. Class names are Rust's, except `reg_legacy` and `vreg_low8`,
   subsets that emission pins to an explicit register; a letter we cannot
   resolve prints as `unresolved("l")`.
+- An `in` with an `asm_place` is a memory-capable input naming its object;
+  the asm may address it in place, so no load precedes the statement.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).
 - A clobbered or hard-coded register prints its source spelling, plus

@@ -33,8 +33,8 @@ void f(int x, int y, int z, int w) {
 // DEFAULT-NEXT:         asm "%0 %1 %2" [dialect=att] {
 // DEFAULT-NEXT:             template: %0 " " %1 " " %2;
 // DEFAULT-NEXT:             lateout 0 "r,m" [reg, mem] place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "0,m" [0, mem] read<i32>(%2);
-// DEFAULT-NEXT:             in 2 "m,0" [mem, 0] read<i32>(%3);
+// DEFAULT-NEXT:             in 1 "0,m" [0, mem] place<i32>(%2);
+// DEFAULT-NEXT:             in 2 "m,0" [mem, 0] place<i32>(%3);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "%0 %1 %2 %3" [dialect=att] {
 // DEFAULT-NEXT:             template: %0 " " %1 " " %2 " " %3;

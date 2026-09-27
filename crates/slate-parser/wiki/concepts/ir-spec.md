@@ -852,7 +852,7 @@ template as opaque text with holes.
   `"[out]"`) is folded into that output as `InOut { input: Some(value) }`
   and removed, and template pieces are renumbered. A `+` output is
   `InOut { input: None }`: the place itself is read. A partial tie
-  (`"0,m"`) stays a separate `In` operand until an alternative is chosen
+  (`"0,m"`) stays a separate `In` (or `InPlace`) operand until an alternative is chosen
   (`slate-parser-25m.15`).
 - The parser rejects what both compilers reject and the fold relies on: an
   output without `=`/`+`, `=`/`+`/`&` on an input, a match past the outputs
@@ -885,6 +885,21 @@ template as opaque text with holes.
   the set (`in("v7")`, `in("rsi")`), avoiding the asm's other explicit
   operands and clobbers. No save/restore is needed; that trick is only for
   reserved registers such as `rbx`.
+- An input whose constraint allows memory in any alternative (`m`, `o`,
+  `g`, `rm`, Arm `Q`) lowers to `AsmOperandKind::InPlace(place)` when the
+  operand is an addressable lvalue, so the object is named rather than
+  loaded before the asm. Emission turns it into `in(reg) &raw const x`
+  and wraps the reference site, or reads the place for a register
+  alternative (`slate-parser-25m.15`). Outputs already carry places.
+- An unaddressable memory-capable operand (bit-field, vector lane,
+  register variable, temporary) falls back to a value: compilers spill it
+  to a temporary, which an input cannot tell from a copy. Errors are only
+  where compilers agree, for memory-only constraints: a non-lvalue and a
+  bit-field (both), and a register variable under gcc (clang spills it).
+  clang also rejects bit-fields and lanes under any memory-capable
+  constraint and gcc takes the register there; we follow gcc
+  (permissive). Fixtures: `sema/ir_asm.c` `memory()`,
+  `sema/ir_asm_memory_gcc.c`, `error/asm-memory-*.c`.
 - `x` is `xmm_reg` whatever the operand width; picking `ymm_reg`/`zmm_reg`
   for wider vectors is the width work of `slate-parser-25m.14`. `v` is
   `zmm_reg` because only that Rust class reaches xmm16-31.

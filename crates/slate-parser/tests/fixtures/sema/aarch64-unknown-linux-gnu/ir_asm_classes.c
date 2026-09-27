@@ -41,7 +41,7 @@ void classes(long x, double d, v4f v) {
 // IR-NEXT:         asm "// %0 %1 %2 %3" {
 // IR-NEXT:             template: "// " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             in 0 "I" [imm] const<i32>(1);
-// IR-NEXT:             in 1 "Q" [mem] read<i64>(%2);
+// IR-NEXT:             in 1 "Q" [mem] place<i64>(%2);
 // IR-NEXT:             in 2 "rZ" [reg | imm] const<i64>(0);
 // IR-NEXT:             in 3 "y" [vreg_low8] read<vector<f32, 4>>(%4);
 // IR-NEXT:         }

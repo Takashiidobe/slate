@@ -201,7 +201,7 @@ impl Hoister {
                                 input,
                                 early_clobber,
                             },
-                            kind @ AsmOperandKind::In(_) => kind,
+                            kind @ (AsmOperandKind::In(_) | AsmOperandKind::InPlace(_)) => kind,
                         };
                         placed.push(AsmOperand { kind, ..operand });
                     }
@@ -209,6 +209,9 @@ impl Hoister {
                         let kind = match operand.kind {
                             AsmOperandKind::In(value) => {
                                 AsmOperandKind::In(self.value(value, &mut out)?)
+                            }
+                            AsmOperandKind::InPlace(place) => {
+                                AsmOperandKind::InPlace(self.place(place, &mut out)?)
                             }
                             AsmOperandKind::InOut {
                                 place,

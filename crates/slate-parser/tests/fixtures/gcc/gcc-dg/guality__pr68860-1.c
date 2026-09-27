@@ -95,13 +95,13 @@ main() {
 // DEFAULT-NEXT:         asm "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             lateout 0 "m" [mem] place<i32>(%10);
-// DEFAULT-NEXT:             in 1 "m" [mem] read<i32>(%10);
+// DEFAULT-NEXT:             in 1 "m" [mem] place<i32>(%10);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))), truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(25), read<i32>(%8))));
 // DEFAULT-NEXT:         asm volatile "nop" [dialect=att] {
 // DEFAULT-NEXT:             template: "nop";
 // DEFAULT-NEXT:             lateout 0 "m" [mem] place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))));
-// DEFAULT-NEXT:             in 1 "m" [mem] read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))));
+// DEFAULT-NEXT:             in 1 "m" [mem] place<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(0))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%10);
 // DEFAULT-NEXT:     }

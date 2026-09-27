@@ -1165,6 +1165,20 @@ impl Lowerer {
         value
     }
 
+    pub(super) fn addressable(&self, place: &Place) -> Result<(), ResolveError> {
+        match &place.kind {
+            PlaceKind::Binding(id) if self.types.entities.is_register(id) => Err(
+                ResolveError::Invalid("address of register variable requested"),
+            ),
+            PlaceKind::Field { bits: Some(_), .. } => {
+                Err(ResolveError::Invalid("address of a bit-field"))
+            }
+            PlaceKind::Lane { .. } => Err(ResolveError::Invalid("address of a vector element")),
+            _ if temporary_rooted(place) => Err(ResolveError::Invalid("address of a temporary")),
+            _ => Ok(()),
+        }
+    }
+
     pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
@@ -1725,7 +1739,7 @@ impl Lowerer {
         Ok((Callee::Indirect(Box::new(value.value)), signature))
     }
 
-    fn read(&mut self, e: &Expr, lvalue: Lvalue) -> Result<Operand, ResolveError> {
+    pub(super) fn read(&mut self, e: &Expr, lvalue: Lvalue) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.lvalue_conversion(lvalue.c);
         let place = lvalue.place;
         let kind = match &place.ty {
@@ -2157,22 +2171,7 @@ impl Lowerer {
                 operand,
             } => {
                 let place = self.place(operand)?;
-                if let PlaceKind::Binding(id) = place.kind
-                    && self.types.entities.is_register(&id)
-                {
-                    return Err(ResolveError::Invalid(
-                        "address of register variable requested",
-                    ));
-                }
-                if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
-                    return Err(ResolveError::Invalid("address of a bit-field"));
-                }
-                if matches!(place.kind, PlaceKind::Lane { .. }) {
-                    return Err(ResolveError::Invalid("address of a vector element"));
-                }
-                if temporary_rooted(&place.place) {
-                    return Err(ResolveError::Invalid("address of a temporary"));
-                }
+                self.addressable(&place.place)?;
                 let ty = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, ty, ValueKind::AddressOf(place.place)))
             }

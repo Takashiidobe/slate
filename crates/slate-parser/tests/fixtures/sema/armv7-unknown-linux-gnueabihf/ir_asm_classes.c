@@ -37,7 +37,7 @@ void classes(int x, float f, double d) {
 // IR-NEXT:         asm "@ %0 %1 %2" {
 // IR-NEXT:             template: "@ " %0 " " %1 " " %2;
 // IR-NEXT:             in 0 "I" [imm] const<i32>(1);
-// IR-NEXT:             in 1 "Q" [mem] read<i32>(%1);
+// IR-NEXT:             in 1 "Q" [mem] place<i32>(%1);
 // IR-NEXT:             in 2 "l" [unresolved("l")] read<i32>(%1);
 // IR-NEXT:         }
 // IR-NEXT:     }

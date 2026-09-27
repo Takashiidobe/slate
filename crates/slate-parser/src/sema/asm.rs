@@ -1,6 +1,7 @@
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use crate::ast;
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
 use crate::target_info::TargetFamily;
 
@@ -32,7 +33,9 @@ impl Lowerer {
         };
         lower_pieces(&operands.pieces, dialect, &mut lowered.pieces);
         for output in &operands.outputs {
+            let constraint = constraint(&output.constraint.value, family);
             let place = self.place(&output.expr)?.place;
+            self.memory_place(&place, constraint.memory_only())?;
             let early_clobber = output.constraint.value.early_clobber();
             let kind = match output.constraint.value.write_modifier() {
                 Some(ast::AsmConstraintModifier::ReadWrite) => AsmOperandKind::InOut {
@@ -47,14 +50,14 @@ impl Lowerer {
             };
             lowered.operands.push(AsmOperand {
                 name: output.name.as_ref().map(|name| name.value.clone()),
-                constraint: constraint(&output.constraint.value, family),
+                constraint,
                 kind,
             });
         }
         let mut renumbered: Vec<usize> = (0..operands.outputs.len()).collect();
         for input in &operands.inputs {
-            let value = self.expr(&input.expr)?.value;
             if let Some(output) = input.constraint.value.tied_output() {
+                let value = self.expr(&input.expr)?.value;
                 let Some(AsmOperand {
                     kind:
                         AsmOperandKind::Out {
@@ -74,11 +77,17 @@ impl Lowerer {
                 renumbered.push(output);
                 continue;
             }
+            let constraint = constraint(&input.constraint.value, family);
+            let kind = if constraint.allows_memory() {
+                self.memory_input(&input.expr, constraint.memory_only())?
+            } else {
+                AsmOperandKind::In(self.expr(&input.expr)?.value)
+            };
             renumbered.push(lowered.operands.len());
             lowered.operands.push(AsmOperand {
                 name: input.name.as_ref().map(|name| name.value.clone()),
-                constraint: constraint(&input.constraint.value, family),
-                kind: AsmOperandKind::In(value),
+                constraint,
+                kind,
             });
         }
         for piece in &mut lowered.pieces {
@@ -107,6 +116,48 @@ impl Lowerer {
             );
         }
         Ok(lowered)
+    }
+}
+
+impl Lowerer {
+    fn memory_input(
+        &mut self,
+        expr: &ast::Expr,
+        memory_only: bool,
+    ) -> Result<AsmOperandKind, ResolveError> {
+        let lvalue = match self.place(expr) {
+            Ok(lvalue) => lvalue,
+            Err(_) if memory_only => {
+                return Err(ResolveError::Invalid(
+                    "asm input with a memory-only constraint is not an lvalue",
+                ));
+            }
+            Err(_) => return Ok(AsmOperandKind::In(self.expr(expr)?.value)),
+        };
+        if self.memory_place(&lvalue.place, memory_only)? {
+            Ok(AsmOperandKind::InPlace(lvalue.place))
+        } else {
+            Ok(AsmOperandKind::In(self.read(expr, lvalue)?.value))
+        }
+    }
+
+    // compilers spill an unaddressable object to a temporary, which an input cannot tell from a copy.
+    fn memory_place(&self, place: &Place, memory_only: bool) -> Result<bool, ResolveError> {
+        match &place.kind {
+            PlaceKind::Field { bits: Some(_), .. } if memory_only => {
+                Err(ResolveError::Invalid("address of a bit-field"))
+            }
+            PlaceKind::Binding(id)
+                if memory_only
+                    && self.types.compiler_flavor() == CompilerFlavor::Gcc
+                    && self.types.entities.is_register(id) =>
+            {
+                Err(ResolveError::Invalid(
+                    "address of register variable requested",
+                ))
+            }
+            _ => Ok(self.addressable(place).is_ok()),
+        }
     }
 }
 

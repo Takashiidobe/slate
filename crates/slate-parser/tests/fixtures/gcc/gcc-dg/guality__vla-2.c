@@ -66,8 +66,8 @@ main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @fn1(%1 x: ptr<i32>, %2 y: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] {
-// DEFAULT-NEXT:             in 0 "rm" [reg | mem] read<ptr<i32>>(%1);
-// DEFAULT-NEXT:             in 1 "rm" [reg | mem] read<i32>(%2);
+// DEFAULT-NEXT:             in 0 "rm" [reg | mem] place<ptr<i32>>(%1);
+// DEFAULT-NEXT:             in 1 "rm" [reg | mem] place<i32>(%2);
 // DEFAULT-NEXT:             clobbers: memory;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

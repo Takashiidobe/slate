@@ -50,8 +50,8 @@ void dialects(int x) {
 // DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] {
 // DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c2;
 // DEFAULT-NEXT:             out 0 [out] "r,m" [reg, mem] place<i32>(%1);
-// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] read<i32>(%2);
-// DEFAULT-NEXT:             in 2 "0,m" [0, mem] read<i32>(deref(read<ptr<i32>>(%3)));
+// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] place<i32>(%2);
+// DEFAULT-NEXT:             in 2 "0,m" [0, mem] place<i32>(deref(read<ptr<i32>>(%3)));
 // DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
