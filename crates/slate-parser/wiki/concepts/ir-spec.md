@@ -981,9 +981,9 @@ template as opaque text with holes.
   - `may_unwind` = an `"unwind"` clobber.
   Fixtures: `sema/ir_asm_options.c`, `sema/ir_asm_options_gcc.c`,
   `sema/aarch64-unknown-linux-gnu/ir_asm_options.c`,
-  `sema/armv7-unknown-linux-gnueabihf/ir_asm_options.c`. Gcc's Thumb-1
-  rule (every asm clobbers CC) cannot arise: the armv7 targets are ARM or
-  Thumb-2, never Thumb-1.
+  `sema/armv7-unknown-linux-gnueabihf/ir_asm_options.c`. On 32-bit ARM,
+  gcc (`arm-none-eabi-gcc` 16.2, `-fdump-rtl-expand`) adds a CC clobber
+  only for `"cc"` in ARM, Thumb-2 and Thumb-1 (armv6-m) alike.
 
 File-scope `asm` lowers to `Module::asm`, a source-ordered list of the same
 `InlineAsm`, printed before the type definitions. It is a separate list rather
