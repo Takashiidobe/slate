@@ -16,7 +16,7 @@ _Complex double complex_double(_Complex double value) { return value; }
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
-// IR-NEXT:     target "i386-unknown-linux-gnu" {
+// IR-NEXT:     target "i686-unknown-linux-gnu" {
 // IR-NEXT:         endian = little;
 // IR-NEXT:         pointer [size=4, align=4];
 // IR-NEXT:         stack_alignment = 16;

@@ -197,7 +197,7 @@ the destination place, and returns whether conversion overflowed. Fixture:
 `tests/fixtures/clang/linux/x86_64/ir_implicit_builtins.c`.
 
 `__builtin_va_list` follows clang's per-target `BuiltinVaListKind`
-(`TargetInfo::va_list_kind`). Where clang makes it `char *` (Windows, i386,
+(`TargetInfo::va_list_kind`). Where clang makes it `char *` (Windows, i686,
 aarch64 Darwin) it is exactly `char *`, and the va builtins take a `ptr<i8>`
 place: the MSVC CRT declares `typedef char* va_list` and clang's `vadefs.h`
 feeds it to `__builtin_va_start`. Elsewhere it lowers to the opaque
@@ -443,7 +443,7 @@ profiles use GNU, GNU EABI, or GNU EABI hard-float environments.
 `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, `i686-pc-windows-msvc`
 and `thumbv7a-pc-windows-msvc` are experimental Windows MSVC-environment
 profiles, with 32-bit `long`, binary64 long double, and unsigned 16-bit
-wchar_t. On i686 `long long` and `double` are 8-aligned (4 on i386 Linux),
+wchar_t. On i686 `long long` and `double` are 8-aligned (4 on i686 Linux),
 pointers are 4 bytes, the stack alignment is 4, and the convention is
 `x86_win32`. thumbv7a has signed `char` (unsigned on Arm32 Linux), 4-byte
 pointers, stack alignment 8, a `char *` va_list, and the same
@@ -913,7 +913,7 @@ template as opaque text with holes.
   memory; either is correct, and the register is what Rust expresses
   without a pointer. A class is unusable when it is unresolved, x87/MMX/AMX
   (clobber-only in Rust, including `t`/`u`/`{st}`), a register the width
-  doesn't fit (a 24-byte struct under `r`, i64 on i386), an immediate
+  doesn't fit (a 24-byte struct under `r`, i64 on i686), an immediate
   whose value isn't an integer constant, a symbol that isn't a link-time
   address, or a match on an output. The chosen alternative is
   `InlineAsm::alternative`, each operand's class is
@@ -967,8 +967,8 @@ template as opaque text with holes.
 - Letters resolve per target to `AsmOperandClass`es (register class,
   explicit register, memory, immediate), keeping the raw letters beside
   them. `g` is reg, mem and imm. Per-target facts checked against the
-  compilers: `q` is `reg_abcd` on i386 but any register on x86-64, and `R`
-  is `reg` on i386 but the legacy eight on x86-64 (`reg_legacy`).
+  compilers: `q` is `reg_abcd` on i686 but any register on x86-64, and `R`
+  is `reg` on i686 but the legacy eight on x86-64 (`reg_legacy`).
   x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars) and Arm `U` are
   multi-letter constraints. `?`, `!`, `*`, `^` and `$` are preference
   hints and are skipped, and `#` ends the alternative. Anything else,
@@ -2433,7 +2433,7 @@ on the type:
   type is padded up to a power-of-two size and aligned to that size, so an
   atomic access to it can be lock-free: `_Atomic struct { char a[3]; }` is
   4 bytes aligned to 4. The promotion applies only up to the target's widest
-  promotable width (16 bytes on x86-64 and AArch64, 8 on i386 and ARM32);
+  promotable width (16 bytes on x86-64 and AArch64, 8 on i686 and ARM32);
   wider objects keep their natural layout, and a zero-sized one still gets
   one byte. The qualifier is never on an array type, so an array of atomic
   elements promotes each element, not the whole array. Sizes and alignments

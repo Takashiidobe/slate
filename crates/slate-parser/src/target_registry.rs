@@ -84,12 +84,12 @@ const X86_64_LINUX_GNU: Predefines = Predefines {
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
 
-const I386_LINUX_GNU: Predefines = Predefines {
+const I686_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
-    name: "<clang-i386-linux-gnu-predefines>",
+    name: "<clang-i686-linux-gnu-predefines>",
     source: include_str!("predefines/clang-22.1.8_i686_linux_gnu.h"),
     defaults: include_str!("predefines/slate_x86_linux_defaults.h"),
-    gnu_namespace: include_str!("predefines/slate_gnu_namespace_i386_linux.h"),
+    gnu_namespace: include_str!("predefines/slate_gnu_namespace_i686_linux.h"),
 };
 
 const X86_64_LINUX_GNU_GCC: Predefines = Predefines {
@@ -99,11 +99,11 @@ const X86_64_LINUX_GNU_GCC: Predefines = Predefines {
     ..X86_64_LINUX_GNU
 };
 
-const I386_LINUX_GNU_GCC: Predefines = Predefines {
+const I686_LINUX_GNU_GCC: Predefines = Predefines {
     flavors: GCC,
-    name: "<gcc-i386-linux-gnu-predefines>",
+    name: "<gcc-i686-linux-gnu-predefines>",
     source: include_str!("predefines/gcc-16.2.1_i686_linux_gnu.h"),
-    ..I386_LINUX_GNU
+    ..I686_LINUX_GNU
 };
 
 const AARCH64_LINUX_GNU: Predefines = Predefines {
@@ -141,17 +141,16 @@ pub const X86_64_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
     convention: AbiConvention::SysV64,
 };
 
-const fn i386_linux_gnu(multiarch: &'static str) -> TargetProfile {
-    TargetProfile {
-        predefines: &[I386_LINUX_GNU, I386_LINUX_GNU_GCC],
-        sysroot: SysrootLayout::Unix {
-            multiarch: Some(multiarch),
-        },
-        clang_headers: ClangHeaders::Upstream,
-        va_list: VaListKind::CharPointer,
-        convention: AbiConvention::X86Cdecl,
-    }
-}
+const I686_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
+    predefines: &[I686_LINUX_GNU, I686_LINUX_GNU_GCC],
+    // debian's multiarch directory keeps the i386 name, and clang searches it for i686
+    sysroot: SysrootLayout::Unix {
+        multiarch: Some("i386-linux-gnu"),
+    },
+    clang_headers: ClangHeaders::Upstream,
+    va_list: VaListKind::CharPointer,
+    convention: AbiConvention::X86Cdecl,
+};
 
 const fn clang_unix(
     predefines: &'static [Predefines],
@@ -197,14 +196,9 @@ pub const TARGETS: &[TargetSpec] = &[
         profile: X86_64_LINUX_GNU_PROFILE,
     },
     TargetSpec {
-        triple: "i386-unknown-linux-gnu",
-        layout: TargetInfo::x86_linux,
-        profile: i386_linux_gnu("i386-linux-gnu"),
-    },
-    TargetSpec {
         triple: "i686-unknown-linux-gnu",
         layout: TargetInfo::x86_linux,
-        profile: i386_linux_gnu("i686-linux-gnu"),
+        profile: I686_LINUX_GNU_PROFILE,
     },
     TargetSpec {
         triple: "aarch64-unknown-linux-gnu",
@@ -358,7 +352,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     )
                 },
                 Predefines {
-                    gnu_namespace: include_str!("predefines/slate_gnu_namespace_i386_windows.h"),
+                    gnu_namespace: include_str!("predefines/slate_gnu_namespace_i686_windows.h"),
                     ..clang_only(
                         "<clang-i686-windows-msvc-predefines>",
                         include_str!("predefines/clang-22.1.8_i686_windows_msvc.h"),

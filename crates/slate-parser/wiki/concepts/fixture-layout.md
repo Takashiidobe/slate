@@ -16,8 +16,7 @@ tests/fixtures/[error/ | suites/<name>/]<flavor>/[<os>/[<arch> | <triple>]]/<fix
 - `<arch>` maps to that OS's usual triple through `CANONICAL_TRIPLES`
   (`windows/i686` is `i686-pc-windows-msvc`), and defaults to `x86_64`.
   Anything the table can't express uses the full triple as the directory
-  instead, like `linux/armv7-unknown-linux-gnueabihf/` or
-  `linux/i386-unknown-linux-gnu/`.
+  instead, like `linux/armv7-unknown-linux-gnueabihf/`.
 - `error/` holds fixtures where every configuration errors. A fixture with
   both passing and error configurations stays in the main tree.
 - `suites/<name>/` holds imported test suites (`gcc-dg`, `gcc-torture`,

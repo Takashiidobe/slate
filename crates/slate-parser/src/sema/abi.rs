@@ -738,7 +738,7 @@ impl<'a> AbiClassifier<'a> {
             AbiConvention::SysV64 if size > register_bytes && !result => AbiPass::ByValue { align },
             AbiConvention::SysV64 => AbiPass::Direct,
             // an eight-byte vector of narrow integer lanes is an MMX type, which
-            // i386 passes as an integer to keep MMX registers out of the ABI
+            // i686 passes as an integer to keep MMX registers out of the ABI
             AbiConvention::X86Cdecl
                 if size == 8
                     && !result

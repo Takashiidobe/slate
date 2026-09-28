@@ -4,7 +4,7 @@
 struct odd5 { char a[5]; };
 struct odd9 { char a[9]; };
 
-// i386 promotes at most 8 bytes, so odd9 keeps its natural layout while
+// i686 promotes at most 8 bytes, so odd9 keeps its natural layout while
 // long long is over-aligned past its natural 4.
 unsigned long widths[] = {
     sizeof(_Atomic struct odd5), _Alignof(_Atomic struct odd5),
@@ -15,7 +15,7 @@ unsigned long widths[] = {
 
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
-// IR-NEXT:     target "i386-unknown-linux-gnu" {
+// IR-NEXT:     target "i686-unknown-linux-gnu" {
 // IR-NEXT:         endian = little;
 // IR-NEXT:         pointer [size=4, align=4];
 // IR-NEXT:         stack_alignment = 16;
