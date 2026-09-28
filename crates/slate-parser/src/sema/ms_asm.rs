@@ -44,6 +44,7 @@ enum MsAsmSymbol {
     },
     Function(BindingId),
     Label(String),
+    CLabel(BindingId),
 }
 
 #[derive(Default)]
@@ -131,6 +132,7 @@ impl Lowerer {
             ..Lowered::default()
         };
         let mut clobbers = BTreeSet::new();
+        let mut labels = Vec::new();
         for (line, instruction) in asm.instructions.iter().enumerate() {
             let instruction = &instruction.value;
             if line > 0 {
@@ -145,9 +147,16 @@ impl Lowerer {
                 });
             }
             if let Some(label) = &instruction.label {
-                lowered
-                    .pieces
-                    .push(AsmPiece::LocalLabel(label.value.to_lowercase()));
+                if let Some(binding) = self.names.label_definitions.get(&label.id) {
+                    lowered.pieces.push(AsmPiece::EntryLabel {
+                        name: label.value.to_lowercase(),
+                        binding: *binding,
+                    });
+                } else {
+                    lowered
+                        .pieces
+                        .push(AsmPiece::LocalLabel(label.value.to_lowercase()));
+                }
                 lowered.text(":");
                 if instruction.mnemonic.is_some() {
                     lowered.text(" ");
@@ -184,7 +193,7 @@ impl Lowerer {
                     clobbers.extend(clobbered(register));
                 }
                 lowered.text(if index == 0 { " " } else { ", " });
-                self.ms_asm_operand(operand, sized, access, &mut lowered)?;
+                self.ms_asm_operand(operand, sized, access, &mut lowered, &mut labels)?;
             }
         }
         for operand in &mut lowered.operands {
@@ -205,7 +214,7 @@ impl Lowerer {
             template: template(asm),
             volatile: true,
             inline: false,
-            goto: false,
+            goto: !labels.is_empty(),
             dialect: Some(AsmDialect::Intel),
             pieces: lowered.pieces,
             operands: lowered.operands,
@@ -213,7 +222,7 @@ impl Lowerer {
                 .into_iter()
                 .map(|name| AsmClobber::Register(register(&decode_register(name))))
                 .collect(),
-            labels: Vec::new(),
+            labels,
             alternative: None,
             rejected: Vec::new(),
             options,
@@ -226,6 +235,7 @@ impl Lowerer {
         sized: bool,
         access: AsmAccess,
         lowered: &mut Lowered,
+        labels: &mut Vec<BindingId>,
     ) -> Result<(), ResolveError> {
         let reference = match operand {
             MsAsmOperand::Register(register) => {
@@ -261,6 +271,19 @@ impl Lowerer {
                 lowered
                     .pieces
                     .push(AsmPiece::LocalLabel(name.to_lowercase()));
+            }
+            Some(MsAsmSymbol::CLabel(binding)) => {
+                if registers || reference.displacement != 0 || reference.offset {
+                    return Err(ResolveError::Unsupported("`__asm` C label with an offset"));
+                }
+                let index = match labels.iter().position(|label| *label == binding) {
+                    Some(index) => index,
+                    None => {
+                        labels.push(binding);
+                        labels.len() - 1
+                    }
+                };
+                lowered.pieces.push(AsmPiece::Label(index));
             }
             Some(MsAsmSymbol::Function(binding)) => {
                 if registers || reference.displacement != 0 {
@@ -493,18 +516,24 @@ impl Lowerer {
     }
 
     fn ms_asm_name(&mut self, expr: &Span<MsAsmExpr>, name: &str) -> Result<Value, ResolveError> {
-        let Some(kind) = self
+        let Some(reference) = self
             .names
             .references
             .iter()
             .find(|reference| reference.id == expr.id)
-            .map(|reference| reference.kind)
         else {
             return Ok(Value {
                 symbol: Some(MsAsmSymbol::Label(name.to_owned())),
                 ..Value::default()
             });
         };
+        if reference.kind == BindingKind::Label {
+            return Ok(Value {
+                symbol: Some(MsAsmSymbol::CLabel(reference.binding)),
+                ..Value::default()
+            });
+        }
+        let kind = reference.kind;
         let identifier = Box::new(
             expr.clone()
                 .with_value(ast::ExprKind::Identifier(name.to_owned())),

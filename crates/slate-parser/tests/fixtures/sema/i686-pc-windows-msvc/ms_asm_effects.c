@@ -143,11 +143,11 @@ void calls(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @string_ops() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "rep movsb\nrepne scasb\nlodsd\nstosw\nagain:\nloop again" [dialect=intel] {
-// DEFAULT-NEXT:             template: "rep movsb\nrepne scasb\nlodsd\nstosw\n" label(again) ":\nloop " label(again);
+// DEFAULT-NEXT:             template: "rep movsb\nrepne scasb\nlodsd\nstosw\n" entry_label(%12, again) ":\nloop " label(again);
 // DEFAULT-NEXT:             clobbers: "eax" as ax, "ecx" as cx, "edi" as di, "esi" as si;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @explicit_registers() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %13 @explicit_registers() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "mov al, 1\nmov bh, 2\nmovzx esi, ax\nmovdqu xmm3, bytes\nmovd mm2, counter\nmov esp, ebp\nfstsw ax\nemms" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov al, 1\nmov bh, 2\nmovzx esi, ax\nmovdqu xmm3, " addr(%0) "\nmovd mm2, " addr(%1) "\nmov esp, ebp\nfstsw ax\nemms";
 // DEFAULT-NEXT:             in 0 [bytes] mem<read> place<array<u8, 16>>(%2);
@@ -155,7 +155,7 @@ void calls(void) {
 // DEFAULT-NEXT:             clobbers: "eax" as ax, "ebx" as bx, "esi" as si, "mm0" as mm0, "mm1" as mm1, "mm2" as mm2, "mm3" as mm3, "mm4" as mm4, "mm5" as mm5, "mm6" as mm6, "mm7" as mm7, "st" as st, "st(1)" as st(1), "st(2)" as st(2), "st(3)" as st(3), "st(4)" as st(4), "st(5)" as st(5), "st(6)" as st(6), "st(7)" as st(7), "xmm3" as xmm3;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @calls() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %14 @calls() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "call read_only" [dialect=intel] {
 // DEFAULT-NEXT:             template: "call " %0;
 // DEFAULT-NEXT:             in 0 sym<offset=0>(%3);

@@ -1054,7 +1054,11 @@ template as opaque text with holes.
   `PTR`, or, where MASM infers it from the C type (no register operand, or
   `movzx`/`movsx`, shifts and rotates, `shld`/`shrd`), the size of the
   innermost element type. That matches the `dword ptr`/`qword ptr` clang
-  inserts. Asm labels are `AsmPiece::LocalLabel(name)`, lowercased.
+  inserts. Clang-flavor asm labels are `AsmPiece::LocalLabel(name)`, lowercased.
+  In the MSVC flavor, an asm label definition is
+  `AsmPiece::EntryLabel { name, binding }`, so a C `goto` can target its
+  exact position in the block. A jump from asm to a C label is an asm-goto
+  `%lN` piece with that C label binding in `labels`.
   `clobbers` are `AsmClobber::Register`s from that effects table:
   written registers widened to their 32-bit name (`al` gives `eax`),
   implicit defs, `st`..`st(7)` for any x87 instruction, and `eax`/`ecx`/

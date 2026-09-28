@@ -275,7 +275,8 @@ asm_place  = "place<" type [ ", volatile" ] ">(" place ")" ;
 asm_symbol = "sym<offset=" [ "-" ] integer ">(" binding ")" ;
 asm_memory = "mem<" ( "read" | "write" | "readwrite" ) ">" asm_place ;
 asm_piece  = string | "%" [ letter ] integer [ asm_view ] | "%l" integer
-           | "%%" | "%=" | asm_address | "label(" identifier ")" ;
+           | "%%" | "%=" | asm_address | "label(" identifier ")"
+           | "entry_label(" binding ", " identifier ")" ;
 asm_address = "addr" [ "<" identifier ">" ] "(%" integer [ " + " identifier ]
               [ " + " identifier "*" integer ] [ ( " + " | " - " ) integer ] ")" ;
 asm_view   = "(" ( integer | "high8" ) ")" ;
@@ -352,7 +353,9 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   `addr<size>(%N + base + index*scale + disp)` is a memory reference into
   operand `N` (the size appears where MASM needs it spelled out), and
   `label(name)` is an asm-local label, lowercased, which emission renumbers
-  because Rust `asm!` rejects named labels. Register-only memory such as
+  because Rust `asm!` rejects named labels. `entry_label(%N, name)` defines
+  a label inside MSVC asm that C `goto` can enter at that position; its
+  binding is the target of the `goto`. Register-only memory such as
   `dword ptr [esp + 12]` stays text.
 - `from value` on an `inout`/`inlateout` is a tied input (`"0"`); without
   it the place itself is read (`"+r"`).

@@ -44,7 +44,7 @@ struct Resolver {
     labels: HashMap<String, Entry>,
     local_labels: Vec<HashMap<String, Entry>>,
     local_label_declarations: HashMap<crate::ast::NodeId, Entry>,
-    ms_asm_labels: HashSet<String>,
+    ms_asm_labels: HashMap<String, Option<Entry>>,
     defined_labels: HashSet<BindingId>,
     collecting_labels: bool,
     collected_tags: HashSet<AstTagId>,
@@ -67,7 +67,7 @@ impl Resolver {
             labels: HashMap::new(),
             local_labels: vec![HashMap::new()],
             local_label_declarations: HashMap::new(),
-            ms_asm_labels: HashSet::new(),
+            ms_asm_labels: HashMap::new(),
             defined_labels: HashSet::new(),
             collecting_labels: false,
             collected_tags: HashSet::new(),
@@ -694,7 +694,10 @@ impl Resolver {
             }
             return Ok(entry);
         }
-        if self.labels.contains_key(&label.value) {
+        if self.labels.contains_key(&label.value)
+            || (self.flavor == CompilerFlavor::Msvc
+                && self.ms_asm_labels.contains_key(&label.value.to_lowercase()))
+        {
             return Err(ResolveError::Duplicate {
                 namespace: "label",
                 name: label.value.clone(),
@@ -834,6 +837,15 @@ impl Resolver {
             .rev()
             .find_map(|scope| scope.get(name))
             .or_else(|| self.labels.get(name))
+            .or_else(|| {
+                (self.flavor == CompilerFlavor::Msvc)
+                    .then(|| {
+                        self.ms_asm_labels
+                            .get(&name.to_lowercase())
+                            .and_then(Option::as_ref)
+                    })
+                    .flatten()
+            })
             .cloned()
             .ok_or_else(|| ResolveError::Unresolved {
                 namespace: "label",
@@ -847,7 +859,23 @@ impl Resolver {
         for instruction in &asm.instructions {
             if self.collecting_labels {
                 if let Some(label) = &instruction.value.label {
-                    self.ms_asm_labels.insert(label.value.to_lowercase());
+                    let name = label.value.to_lowercase();
+                    if self.flavor == CompilerFlavor::Msvc {
+                        if self.labels.contains_key(&label.value)
+                            || self.ms_asm_labels.contains_key(&name)
+                        {
+                            return Err(ResolveError::Duplicate {
+                                namespace: "label",
+                                name: label.value.clone(),
+                            });
+                        }
+                        let entry = self.new_entry(&label.value, BindingKind::Label, label);
+                        self.defined_labels.insert(entry.id);
+                        self.resolution.label_definitions.insert(label.id, entry.id);
+                        self.ms_asm_labels.insert(name, Some(entry));
+                    } else {
+                        self.ms_asm_labels.insert(name, None);
+                    }
                 }
                 continue;
             }
@@ -864,7 +892,12 @@ impl Resolver {
             MsAsmExpr::Name(name) if self.lookup_ordinary(name).is_some() => {
                 self.reference_ordinary(name, expr)
             }
-            MsAsmExpr::Name(name) if self.ms_asm_labels.contains(&name.to_lowercase()) => Ok(()),
+            MsAsmExpr::Name(name) if self.ms_asm_labels.contains_key(&name.to_lowercase()) => {
+                Ok(())
+            }
+            MsAsmExpr::Name(name) if self.flavor == CompilerFlavor::Msvc => {
+                self.reference_label(&expr.clone().with_value(name.clone()))
+            }
             MsAsmExpr::Name(name) => Err(ResolveError::Unresolved {
                 namespace: "label",
                 name: name.clone(),

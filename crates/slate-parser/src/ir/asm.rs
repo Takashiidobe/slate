@@ -111,6 +111,10 @@ pub enum AsmPiece {
     },
     // an MSVC `__asm` label, lowercased; rust `asm!` rejects named labels, so emission renumbers it.
     LocalLabel(String),
+    EntryLabel {
+        name: String,
+        binding: BindingId,
+    },
 }
 
 // the register slice a width modifier prints, which overrides the operand's own width.
@@ -435,6 +439,7 @@ impl fmt::Display for AsmPiece {
                 f.write_str(")")
             }
             Self::LocalLabel(name) => write!(f, "label({name})"),
+            Self::EntryLabel { name, binding } => write!(f, "entry_label(%{}, {name})", binding.0),
         }
     }
 }

@@ -80,7 +80,9 @@ Acceptance:
 Jumps between C and asm labels: MSVC accepts `jmp c_label` from asm and
 `goto asm_label` into an asm block; clang rejects both ("use of undeclared
 label", "cannot jump from this goto statement to label ... inside an inline
-assembly block").
+assembly block"). The MSVC flavor resolves the first as an asm-goto label
+operand and records the second as an entry label at its exact position in
+the asm template.
 
 Lexing: an apostrophe in a `;` comment (`; don't`) is only a clang warning
 (`-Winvalid-pp-token`) and already survives our lexer.
@@ -141,8 +143,8 @@ an object or parameter, a function, an enumerator or a typedef. Otherwise it
 must be an asm label defined anywhere in the same function, in any `__asm`
 statement, compared case-insensitively. Anything else is "unresolved label
 name", which is also how both compilers word it. Asm labels live apart from
-C labels (clang; MSVC shares one namespace and rejects `lbl:` in both), and
-duplicates are not diagnosed (clang accepts them, MSVC rejects). Reachability
+C labels in the clang flavor. MSVC shares one label namespace and rejects
+`lbl:` in both; the MSVC flavor diagnoses duplicates. Reachability
 marks the same names, so header declarations used only from `__asm` survive
 pruning.
 
@@ -273,8 +275,3 @@ no implicit register outputs are added.
   costs one, or one in total with a frame struct.
 - `_emit` byte sequences (hand-encoded `rdtsc`, `cpuid`) carry no inferred
   clobbers. clang has the same hole.
-
-## Open decisions
-
-- MSVC-only jumps between C labels and asm labels: deferred; reject until
-  then.
