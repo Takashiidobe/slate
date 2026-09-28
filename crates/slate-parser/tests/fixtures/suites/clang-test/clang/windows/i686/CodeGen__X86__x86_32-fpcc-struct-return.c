@@ -64,7 +64,7 @@ ZeroSized returnZero(ZeroSized x) { return x; }
 // DEFAULT-NEXT:     fn %12 @returnShort(%13 x: @type4) -> @type4 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type4, reason=return>(read<@type4>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @returnZero(%15 x: @type6) -> @type6 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @returnZero(%15 x: @type6) -> @type6 [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type6, reason=return>(read<@type6>(%15));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

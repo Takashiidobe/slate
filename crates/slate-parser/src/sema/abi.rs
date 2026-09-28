@@ -228,16 +228,7 @@ impl<'a> AbiClassifier<'a> {
                         if matches!(field.ty, Type::Array { length: None, .. }) {
                             return Ok(false);
                         }
-                        if field.name.is_none() && field.bit_width.is_some()
-                            || matches!(
-                                field.ty,
-                                Type::Array {
-                                    length: Some(0),
-                                    ..
-                                }
-                            )
-                            || self.is_empty_record(&field.ty)
-                        {
+                        if self.is_empty_field(field) {
                             continue;
                         }
                         if !self.win32_returns_in_register(&field.ty)? {
@@ -263,18 +254,22 @@ impl<'a> AbiClassifier<'a> {
         }
     }
 
+    fn is_empty_field(&self, field: &Field) -> bool {
+        field.name.is_none() && field.bit_width.is_some() || self.is_empty_record(&field.ty)
+    }
+
     fn is_empty_record(&self, ty: &Type) -> bool {
         match ty {
+            Type::Array {
+                length: Some(0), ..
+            } => true,
             Type::Array { element, .. } => self.is_empty_record(element),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.is_empty_record(inner),
                 TypeDefinitionKind::Record {
                     fields: Some(fields),
                     ..
-                } => fields.iter().all(|field| {
-                    field.name.is_none() && field.bit_width.is_some()
-                        || self.is_empty_record(&field.ty)
-                }),
+                } => fields.iter().all(|field| self.is_empty_field(field)),
                 _ => false,
             },
             _ => false,
@@ -420,6 +415,13 @@ impl<'a> AbiClassifier<'a> {
             AbiConvention::X86Cdecl if result && size == 0 => AbiPass::SRet {
                 align: align.min(4),
             },
+            AbiConvention::X86Win32
+                if result
+                    && self.types.flavor == CompilerFlavor::Clang
+                    && self.is_empty_record(record.ty) =>
+            {
+                AbiPass::Void
+            }
             AbiConvention::X86Win32
                 if result
                     && matches!(size, 1 | 2 | 4 | 8)

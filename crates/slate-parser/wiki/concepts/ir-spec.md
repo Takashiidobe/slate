@@ -1418,6 +1418,7 @@ verified to agree:
 | `_Float16`, `__bf16`, `long double` (f80/f128), `__float128` members where they set the register class | `sysv64`, `aapcs64`, `win_arm64` | SysV eightbyte classes or HFA |
 | complex with such a component | `sysv64`, `aapcs64`, `win_arm64` | same |
 | GNU empty record result | `x86_cdecl` | `sret` |
+| empty record result (no fields but zero-length arrays, unnamed bit-fields and empty records; 4+ bytes under MS layout), clang flavor only (cl returns it in EAX like rustc) | `x86_win32` | `void` |
 | register-sized record result clang still returns in memory (a `char[3]`, `_BitInt` or flexible array member) | `x86_win32` | `sret` |
 | complex result of ≤ 8 bytes (gcc agrees: `_Complex char` in AX, `int`/`float` in EDX:EAX) | `x86_cdecl` | `coerce<i16/i32/i64>` |
 | homogeneous float record, `_Complex float`/`double` (rustc only uses VFP for `hf` triples) | `aapcs32_hard_float` on Windows | `coerce<fN...>` |
@@ -1444,7 +1445,8 @@ clang returns a record, union or complex of 1, 2, 4 or 8 bytes in registers
 only when its non-empty fields are all themselves register-sized (zero-length
 arrays are skipped; a flexible array member, a field like `char[3]`, or a
 `_BitInt` field disqualify it). rustc returns every record of those sizes in
-registers, so the disqualified ones are the explicit `sret` cases.
+registers, so the disqualified ones are the explicit `sret` cases. clang
+ignores an empty record result before that rule, so it is `void`.
 `tests/fixtures/clang/windows/i686/abi_target.c` pins these against clang.
 
 **x86-32 calling conventions.** `__stdcall`, `__fastcall`, `__vectorcall`
