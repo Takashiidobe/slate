@@ -109,7 +109,7 @@ impl Lowerer {
         let ExprKind::Identifier(name) = &callee.value else {
             return None;
         };
-        let builtin = super::builtins::clang_builtin(name, self.types.flavor)?;
+        let builtin = super::builtins::clang_builtin(name, self.types.compiler_flavor())?;
         let Some(&binding) = self.types.references.get(&callee.id) else {
             return Some((builtin, None));
         };
@@ -198,8 +198,8 @@ impl Lowerer {
             linkage: Linkage::External,
             symbol: SymbolAttributes::default(),
             semantics: FunctionSemantics {
-                noreturn: builtin.noreturn(self.types.flavor),
-                memory: builtin.memory_effects(self.types.flavor),
+                noreturn: builtin.noreturn(self.types.compiler_flavor()),
+                memory: builtin.memory_effects(self.types.compiler_flavor()),
                 ..FunctionSemantics::default()
             },
             body: None,
@@ -2483,7 +2483,7 @@ impl Lowerer {
                     } else if self.is_null_pointer_constant(Some(then_value), &left) {
                         right.c
                     } else {
-                        let rules = self.types.features.conditional_pointers;
+                        let rules = self.types.features().conditional_pointers;
                         self.types
                             .ctypes
                             .merge_pointer(left.c, right.c, rules)

@@ -6,8 +6,8 @@ use crate::ast::{
     IntegerType, ParameterList, Span, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
-use crate::compiler_args::{CompilerFlavor, LanguageStandard};
-use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
+use crate::compiler_args::CompilerFlavor;
+use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Enumerator, Field,
     Number, NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition,
@@ -25,6 +25,7 @@ use super::ctype::{
 };
 use super::numeric::ResolveError;
 use super::operand::Operand;
+use crate::dialect::Dialect;
 use crate::standard_features::StandardFeatures;
 
 pub(super) struct ParameterShape {
@@ -35,9 +36,7 @@ pub(super) struct ParameterShape {
 }
 
 pub struct TypeResolver {
-    target: TargetInfo,
-    pub(super) flavor: CompilerFlavor,
-    pub features: StandardFeatures,
+    dialect: Dialect,
     pub ctypes: CTypes,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
@@ -55,8 +54,6 @@ pub struct TypeResolver {
     field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
-    diagnostic_options: DiagnosticOptions,
-    standard: LanguageStandard,
     prototype_scope: bool,
 }
 
@@ -72,14 +69,12 @@ pub(super) enum Ordinary {
 
 impl TypeResolver {
     pub(super) fn target_info(&self) -> &TargetInfo {
-        &self.target
+        self.dialect.target()
     }
 
-    pub fn new(target: TargetInfo) -> Self {
+    fn new(dialect: Dialect) -> Self {
         Self {
-            target,
-            flavor: CompilerFlavor::Clang,
-            features: StandardFeatures::default(),
+            dialect,
             ctypes: CTypes::default(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
@@ -97,18 +92,16 @@ impl TypeResolver {
             field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
-            diagnostic_options: DiagnosticOptions::default(),
-            standard: LanguageStandard::default(),
             prototype_scope: false,
         }
     }
 
     pub fn ir_type(&self, q: QualType) -> Type {
-        self.ctypes.ir_type(q, &self.target)
+        self.ctypes.ir_type(q, self.dialect.target())
     }
 
     pub fn is_va_list(&mut self, ty: &Type) -> bool {
-        let va_list = self.ctypes.va_list_type(&self.target);
+        let va_list = self.ctypes.va_list_type(self.dialect.target());
         self.ir_type(va_list) == *ty
     }
 
@@ -129,7 +122,11 @@ impl TypeResolver {
     }
 
     pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
-        self.flavor
+        self.dialect.flavor()
+    }
+
+    pub fn features(&self) -> StandardFeatures {
+        self.dialect.features()
     }
 
     pub fn access_of(&self, q: QualType) -> Access {
@@ -137,23 +134,19 @@ impl TypeResolver {
     }
 
     pub fn with_tags(unit: &TranslationUnit) -> Self {
-        let dialect = &unit.dialect;
-        let mut resolver = Self::new(dialect.target().clone());
-        resolver.flavor = dialect.flavor();
-        resolver.ctypes.ptr32_extension_is_qualifier = dialect.flavor() == CompilerFlavor::Msvc;
-        resolver.features = dialect.features();
+        let mut resolver = Self::new(unit.dialect.clone());
+        resolver.ctypes.ptr32_extension_is_qualifier =
+            unit.dialect.flavor() == CompilerFlavor::Msvc;
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
-        resolver.diagnostic_options = dialect.options().diagnostics.clone();
-        resolver.standard = dialect.standard();
         resolver
     }
 
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
         let diagnostics = DiagnosticContext {
-            options: &self.diagnostic_options,
-            standard: self.standard,
-            flavor: self.flavor,
+            options: &self.dialect.options().diagnostics,
+            standard: self.dialect.standard(),
+            flavor: self.dialect.flavor(),
         };
         self.diagnostics.extend(warning.diagnose(
             message,
@@ -188,8 +181,8 @@ impl TypeResolver {
                     if let Attribute::Unknown { name, .. } = &attribute.value
                         && !crate::attribute_support::spelling_registered(
                             name,
-                            self.flavor,
-                            &self.target,
+                            self.dialect.flavor(),
+                            self.dialect.target(),
                         )
                     {
                         let message = format!("unknown attribute '{name}' ignored");
@@ -262,13 +255,13 @@ impl TypeResolver {
                 }
             }
             CTypeKind::Float(_) => {
-                let long_double = self.target.long_double;
+                let long_double = self.dialect.target().long_double;
                 CTypeKind::Float(match name {
                     "SF" => FloatKind::Float,
                     "DF" => FloatKind::Double,
                     "XF" if long_double == LongDoubleFormat::X87 => FloatKind::LongDouble,
                     "TF" if long_double == LongDoubleFormat::Binary128 => FloatKind::LongDouble,
-                    "TF" if self.target.has_float128() => FloatKind::Float128,
+                    "TF" if self.dialect.target().has_float128() => FloatKind::Float128,
                     "XF" | "TF" => {
                         return Err(ResolveError::Invalid("unsupported machine mode"));
                     }
@@ -282,7 +275,7 @@ impl TypeResolver {
                 let signed = match kind {
                     CTypeKind::Bool | CTypeKind::UChar => false,
                     CTypeKind::SChar => true,
-                    CTypeKind::Char => self.target.char_signed,
+                    CTypeKind::Char => self.dialect.target().char_signed,
                     CTypeKind::Int { signed, .. } => signed,
                     CTypeKind::Complex(_) => {
                         return Err(ResolveError::Unsupported("complex machine mode"));
@@ -306,7 +299,7 @@ impl TypeResolver {
                     "SI" => 32,
                     "DI" => 64,
                     "TI" => 128,
-                    "word" | "pointer" => self.target.pointer_width,
+                    "word" | "pointer" => self.dialect.target().pointer_width,
                     "SF" | "DF" | "XF" | "TF" => return Err(mismatch),
                     _ => return Err(ResolveError::Unsupported("machine mode")),
                 };
@@ -318,7 +311,7 @@ impl TypeResolver {
 
     // clang's getIntTypeByWidth order: the first standard type of that width wins
     fn integer_of_width(&self, width: u32, signed: bool) -> Result<CTypeKind, ResolveError> {
-        let target = &self.target;
+        let target = self.dialect.target();
         let rank = if width == 8 {
             return Ok(if signed {
                 CTypeKind::SChar
@@ -348,9 +341,9 @@ impl TypeResolver {
         e: &crate::ast::Expr,
     ) -> Result<BigInt, ResolveError> {
         let value = self.constant_value(e)?;
-        super::fold::integer_constant(&value, self.flavor).ok_or(ResolveError::Unsupported(
-            "nonconstant or undefined integer expression",
-        ))
+        super::fold::integer_constant(&value, self.dialect.flavor()).ok_or(
+            ResolveError::Unsupported("nonconstant or undefined integer expression"),
+        )
     }
 
     pub(super) fn push_scope(&mut self) {
@@ -404,8 +397,7 @@ impl TypeResolver {
     }
 
     pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Operand, ResolveError> {
-        let context =
-            super::numeric::Context::new(self.target.clone()).with_features(self.features);
+        let context = super::numeric::Context::for_dialect(&self.dialect);
         self.constant_value_with_context(&context, e)
     }
 
@@ -432,7 +424,7 @@ impl TypeResolver {
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let ty = self.assertion_operand_type(operand)?;
                 if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.ctypes.is_function(ty) {
-                    let c = self.ctypes.size_type(&self.target);
+                    let c = self.ctypes.size_type(self.dialect.target());
                     return Ok(Operand {
                         c,
                         value: Value {
@@ -458,7 +450,7 @@ impl TypeResolver {
                     self.object_alignment(operand, u64::from(layout.alignment_bytes))
                 };
                 (
-                    self.ctypes.size_type(&self.target),
+                    self.ctypes.size_type(self.dialect.target()),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -534,7 +526,7 @@ impl TypeResolver {
                     u64::from(layout.alignment_bytes)
                 };
                 (
-                    self.ctypes.size_type(&self.target),
+                    self.ctypes.size_type(self.dialect.target()),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -543,7 +535,7 @@ impl TypeResolver {
                 let ty = self.object_type(ty, "void offsetof")?;
                 let (_, n) = self.offsetof_member(ty, member)?;
                 (
-                    self.ctypes.size_type(&self.target),
+                    self.ctypes.size_type(self.dialect.target()),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -819,7 +811,7 @@ impl TypeResolver {
                 let right = self.ctypes.lvalue_conversion(right);
                 match (self.ctypes.is_pointer(left), self.ctypes.is_pointer(right)) {
                     (true, true) => {
-                        let rules = self.features.conditional_pointers;
+                        let rules = self.dialect.features().conditional_pointers;
                         Ok(self
                             .ctypes
                             .merge_pointer(left, right, rules)
@@ -1251,7 +1243,7 @@ impl TypeResolver {
         &self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Option<CallConv> {
-        let x86 = match self.target.family {
+        let x86 = match self.dialect.target().family {
             TargetFamily::X86 => true,
             TargetFamily::X86_64 => false,
             TargetFamily::AArch64 | TargetFamily::Arm32 => return None,
@@ -1481,12 +1473,16 @@ impl TypeResolver {
                 FloatingType::Float32 => FloatKind::Float32,
                 FloatingType::Float64 => FloatKind::Float64,
                 FloatingType::Float32x => FloatKind::Float32x,
-                FloatingType::Float64x if self.target.float64x_format().is_some() => {
+                FloatingType::Float64x if self.dialect.target().float64x_format().is_some() => {
                     FloatKind::Float64x
                 }
-                FloatingType::Float128 if self.target.has_float128() => FloatKind::Float128,
+                FloatingType::Float128 if self.dialect.target().has_float128() => {
+                    FloatKind::Float128
+                }
                 FloatingType::Float128Ext => FloatKind::Float128,
-                FloatingType::Float80 if self.target.long_double == LongDoubleFormat::X87 => {
+                FloatingType::Float80
+                    if self.dialect.target().long_double == LongDoubleFormat::X87 =>
+                {
                     FloatKind::LongDouble
                 }
                 FloatingType::Decimal32 => FloatKind::Decimal32,
@@ -1560,7 +1556,7 @@ impl TypeResolver {
                 saturating: fixed.saturated,
             }),
             TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
-                return Ok(self.ctypes.va_list_type(&self.target));
+                return Ok(self.ctypes.va_list_type(self.dialect.target()));
             }
             TypeSpecifier::TargetBuiltin(_) => {
                 return Err(ResolveError::Unsupported("target builtin type"));
@@ -1665,7 +1661,7 @@ impl TypeResolver {
                 })?;
                 let prototyped = match parameters {
                     ParameterList::IdentifierList { .. } => false,
-                    ParameterList::Empty => self.features.empty_parens_are_prototype,
+                    ParameterList::Empty => self.dialect.features().empty_parens_are_prototype,
                     ParameterList::Prototype { .. } | ParameterList::Void => true,
                 };
                 let (core, ret) = self.apply_pointers(inner, q)?;
@@ -1700,7 +1696,9 @@ impl TypeResolver {
 
     pub(super) fn promoted_parameter(&mut self, declared: QualType) -> QualType {
         let adjusted = self.ctypes.adjust_parameter(declared);
-        let promoted = self.ctypes.default_promotion(adjusted, &self.target);
+        let promoted = self
+            .ctypes
+            .default_promotion(adjusted, self.dialect.target());
         self.ctypes.unqualified(promoted)
     }
 
@@ -1806,7 +1804,7 @@ impl TypeResolver {
                 "'__sptr' and '__uptr' attributes are not compatible",
             ));
         }
-        Ok(Some(match self.target.pointer_width {
+        Ok(Some(match self.dialect.target().pointer_width {
             32 if is_ptr64 => PointerSpace::Ptr64,
             32 if is_uptr => PointerSpace::Ptr32Uptr,
             64 if is_ptr32 && is_uptr => PointerSpace::Ptr32Uptr,
@@ -2017,7 +2015,7 @@ impl TypeResolver {
                             enumerators: None,
                             layout: Some(layout),
                         };
-                        Some(if self.features.enumerators_have_enum_type {
+                        Some(if self.dialect.features().enumerators_have_enum_type {
                             self.ctypes.qual(CTypeKind::Enum(id))
                         } else {
                             fixed
@@ -2035,11 +2033,18 @@ impl TypeResolver {
                     let (value, own) = match (&enumerator.value, previous.take()) {
                         (Some(expr), _) => {
                             let operand = self.constant_value(expr)?;
-                            let value = super::fold::integer_constant(&operand.value, self.flavor)
-                                .ok_or(ResolveError::Unsupported(
-                                    "nonconstant or undefined integer expression",
-                                ))?;
-                            let own = self.ctypes.integer_promotion(operand.c, None, &self.target);
+                            let value = super::fold::integer_constant(
+                                &operand.value,
+                                self.dialect.flavor(),
+                            )
+                            .ok_or(ResolveError::Unsupported(
+                                "nonconstant or undefined integer expression",
+                            ))?;
+                            let own = self.ctypes.integer_promotion(
+                                operand.c,
+                                None,
+                                self.dialect.target(),
+                            );
                             (value, own)
                         }
                         (None, Some((previous, own))) => (previous + 1, own),
@@ -2110,7 +2115,7 @@ impl TypeResolver {
                 self.ctypes.set_enum_underlying(id, underlying_c);
                 let enumerator_c = if !is_fixed && fits_int {
                     self.ctypes.int()
-                } else if self.features.enumerators_have_enum_type {
+                } else if self.dialect.features().enumerators_have_enum_type {
                     self.ctypes.qual(CTypeKind::Enum(id))
                 } else {
                     underlying_c
@@ -2163,12 +2168,12 @@ impl TypeResolver {
             }
         };
         if redefines.is_some() {
-            let same_member = if self.flavor == CompilerFlavor::Clang {
+            let same_member = if self.dialect.flavor() == CompilerFlavor::Clang {
                 CTypes::same_or_enum_underlying
             } else {
                 CTypes::same
             };
-            if self.features.compatible_tag_redefinitions
+            if self.dialect.features().compatible_tag_redefinitions
                 && same_tag_shape(&self.definitions[id.0 as usize].kind, &kind)
                 && self.same_field_types(id, redefined_fields.as_deref(), &kind, same_member)
             {
@@ -2179,7 +2184,7 @@ impl TypeResolver {
             ));
         }
         self.definitions[id.0 as usize].kind = kind;
-        if self.features.compatible_tag_redefinitions {
+        if self.dialect.features().compatible_tag_redefinitions {
             self.join_compatible_tag(id);
         }
         Ok(id)
@@ -2287,15 +2292,15 @@ impl TypeResolver {
     }
 
     fn atomic_layout(&self, layout: StorageLayout) -> StorageLayout {
-        match self.flavor {
+        match self.dialect.flavor() {
             CompilerFlavor::Gcc => layout,
-            CompilerFlavor::Clang => self.target.atomic_storage(layout),
-            CompilerFlavor::Msvc => self.target.msvc_atomic_storage(layout),
+            CompilerFlavor::Clang => self.dialect.target().atomic_storage(layout),
+            CompilerFlavor::Msvc => self.dialect.target().msvc_atomic_storage(layout),
         }
     }
 
     pub(super) fn effective_alignment(&self, requested: u64, natural: u64) -> u64 {
-        if matches!(self.flavor, CompilerFlavor::Clang) {
+        if matches!(self.dialect.flavor(), CompilerFlavor::Clang) {
             requested
         } else {
             requested.max(natural)
@@ -2316,7 +2321,7 @@ impl TypeResolver {
                     ..
                 }
             ))
-        .then(|| self.target.large_array_alignment())
+        .then(|| self.dialect.target().large_array_alignment())
         .flatten();
         let typedef_aligned = declared.is_some_and(|q| self.ctypes.typedef_alignment(q).is_some());
         let unaligned = declared.is_some_and(|q| self.is_unaligned(q));
@@ -2338,7 +2343,7 @@ impl TypeResolver {
     }
 
     pub(super) fn declared_alignment(&self, requested: u64, natural: u64) -> u64 {
-        if matches!(self.flavor, CompilerFlavor::Msvc) {
+        if matches!(self.dialect.flavor(), CompilerFlavor::Msvc) {
             requested.max(natural)
         } else {
             requested
@@ -2380,7 +2385,7 @@ impl TypeResolver {
     // cl.exe only honours __unaligned on pointer types
     fn is_unaligned(&self, q: QualType) -> bool {
         self.ctypes.quals(q).is_unaligned
-            && (self.flavor != CompilerFlavor::Msvc || self.ctypes.is_pointer(q))
+            && (self.dialect.flavor() != CompilerFlavor::Msvc || self.ctypes.is_pointer(q))
     }
 
     pub(super) fn qualified_storage(
@@ -2416,7 +2421,9 @@ impl TypeResolver {
                 } => self.qualified_storage(underlying.clone(), atomic),
                 _ => Err(ResolveError::Unsupported("incomplete field type")),
             },
-            Type::Pointer { space, .. } => Ok(promote(self.target.pointer_storage(space))),
+            Type::Pointer { space, .. } => {
+                Ok(promote(self.dialect.target().pointer_storage(space)))
+            }
             Type::Array {
                 element,
                 length: Some(length),
@@ -2432,7 +2439,7 @@ impl TypeResolver {
             Type::Array { length: None, .. } | Type::Function { .. } => {
                 Err(ResolveError::Unsupported("incomplete field type"))
             }
-            _ => Ok(promote(self.target.storage_of(ty)?)),
+            _ => Ok(promote(self.dialect.target().storage_of(ty)?)),
         }
     }
 
@@ -2449,7 +2456,7 @@ impl TypeResolver {
             | Type::Numeric(NumericType::Integer {
                 bit_precise: false, ..
             }) => {
-                let size = self.target.storage_of(ty.clone())?.size_bytes;
+                let size = self.dialect.target().storage_of(ty.clone())?.size_bytes;
                 if size.is_power_of_two() {
                     Ok(Some(size))
                 } else {
@@ -2471,7 +2478,7 @@ impl TypeResolver {
         rules: RecordRules,
         requested: Option<u64>,
     ) -> Result<(RecordLayout, Vec<u64>), ResolveError> {
-        if self.target.environment == TargetEnvironment::Msvc {
+        if self.dialect.target().environment == TargetEnvironment::Msvc {
             return self.layout_microsoft_record(
                 kind,
                 fields,
@@ -2530,7 +2537,9 @@ impl TypeResolver {
                 .max(field_aligned.unwrap_or(1))
                 .min(max_field_alignment.unwrap_or(u64::MAX));
             field_alignments.push(align);
-            if field.bit_width == Some(0) && self.target.abi.zero_width_bitfield_aligns_record {
+            if field.bit_width == Some(0)
+                && self.dialect.target().abi.zero_width_bitfield_aligns_record
+            {
                 aggregate_align = aggregate_align.max(natural);
             } else if field.bit_width != Some(0) {
                 aggregate_align = aggregate_align.max(align);
@@ -2651,7 +2660,7 @@ impl TypeResolver {
         } else {
             rules
                 .max_field_alignment
-                .filter(|pack| pack * 8 <= u64::from(self.target.pointer_width))
+                .filter(|pack| pack * 8 <= u64::from(self.dialect.target().pointer_width))
         };
         let mut size = 0u64;
         let mut alignment = 1u64;
@@ -2760,7 +2769,7 @@ impl TypeResolver {
         }
         size = align_up(size, alignment)?;
         let required = required.into_iter().chain(requested).max();
-        let rounding = required.or((self.target.pointer_width == 64).then_some(1));
+        let rounding = required.or((self.dialect.target().pointer_width == 64).then_some(1));
         if let Some(rounding) = rounding {
             alignment = alignment.max(rounding);
             size = align_up(size, alignment)?;
@@ -3379,7 +3388,8 @@ fn resolve_parameters(
     next_binding: &mut u32,
 ) -> Result<crate::ir::Parameters, ResolveError> {
     use crate::ir::{BindingId, Parameter, Parameters};
-    if matches!(signature, ParameterList::Empty) && !resolver.features.empty_parens_are_prototype {
+    if matches!(signature, ParameterList::Empty) && !resolver.features().empty_parens_are_prototype
+    {
         return Ok(Parameters::Unprototyped);
     }
     let mut fixed = Vec::new();

@@ -285,7 +285,7 @@ impl<'a> AbiClassifier<'a> {
     }
 
     fn atomic_is_memory(&self, operand: &AbiOperand, convention: AbiConvention) -> bool {
-        if !operand.atomic || !matches!(self.types.flavor, CompilerFlavor::Clang) {
+        if !operand.atomic || !matches!(self.types.compiler_flavor(), CompilerFlavor::Clang) {
             return false;
         }
         if !matches!(
@@ -331,7 +331,7 @@ impl<'a> AbiClassifier<'a> {
             });
         }
         if operand.atomic
-            && self.types.flavor != CompilerFlavor::Gcc
+            && self.types.compiler_flavor() != CompilerFlavor::Gcc
             && matches!(convention, AbiConvention::Aapcs64 | AbiConvention::WinArm64)
             && self.is_record_or_complex(&operand.ty)
         {
@@ -401,8 +401,8 @@ impl<'a> AbiClassifier<'a> {
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
         let AbiRecord { size, align, .. } = *record;
-        let flexible_in_memory =
-            self.types.flavor != CompilerFlavor::Gcc && has_flexible_array(record.fields);
+        let flexible_in_memory = self.types.compiler_flavor() != CompilerFlavor::Gcc
+            && has_flexible_array(record.fields);
         Ok(match convention {
             AbiConvention::SysV64 => self.sysv_record(record, flexible_in_memory, result)?,
             AbiConvention::Win64 if flexible_in_memory && matches!(size, 1 | 2 | 4 | 8) => {
@@ -417,7 +417,7 @@ impl<'a> AbiClassifier<'a> {
             },
             AbiConvention::X86Win32
                 if result
-                    && self.types.flavor == CompilerFlavor::Clang
+                    && self.types.compiler_flavor() == CompilerFlavor::Clang
                     && self.is_empty_record(record.ty) =>
             {
                 AbiPass::Void
@@ -430,7 +430,7 @@ impl<'a> AbiClassifier<'a> {
                 AbiPass::SRet { align }
             }
             AbiConvention::Aapcs64 | AbiConvention::WinArm64 | AbiConvention::Aapcs32HardFloat => {
-                let c = if record.atomic && self.types.flavor != CompilerFlavor::Gcc {
+                let c = if record.atomic && self.types.compiler_flavor() != CompilerFlavor::Gcc {
                     None
                 } else {
                     self.homogeneous_record(

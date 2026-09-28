@@ -140,13 +140,14 @@ impl Lowerer {
             .functions
             .iter()
             .filter_map(|function| {
-                let builtin = super::builtins::clang_builtin(&function.name, self.types.flavor)?;
+                let builtin =
+                    super::builtins::clang_builtin(&function.name, self.types.compiler_flavor())?;
                 Some((function.id, function.value.id, builtin))
             })
             .collect();
         for (node, id, builtin) in named_builtins {
             if !self.declares_builtin(id, builtin) {
-                if self.types.flavor == CompilerFlavor::Clang
+                if self.types.compiler_flavor() == CompilerFlavor::Clang
                     && builtin.has(BuiltinAttribute::NoReturn)
                     && matches!(self.types.entities.linkage(id), Some(Linkage::External))
                 {
@@ -160,8 +161,8 @@ impl Lowerer {
                 .or_default()
                 .push(("c_builtin".into(), builtin.name.into()));
             let state = self.function_declarations.entry(id).or_default();
-            state.noreturn |= builtin.noreturn(self.types.flavor);
-            if let Some(memory) = builtin.memory_effects(self.types.flavor) {
+            state.noreturn |= builtin.noreturn(self.types.compiler_flavor());
+            if let Some(memory) = builtin.memory_effects(self.types.compiler_flavor()) {
                 state.restrict_memory(memory);
             }
         }

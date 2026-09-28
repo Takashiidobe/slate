@@ -699,7 +699,8 @@ impl Lowerer {
         params: &ParameterList,
         mut prologue: Option<&mut Vec<Span<Statement>>>,
     ) -> Result<Parameters, ResolveError> {
-        if matches!(params, ParameterList::Empty) && !self.types.features.empty_parens_are_prototype
+        if matches!(params, ParameterList::Empty)
+            && !self.types.features().empty_parens_are_prototype
         {
             return Ok(Parameters::Unprototyped);
         }
@@ -866,7 +867,10 @@ impl Lowerer {
         }
         let storage_class = item.specifiers.storage;
         let inferred = matches!(item.specifiers.ty, ast::TypeSpecifier::Inferred);
-        if inferred && self.types.flavor == CompilerFlavor::Gcc && item.declarators.len() > 1 {
+        if inferred
+            && self.types.compiler_flavor() == CompilerFlavor::Gcc
+            && item.declarators.len() > 1
+        {
             return Err(ResolveError::Invalid(
                 "'auto' may only be used with a single declarator",
             ));
@@ -1098,7 +1102,7 @@ impl Lowerer {
                     let value = self.initializer_value(resolved, initializer, &anchor);
                     self.context.region = region;
                     let mut value = value?;
-                    if self.types.flavor == CompilerFlavor::Msvc
+                    if self.types.compiler_flavor() == CompilerFlavor::Msvc
                         && (global || storage_class == StorageClass::Static)
                     {
                         super::fold::fold_msvc_static_divisions(&mut value);
@@ -1309,7 +1313,7 @@ impl Lowerer {
         &mut self,
         lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
     ) -> Result<T, ResolveError> {
-        if self.types.features.control_statement_scopes {
+        if self.types.features().control_statement_scopes {
             self.scoped(lower)
         } else {
             lower(self)
@@ -1330,7 +1334,7 @@ impl Lowerer {
     fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
-        let number = super::fold::integer_constant(&value, self.types.flavor)
+        let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
             .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
         Ok(self.value(
             expr,
@@ -1576,9 +1580,9 @@ impl Lowerer {
             StmtKind::Block(body) => {
                 Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
             }
-            StmtKind::ReturnVoid => match self.types.flavor {
+            StmtKind::ReturnVoid => match self.types.compiler_flavor() {
                 CompilerFlavor::Msvc => Statement::Return(None),
-                CompilerFlavor::Gcc if self.types.features.valueless_return_in_nonvoid => {
+                CompilerFlavor::Gcc if self.types.features().valueless_return_in_nonvoid => {
                     Statement::Return(None)
                 }
                 _ => {
@@ -1588,7 +1592,7 @@ impl Lowerer {
                 }
             },
             StmtKind::Attributed { attributes, body } => {
-                if self.types.flavor != CompilerFlavor::Gcc
+                if self.types.compiler_flavor() != CompilerFlavor::Gcc
                     && attributes
                         .iter()
                         .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
@@ -1601,7 +1605,7 @@ impl Lowerer {
                 return Ok(());
             }
             StmtKind::NestedFunction(_) => {
-                return Err(if self.types.flavor == CompilerFlavor::Gcc {
+                return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
                     ResolveError::Unsupported("GNU nested function")
                 } else {
                     ResolveError::Invalid("function definition is not allowed here")

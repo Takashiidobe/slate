@@ -454,7 +454,7 @@ impl Lowerer {
                             .offsetof_field(ty, &field.value)
                             .map_err(|_| no_such_member)?
                     }
-                    _ if self.types.flavor == CompilerFlavor::Msvc => {
+                    _ if self.types.compiler_flavor() == CompilerFlavor::Msvc => {
                         self.types.ms_asm_field(&field.value)?
                     }
                     Some(_) => return Err(no_such_member),

@@ -150,7 +150,7 @@ impl Lowerer {
                 ));
             }
         };
-        if self.types.flavor == CompilerFlavor::Gcc && !plain_identifier(declarator) {
+        if self.types.compiler_flavor() == CompilerFlavor::Gcc && !plain_identifier(declarator) {
             return Err(ResolveError::Invalid(
                 "'auto' requires a plain identifier as declarator",
             ));
@@ -166,7 +166,7 @@ impl Lowerer {
         }
         let (value, bit_field) = self.speculative_type(expr)?;
         if bit_field {
-            return Err(if self.types.flavor == CompilerFlavor::Gcc {
+            return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
                 ResolveError::Unsupported("deduced type of a bit-field initializer")
             } else {
                 ResolveError::Invalid("cannot use a bit-field as a deduced-type initializer")
@@ -263,7 +263,7 @@ impl TypeResolver {
         declarator: &Declarator,
         value: QualType,
     ) -> Result<(QualType, QualType), ResolveError> {
-        let atomic = self.flavor != CompilerFlavor::Gcc
+        let atomic = self.compiler_flavor() != CompilerFlavor::Gcc
             && self.ctypes.element(value).is_none()
             && self.ctypes.quals(value).is_atomic;
         let converted = self.ctypes.lvalue_conversion(value);

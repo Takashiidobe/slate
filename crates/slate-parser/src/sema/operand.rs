@@ -44,7 +44,7 @@ impl TypeResolver {
         use crate::const_expr::Encoding;
         let kind = match encoding {
             Encoding::Plain => CTypeKind::Char,
-            Encoding::Utf8 if !self.features.u8_literals_are_unsigned => CTypeKind::Char,
+            Encoding::Utf8 if !self.features().u8_literals_are_unsigned => CTypeKind::Char,
             Encoding::Utf8 => CTypeKind::UChar,
             Encoding::Utf16 => CTypeKind::Int {
                 rank: IntRank::Short,
