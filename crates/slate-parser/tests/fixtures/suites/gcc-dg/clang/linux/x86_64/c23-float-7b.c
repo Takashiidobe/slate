@@ -18,20 +18,20 @@
 
 volatile double d = DBL_SNAN;
 
-extern void abort(void);
-extern void exit(int);
+extern void abort (void);
+extern void exit (int);
 
-int main(void) {
-  feclearexcept(FE_ALL_EXCEPT);
+int
+main (void)
+{
+  feclearexcept (FE_ALL_EXCEPT);
   d += d;
-  if (!fetestexcept(FE_INVALID))
-    abort();
-  exit(0);
+  if (!fetestexcept (FE_INVALID))
+    abort ();
+  exit (0);
 }
 
-
-
-
+// SLATE-FILECHECK-STD DEFAULT c23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

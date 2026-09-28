@@ -2,50 +2,49 @@
 /* { dg-do run { target i?86-*-* x86_64-*-* } } */
 
 struct S {
-  int                              a : 2;
-  __attribute__((aligned(8))) int  b : 2;
-  int                              c : 28;
-  __attribute__((aligned(16))) int d : 2;
-  int                              e : 30;
+  int a : 2;
+  __attribute__((aligned (8))) int b : 2;
+  int c : 28;
+  __attribute__((aligned (16))) int d : 2;
+  int e : 30;
 } __attribute__((ms_struct));
 
 struct S s;
 
 int
-main() {
+main ()
+{
   int i;
-  if (sizeof(s) != 32)
-    __builtin_abort();
+  if (sizeof (s) != 32)
+    __builtin_abort ();
   s.a = -1;
   for (i = 0; i < 32; ++i)
-    if (((char *)&s)[i] != (i ? 0 : 3))
-      __builtin_abort();
+    if (((char *) &s)[i] != (i ? 0 : 3))
+      __builtin_abort ();
   s.a = 0;
   s.b = -1;
   for (i = 0; i < 32; ++i)
-    if (((char *)&s)[i] != (i ? 0 : 12))
-      __builtin_abort();
+    if (((char *) &s)[i] != (i ? 0 : 12))
+      __builtin_abort ();
   s.b = 0;
   s.c = -1;
   for (i = 0; i < 32; ++i)
-    if (((signed char *)&s)[i] != (i > 3 ? 0 : (i ? -1 : -16)))
-      __builtin_abort();
+    if (((signed char *) &s)[i] != (i > 3 ? 0 : (i ? -1 : -16)))
+      __builtin_abort ();
   s.c = 0;
   s.d = -1;
   for (i = 0; i < 32; ++i)
-    if (((signed char *)&s)[i] != (i == 16 ? 3 : 0))
-      __builtin_abort();
+    if (((signed char *) &s)[i] != (i == 16 ? 3 : 0))
+      __builtin_abort ();
   s.d = 0;
   s.e = -1;
   for (i = 0; i < 32; ++i)
-    if (((signed char *)&s)[i] !=
-        ((i < 16 || i > 19) ? 0 : (i == 16 ? -4 : -1)))
-      __builtin_abort();
+    if (((signed char *) &s)[i] != ((i < 16 || i > 19) ? 0 : (i == 16 ? -4 : -1)))
+      __builtin_abort ();
   return 0;
 }
 
-
-
+// SLATE-FILECHECK-STD DEFAULT c89
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
@@ -80,7 +79,7 @@ main() {
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0, 0, 16, 16], bit_offsets=[Some(0), Some(2), Some(4), Some(128), Some(130)], bit_units=[(0, 4), (16, 4)], field_units=[Some(0), Some(0), Some(0), Some(1), Some(1)]];
 // DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %2 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(32), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);

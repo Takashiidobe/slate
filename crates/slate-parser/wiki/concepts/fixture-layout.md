@@ -23,7 +23,11 @@ tests/fixtures/[error/ | suites/<name>/]<flavor>/[<os>/[<arch> | <triple>]]/<fix
 - `suites/<name>/` holds imported test suites (`gcc-dg`, `gcc-torture`,
   `clang-test`), kept apart because their sweep tools write there with
   `--migrate`. gcc-torture runs under both `clang/` and `gcc/`, since the
-  IR differs between the flavors for about a quarter of it.
+  IR differs between the flavors for about a quarter of it. gcc-dg does
+  too: `gcc/` holds the language-feature tests gcc accepts, and `clang/`
+  holds the same tests wherever clang also accepts them, each with the
+  test's own `-std`. A test that only one flavor has is either rejected by
+  that compiler's oracle or has a slate gap filed under `slate-parser-cxg`.
 - `inputs/` holds headers and sysroots that fixtures reach through a
   directive path (`SLATE-FILECHECK-ISYSTEM`, `-I`, `--sysroot`,
   `-include`). A header reached relative to the fixture (`#include "x.h"`)

@@ -8,26 +8,28 @@
 
 enum bar : long { A = 1, B = 3 };
 
-int test_bar(enum bar *a, void *b) {
-  *a = A;
+int test_bar(enum bar* a, void* b)
+{
+	*a = A;
 
-  enum foo : long { C = 2, D = 4 } *p = b;
-  *p                                  = B;
+	enum foo : long { C = 2, D = 4 }* p = b;
+	*p = B;
 
-  return *a;
-}
-
-int main() {
-  enum bar z;
-
-  if (B != test_bar(&z, &z))
-    __builtin_abort();
-
-  return 0;
+	return *a;
 }
 
 
+int main()
+{
+	enum bar z;
 
+	if (B != test_bar(&z, &z))
+		__builtin_abort();
+
+	return 0;
+}
+
+// SLATE-FILECHECK-STD DEFAULT c23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

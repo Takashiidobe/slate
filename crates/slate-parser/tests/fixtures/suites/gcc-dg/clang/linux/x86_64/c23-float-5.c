@@ -19,19 +19,19 @@
 
 volatile float f = NAN;
 
-extern void abort(void);
-extern void exit(int);
+extern void abort (void);
+extern void exit (int);
 
-int main(void) {
+int
+main (void)
+{
   f += f;
-  if (fetestexcept(FE_INVALID))
-    abort();
-  exit(0);
+  if (fetestexcept (FE_INVALID))
+    abort ();
+  exit (0);
 }
 
-
-
-
+// SLATE-FILECHECK-STD DEFAULT c23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

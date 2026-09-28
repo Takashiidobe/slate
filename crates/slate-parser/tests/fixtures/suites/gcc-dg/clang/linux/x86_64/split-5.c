@@ -4,153 +4,173 @@
 /* { dg-require-effective-target ucontext_h } */
 /* { dg-options "-pthread -fsplit-stack" } */
 
-#include <pthread.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <ucontext.h>
 
-extern void __splitstack_getcontext(void *context[10]);
+extern void __splitstack_getcontext (void *context[10]);
 
-extern void __splitstack_setcontext(void *context[10]);
+extern void __splitstack_setcontext (void *context[10]);
 
-extern void *__splitstack_makecontext(size_t, void *context[10], size_t *);
+extern void *__splitstack_makecontext (size_t, void *context[10], size_t *);
 
-extern void __splitstack_block_signals(int *, int *);
+extern void __splitstack_block_signals (int *, int *);
 
-extern void __splitstack_block_signals_context(void *context[10], int *, int *);
+extern void __splitstack_block_signals_context (void *context[10], int *,
+						int *);
 
-extern void *__splitstack_find(void *, void *, size_t *, void **, void **,
-                               void **);
+extern void *__splitstack_find (void *, void *, size_t *, void **, void **,
+				void **);
 
-extern void *__splitstack_find_context(void *context[10], size_t *, void **,
-                                       void **, void **);
+extern void *__splitstack_find_context (void *context[10], size_t *, void **,
+					void **, void **);
 
 static ucontext_t c1;
-static void      *s1[10];
+static void *s1[10];
 
 static ucontext_t c2;
-static void      *s2[10];
+static void *s2[10];
 
-static void swap(ucontext_t *, void *fs[10], ucontext_t *, void *ts[10])
-    __attribute__((no_split_stack));
+static void swap (ucontext_t *, void *fs[10], ucontext_t *, void *ts[10])
+  __attribute__ ((no_split_stack));
 
-static void swap(ucontext_t *fu, void *fs[10], ucontext_t *tu, void *ts[10]) {
-  __splitstack_getcontext(fs);
-  __splitstack_setcontext(ts);
-  swapcontext(fu, tu);
-  __splitstack_setcontext(fs);
+static void
+swap (ucontext_t *fu, void *fs[10], ucontext_t *tu, void *ts[10])
+{
+  __splitstack_getcontext (fs);
+  __splitstack_setcontext (ts);
+  swapcontext (fu, tu);
+  __splitstack_setcontext (fs);
 }
 
 /* Use a noinline function to ensure that the buffer is not removed
    from the stack.  */
-static void use_buffer(char *buf) __attribute__((noinline));
-static void use_buffer(char *buf) { buf[0] = '\0'; }
+static void use_buffer (char *buf) __attribute__ ((noinline));
+static void
+use_buffer (char *buf)
+{
+  buf[0] = '\0';
+}
 
-static void down(int i, const char *msg, ucontext_t *me, void *mes[10],
-                 ucontext_t *other, void *others[10]) {
+static void
+down (int i, const char *msg, ucontext_t *me, void *mes[10],
+      ucontext_t *other, void *others[10])
+{
   char buf[10000];
 
-  if (i > 0) {
-    use_buffer(buf);
-    swap(me, mes, other, others);
-    down(i - 1, msg, me, mes, other, others);
-  } else {
-    int    c = 0;
-    void  *stack;
-    size_t stack_size;
-    void  *next_segment = NULL;
-    void  *next_sp      = NULL;
-    void  *initial_sp   = NULL;
-
-    stack = __splitstack_find_context(mes, &stack_size, &next_segment, &next_sp,
-                                      &initial_sp);
-    if (stack != NULL) {
-      ++c;
-      while (__splitstack_find(next_segment, next_sp, &stack_size,
-                               &next_segment, &next_sp, &initial_sp) != NULL)
-        ++c;
+  if (i > 0)
+    {
+      use_buffer (buf);
+      swap (me, mes, other, others);
+      down (i - 1, msg, me, mes, other, others);
     }
-  }
+  else
+    {
+      int c = 0;
+      void *stack;
+      size_t stack_size;
+      void *next_segment = NULL;
+      void *next_sp = NULL;
+      void *initial_sp = NULL;
+
+      stack = __splitstack_find_context (mes, &stack_size, &next_segment,
+					&next_sp, &initial_sp);
+      if (stack != NULL)
+	{
+	  ++c;
+	  while (__splitstack_find (next_segment, next_sp, &stack_size,
+				    &next_segment, &next_sp, &initial_sp)
+		 != NULL)
+	    ++c;
+	}
+    }
 }
 
-static void go1(void) {
-  down(1000, "go1", &c1, s1, &c2, s2);
-  pthread_exit(NULL);
+static void
+go1 (void)
+{
+  down (1000, "go1", &c1, s1, &c2, s2);
+  pthread_exit (NULL);
 }
 
-static void go2(void) {
-  down(1000, "go2", &c2, s2, &c1, s1);
-  pthread_exit(NULL);
+static void
+go2 (void)
+{
+  down (1000, "go2", &c2, s2, &c1, s1);
+  pthread_exit (NULL);
 }
 
-struct thread_context {
+struct thread_context
+{
   ucontext_t *u;
-  void      **s;
+  void **s;
 };
 
-static void *start_thread(void *) __attribute__((no_split_stack));
+static void *start_thread (void *) __attribute__ ((no_split_stack));
 
-static void *start_thread(void *context) {
-  struct thread_context *tc = (struct thread_context *)context;
-  int                    block;
+static void *
+start_thread (void *context)
+{
+  struct thread_context *tc = (struct thread_context *) context;
+  int block;
 
   block = 0;
-  __splitstack_block_signals(&block, NULL);
-  __splitstack_setcontext(tc->s);
-  setcontext(tc->u);
-  abort();
+  __splitstack_block_signals (&block, NULL);
+  __splitstack_setcontext (tc->s);
+  setcontext (tc->u);
+  abort ();
 }
 
 int
-main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
-  pthread_t             tid;
-  int                   err;
-  size_t                size;
+main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
+{
+  pthread_t tid;
+  int err;
+  size_t size;
   struct thread_context tc;
-  int                   block;
+  int block;
 
-  if (getcontext(&c1) < 0)
-    abort();
+  if (getcontext (&c1) < 0)
+    abort ();
 
   c2 = c1;
 
-  c1.uc_stack.ss_sp = __splitstack_makecontext(8192, &s1[0], &size);
+  c1.uc_stack.ss_sp = __splitstack_makecontext (8192, &s1[0], &size);
   if (c1.uc_stack.ss_sp == NULL)
-    abort();
+    abort ();
   c1.uc_stack.ss_flags = 0;
-  c1.uc_stack.ss_size  = size;
-  c1.uc_link           = NULL;
-  block                = 0;
-  __splitstack_block_signals_context(&s1[0], &block, NULL);
-  makecontext(&c1, go1, 0);
+  c1.uc_stack.ss_size = size;
+  c1.uc_link = NULL;
+  block = 0;
+  __splitstack_block_signals_context (&s1[0], &block, NULL);
+  makecontext (&c1, go1, 0);
 
-  c2.uc_stack.ss_sp = __splitstack_makecontext(8192, &s2[0], &size);
+  c2.uc_stack.ss_sp = __splitstack_makecontext (8192, &s2[0], &size);
   if (c2.uc_stack.ss_sp == NULL)
-    abort();
+    abort ();
   c2.uc_stack.ss_flags = 0;
-  c2.uc_stack.ss_size  = size;
-  c2.uc_link           = NULL;
-  __splitstack_block_signals_context(&s2[0], &block, NULL);
-  makecontext(&c2, go2, 0);
+  c2.uc_stack.ss_size = size;
+  c2.uc_link = NULL;
+  __splitstack_block_signals_context (&s2[0], &block, NULL);
+  makecontext (&c2, go2, 0);
 
   block = 0;
-  __splitstack_block_signals(&block, NULL);
+  __splitstack_block_signals (&block, NULL);
 
   tc.u = &c1;
   tc.s = &s1[0];
-  err  = pthread_create(&tid, NULL, start_thread, &tc);
+  err = pthread_create (&tid, NULL, start_thread, &tc);
   if (err != 0)
-    abort();
+    abort ();
 
-  err = pthread_join(tid, NULL);
+  err = pthread_join (tid, NULL);
   if (err != 0)
-    abort();
+    abort ();
 
   return 0;
 }
 
-
-
-
+// SLATE-FILECHECK-STD DEFAULT gnu23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
@@ -176,21 +196,21 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint16_t = u16;
-// DEFAULT-NEXT:     type @type1 __uint32_t = u32;
-// DEFAULT-NEXT:     type @type2 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type3 size_t = u64;
-// DEFAULT-NEXT:     type @type4 pthread_t = u64;
-// DEFAULT-NEXT:     type @type5 pthread_attr_t = union {
+// DEFAULT-NEXT:     type @type0 size_t = u64;
+// DEFAULT-NEXT:     type @type1 __uint16_t = u16;
+// DEFAULT-NEXT:     type @type2 __uint32_t = u32;
+// DEFAULT-NEXT:     type @type3 __uint64_t = u64;
+// DEFAULT-NEXT:     type @type4 = struct {
+// DEFAULT-NEXT:         field0 __val: array<u64, 16>;
+// DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
+// DEFAULT-NEXT:     type @type5 __sigset_t = @type4;
+// DEFAULT-NEXT:     type @type6 sigset_t = @type4;
+// DEFAULT-NEXT:     type @type7 pthread_t = u64;
+// DEFAULT-NEXT:     type @type8 pthread_attr_t = union {
 // DEFAULT-NEXT:         field0 __size: array<i8, 56>;
 // DEFAULT-NEXT:         field1 __align: i64;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type6 pthread_attr_t = @type5;
-// DEFAULT-NEXT:     type @type7 = struct {
-// DEFAULT-NEXT:         field0 __val: array<u64, 16>;
-// DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 __sigset_t = @type7;
-// DEFAULT-NEXT:     type @type9 sigset_t = @type7;
+// DEFAULT-NEXT:     type @type9 pthread_attr_t = @type8;
 // DEFAULT-NEXT:     type @type10 = struct {
 // DEFAULT-NEXT:         field0 ss_sp: ptr<void>;
 // DEFAULT-NEXT:         field1 ss_flags: i32;
@@ -232,7 +252,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         field1 uc_link: ptr<@type20>;
 // DEFAULT-NEXT:         field2 uc_stack: @type10;
 // DEFAULT-NEXT:         field3 uc_mcontext: @type18;
-// DEFAULT-NEXT:         field4 uc_sigmask: @type7;
+// DEFAULT-NEXT:         field4 uc_sigmask: @type4;
 // DEFAULT-NEXT:         field5 __fpregs_mem: @type16;
 // DEFAULT-NEXT:         field6 __ssp: array<u64, 4>;
 // DEFAULT-NEXT:     } [size=968, align=8, offsets=[0, 8, 16, 40, 296, 424, 936]];
@@ -247,10 +267,10 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:     global %40 s2: array<ptr<void>, 10> [storage=static] [align=16] [linkage=internal];
 // DEFAULT-NEXT:     global %118 .str118: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([103, 111, 49, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %119 .str119: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([103, 111, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %9 @pthread_create(%77 __newthread: ptr<u64> [restrict], %78 __attr: ptr<const @type5> [restrict], %79 __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %80 __arg: ptr<void> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @pthread_exit(%81 __retval: ptr<void>) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @pthread_join(%82 __th: u64, %83 __thread_return: ptr<ptr<void>>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %11 @pthread_create(%77 __newthread: ptr<u64> [restrict], %78 __attr: ptr<const @type8> [restrict], %79 __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %80 __arg: ptr<void> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %12 @pthread_exit(%81 __retval: ptr<void>) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %13 @pthread_join(%82 __th: u64, %83 __thread_return: ptr<ptr<void>>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %26 @getcontext(%84 __ucp: ptr<@type20>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %27 @setcontext(%85 __ucp: ptr<const @type20>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %28 @swapcontext(%86 __oucp: ptr<@type20> [restrict], %87 __ucp: ptr<const @type20> [restrict]) -> i32 [linkage=external];
@@ -303,11 +323,11 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %62 @go1() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<const i8>, ptr<@type20>, ptr<ptr<void>>, ptr<@type20>, ptr<ptr<void>>) -> void>(%48, const<i32>(1000), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%118)), addr_of<ptr<@type20>>(%37), array_decay<ptr<ptr<void>>, length=Some(10)>(%38), addr_of<ptr<@type20>>(%39), array_decay<ptr<ptr<void>>, length=Some(10)>(%40));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%10, null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%12, null<ptr<void>>);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %63 @go2() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<const i8>, ptr<@type20>, ptr<ptr<void>>, ptr<@type20>, ptr<ptr<void>>) -> void>(%48, const<i32>(1000), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%119)), addr_of<ptr<@type20>>(%39), array_decay<ptr<ptr<void>>, length=Some(10)>(%40), addr_of<ptr<@type20>>(%37), array_decay<ptr<ptr<void>>, length=Some(10)>(%38));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%10, null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%12, null<ptr<void>>);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %65 @start_thread(%66 context: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %67 tc: ptr<@type22> [storage=automatic] = pointer_cast<ptr<@type22>, reason=explicit>(read<ptr<void>>(%66));
@@ -316,7 +336,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>) -> void>(%33, addr_of<ptr<i32>>(%68), null<ptr<i32>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>) -> void>(%31, read<ptr<ptr<void>>>(field1(deref(read<ptr<@type22>>(%67)))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const @type20>) -> i32>(%27, pointer_cast<ptr<const @type20>, reason=arg>(read<ptr<@type20>>(field0(deref(read<ptr<@type22>>(%67))))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %69 @main(%70 argc: i32, %71 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %72 tid: u64 [storage=automatic];
@@ -325,12 +345,12 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         let %75 tc: @type22 [storage=automatic];
 // DEFAULT-NEXT:         let %76 block: i32 [storage=automatic];
 // DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<@type20>) -> i32>(%26, addr_of<ptr<@type20>>(%37)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<@type20>(%39, copy<@type20, reason=assign>(read<@type20>(%37)));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%37)), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%38), const<i32>(0)))), addr_of<ptr<u64>>(%74)));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%38), const<i32>(0)))), addr_of<ptr<u64>>(%74));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%37))), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%37)), const<i32>(0));
 // DEFAULT-NEXT:         write<u64>(field2(field2(%37)), read<u64>(%74));
 // DEFAULT-NEXT:         write<ptr<@type20>>(field1(%37), null<ptr<@type20>>);
@@ -340,7 +360,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%39)), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%40), const<i32>(0)))), addr_of<ptr<u64>>(%74)));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%32, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%40), const<i32>(0)))), addr_of<ptr<u64>>(%74));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%39))), null<ptr<void>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%39)), const<i32>(0));
 // DEFAULT-NEXT:         write<u64>(field2(field2(%39)), read<u64>(%74));
 // DEFAULT-NEXT:         write<ptr<@type20>>(field1(%39), null<ptr<@type20>>);
@@ -350,14 +370,14 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>) -> void>(%33, addr_of<ptr<i32>>(%76), null<ptr<i32>>);
 // DEFAULT-NEXT:         write<ptr<@type20>>(field0(%75), addr_of<ptr<@type20>>(%37));
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(field1(%75), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%38), const<i32>(0)))));
-// DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(ptr<u64>, ptr<const @type5>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%9, addr_of<ptr<u64>>(%72), null<ptr<const @type5>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, ptr<const @type5>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%9, addr_of<ptr<u64>>(%72), null<ptr<const @type5>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75)));
+// DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(ptr<u64>, ptr<const @type8>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%11, addr_of<ptr<u64>>(%72), null<ptr<const @type8>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, ptr<const @type8>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%11, addr_of<ptr<u64>>(%72), null<ptr<const @type8>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%65), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type22>>(%75)));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%73), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%11, read<u64>(%72), null<ptr<ptr<void>>>));
-// DEFAULT-NEXT:         call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%11, read<u64>(%72), null<ptr<ptr<void>>>);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:         write<i32>(%73, call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%13, read<u64>(%72), null<ptr<ptr<void>>>));
+// DEFAULT-NEXT:         call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%13, read<u64>(%72), null<ptr<ptr<void>>>);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%73), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

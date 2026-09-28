@@ -12,21 +12,21 @@
 
 volatile float f = INFINITY;
 
-extern void abort(void);
-extern void exit(int);
+extern void abort (void);
+extern void exit (int);
 
-int main(void) {
-  (void)_Generic(INFINITY, float: 0);
+int
+main (void)
+{
+  (void) _Generic (INFINITY, float : 0);
   if (!(INFINITY > FLT_MAX))
-    abort();
+    abort ();
   if (!(f > FLT_MAX))
-    abort();
-  exit(0);
+    abort ();
+  exit (0);
 }
 
-
-
-
+// SLATE-FILECHECK-STD DEFAULT c23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

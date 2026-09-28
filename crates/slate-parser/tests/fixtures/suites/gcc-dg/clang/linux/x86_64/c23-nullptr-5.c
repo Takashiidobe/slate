@@ -2,20 +2,18 @@
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic-errors" } */
 
-int             i;
-typeof(nullptr) fn() {
-  ++i;
-  return nullptr;
-}
+int i;
+typeof (nullptr) fn () { ++i; return nullptr; }
 
-int main() {
-  int *p = fn();
+int
+main ()
+{
+  int *p = fn ();
   if (i != 1)
-    __builtin_abort();
+    __builtin_abort ();
 }
 
-
-
+// SLATE-FILECHECK-STD DEFAULT c23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

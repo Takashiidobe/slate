@@ -4,48 +4,53 @@
 extern void abort();
 
 struct s1_t {
-  char a;
-  char b __attribute__((aligned(16)));
-} __attribute__((ms_struct));
+    char a;
+    char b __attribute__ ((aligned (16)));
+} __attribute__ ((ms_struct));
 struct s1_t s1;
 
 struct s2_t {
   char a;
   char b;
-} __attribute__((ms_struct));
+} __attribute__ ((ms_struct));
 struct s2_t s2;
 
 struct s3_t {
   __extension__ char a : 6;
-  char               b __attribute__((aligned(16)));
-} __attribute__((ms_struct));
+  char b __attribute__ ((aligned (16)));
+} __attribute__ ((ms_struct));
 struct s3_t s3;
 
 struct s4_t {
   __extension__ char a : 6;
-  char               b __attribute__((aligned(2)));
-} __attribute__((ms_struct));
+  char b __attribute__ ((aligned (2)));
+} __attribute__ ((ms_struct));
 struct s4_t s4;
 
 struct s5_t {
   __extension__ char a : 6;
-  char               b __attribute__((aligned(1)));
-} __attribute__((ms_struct));
+  char b __attribute__ ((aligned (1)));
+} __attribute__ ((ms_struct));
 struct s5_t s5;
 
-__extension__ static __PTRDIFF_TYPE__ offs(const void *a, const void *b) {
-  return (__PTRDIFF_TYPE__)((const char *)a - (const char *)b);
+__extension__
+static __PTRDIFF_TYPE__ offs (const void *a, const void *b)
+{
+  return (__PTRDIFF_TYPE__) ((const char*)a  - (const char*)b);
 }
 
-int main() {
-  if (offs(&s1.b, &s1) != 16 || offs(&s2.b, &s2) != 1 ||
-      offs(&s3.b, &s3) != 16 || offs(&s4.b, &s4) != 2 || offs(&s5.b, &s5) != 1)
-    abort();
+int main()
+{
+  if (offs (&s1.b, &s1) != 16
+      || offs (&s2.b, &s2) != 1
+      || offs (&s3.b, &s3) != 16
+      || offs (&s4.b, &s4) != 2
+      || offs (&s5.b, &s5) != 1)
+    abort ();
   return 0;
 }
 
-
-
+// SLATE-FILECHECK-STD DEFAULT c89
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
@@ -96,11 +101,11 @@ int main() {
 // DEFAULT-NEXT:     global %6 s3: @type2 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 s4: @type3 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %10 s5: @type4 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %0 @abort(unprototyped) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @offs(%12 a: ptr<const void>, %13 b: ptr<const void>) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%12)), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%13)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %14 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %15: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%2))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%2))), widen<i64, reason=usual_arith>(const<i32>(16)))
 // DEFAULT-NEXT:             write<bool>(%15, const<bool>(true));

@@ -1,7 +1,7 @@
 /* bf-ms-attrib.c */
 /* Adapted from Donn Terry <donnte@microsoft.com> testcase
    posted to GCC-patches
-   http://gcc.gnu.org/ml/gcc-patches/2000-08/msg00577.html */
+   http://gcc.gnu.org/ml/gcc-patches/2000-08/msg00577.html */ 
 
 /* { dg-do run { target *-*-mingw* *-*-cygwin* } } */
 
@@ -12,32 +12,34 @@
 extern void abort(void);
 
 struct one_gcc {
-  int            d;
-  unsigned char  a;
-  unsigned short b : 7;
-  char           c;
-} __attribute__((__gcc_struct__));
+  int d;
+  unsigned char a;
+  unsigned short b:7;
+  char c;	
+} __attribute__((__gcc_struct__)) ;
+
 
 struct one_ms {
-  int            d;
-  unsigned char  a;
-  unsigned short b : 7;
-  char           c;
+  int d;
+  unsigned char a;
+  unsigned short b:7;
+  char c;	
 } __attribute__((__ms_struct__));
 
-int main() {
-  /* As long as the sizes are as expected, we know attributes are working.
+
+main() 
+  {
+    /* As long as the sizes are as expected, we know attributes are working.
        bf-ms-layout.c makes sure the right thing happens when the attribute
        is on. */
-  if (sizeof(struct one_ms) != 12)
-    abort();
-  if (sizeof(struct one_gcc) != 8)
-    abort();
-  return 0;
-}
+    if (sizeof(struct one_ms) != 12)
+	abort();
+    if (sizeof(struct one_gcc) != 8)
+	abort();
+    return 0;
+  }
 
-
-
+// SLATE-FILECHECK-STD DEFAULT c89
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
@@ -76,7 +78,7 @@ int main() {
 // DEFAULT-NEXT:         field3 c: i8;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 6, 8], bit_offsets=[None, None, Some(48), None], bit_units=[(6, 2)], field_units=[None, None, Some(0), None]];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %3 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
