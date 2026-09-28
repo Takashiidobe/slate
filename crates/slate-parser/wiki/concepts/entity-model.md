@@ -56,7 +56,19 @@ accepted.
 
 `Entities::discard_after(next_id)` drops entities created while lowering a
 speculatively evaluated expression (`sizeof`, `_Generic`, an unevaluated
-`typeof`) whose bindings are rolled back.
+`typeof`) whose bindings are rolled back. That path is now only the fallback:
+`TypeResolver::typed` (`sema/typer.rs`) types an expression without lowering
+it and memoizes `Typed { c, lvalue, bits }` per `NodeId` in
+`expression_types`, and the speculative callers ask it first. It answers only
+when it has a rule for the expression and every subexpression; anything else
+(calls and builtins, statement expressions, pointer `?:`, `sizeof`, ...) is
+`Unimplemented`, which means "no answer" and falls back to speculative
+lowering. `Lowerer::expr` and `Lowerer::place` compare every answer with the
+type they lowered and return `Internal` on disagreement, so the rules cannot
+drift: typing rules shared with lowering (`binary_types`, `arithmetic_type`,
+`literal_type`) are factored out of the IR-building code rather than copied.
+A `sizeof` operand the typer answers is not lowered at all unless its type is
+a VLA, which C evaluates.
 
 `names.rs::redeclares` decides whether a second declaration shares the first
 one's entity, and it treats `Object` and `Function` as one kind. A declarator

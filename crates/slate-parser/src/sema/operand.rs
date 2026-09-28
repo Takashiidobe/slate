@@ -6,6 +6,13 @@ use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
 use crate::const_expr::{BinaryOp, FloatSuffix, UnaryOp};
 use crate::ir::{ConversionReason, ValueKind};
 use crate::ir::{Place, Value};
+use crate::standard_features::StandardFeatures;
+use crate::target_info::TargetInfo;
+
+pub(super) struct BinaryTypes {
+    pub operands: Option<(QualType, QualType)>,
+    pub result: QualType,
+}
 
 #[derive(Clone, Debug)]
 pub(super) struct Operand {
@@ -106,6 +113,19 @@ impl TypeResolver {
     }
 
     pub(super) fn literal(&mut self, context: &Context, e: &Expr) -> Result<Operand, ResolveError> {
+        let c = self.literal_type(&context.target, context.features, e)?;
+        Ok(Operand {
+            value: context.resolve_literal(e)?,
+            c,
+        })
+    }
+
+    pub(super) fn literal_type(
+        &mut self,
+        target: &TargetInfo,
+        features: StandardFeatures,
+        e: &Expr,
+    ) -> Result<QualType, ResolveError> {
         let kind = match &e.value {
             ExprKind::IntegerLiteral(literal) => {
                 let component = if literal.suffix.size
@@ -118,12 +138,11 @@ impl TypeResolver {
                         signed: !literal.suffix.unsigned,
                     }
                 } else {
-                    let selection = super::validate::select_integer_candidate(
-                        literal,
-                        &context.target,
-                        context.features,
-                    )
-                    .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
+                    let selection =
+                        super::validate::select_integer_candidate(literal, target, features)
+                            .ok_or_else(|| {
+                                ResolveError::IntegerLiteral(literal.spelling.clone())
+                            })?;
                     let signed = selection.signed;
                     let rank = match selection.rank {
                         IntegerRank::Short => IntRank::Short,
@@ -166,7 +185,7 @@ impl TypeResolver {
                         FloatSuffix::F32 => FloatKind::Float32,
                         FloatSuffix::F64 => FloatKind::Float64,
                         FloatSuffix::F32x => FloatKind::Float32x,
-                        FloatSuffix::F64x if self.target_info().float64x_format().is_some() => {
+                        FloatSuffix::F64x if target.float64x_format().is_some() => {
                             FloatKind::Float64x
                         }
                         FloatSuffix::F64x => {
@@ -190,11 +209,7 @@ impl TypeResolver {
             ExprKind::BoolLiteral(_) => CTypeKind::Bool,
             _ => return Err(ResolveError::Rejected("nonliteral numeric expression")),
         };
-        let c = self.ctypes.qual(kind);
-        Ok(Operand {
-            value: context.resolve_literal(e)?,
-            c,
-        })
+        Ok(self.ctypes.qual(kind))
     }
 
     pub(super) fn arithmetic_conversion(
@@ -253,30 +268,33 @@ impl TypeResolver {
     ) -> Result<(Operand, Operand), ResolveError> {
         let left = self.promote_operand(context, left, None)?;
         let right = self.promote_operand(context, right, None)?;
-        if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
-            let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
-            return Ok((
-                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
-                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
-            ));
+        let c = self.arithmetic_type(left.c, right.c)?;
+        Ok((
+            self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
+            self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
+        ))
+    }
+
+    pub(super) fn arithmetic_type(
+        &mut self,
+        left: QualType,
+        right: QualType,
+    ) -> Result<QualType, ResolveError> {
+        if self.ctypes.is_fixed_point(left) || self.ctypes.is_fixed_point(right) {
+            return self.ctypes.usual_fixed_type(left, right);
         }
-        let component = self
-            .ctypes
-            .usual_real_type(left.c, right.c, &context.target)?;
+        let target = self.target_info().clone();
+        let component = self.ctypes.usual_real_type(left, right, &target)?;
         let domain = match (
-            self.ctypes.canonical_kind(left.c),
-            self.ctypes.canonical_kind(right.c),
+            self.ctypes.canonical_kind(left),
+            self.ctypes.canonical_kind(right),
         ) {
             (CTypeKind::Imaginary(_), CTypeKind::Imaginary(_)) => 1,
             (CTypeKind::Complex(_) | CTypeKind::Imaginary(_), _)
             | (_, CTypeKind::Complex(_) | CTypeKind::Imaginary(_)) => 2,
             _ => 0,
         };
-        let c = self.arithmetic_domain(component, domain)?;
-        Ok((
-            self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
-            self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
-        ))
+        self.arithmetic_domain(component, domain)
     }
 
     fn arithmetic_domain(
@@ -317,6 +335,30 @@ impl TypeResolver {
         super::numeric::reject_mixed_decimal(op.into(), &left.value, &right.value)?;
         let left = self.promote_operand(context, left, None)?;
         let right = self.promote_operand(context, right, None)?;
+        let types = self.binary_types(op, left.c, right.c)?;
+        let (left, right) = match types.operands {
+            Some((lc, rc)) => (
+                self.arithmetic_conversion(context, left, lc, ConversionReason::UsualArith)?,
+                self.arithmetic_conversion(context, right, rc, ConversionReason::UsualArith)?,
+            ),
+            None => (left, right),
+        };
+        let (ty, kind) = context.emit_binary(op, left.value, right.value)?;
+        Ok(Operand {
+            value: Value {
+                ty,
+                node: e.derive(kind),
+            },
+            c: types.result,
+        })
+    }
+
+    pub(super) fn binary_types(
+        &mut self,
+        op: BinaryOp,
+        left: QualType,
+        right: QualType,
+    ) -> Result<BinaryTypes, ResolveError> {
         let comparison = matches!(
             op,
             BinaryOp::Equal
@@ -329,16 +371,13 @@ impl TypeResolver {
                 | BinaryOp::Or
         );
         let shift = matches!(op, BinaryOp::ShiftLeft | BinaryOp::ShiftRight);
-        let vector = matches!(self.ctypes.canonical_kind(left.c), CTypeKind::Vector { .. })
-            || matches!(
-                self.ctypes.canonical_kind(right.c),
-                CTypeKind::Vector { .. }
-            );
-        let (left, right, result) = if vector {
-            let c = if matches!(self.ctypes.canonical_kind(left.c), CTypeKind::Vector { .. }) {
-                left.c
+        let vector = matches!(self.ctypes.canonical_kind(left), CTypeKind::Vector { .. })
+            || matches!(self.ctypes.canonical_kind(right), CTypeKind::Vector { .. });
+        let (operands, result) = if vector {
+            let c = if matches!(self.ctypes.canonical_kind(left), CTypeKind::Vector { .. }) {
+                left
             } else {
-                right.c
+                right
             };
             let c = if comparison {
                 let CTypeKind::Vector {
@@ -351,15 +390,15 @@ impl TypeResolver {
                 };
                 let element = match self.ctypes.canonical_kind(element) {
                     CTypeKind::Float(_) => {
-                        let width =
-                            context.target.storage_of(self.ir_type(element))?.size_bytes * 8;
-                        let rank = if width == u64::from(context.target.short_width) {
+                        let target = self.target_info().clone();
+                        let width = target.storage_of(self.ir_type(element))?.size_bytes * 8;
+                        let rank = if width == u64::from(target.short_width) {
                             IntRank::Short
-                        } else if width == u64::from(context.target.int_width) {
+                        } else if width == u64::from(target.int_width) {
                             IntRank::Int
-                        } else if width == u64::from(context.target.long_width) {
+                        } else if width == u64::from(target.long_width) {
                             IntRank::Long
-                        } else if width == u64::from(context.target.long_long_width) {
+                        } else if width == u64::from(target.long_long_width) {
                             IntRank::LongLong
                         } else {
                             IntRank::Int128
@@ -376,28 +415,22 @@ impl TypeResolver {
             } else {
                 c
             };
-            (left, right, c)
+            (None, c)
         } else if shift || matches!(op, BinaryOp::And | BinaryOp::Or) {
-            let c = left.c;
-            (left, right, c)
-        } else if self.ctypes.is_fixed_point(left.c) || self.ctypes.is_fixed_point(right.c) {
-            let c = self.ctypes.usual_fixed_type(left.c, right.c)?;
-            (
-                self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
-                self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
-                c,
-            )
+            (None, left)
+        } else if self.ctypes.is_fixed_point(left) || self.ctypes.is_fixed_point(right) {
+            let c = self.ctypes.usual_fixed_type(left, right)?;
+            (Some((c, c)), c)
         } else {
-            let component = self
-                .ctypes
-                .usual_real_type(left.c, right.c, &context.target)?;
+            let target = self.target_info().clone();
+            let component = self.ctypes.usual_real_type(left, right, &target)?;
             let domain = |c| match self.ctypes.canonical_kind(c) {
                 CTypeKind::Complex(_) => 2,
                 CTypeKind::Imaginary(_) => 1,
                 _ => 0,
             };
-            let ld = domain(left.c);
-            let rd = domain(right.c);
+            let ld = domain(left);
+            let rd = domain(right);
             let result_domain = if ld == 2 || rd == 2 {
                 2
             } else if matches!(op, BinaryOp::Mul | BinaryOp::Div) {
@@ -410,25 +443,14 @@ impl TypeResolver {
             let lc = self.arithmetic_domain(component, ld)?;
             let rc = self.arithmetic_domain(component, rd)?;
             let result = self.arithmetic_domain(component, result_domain)?;
-            (
-                self.arithmetic_conversion(context, left, lc, ConversionReason::UsualArith)?,
-                self.arithmetic_conversion(context, right, rc, ConversionReason::UsualArith)?,
-                result,
-            )
+            (Some((lc, rc)), result)
         };
-        let (ty, kind) = context.emit_binary(op, left.value, right.value)?;
-        let c = if comparison && !vector {
+        let result = if comparison && !vector {
             self.ctypes.int()
         } else {
             result
         };
-        Ok(Operand {
-            value: Value {
-                ty,
-                node: e.derive(kind),
-            },
-            c,
-        })
+        Ok(BinaryTypes { operands, result })
     }
 
     pub(super) fn unary_operand(

@@ -50,6 +50,7 @@ pub struct TypeResolver {
     pub(super) declarations: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
+    pub(super) expression_types: HashMap<crate::ast::NodeId, Option<super::typer::Typed>>,
     pub(super) inferred: Option<QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
@@ -80,6 +81,7 @@ impl TypeResolver {
             declarations: HashMap::new(),
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
+            expression_types: HashMap::new(),
             inferred: None,
             constants: HashMap::new(),
             record_fields: HashMap::new(),
@@ -642,7 +644,7 @@ impl TypeResolver {
         self.declared_alignment(requested, natural)
     }
 
-    fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
+    pub(super) fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
         let id = self.references.get(&e.id)?;
         self.entities.ty(id)
     }

@@ -502,6 +502,18 @@ impl TypeResolver {
         element: QualType,
         items: &[InitializerItem],
     ) -> Result<u64, ResolveError> {
+        if let [item] = items
+            && item.designators.is_empty()
+            && let Initializer::Expr(expr) = &item.value
+            && let ExprKind::StringLiteral(literal) = &expr.value
+            && self.ctypes.is_integer(element)
+            && let Some((_, Extent::Fixed(length))) = {
+                let string = self.string_type(literal);
+                self.ctypes.element(string)
+            }
+        {
+            return Ok(length);
+        }
         let c = self.ctypes.qual(CTypeKind::Array {
             element,
             extent: Extent::Incomplete,

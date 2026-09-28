@@ -1206,7 +1206,16 @@ impl Lowerer {
     }
 
     pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
-        self.lower_place(e).map_err(|error| error.at(e.expansion))
+        let place = self.lower_place(e).map_err(|error| error.at(e.expansion))?;
+        if let Ok(typed) = self.types.typed(e)
+            && typed.lvalue
+            && typed.c != place.c
+        {
+            return Err(ResolveError::Internal(
+                "expression typer disagrees with lowering",
+            ));
+        }
+        Ok(place)
     }
 
     fn lower_place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
@@ -1731,6 +1740,9 @@ impl Lowerer {
     }
 
     fn unevaluated(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        if let Ok(typed) = self.types.typed(e) {
+            return Ok(self.types.ctypes.lvalue_conversion(typed.c));
+        }
         let next_id = self.next_id;
         let globals = self.module.globals.len();
         let functions = self.module.functions.len();
@@ -1922,6 +1934,16 @@ impl Lowerer {
         if let ExprKind::StringLiteral(lit) = &operand.value {
             return Ok((self.types.string_type(lit), None));
         }
+        if let Ok(typed) = self.types.typed(operand) {
+            if typed.bits.is_some() {
+                return Err(ResolveError::Rejected(
+                    "application of sizeof or alignof to a bit-field",
+                ));
+            }
+            if !matches!(self.types.ir_type(typed.c), Type::VariableArray { .. }) {
+                return Ok((typed.c, None));
+            }
+        }
         let globals = self.module.globals.len();
         let functions = self.module.functions.len();
         let next_id = self.next_id;
@@ -2048,7 +2070,15 @@ impl Lowerer {
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
-        self.lower_expr(e).map_err(|error| error.at(e.expansion))
+        let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
+        if let Ok(typed) = self.types.typed(e)
+            && self.types.rvalue_type(typed) != lowered.c
+        {
+            return Err(ResolveError::Internal(
+                "expression typer disagrees with lowering",
+            ));
+        }
+        Ok(lowered)
     }
 
     fn lower_expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
@@ -2150,6 +2180,7 @@ impl Lowerer {
             ExprKind::Cast { ty, value } => {
                 let extents = self.type_name_extents(ty)?;
                 let to = self.resolve_type_name(ty)?;
+                let to = self.types.ctypes.unqualified(to);
                 let is_void = self.types.ctypes.is_void(to);
                 let value = self.expr(value)?;
                 let cast = if let Some(index) = self.types.union_cast_member(to, value.c)? {

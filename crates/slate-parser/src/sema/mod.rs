@@ -22,6 +22,7 @@ mod operand;
 pub mod pragmas;
 mod sequencing;
 mod type_of;
+mod typer;
 pub mod types;
 mod validate;
 

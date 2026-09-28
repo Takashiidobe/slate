@@ -208,6 +208,9 @@ impl Lowerer {
     }
 
     pub(super) fn speculative_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
+        if let Ok(typed) = self.types.typed(e) {
+            return Ok((typed.c, typed.bits.is_some()));
+        }
         let next_id = self.next_id;
         let globals = self.module.globals.len();
         let resolved = self.operand_type(e);
