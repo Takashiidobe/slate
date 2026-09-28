@@ -3,6 +3,10 @@ use crate::ast::Span;
 use crate::ir::*;
 use std::collections::{HashMap, HashSet};
 
+pub(super) fn has_effects(value: &Value) -> bool {
+    Hoister::new(0, 0, HashMap::new(), HashSet::new()).effects(value)
+}
+
 pub(super) struct Hoister {
     next_id: u32,
     old: Vec<Value>,

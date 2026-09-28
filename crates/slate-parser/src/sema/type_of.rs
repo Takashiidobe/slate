@@ -3,12 +3,13 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{
-    Attribute, DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, Initializer,
-    NodeId, Span, StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand, TypeSpecifier,
+    ArraySize, Attribute, DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind,
+    Initializer, NodeId, Span, StorageClass, TagBody, TagSpecifier, TypeName, TypeOfOperand,
+    TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::BindingId;
-use crate::ir::{PlaceKind, Type};
+use crate::ir::{PlaceKind, Type, Value};
 use crate::visit::{self, Visitor};
 use std::collections::HashMap;
 
@@ -127,6 +128,56 @@ impl Lowerer {
         }
     }
 
+    pub(super) fn typeof_evaluations(
+        &mut self,
+        specifier: &TypeSpecifier,
+        out: &mut Vec<(BindingId, Value)>,
+    ) -> Result<(), ResolveError> {
+        match specifier {
+            TypeSpecifier::TypeOf(TypeOfOperand::Expression(expr))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(expr)) => {
+                let typed = self.types.typed(expr)?;
+                if !self.types.ctypes.is_variably_modified(typed.c) {
+                    return Ok(());
+                }
+                let value = self.expr(expr)?;
+                if !super::effects::has_effects(&value.value) {
+                    return Ok(());
+                }
+                let id = self.fresh();
+                self.types.entities.declare(id, value.c, false);
+                out.push((id, value.value));
+                Ok(())
+            }
+            TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+                self.typeof_evaluations(&ty.specifiers.ty, out)?;
+                self.extents(&ty.declarator, out)
+            }
+            _ => Ok(()),
+        }
+    }
+
+    fn reserve_extents(&mut self, e: &Expr) {
+        let unbound = self
+            .types
+            .typed(e)
+            .is_ok_and(|typed| self.types.ctypes.has_unbound_extent(typed.c));
+        if !self.in_function || !unbound {
+            return;
+        }
+        let mut sizes = VariableSizes {
+            types: &mut self.types,
+            nodes: Vec::new(),
+        };
+        let Ok(()) = sizes.visit_expr(e);
+        for node in sizes.nodes {
+            let id = self.fresh();
+            self.types.extents.insert(node, id);
+            self.reserved_extents.insert(node, id);
+        }
+    }
+
     pub(super) fn infer_type(
         &mut self,
         specifiers: &DeclarationSpecifiers,
@@ -164,6 +215,7 @@ impl Lowerer {
                 "variable declared with deduced type cannot appear in its own initializer",
             ));
         }
+        self.reserve_extents(expr);
         let (value, bit_field) = self.speculative_type(expr)?;
         if bit_field {
             return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
@@ -316,6 +368,34 @@ fn plain_identifier(declarator: &Declarator) -> bool {
         Declarator::Name(_) => true,
         Declarator::Attributed { inner, .. } => plain_identifier(inner),
         _ => false,
+    }
+}
+
+struct VariableSizes<'a> {
+    types: &'a mut TypeResolver,
+    nodes: Vec<NodeId>,
+}
+
+impl Visitor for VariableSizes<'_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Self::Error> {
+        match declarator {
+            Declarator::Array { inner, size, .. } => {
+                self.visit_declarator(inner)?;
+                if let ArraySize::Expression(expr) = size {
+                    self.visit_expr(expr)?;
+                    if !self.types.extents.contains_key(&expr.id)
+                        && self.types.constant_integer(expr).is_err()
+                    {
+                        self.nodes.push(expr.id);
+                    }
+                }
+                Ok(())
+            }
+            Declarator::Function { inner, .. } => self.visit_declarator(inner),
+            _ => visit::walk_declarator(self, declarator),
+        }
     }
 }
 

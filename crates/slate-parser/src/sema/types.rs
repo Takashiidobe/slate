@@ -66,6 +66,7 @@ pub struct TypeResolver {
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
     prototype_scope: bool,
+    pub(super) provisional_extents: bool,
 }
 
 impl TypeResolver {
@@ -100,6 +101,7 @@ impl TypeResolver {
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
             prototype_scope: false,
+            provisional_extents: false,
         }
     }
 
@@ -1494,7 +1496,9 @@ impl TypeResolver {
                                         ResolveError::Rejected("invalid array length")
                                     })?)
                                 }
-                                Err(_) if self.prototype_scope => Extent::Variable(None),
+                                Err(_) if self.prototype_scope || self.provisional_extents => {
+                                    Extent::Variable(None)
+                                }
                                 Err(error) => return Err(error),
                             },
                         },

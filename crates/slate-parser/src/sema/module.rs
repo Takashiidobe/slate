@@ -60,6 +60,7 @@ fn resolve_module(
         ms_asm_return: Vec::new(),
         floating_pragmas: FloatingPragmas::new(unit.dialect.flavor(), context.region),
         compound_start: false,
+        reserved_extents: HashMap::new(),
         context,
     };
     let mut poisoned = HashSet::new();
@@ -737,7 +738,12 @@ impl Lowerer {
             }
             if let Some(prologue) = prologue.as_deref_mut() {
                 let anchor = parameter.derive(());
-                self.capture_extents(&parameter.declarator, &anchor, prologue)?;
+                self.capture_extents(
+                    Some(&parameter.specifiers.ty),
+                    &parameter.declarator,
+                    &anchor,
+                    prologue,
+                )?;
             }
             let start = self.types.definitions.len();
             let resolved =
@@ -880,7 +886,7 @@ impl Lowerer {
         }
         let mut deduced = None;
         let mut statements = Vec::new();
-        for declarator in &item.declarators {
+        for (index, declarator) in item.declarators.iter().enumerate() {
             let attributes = item
                 .specifiers
                 .attributes
@@ -900,7 +906,12 @@ impl Lowerer {
                 .ok_or(ResolveError::Internal("unnamed declaration"))?;
             if !global {
                 let anchor = declarator.derive(());
-                self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
+                self.capture_extents(
+                    (index == 0).then_some(&item.specifiers.ty),
+                    &declarator.declarator,
+                    &anchor,
+                    &mut statements,
+                )?;
             }
             let start = self.types.definitions.len();
             let value = if inferred {
@@ -1255,11 +1266,15 @@ impl Lowerer {
 
     fn capture_extents(
         &mut self,
+        specifier: Option<&ast::TypeSpecifier>,
         declarator: &Declarator,
         anchor: &Span<()>,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<(), ResolveError> {
         let mut extents = Vec::new();
+        if let Some(specifier) = specifier {
+            self.typeof_evaluations(specifier, &mut extents)?;
+        }
         self.extents(declarator, &mut extents)?;
         out.extend(extents.into_iter().map(|(id, count)| {
             anchor.derive(Statement::Temporary {
@@ -1294,7 +1309,10 @@ impl Lowerer {
                 let extent_type = self.types.ctypes.size_type(&self.context.target);
                 let count = self.expr(expr)?;
                 let count = self.convert(count, extent_type, ConversionReason::Assign)?;
-                let id = self.fresh();
+                let id = match self.reserved_extents.remove(&expr.id) {
+                    Some(id) => id,
+                    None => self.fresh(),
+                };
                 self.types.entities.declare(id, extent_type, false);
                 self.types.extents.insert(expr.id, id);
                 out.push((id, count.value));

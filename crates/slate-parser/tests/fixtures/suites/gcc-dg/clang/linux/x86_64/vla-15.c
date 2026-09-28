@@ -57,7 +57,13 @@ main (void)
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5 j: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%8), const<u64>(1))));
+// DEFAULT-NEXT:         let %5 j: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %10: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:         let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%11));
+// DEFAULT-NEXT:         let %8: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%4)));
+// DEFAULT-NEXT:         let %9: ptr<i8> [synthetic] = array_decay<ptr<i8>, length=None>(deref(pointer_cast<ptr<vla<i8, %8>>, reason=explicit>(array_decay<ptr<i8>, length=Some(1)>(%2))));
+// DEFAULT-NEXT:         write<i32>(%5, reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%8), const<u64>(1)))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%4), const<i32>(1)), ne<i32>(read<i32>(%5), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:     }

@@ -283,7 +283,11 @@ and places and erased only when emitting IR. See [C type layer](c-type-layer.md)
 `typeof` and `typeof_unqual` resolve in sema for both type names and expression
 operands. Expression operands retain array and function types without decay;
 typing them emits no runtime effects and rolls back temporary binding IDs and
-string globals. `typeof_unqual` removes outer qualifiers, including atomic
+string globals, except that an operand of variably modified type is evaluated
+(C23 6.7.3.6, as gcc and clang do) as a synthetic temporary before the
+declaration or type name, binding its extents, when that evaluation has
+effects: `typeof(++i, (int (*)[i])a) q` increments `i` and gives
+`q: ptr<vla<i32, %i>>`, while `typeof(vla_object)` emits nothing. `typeof_unqual` removes outer qualifiers, including atomic
 qualification, while preserving pointee qualifiers. Resolved declarations keep
 their `typeof` spelling, canonical C type, and applicable typedef chain metadata.
 Function types can declare functions without a new parameter list, and existing

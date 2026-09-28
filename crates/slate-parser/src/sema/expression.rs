@@ -34,6 +34,7 @@ pub(super) struct Lowerer {
     pub ms_asm_return: Vec<BindingId>,
     pub floating_pragmas: super::pragmas::FloatingPragmas,
     pub compound_start: bool,
+    pub reserved_extents: HashMap<NodeId, BindingId>,
 }
 
 impl Lowerer {
@@ -1768,8 +1769,9 @@ impl Lowerer {
             }
             Err(_) => self.expr(operand).map(|value| (value.c, value.value)),
         };
-        let evaluated = result.as_ref().is_ok_and(|(c, _)| {
-            self.next_id != next_id && matches!(self.types.ir_type(*c), Type::VariableArray { .. })
+        let evaluated = result.as_ref().is_ok_and(|(c, value)| {
+            matches!(self.types.ir_type(*c), Type::VariableArray { .. })
+                && super::effects::has_effects(value)
         });
         if evaluated {
             return result.map(|(c, value)| (c, Some(value)));
@@ -1792,6 +1794,7 @@ impl Lowerer {
     ) -> Result<Vec<(BindingId, Value)>, ResolveError> {
         let mut extents = Vec::new();
         if self.in_function {
+            self.typeof_evaluations(&ty.specifiers.ty, &mut extents)?;
             self.extents(&ty.declarator, &mut extents)?;
         }
         Ok(extents)

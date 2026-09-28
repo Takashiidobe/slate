@@ -49,7 +49,9 @@ impl TypeResolver {
             return Ok(*typed);
         }
         let typed = self.type_expression(e)?;
-        self.expression_types.insert(e.id, typed);
+        if !self.ctypes.has_unbound_extent(typed.c) {
+            self.expression_types.insert(e.id, typed);
+        }
         Ok(typed)
     }
 
@@ -85,7 +87,10 @@ impl TypeResolver {
     }
 
     fn type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
-        self.resolve(&ty.specifiers, &ty.declarator)
+        let provisional = std::mem::replace(&mut self.provisional_extents, true);
+        let resolved = self.resolve(&ty.specifiers, &ty.declarator);
+        self.provisional_extents = provisional;
+        resolved
     }
 
     fn is_decimal(&self, c: QualType) -> Option<bool> {
@@ -184,7 +189,10 @@ impl TypeResolver {
                 if self.entities.ty(&binding).is_some() || self.locals.contains_key(&binding) {
                     continue;
                 }
-                let Ok(resolved) = self.declarator_type(&declaration.specifiers, declarator) else {
+                let provisional = std::mem::replace(&mut self.provisional_extents, true);
+                let resolved = self.declarator_type(&declaration.specifiers, declarator);
+                self.provisional_extents = provisional;
+                let Ok(resolved) = resolved else {
                     continue;
                 };
                 let completed = self.completed_array(resolved, declarator.initializer.as_ref());

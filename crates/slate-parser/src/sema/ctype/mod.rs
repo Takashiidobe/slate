@@ -555,6 +555,30 @@ impl CTypes {
         matches!(self.canonical_kind(q), CTypeKind::Pointer(..))
     }
 
+    pub fn is_variably_modified(&self, q: QualType) -> bool {
+        self.any_variable_extent(q, &|_| true)
+    }
+
+    pub fn has_unbound_extent(&self, q: QualType) -> bool {
+        self.any_variable_extent(q, &|binding| binding.is_none())
+    }
+
+    fn any_variable_extent(
+        &self,
+        q: QualType,
+        matches: &dyn Fn(Option<BindingId>) -> bool,
+    ) -> bool {
+        match self.canonical_kind(q) {
+            CTypeKind::Pointer(pointee, _) => self.any_variable_extent(*pointee, matches),
+            CTypeKind::Array { element, extent } => {
+                matches!(extent, Extent::Variable(binding) if matches(*binding))
+                    || self.any_variable_extent(*element, matches)
+            }
+            CTypeKind::Function { ret, .. } => self.any_variable_extent(*ret, matches),
+            _ => false,
+        }
+    }
+
     pub fn adjust_parameter(&mut self, q: QualType) -> QualType {
         if let Some((element, _)) = self.element(q) {
             return self.pointer(element);

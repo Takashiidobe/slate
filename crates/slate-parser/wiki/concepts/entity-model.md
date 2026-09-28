@@ -71,7 +71,7 @@ cannot drift: typing rules shared with lowering (`binary_types`,
 `chosen_expr`, `real_floating_component`, `statement_expression_parts`,
 `AtomicBuiltin::result`, `swizzle`, `shuffle`, `predefined_name`) are factored
 out of the IR-building code rather than copied. A `sizeof` operand the typer answers is not lowered at all unless its
-type is a VLA, which C evaluates.
+type is a VLA, which C evaluates (see the variably modified paragraph below).
 
 The static-assertion checker and `typeof` resolution type expressions through
 the same typer (`TypeResolver::expression_type`), so a constant expression
@@ -93,9 +93,22 @@ the typer types the body's top-level declarations itself
 (`declarator_type` + `completed_array`, shared with the checker) into
 `TypeResolver::locals`, which `object()` consults after `entities`.
 
-What the typer still cannot answer is a variably modified type (a cast to
-`int (*)[n]`, a VLA local in a statement expression): its extent binding is
-created when lowering evaluates the size.
+A variably modified operand (a cast to `int (*)[n]`, a VLA local in a
+statement expression) needs an extent binding that only lowering creates when
+it evaluates the size. While resolving its own type names and statement
+locals the typer sets `TypeResolver::provisional_extents`, so `derive` gives
+such a size `Extent::Variable(None)` (`vla<T, *>`) instead of failing, and
+`typed` never memoizes a type with an unbound extent
+(`CTypes::has_unbound_extent`): lowering's cross-check asks again after the
+size is bound and gets the exact `vla<T, %id>`. The callers then evaluate the
+operand for real rather than speculatively: `sizeof` lowers a VLA-typed operand
+and keeps it when it has effects (a `Capture` of a new extent counts); `typeof`
+of a variably modified expression is evaluated where its extents would be
+captured (`Lowerer::typeof_evaluations`, from `capture_extents` and
+`type_name_extents`), again only when it has effects, so `typeof(g)` of a VM
+pointer reads nothing; `__auto_type` reserves `BindingId`s for its
+initializer's non-constant sizes first (`reserve_extents`), so the typer
+answers the exact type and lowering's `extents` binds into the reserved ids.
 
 `names.rs::redeclares` decides whether a second declaration shares the first
 one's entity, and it treats `Object` and `Function` as one kind. A declarator
