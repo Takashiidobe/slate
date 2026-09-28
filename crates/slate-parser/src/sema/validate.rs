@@ -54,7 +54,7 @@ pub struct SemaErrors {
 impl TranslationUnit {
     pub fn analyze(&self, files: &Files) -> Result<Vec<SemaError>, SemaErrors> {
         let flavor = self.flavor;
-        let features = StandardFeatures::new(self.standard);
+        let features = StandardFeatures::for_compiler(self.standard, flavor, &self.target);
         let literals = LiteralContext {
             target: &self.target,
             features,
@@ -702,32 +702,93 @@ pub(super) fn integer_candidates(
     if long_long {
         push(&mut candidates, LongLong);
     }
-    if signed_only {
+    if signed_only && !features.widest_integer_literal_fallback {
         candidates.push((if long_long { LongLong } else { Long }, false));
     }
     candidates
 }
 
+pub(super) struct IntegerLiteralSelection {
+    pub rank: IntegerRank,
+    pub signed: bool,
+    pub value: crate::ir::Number,
+    pub truncated: bool,
+    pub widest_fallback: bool,
+}
+
+// gcc evaluates literals in intmax_t precision and warns; clang rejects, so the gcc value wins.
 pub(super) fn select_integer_candidate(
     literal: &IntegerLiteral,
     target: &TargetInfo,
     features: StandardFeatures,
-) -> Option<(IntegerRank, bool)> {
-    integer_candidates(literal, features)
+) -> Option<IntegerLiteralSelection> {
+    let intmax_width = target.long_long_width;
+    let truncated = literal.value.bits() > u64::from(intmax_width);
+    let value = if truncated {
+        &literal.value % (BigUint::from(1u32) << intmax_width)
+    } else {
+        literal.value.clone()
+    };
+    let candidate = integer_candidates(literal, features)
         .into_iter()
         .find(|(rank, signed)| {
             let width = integer_rank_width(*rank, target);
-            width > 0 && fits_rank(&literal.value, width, *signed)
-        })
+            width > 0 && fits_rank(&value, width, *signed)
+        });
+    let (rank, signed, value, widest_fallback) = match candidate {
+        Some((rank, signed)) => (rank, signed, crate::ir::Number::Integer(value), false),
+        None if features.widest_integer_literal_fallback => {
+            let rank = if target.pointer_width >= 64 {
+                IntegerRank::Int128
+            } else {
+                IntegerRank::LongLong
+            };
+            let signed = !literal.suffix.unsigned;
+            let width = integer_rank_width(rank, target);
+            let value = if !signed || fits_rank(&value, width, true) {
+                crate::ir::Number::Integer(value)
+            } else {
+                crate::ir::Number::SignedInteger(
+                    num_bigint::BigInt::from(value) - (num_bigint::BigInt::from(1u32) << width),
+                )
+            };
+            (rank, signed, value, true)
+        }
+        None => return None,
+    };
+    Some(IntegerLiteralSelection {
+        rank,
+        signed,
+        value,
+        truncated,
+        widest_fallback,
+    })
 }
 
 fn integer_literal_warnings(
     literal: &IntegerLiteral,
-    rank: IntegerRank,
-    signed: bool,
+    selection: &IntegerLiteralSelection,
     features: StandardFeatures,
 ) -> Vec<(Warning, String)> {
+    let IntegerLiteralSelection {
+        rank,
+        signed,
+        truncated,
+        widest_fallback,
+        ..
+    } = *selection;
     let mut warnings = Vec::new();
+    if truncated {
+        warnings.push((
+            Warning::IntegerLiteralTooLarge,
+            "integer constant is too large for its type".to_string(),
+        ));
+    } else if widest_fallback {
+        warnings.push((
+            Warning::ImplicitlyUnsignedLiteral,
+            "integer constant is so large that it is unsigned".to_string(),
+        ));
+    }
     if rank == IntegerRank::LongLong && features.long_long_type != Availability::Standard {
         warnings.push((
             Warning::LongLong,
@@ -778,7 +839,7 @@ fn integer_literal_diagnostics(
                 literal.spelling
             ),
         )],
-        Some((rank, signed)) => integer_literal_warnings(literal, rank, signed, context.features)
+        Some(selection) => integer_literal_warnings(literal, &selection, context.features)
             .into_iter()
             .map(|(warning, message)| (Some(warning), message))
             .collect(),

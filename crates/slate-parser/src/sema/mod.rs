@@ -35,8 +35,10 @@ use numeric::{Context, ResolveError};
 pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, ResolveError> {
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
-        .with_features(crate::standard_features::StandardFeatures::new(
+        .with_features(crate::standard_features::StandardFeatures::for_compiler(
             unit.standard,
+            unit.flavor,
+            &unit.target,
         ))
         .with_contraction(pragmas::default_contraction(unit.flavor, unit.standard));
     let mut expressions: Vec<&Expr> = Vec::new();

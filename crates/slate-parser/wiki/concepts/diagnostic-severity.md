@@ -71,7 +71,8 @@ to (1) needs no justification beyond the measurement. (3) is always a bug.
 | ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `long-long`                   | off       | yes      | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
 | `c99-compat`                  | on in c89 | no       | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                            |
-| `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank                                             |
+| `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank, or (gcc flavor) on gcc's widest literal type |
+| `integer-literal-too-large`   | on        | no       | an integer literal wider than `long long` is truncated to it; clang rejects, gcc warns (no gcc `-W` name, so the name is slate's) |
 | `bit-int-extension`           | off       | yes      | a written `_BitInt` type while `bit_int_type` is not `Standard`                                                           |
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 | `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |

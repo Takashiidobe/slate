@@ -1,13 +1,16 @@
-/* Test for integer constant types: diagnostics for constants outside
-   range of intmax_t must be pedwarns.  PR 39559.  */
+/* PR middle-end/79788 */
 /* { dg-do compile } */
-/* { dg-options "-std=iso9899:1999 -pedantic-errors" } */
+/* { dg-options "-O2" } */
 
-#if 9223372036854775808LL /* { dg-error "integer constant is so large that it is unsigned" } */
-unsigned long long l = 9223372036854775808LL; /* { dg-error "integer constant is so large that it is unsigned" } */
-#endif
+long long
+foo (long long x, long long y)
+{
+  if (y > 1234567891234567891234567891234567812 / x)	/* { dg-warning "integer constant is too large for its type" } */
+    return x;
+  return 0;
+}
 
-// SLATE-FILECHECK-STD DEFAULT iso9899:1999
+// SLATE-FILECHECK-STD DEFAULT gnu23
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
@@ -33,6 +36,10 @@ unsigned long long l = 9223372036854775808LL; /* { dg-error "integer constant is
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 l: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(truncate<i64, reason=assign, fits=unknown>(const<i128>(9223372036854775808))) [linkage=external];
+// DEFAULT-NEXT:     fn %0 @foo(%1 x: i64, %2 y: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if gt<i128>(widen<i128, reason=usual_arith>(read<i64>(%2)), div<i128, by_zero=ub, min_by_neg_one=ub>(const<i128>(13314483284964259460), widen<i128, reason=usual_arith>(read<i64>(%1))))
+// DEFAULT-NEXT:             return read<i64>(%1);
+// DEFAULT-NEXT:         return widen<i64, reason=return>(const<i32>(0));
+// DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

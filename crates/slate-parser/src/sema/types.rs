@@ -135,7 +135,8 @@ impl TypeResolver {
         let mut resolver = Self::new(target);
         resolver.flavor = unit.flavor;
         resolver.ctypes.ptr32_extension_is_qualifier = unit.flavor == CompilerFlavor::Msvc;
-        resolver.features = StandardFeatures::new(unit.standard);
+        resolver.features =
+            StandardFeatures::for_compiler(unit.standard, unit.flavor, &unit.target);
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
         resolver.diagnostic_options = unit.options.diagnostics.clone();

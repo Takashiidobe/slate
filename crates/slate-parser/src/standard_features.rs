@@ -1,4 +1,4 @@
-use crate::compiler_args::LanguageStandard;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::compiler_options::InlineSemantics;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,6 +46,7 @@ pub struct StandardFeatures {
     pub inline_semantics: InlineSemantics,
     pub microsoft_extensions: bool,
     pub gnu_floating_keywords: bool,
+    pub widest_integer_literal_fallback: bool,
     pub keyword_float80: bool,
     pub fixed_point_keywords: bool,
     pub x86_segment_keywords: bool,
@@ -104,18 +105,41 @@ impl StandardFeatures {
             },
             microsoft_extensions: false,
             gnu_floating_keywords: false,
+            widest_integer_literal_fallback: false,
             keyword_float80: false,
             fixed_point_keywords: true,
             x86_segment_keywords: false,
         }
     }
 
-    pub fn with_microsoft_extensions(mut self, enabled: bool) -> Self {
-        self.microsoft_extensions = enabled;
-        self
+    pub fn for_compiler(
+        standard: LanguageStandard,
+        flavor: CompilerFlavor,
+        target: &crate::target_info::TargetInfo,
+    ) -> Self {
+        let mut features = Self::new(standard);
+        features.microsoft_extensions = match flavor {
+            CompilerFlavor::Msvc => true,
+            CompilerFlavor::Clang => {
+                target.environment == crate::target_info::TargetEnvironment::Msvc
+            }
+            CompilerFlavor::Gcc => false,
+        };
+        if flavor == CompilerFlavor::Gcc {
+            features.widest_integer_literal_fallback = true;
+            features = features.with_gcc_keywords(
+                standard,
+                matches!(
+                    target.family,
+                    crate::target_info::TargetFamily::X86_64
+                        | crate::target_info::TargetFamily::X86
+                ),
+            );
+        }
+        features
     }
 
-    pub fn with_gcc_keywords(mut self, standard: LanguageStandard, x86: bool) -> Self {
+    fn with_gcc_keywords(mut self, standard: LanguageStandard, x86: bool) -> Self {
         self.gnu_floating_keywords = true;
         self.keyword_float80 = x86;
         // gcc's -std=cNN implies -fno-asm, which unreserves the fixed-point keywords

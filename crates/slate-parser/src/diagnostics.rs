@@ -7,6 +7,7 @@ pub enum Warning {
     LongLong,
     C99Compat,
     ImplicitlyUnsignedLiteral,
+    IntegerLiteralTooLarge,
     BitIntExtension,
     C23Extensions,
     PointerSign,
@@ -24,10 +25,11 @@ pub enum Warning {
 }
 
 impl Warning {
-    pub const ALL: [Self; 17] = [
+    pub const ALL: [Self; 18] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
+        Self::IntegerLiteralTooLarge,
         Self::BitIntExtension,
         Self::C23Extensions,
         Self::PointerSign,
@@ -49,6 +51,7 @@ impl Warning {
             Self::LongLong => "long-long",
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",
+            Self::IntegerLiteralTooLarge => "integer-literal-too-large",
             Self::BitIntExtension => "bit-int-extension",
             Self::C23Extensions => "c23-extensions",
             Self::PointerSign => "pointer-sign",

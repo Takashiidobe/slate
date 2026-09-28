@@ -118,13 +118,14 @@ impl TypeResolver {
                         signed: !literal.suffix.unsigned,
                     }
                 } else {
-                    let (rank, signed) = super::validate::select_integer_candidate(
+                    let selection = super::validate::select_integer_candidate(
                         literal,
                         &context.target,
                         context.features,
                     )
                     .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
-                    let rank = match rank {
+                    let signed = selection.signed;
+                    let rank = match selection.rank {
                         IntegerRank::Short => IntRank::Short,
                         IntegerRank::Int => IntRank::Int,
                         IntegerRank::Long => IntRank::Long,

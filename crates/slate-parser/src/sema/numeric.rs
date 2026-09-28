@@ -132,13 +132,25 @@ impl Context {
         let (ty, kind) = match &expression.value {
             ExprKind::IntegerLiteral(literal) => {
                 let bit_precise = literal.suffix.size == IntegerSizeSuffix::BitInt;
-                let (width, signed) = if bit_precise {
+                let (width, signed, value) = if bit_precise {
                     bit_int_literal_width(literal)
-                        .map(|width| (width, !literal.suffix.unsigned))
+                        .map(|width| {
+                            (
+                                width,
+                                !literal.suffix.unsigned,
+                                Number::Integer(literal.value.clone()),
+                            )
+                        })
                         .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
                 } else {
                     select_integer_candidate(literal, &self.target, self.features)
-                        .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
+                        .map(|selection| {
+                            (
+                                integer_rank_width(selection.rank, &self.target),
+                                selection.signed,
+                                selection.value,
+                            )
+                        })
                         .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?
                 };
                 let numeric = NumericType::Integer {
@@ -146,7 +158,7 @@ impl Context {
                     signed,
                     bit_precise,
                 };
-                let number = Number::Integer(literal.value.clone());
+                let number = value;
                 if literal.imaginary {
                     imaginary_literal(
                         expression,

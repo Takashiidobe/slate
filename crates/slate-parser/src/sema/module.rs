@@ -25,7 +25,7 @@ pub fn resolve_module(
     unit: &TranslationUnit,
     files: &crate::files::Files,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
-    let features = StandardFeatures::new(unit.standard);
+    let features = StandardFeatures::for_compiler(unit.standard, unit.flavor, &unit.target);
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
         .with_features(features)

@@ -571,9 +571,18 @@ candidate order and target integer widths: `StandardFeatures::long_long_type`
 is `Standard` from C99 on and `Extension` in C89, so a C89 unsuffixed or
 `l`-suffixed decimal literal may become `unsigned long` (C89 6.1.3.2) before
 falling back to the `long long` extension tail, while C99 (6.4.4.1) reaches
-`long long` first. In every mode a decimal literal that fits no signed type
-falls back to the unsigned form of the widest rank, matching clang's
-`-Wimplicitly-unsigned-literal`. `select_integer_candidate` is the single
+`long long` first. Under the clang and msvc flavors a decimal literal that
+fits no signed type falls back to the unsigned form of the widest rank,
+matching clang's `-Wimplicitly-unsigned-literal`. The gcc flavor
+(`StandardFeatures::widest_integer_literal_fallback`) instead falls back to
+gcc's widest literal type, signed unless `u`-suffixed: `__int128` on 64-bit
+targets, else `long long`, where the value keeps its bits and may lower as a
+negative `Number::SignedInteger` (`18446744073709551615` is `long long` -1
+on i686). A literal wider than `long long` is truncated to that width first,
+as gcc's cpplib evaluates in `intmax_t` precision, with the
+`integer-literal-too-large` warning; candidate selection then runs on the
+truncated value (`99999999999999999999` is `long`). clang rejects such
+literals, so every flavor takes gcc's value. `select_integer_candidate` is the single
 selection point, shared with validation, and the candidate it picks is what
 [`diagnostic-severity.md`](diagnostic-severity.md) derives the literal
 warnings from. C89 and C99 only diverge where `long` is
