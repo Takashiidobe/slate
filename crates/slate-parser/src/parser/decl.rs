@@ -110,7 +110,7 @@ impl Parser {
         tokens: &'a [Span<Token>],
         pos: usize,
     ) -> DeclaratorParser<'a> {
-        DeclaratorParser::new(tokens, pos, Some(self))
+        DeclaratorParser::new(tokens, pos, self.context())
     }
 
     pub(super) fn parse_declaration_specifiers(
@@ -197,7 +197,7 @@ impl Parser {
         }
         let bit_width = if is_field && parser.matches(Token::Colon) {
             let start = parser.pos;
-            let (width, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
+            let (width, end) = const_expr::Parser::parse_one(tokens, start, self.context())
                 .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
             parser.pos = end;
             Some(width)
@@ -357,7 +357,7 @@ impl Parser {
                     decls.push(self.declaration_annotation(annotation)?);
                 }
             }
-            decls.push(span_tokens(decl, &tokens[start..*position], Some(self)));
+            decls.push(span_tokens(decl, &tokens[start..*position], self.context()));
             decls.extend(comments);
         }
         if linkage {
@@ -563,7 +563,8 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
             }
             _ => {
                 let checkpoint = parser.checkpoint();
-                if let Ok(expression) = const_expr::Parser::parse_expression(argument, Some(parser))
+                if let Ok(expression) =
+                    const_expr::Parser::parse_expression(argument, parser.context())
                 {
                     checkpoint.commit();
                     alignment = Some(expression);
@@ -635,16 +636,14 @@ pub(super) fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
 
 pub(super) fn bare_identifier_names<'a>(
     tokens: impl IntoIterator<Item = &'a Token>,
-    context: Option<&Parser>,
+    context: super::ParseContext<'_>,
 ) -> Option<Vec<String>> {
     let mut names = Vec::new();
     let mut expect_ident = true;
     for token in tokens {
         if expect_ident {
             match token {
-                Token::Ident(name) if !context.is_some_and(|parser| parser.is_typedef(name)) => {
-                    names.push(name.to_string())
-                }
+                Token::Ident(name) if !context.is_typedef(name) => names.push(name.to_string()),
                 _ => return None,
             }
         } else if *token != Token::Comma {

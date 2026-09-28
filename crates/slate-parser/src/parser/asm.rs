@@ -65,7 +65,7 @@ fn asm_string(tokens: &[Span<Token>], pos: &mut usize) -> Result<Span<String>, S
     if *pos == start {
         return Err("expected string literal in `asm`".into());
     }
-    Ok(span_tokens(value, &tokens[start..*pos], None))
+    Ok(Span::cover(value, &tokens[start..*pos]))
 }
 
 impl DeclaratorParser<'_> {
@@ -149,7 +149,7 @@ impl Parser {
             qualifiers.push(span_tokens(
                 qualifier,
                 &tokens[position..=position],
-                Some(self),
+                self.context(),
             ));
             position += 1;
         }
@@ -227,7 +227,11 @@ impl Parser {
             loop {
                 let start = cursor.pos;
                 let label = cursor.expect_ident("expected identifier")?;
-                labels.push(span_tokens(label, &tokens[start..cursor.pos], Some(self)));
+                labels.push(span_tokens(
+                    label,
+                    &tokens[start..cursor.pos],
+                    self.context(),
+                ));
                 if !cursor.consume(Token::Comma) {
                     break;
                 }
@@ -372,7 +376,7 @@ impl Parser {
             let name = if cursor.consume(Token::LBracket) {
                 let start = cursor.pos;
                 let name = cursor.expect_ident("expected identifier")?;
-                let name = span_tokens(name, &tokens[start..cursor.pos], Some(self));
+                let name = span_tokens(name, &tokens[start..cursor.pos], self.context());
                 cursor.expect(Token::RBracket, "expected `]`")?;
                 Some(name)
             } else {

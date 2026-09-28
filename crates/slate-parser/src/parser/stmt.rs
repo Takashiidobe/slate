@@ -148,7 +148,7 @@ impl Parser {
                 .into_iter()
                 .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
             stmts.extend(pragmas);
-            stmts.push(span_tokens(stmt, &tokens[start..position], Some(self)));
+            stmts.push(span_tokens(stmt, &tokens[start..position], self.context()));
             stmts.extend(comments);
         }
         stmts.extend(self.statement_annotations(tokens, tokens.len(), tokens.len())?);
@@ -171,7 +171,7 @@ impl Parser {
         Ok(Box::new(span_tokens(
             stmt,
             &cursor.tokens[start..cursor.pos],
-            Some(self),
+            self.context(),
         )))
     }
 
@@ -184,7 +184,7 @@ impl Parser {
         Ok(Box::new(span_tokens(
             stmt,
             &cursor.tokens[start..cursor.pos],
-            Some(self),
+            self.context(),
         )))
     }
 
@@ -220,7 +220,7 @@ impl Parser {
             {
                 true
             }
-            Some(token) => const_expr::starts_type_name(token, Some(self)),
+            Some(token) => const_expr::starts_type_name(token, self.context()),
             None => false,
         }
     }
@@ -259,7 +259,7 @@ impl Parser {
             let label = span_tokens(
                 name.to_string(),
                 &tokens[cursor.pos..cursor.pos + 1],
-                Some(self),
+                self.context(),
             );
             cursor.pos += 2;
             let body = self.parse_labeled_body(cursor)?;
@@ -278,7 +278,7 @@ impl Parser {
                         Token::Ident(name) => Ok(span_tokens(
                             name.to_string(),
                             std::slice::from_ref(single),
-                            Some(self),
+                            self.context(),
                         )),
                         _ => Err(self.error_at_tokens(tokens, cursor.pos, "expected label name")),
                     },
@@ -314,7 +314,7 @@ impl Parser {
                 let body = Box::new(span_tokens(
                     statement,
                     &tokens[position..cursor.pos],
-                    Some(self),
+                    self.context(),
                 ));
                 checkpoint.commit();
                 return Ok(StmtKind::Attributed { attributes, body });
@@ -382,19 +382,21 @@ impl Parser {
                 cursor.pos += 1;
                 let label_start = cursor.pos;
                 let label = cursor.expect_ident("expected label after `goto`")?;
-                let label = span_tokens(label, &tokens[label_start..cursor.pos], Some(self));
+                let label = span_tokens(label, &tokens[label_start..cursor.pos], self.context());
                 cursor.expect(Token::Semi, "expected `;` after `goto` label")?;
                 Ok(StmtKind::Goto(label))
             }
             Some(Token::Keyword(Keyword::Case)) => {
                 let start = cursor.pos + 1;
-                let (value, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
+                let (value, end) = const_expr::Parser::parse_one(tokens, start, self.context())
                     .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
                 cursor.pos = end;
                 let label = if cursor.peek() == Some(&Token::Ellipsis) {
                     let start = cursor.pos + 1;
-                    let (end_value, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
-                        .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+                    let (end_value, end) =
+                        const_expr::Parser::parse_one(tokens, start, self.context()).map_err(
+                            |error| self.error_at_tokens(tokens, start, error.to_string()),
+                        )?;
                     cursor.pos = end;
                     SwitchLabel::CaseRange {
                         start: value,
@@ -534,13 +536,13 @@ impl Parser {
                     Some(Box::new(span_tokens(
                         StmtKind::Decl(declaration),
                         init_tokens,
-                        Some(self),
+                        self.context(),
                     )))
                 } else {
                     Some(Box::new(span_tokens(
                         StmtKind::Expr(self.parse_expression(init_tokens)?),
                         init_tokens,
-                        Some(self),
+                        self.context(),
                     )))
                 };
                 let condition = if condition_tokens.is_empty() {
@@ -597,7 +599,7 @@ impl Parser {
         if tokens.is_empty() {
             return Err(self.error_at_tokens(tokens, 0, "expected expression"));
         }
-        const_expr::Parser::parse_expression(tokens, Some(self))
+        const_expr::Parser::parse_expression(tokens, self.context())
             .map_err(|error| self.error_at_tokens(tokens, 0, error.to_string()))
     }
 }

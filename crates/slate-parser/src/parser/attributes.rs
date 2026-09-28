@@ -1,4 +1,4 @@
-use super::{Parser, string_literal_content};
+use super::{ParseContext, Parser, string_literal_content};
 use crate::ast::*;
 use crate::attribute_support;
 use crate::const_expr;
@@ -10,7 +10,7 @@ impl Parser {
         tokens: &[Span<Token>],
         position: usize,
     ) -> Result<(Vec<Span<Attribute>>, usize), String> {
-        parse_attribute_groups(tokens, position, self.biggest_alignment, Some(self))
+        parse_attribute_groups(tokens, position, self.biggest_alignment, self.context())
     }
 }
 
@@ -89,7 +89,7 @@ pub(super) fn parse_attribute_groups(
     tokens: &[Span<Token>],
     position: usize,
     biggest_alignment: i64,
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Result<(Vec<Span<Attribute>>, usize), String> {
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
@@ -248,9 +248,9 @@ pub(super) fn parse_attribute(
     name: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Result<Attribute, String> {
-    let checkpoint = context.map(Parser::checkpoint);
+    let checkpoint = context.parser().map(Parser::checkpoint);
     let attribute = parse_attribute_value(name, arguments, biggest_alignment, context)?;
     if !matches!(attribute, Attribute::Invalid { .. })
         && let Some(checkpoint) = checkpoint
@@ -264,7 +264,7 @@ fn parse_attribute_value(
     name: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Result<Attribute, String> {
     let parse_expression =
         |arguments: &[Span<Token>]| parse_attribute_expression(arguments, context);
@@ -547,7 +547,7 @@ fn integer_argument(value: i64, arguments: &[Span<Token>]) -> Expr {
 
 fn parse_attribute_expression(
     arguments: &[Span<Token>],
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Result<Expr, String> {
     const_expr::Parser::parse_expression(arguments, context).map_err(|error| error.to_string())
 }
@@ -587,23 +587,25 @@ fn c23_attribute_name(name: &str) -> Option<&str> {
     }
 }
 
-fn gnu_registered(name: &str, context: Option<&Parser>) -> bool {
-    context.is_none_or(|parser| {
-        attribute_support::gnu_registered(name, parser.flavor(), parser.dialect().target())
-    })
+fn gnu_registered(name: &str, context: ParseContext<'_>) -> bool {
+    attribute_support::gnu_registered(name, context.dialect().flavor(), context.dialect().target())
 }
 
-fn declspec_registered(name: &str, context: Option<&Parser>) -> bool {
-    context.is_none_or(|parser| {
-        attribute_support::declspec_registered(name, parser.flavor(), parser.dialect().target())
-    })
+fn declspec_registered(name: &str, context: ParseContext<'_>) -> bool {
+    attribute_support::declspec_registered(
+        name,
+        context.dialect().flavor(),
+        context.dialect().target(),
+    )
 }
 
-fn c23_registered(name: &str, context: Option<&Parser>) -> bool {
+fn c23_registered(name: &str, context: ParseContext<'_>) -> bool {
     !name.contains("::")
-        || context.is_none_or(|parser| {
-            attribute_support::spelling_registered(name, parser.flavor(), parser.dialect().target())
-        })
+        || attribute_support::spelling_registered(
+            name,
+            context.dialect().flavor(),
+            context.dialect().target(),
+        )
 }
 
 fn parse_attribute_spelling(
@@ -611,7 +613,7 @@ fn parse_attribute_spelling(
     canonical: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Result<Attribute, String> {
     Ok(
         match parse_attribute(canonical, arguments, biggest_alignment, context)? {

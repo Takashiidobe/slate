@@ -1,5 +1,6 @@
 mod asm;
 mod attributes;
+mod context;
 mod decl;
 mod declarator;
 mod input;
@@ -18,6 +19,7 @@ use crate::pp::{
     DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, Preprocessor, PreprocessorInputs,
 };
 use crate::standard_features::StandardFeatures;
+pub(crate) use context::ParseContext;
 pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, builtin_integer_typedef, is_target_builtin_name};
 use input::{Annotation, ParserInput};
@@ -255,13 +257,11 @@ pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
 
 fn resolve_biggest_alignment(
     macros: &foldhash::HashMap<String, MacroEntry>,
-    features: StandardFeatures,
+    dialect: &Dialect,
 ) -> i64 {
     macros
         .get("__BIGGEST_ALIGNMENT__")
-        .and_then(|entry| {
-            const_expr::Parser::evaluate(&entry.definition.replacement, features).ok()
-        })
+        .and_then(|entry| const_expr::Parser::evaluate(&entry.definition.replacement, dialect).ok())
         .unwrap_or(FALLBACK_BIGGEST_ALIGNMENT)
 }
 
@@ -387,7 +387,7 @@ impl Parser {
         let mut nodes = self.prepare_preprocessor(&mut pp)?;
         nodes.extend(pp.parse_str("<main>", src).map_err(FrontendError::PP)?);
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, dialect.features());
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, &dialect);
         self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.ok_or_else(|| {
             FrontendError::Parse(ParseError::new(
@@ -423,7 +423,7 @@ impl Parser {
         nodes.extend(pp.parse_file(path).map_err(FrontendError::PP)?);
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, dialect.features());
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, &dialect);
         self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.ok_or_else(|| {
             FrontendError::Parse(ParseError::new(
@@ -493,10 +493,10 @@ pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {
 pub(crate) fn span_tokens<T>(
     value: T,
     tokens: &[Span<Token>],
-    context: Option<&Parser>,
+    context: ParseContext<'_>,
 ) -> Span<T> {
-    match context {
-        Some(context) => context.cover_tokens(value, tokens, 0, tokens.len()),
+    match context.parser() {
+        Some(parser) => parser.cover_tokens(value, tokens, 0, tokens.len()),
         None => Span::cover(value, tokens),
     }
 }

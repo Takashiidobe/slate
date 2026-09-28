@@ -157,9 +157,3 @@ impl StandardFeatures {
         self
     }
 }
-
-impl Default for StandardFeatures {
-    fn default() -> Self {
-        Self::new(LanguageStandard::default())
-    }
-}

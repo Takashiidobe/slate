@@ -876,23 +876,21 @@ pub struct Parser<'a> {
     tokens: &'a [Span<Token>],
     span_ranges: Option<SpanRangeIndex>,
     position: usize,
-    context: Option<&'a crate::parser::Parser>,
-    features: StandardFeatures,
+    context: crate::parser::ParseContext<'a>,
     nesting: Cell<u32>,
     directive: bool,
 }
 
 impl<'a> Parser<'a> {
     fn features(&self) -> StandardFeatures {
-        self.features
+        self.context.features()
     }
 
     pub fn parse(
         tokens: &'a [Span<Token>],
-        features: StandardFeatures,
+        dialect: &'a crate::dialect::Dialect,
     ) -> Result<Expr, ConstExprError> {
-        let mut parser = Self::new(tokens, None);
-        parser.features = features;
+        let mut parser = Self::new(tokens, crate::parser::ParseContext::Standalone(dialect));
         let expression = parser.parse_conditional()?;
         if parser.peek().is_some() {
             return Err(ConstExprError::UnexpectedTokens);
@@ -902,7 +900,7 @@ impl<'a> Parser<'a> {
 
     pub(crate) fn parse_expression(
         tokens: &'a [Span<Token>],
-        context: Option<&'a crate::parser::Parser>,
+        context: crate::parser::ParseContext<'a>,
     ) -> Result<Expr, ConstExprError> {
         let mut parser = Self::new(tokens, context);
         let expression = parser.parse_comma()?;
@@ -915,7 +913,7 @@ impl<'a> Parser<'a> {
     pub(crate) fn parse_one(
         tokens: &'a [Span<Token>],
         start: usize,
-        context: Option<&'a crate::parser::Parser>,
+        context: crate::parser::ParseContext<'a>,
     ) -> Result<(Expr, usize), ConstExprError> {
         let mut parser = Self::new(tokens, context);
         parser.position = start;
@@ -926,7 +924,7 @@ impl<'a> Parser<'a> {
     pub(crate) fn parse_initializer(
         tokens: &'a [Span<Token>],
         start: usize,
-        context: Option<&'a crate::parser::Parser>,
+        context: crate::parser::ParseContext<'a>,
     ) -> Result<(Initializer, usize), ConstExprError> {
         let mut parser = Self::new(tokens, context);
         parser.position = start;
@@ -936,9 +934,9 @@ impl<'a> Parser<'a> {
 
     pub fn evaluate(
         tokens: &'a [Span<Token>],
-        features: StandardFeatures,
+        dialect: &'a crate::dialect::Dialect,
     ) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(&Self::parse(tokens, features)?, EvalContext::default())
+        Self::evaluate_expr(&Self::parse(tokens, dialect)?, EvalContext::default())
     }
 
     pub fn evaluate_ast(expression: &Expr) -> Result<i64, ConstExprError> {
@@ -947,11 +945,10 @@ impl<'a> Parser<'a> {
 
     pub fn evaluate_with_defined(
         tokens: &'a [Span<Token>],
-        dialect: &crate::dialect::Dialect,
+        dialect: &'a crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
-        let mut parser = Self::new(tokens, None);
-        parser.features = dialect.features();
+        let mut parser = Self::new(tokens, crate::parser::ParseContext::Standalone(dialect));
         parser.directive = true;
         let at_position = |parser: &Self, error| LocatedConstExprError {
             token: Some(parser.failure_position(&error)),
@@ -1300,14 +1297,15 @@ impl<'a> Parser<'a> {
         })
     }
 
-    fn new(tokens: &'a [Span<Token>], context: Option<&'a crate::parser::Parser>) -> Self {
-        let indexed_by_context = context.is_some_and(|parser| parser.has_token_slice(tokens));
+    fn new(tokens: &'a [Span<Token>], context: crate::parser::ParseContext<'a>) -> Self {
+        let indexed_by_context = context
+            .parser()
+            .is_some_and(|parser| parser.has_token_slice(tokens));
         Self {
             tokens,
             span_ranges: (!indexed_by_context).then(|| SpanRangeIndex::new(tokens)),
             position: 0,
             context,
-            features: context.map_or_else(StandardFeatures::default, |parser| parser.features()),
             nesting: Cell::new(0),
             directive: false,
         }
@@ -1329,6 +1327,7 @@ impl<'a> Parser<'a> {
 
     fn nesting(&self) -> &Cell<u32> {
         self.context
+            .parser()
             .map_or(&self.nesting, crate::parser::Parser::nesting)
     }
 
@@ -1339,8 +1338,8 @@ impl<'a> Parser<'a> {
     fn cover_span<T>(&self, value: T, start: usize, end: usize) -> Span<T> {
         if let Some(span_ranges) = &self.span_ranges {
             span_ranges.cover(value, self.tokens, start, end)
-        } else if let Some(context) = self.context {
-            context.cover_tokens(value, self.tokens, start, end)
+        } else if let Some(parser) = self.context.parser() {
+            parser.cover_tokens(value, self.tokens, start, end)
         } else {
             Span::cover(value, &self.tokens[start..end])
         }
@@ -1595,7 +1594,7 @@ impl<'a> Parser<'a> {
         start: usize,
         accepts: impl FnOnce(usize) -> bool,
     ) -> Option<(Box<TypeName>, usize)> {
-        let checkpoint = self.context.map(crate::parser::Parser::checkpoint);
+        let checkpoint = self.context.parser().map(crate::parser::Parser::checkpoint);
         let mut declarator_parser = DeclaratorParser::new(self.tokens, start, self.context);
         let type_name = declarator_parser.parse_type_name().ok()?;
         let end = declarator_parser.position();
@@ -1610,7 +1609,7 @@ impl<'a> Parser<'a> {
 
     pub(crate) fn try_parse_full_type_name(
         tokens: &'a [Span<Token>],
-        context: Option<&'a crate::parser::Parser>,
+        context: crate::parser::ParseContext<'a>,
     ) -> Option<Box<TypeName>> {
         let first = &tokens.first()?.value;
         if !starts_type_name(first, context) {
@@ -1903,6 +1902,7 @@ impl<'a> Parser<'a> {
             .ok_or(ConstExprError::ExpectedIntegerExpression)?;
         let context = self
             .context
+            .parser()
             .ok_or(ConstExprError::NotConstant("statement expression"))?;
         let body = context
             .parse_statement_expression_body(&self.tokens[open + 1..close])
@@ -2104,7 +2104,7 @@ fn bit_int_width(ty: &TypeName) -> Option<(u32, bool)> {
     (width > 0).then_some((width, *signed))
 }
 
-pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Parser>) -> bool {
+pub(crate) fn starts_type_name(token: &Token, context: crate::parser::ParseContext<'_>) -> bool {
     match token {
         Token::Keyword(keyword) => matches!(
             keyword,
@@ -2158,7 +2158,7 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Constexpr
         ),
         Token::Ident(name) => {
-            context.is_some_and(|parser| parser.is_typedef(name))
+            context.is_typedef(name)
                 || crate::parser::is_target_builtin_name(name)
                 || crate::parser::builtin_integer_typedef(name).is_some()
                 || matches!(name.as_str(), "__attribute__" | "__attribute")

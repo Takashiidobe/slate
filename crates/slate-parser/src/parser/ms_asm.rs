@@ -220,7 +220,7 @@ impl Parser {
         while tokens.get(start + 1).map(|token| &token.value) == Some(&Token::Colon)
             && let Some(name) = word(&tokens[start].value)
         {
-            let name = span_tokens(name.to_string(), &tokens[start..=start], Some(self));
+            let name = span_tokens(name.to_string(), &tokens[start..=start], self.context());
             if let Some(previous) = label.replace(name) {
                 instructions.push(span_tokens(
                     MsAsmInstruction {
@@ -230,7 +230,7 @@ impl Parser {
                         operands: Vec::new(),
                     },
                     &tokens[start - 2..start],
-                    Some(self),
+                    self.context(),
                 ));
             }
             start += 2;
@@ -245,7 +245,7 @@ impl Parser {
             prefixes.push(span_tokens(
                 prefix.to_string(),
                 &tokens[position..=position],
-                Some(self),
+                self.context(),
             ));
             position += 1;
         }
@@ -263,7 +263,7 @@ impl Parser {
                 Some(span_tokens(
                     mnemonic.to_string(),
                     &tokens[position - 1..position],
-                    Some(self),
+                    self.context(),
                 ))
             }
         };
@@ -288,7 +288,7 @@ impl Parser {
                     operands,
                 },
                 &tokens[label_start..],
-                Some(self),
+                self.context(),
             ));
         }
         Ok(instructions)
@@ -364,7 +364,7 @@ impl<'p, 'a> OperandParser<'p, 'a> {
         Box::new(span_tokens(
             value,
             &self.tokens[start..self.pos],
-            Some(self.parser),
+            self.parser.context(),
         ))
     }
 
@@ -468,7 +468,7 @@ impl<'p, 'a> OperandParser<'p, 'a> {
                     let field = span_tokens(
                         field.to_string(),
                         &self.tokens[self.pos - 1..self.pos],
-                        Some(self.parser),
+                        self.parser.context(),
                     );
                     base = self.node(MsAsmExpr::Member { base, field }, start);
                 }

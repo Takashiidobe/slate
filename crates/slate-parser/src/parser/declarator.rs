@@ -1,6 +1,6 @@
 use super::attributes::parse_attribute_groups;
 use super::decl::{bare_identifier_names, matching_paren, set_qualifier, specifiers_with_type};
-use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, span_tokens};
+use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, ParseContext, Parser, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
@@ -52,7 +52,7 @@ pub(crate) struct DeclaratorParser<'a> {
     pub(super) tokens: &'a [Span<Token>],
     pub(super) pos: usize,
     pub(super) biggest_alignment: i64,
-    pub(super) context: Option<&'a Parser>,
+    pub(super) context: ParseContext<'a>,
     pub(super) identifier_list: IdentifierList,
     pub(super) definition_bindings: std::collections::HashMap<String, super::NameBinding>,
 }
@@ -65,13 +65,15 @@ pub(super) enum IdentifierList {
 }
 
 impl<'a> DeclaratorParser<'a> {
-    pub(crate) fn new(tokens: &'a [Span<Token>], pos: usize, context: Option<&'a Parser>) -> Self {
+    pub(crate) fn new(tokens: &'a [Span<Token>], pos: usize, context: ParseContext<'a>) -> Self {
         Self {
             tokens,
             pos,
-            biggest_alignment: context.map_or(FALLBACK_BIGGEST_ALIGNMENT, |parser| {
-                parser.biggest_alignment
-            }),
+            biggest_alignment: context
+                .parser()
+                .map_or(FALLBACK_BIGGEST_ALIGNMENT, |parser| {
+                    parser.biggest_alignment
+                }),
             context,
             identifier_list: IdentifierList::Rejected,
             definition_bindings: std::collections::HashMap::new(),
@@ -220,6 +222,7 @@ impl<'a> DeclaratorParser<'a> {
     ) -> Result<TypeSpecifier, DeclaratorError> {
         let parser = self
             .context
+            .parser()
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
         let definition = TagDefinition {
             id: TagId(0),
@@ -273,6 +276,7 @@ impl<'a> DeclaratorParser<'a> {
         let mut fields = Vec::new();
         let parser = self
             .context
+            .parser()
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
         loop {
             fields.extend(
@@ -332,7 +336,7 @@ impl<'a> DeclaratorParser<'a> {
         self.pos += 1;
         let mut items = Vec::new();
         loop {
-            if let Some(parser) = self.context {
+            if let Some(parser) = self.context.parser() {
                 items.extend(
                     parser
                         .input
@@ -366,7 +370,7 @@ impl<'a> DeclaratorParser<'a> {
             } else {
                 None
             };
-            if let Some(parser) = self.context {
+            if let Some(parser) = self.context.parser() {
                 parser.names.bind(&name, false);
             }
             items.push(span_tokens(
@@ -579,14 +583,10 @@ impl<'a> DeclaratorParser<'a> {
         self.parse_specifier_keywords(&mut specifiers)?;
         let gnu_auto_type = self.matches(Token::Ident("__auto_type".into()));
         self.parse_specifier_keywords(&mut specifiers)?;
-        let c23_auto_inference = self
-            .context
-            .is_some_and(|parser| parser.features().auto_type_inference)
+        let c23_auto_inference = self.context.features().auto_type_inference
             && specifiers.storage == StorageClass::Auto
             && match self.peek() {
-                Some(Token::Ident(name)) => {
-                    !self.context.is_some_and(|parser| parser.is_typedef(name))
-                }
+                Some(Token::Ident(name)) => !self.context.is_typedef(name),
                 Some(Token::Star | Token::LParen) => true,
                 _ => false,
             };
@@ -596,24 +596,20 @@ impl<'a> DeclaratorParser<'a> {
         let inferred =
             gnu_auto_type || c23_auto_inference || specifiers.ty == TypeSpecifier::Inferred;
         let implicit_int = implicit_int_function
-            && self
-                .context
-                .is_some_and(|parser| parser.features().implicit_int.is_accepted())
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
+            && self.context.features().implicit_int.is_accepted()
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_typedef(name))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi | Token::Comma | Token::Equal)
             );
         if !implicit_int
             && !inferred
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_typedef(name))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi)
             )
-            && self
-                .context
-                .is_some_and(|parser| !parser.features().implicit_int.is_accepted())
+            && !self.context.features().implicit_int.is_accepted()
         {
             return Err(DeclaratorError::Other(
                 "a type specifier is required for all declarations".into(),
@@ -695,9 +691,7 @@ impl<'a> DeclaratorParser<'a> {
                 Keyword::Register => StorageClass::Register,
                 _ => return Ok(()),
             };
-            let inference = self
-                .context
-                .is_some_and(|parser| parser.features().auto_type_inference);
+            let inference = self.context.features().auto_type_inference;
             match (specifiers.storage, storage) {
                 (StorageClass::None, _) => specifiers.storage = storage,
                 (StorageClass::Auto, other) | (other, StorageClass::Auto)
@@ -788,7 +782,7 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(super) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
-        let _scope = self.context.map(Parser::enter_scope);
+        let _scope = self.context.parser().map(Parser::enter_scope);
         let open = self.pos;
         self.expect(
             Token::LParen,
@@ -838,7 +832,7 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::Comma) | Some(Token::RParen) => Declarator::Abstract,
                 _ => self.parse_declarator(true)?,
             };
-            if let Some(parser) = self.context
+            if let Some(parser) = self.context.parser()
                 && let Some(name) = declarator.name()
             {
                 parser.names.bind(name, false);
@@ -869,7 +863,7 @@ impl<'a> DeclaratorParser<'a> {
                 DeclaratorError::ExpectedToken(Token::Comma, "between parameters"),
             )?;
         }
-        if accepts_identifier_list && let Some(parser) = self.context {
+        if accepts_identifier_list && let Some(parser) = self.context.parser() {
             self.definition_bindings = parser
                 .names
                 .scopes
