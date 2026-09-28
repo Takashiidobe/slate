@@ -382,7 +382,7 @@ impl Lowerer {
                 let [operand] = arguments else {
                     return Err(ResolveError::Rejected("classify builtin arity"));
                 };
-                let (resolved, _) = self.speculative_type(operand)?;
+                let (resolved, _) = self.operand_type(operand)?;
                 let resolved = self.types.ctypes.lvalue_conversion(resolved);
                 let class = type_class(&self.types.ctypes, resolved)
                     .ok_or(ResolveError::Unimplemented("classify builtin operand"))?;
@@ -405,7 +405,7 @@ impl Lowerer {
         let first = match (derived, arguments.first()) {
             (DerivedSignature::Declared, _) | (_, None) => None,
             (_, Some(argument)) => {
-                let (resolved, _) = self.speculative_type(argument)?;
+                let (resolved, _) = self.operand_type(argument)?;
                 Some(self.types.ctypes.lvalue_conversion(resolved))
             }
         };
@@ -1535,18 +1535,8 @@ impl Lowerer {
     }
 
     fn unevaluated(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
-        if let Ok(typed) = self.types.typed(e) {
-            return Ok(self.types.ctypes.lvalue_conversion(typed.c));
-        }
-        let next_id = self.next_id;
-        let globals = self.module.globals.len();
-        let functions = self.module.functions.len();
-        let result = match self.place(e) {
-            Ok(place) => Ok(self.types.ctypes.lvalue_conversion(place.c)),
-            Err(_) => self.expr(e).map(|value| value.c),
-        };
-        self.discard_after(globals, functions, next_id);
-        result
+        let typed = self.types.typed(e)?;
+        Ok(self.types.ctypes.lvalue_conversion(typed.c))
     }
 
     fn callee(&mut self, e: &Expr) -> Result<(Callee, QualType), ResolveError> {
@@ -1729,63 +1719,34 @@ impl Lowerer {
         if let ExprKind::StringLiteral(lit) = &operand.value {
             return Ok((self.types.string_type(lit), None));
         }
-        if let Ok(typed) = self.types.typed(operand) {
-            if typed.bits.is_some() {
-                return Err(ResolveError::Rejected(
-                    "application of sizeof or alignof to a bit-field",
-                ));
-            }
-            if !matches!(self.types.ir_type(typed.c), Type::VariableArray { .. }) {
-                return Ok((typed.c, None));
-            }
-        }
-        let globals = self.module.globals.len();
-        let functions = self.module.functions.len();
-        let next_id = self.next_id;
-        let result = match self.place(operand) {
-            Ok(Lvalue {
-                place:
-                    Place {
-                        kind: PlaceKind::Field { bits: Some(_), .. },
-                        ..
-                    },
-                ..
-            }) => Err(ResolveError::Rejected(
+        let typed = self.types.typed(operand)?;
+        if typed.bits.is_some() {
+            return Err(ResolveError::Rejected(
                 "application of sizeof or alignof to a bit-field",
-            )),
-            Ok(lvalue) => {
-                let ty = self.types.ir_type(lvalue.c);
-                let address = self.value(
-                    operand,
-                    Type::Pointer {
-                        pointee: Box::new(ty),
-                        is_const: false,
-                        access: Access::default(),
-                        space: PointerSpace::Default,
-                    },
-                    ValueKind::AddressOf(lvalue.place),
-                );
-                Ok((lvalue.c, address))
-            }
-            Err(_) => self.expr(operand).map(|value| (value.c, value.value)),
-        };
-        let evaluated = result.as_ref().is_ok_and(|(c, value)| {
-            matches!(self.types.ir_type(*c), Type::VariableArray { .. })
-                && super::effects::has_effects(value)
-        });
-        if evaluated {
-            return result.map(|(c, value)| (c, Some(value)));
+            ));
         }
-        self.discard_after(globals, functions, next_id);
-        result.map(|(c, _)| (c, None))
-    }
-
-    fn discard_after(&mut self, globals: usize, functions: usize, next_id: u32) {
-        self.next_id = next_id;
-        self.module.globals.truncate(globals);
-        self.module.functions.truncate(functions);
-        self.builtin_declarations.retain(|_, id| id.0 < next_id);
-        self.types.entities.discard_after(next_id);
+        if !matches!(self.types.ir_type(typed.c), Type::VariableArray { .. }) {
+            return Ok((typed.c, None));
+        }
+        let (c, value) = if typed.lvalue {
+            let lvalue = self.place(operand)?;
+            let ty = self.types.ir_type(lvalue.c);
+            let address = self.value(
+                operand,
+                Type::Pointer {
+                    pointee: Box::new(ty),
+                    is_const: false,
+                    access: Access::default(),
+                    space: PointerSpace::Default,
+                },
+                ValueKind::AddressOf(lvalue.place),
+            );
+            (lvalue.c, address)
+        } else {
+            let value = self.expr(operand)?;
+            (value.c, value.value)
+        };
+        Ok((c, super::effects::has_effects(&value).then_some(value)))
     }
 
     fn type_name_extents(

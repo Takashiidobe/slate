@@ -98,10 +98,6 @@ impl Entities {
         self.entities.iter().map(|(id, entity)| (*id, entity.ty))
     }
 
-    pub(super) fn discard_after(&mut self, next_id: u32) {
-        self.entities.retain(|id, _| id.0 < next_id);
-    }
-
     pub(super) fn merge_declaration(
         &mut self,
         id: BindingId,

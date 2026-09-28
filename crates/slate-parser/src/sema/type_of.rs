@@ -9,7 +9,7 @@ use crate::ast::{
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::BindingId;
-use crate::ir::{PlaceKind, Type, Value};
+use crate::ir::{Type, Value};
 use crate::visit::{self, Visitor};
 use std::collections::HashMap;
 
@@ -216,7 +216,7 @@ impl Lowerer {
             ));
         }
         self.reserve_extents(expr);
-        let (value, bit_field) = self.speculative_type(expr)?;
+        let (value, bit_field) = self.operand_type(expr)?;
         if bit_field {
             return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
                 ResolveError::Unimplemented("deduced type of a bit-field initializer")
@@ -253,45 +253,15 @@ impl Lowerer {
     }
 
     pub(super) fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
-        match self.speculative_type(e)? {
+        match self.operand_type(e)? {
             (_, true) => Err(ResolveError::Rejected("typeof applied to a bit-field")),
             (resolved, false) => Ok(resolved),
         }
     }
 
-    pub(super) fn speculative_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
-        if let Ok(typed) = self.types.typed(e) {
-            return Ok((typed.c, typed.bits.is_some()));
-        }
-        let next_id = self.next_id;
-        let globals = self.module.globals.len();
-        let resolved = self.operand_type(e);
-        self.next_id = next_id;
-        self.module.globals.truncate(globals);
-        self.types.entities.discard_after(next_id);
-        resolved
-    }
-
-    fn operand_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
-        match &e.value {
-            ExprKind::Paren(inner) => return self.operand_type(inner),
-            ExprKind::Generic {
-                controlling,
-                associations,
-            } => {
-                let selected = self.generic_selected(controlling, associations)?;
-                return self.operand_type(selected);
-            }
-            ExprKind::StringLiteral(literal) => {
-                return Ok((self.types.string_type(literal), false));
-            }
-            _ => {}
-        }
-        if let Ok(place) = self.place(e) {
-            let bits = matches!(place.kind, PlaceKind::Field { bits: Some(_), .. });
-            return Ok((place.c, bits));
-        }
-        Ok((self.expr(e)?.c, false))
+    pub(super) fn operand_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
+        let typed = self.types.typed(e)?;
+        Ok((typed.c, typed.bits.is_some()))
     }
 
     pub(super) fn with_length(&mut self, resolved: QualType, ty: &Type) -> QualType {

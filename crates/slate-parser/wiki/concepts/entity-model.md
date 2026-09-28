@@ -54,15 +54,15 @@ the "already declared?" early return in `declare_global`/`declare_function`, or
 the first declaration never registers and `int x; long x;` is silently
 accepted.
 
-`Entities::discard_after(next_id)` drops entities created while lowering a
-speculatively evaluated expression (`sizeof`, `_Generic`, an unevaluated
-`typeof`) whose bindings are rolled back. That path is now only the fallback:
-`TypeResolver::typed` (`sema/typer.rs`) types an expression without lowering
-it and memoizes `Typed { c, lvalue, bits }` per `NodeId` in
-`expression_types`, and the speculative callers ask it first. It answers only
-when it has a rule for the expression and every subexpression it needs;
-anything else is `Unimplemented`, which means "no answer" and falls back to
-speculative lowering. Only answers are memoized: the checker types an enum
+Unevaluated operands (`sizeof`, `_Generic`'s controlling expression,
+`typeof`, `__auto_type` initializers, classify and derived-signature builtin
+arguments) are never lowered to learn their type; nothing rolls back
+`next_id` or entities. `TypeResolver::typed` (`sema/typer.rs`) types an
+expression without lowering it and memoizes `Typed { c, lvalue, bits }` per
+`NodeId` in `expression_types`. It answers when it has a rule for the
+expression and every subexpression it needs;
+anything else is `Unimplemented`, which the unevaluated callers report as a
+real error. Only answers are memoized: the checker types an enum
 body before its enumerators are declared, and a remembered failure would hide
 the later answer. `Lowerer::expr` and `Lowerer::place` compare every answer
 with the type they lowered and return `Internal` on disagreement, so the rules
@@ -101,7 +101,7 @@ such a size `Extent::Variable(None)` (`vla<T, *>`) instead of failing, and
 `typed` never memoizes a type with an unbound extent
 (`CTypes::has_unbound_extent`): lowering's cross-check asks again after the
 size is bound and gets the exact `vla<T, %id>`. The callers then evaluate the
-operand for real rather than speculatively: `sizeof` lowers a VLA-typed operand
+operand for real: `sizeof` lowers a VLA-typed operand
 and keeps it when it has effects (a `Capture` of a new extent counts); `typeof`
 of a variably modified expression is evaluated where its extents would be
 captured (`Lowerer::typeof_evaluations`, from `capture_extents` and

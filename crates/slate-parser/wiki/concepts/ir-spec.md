@@ -298,8 +298,7 @@ variable array types retain their captured extents. See
 resolved entirely in sema, through the typeof path, so the IR only ever sees the
 deduced concrete type and never a mark that it was inferred.
 `Lowerer::declaration` types the initializer with the expression typer
-(`speculative_type`, which lowers speculatively only where the typer has no
-answer) and hands the deduced base to `TypeResolver` for that one declarator. Everything
+(`operand_type`, which never lowers it) and hands the deduced base to `TypeResolver` for that one declarator. Everything
 after type resolution runs unchanged. The deduced type is the
 initializer's lvalue-converted type: arrays and functions decay; `const`,
 `volatile` and `restrict` are dropped; qualifiers in the specifiers are added
