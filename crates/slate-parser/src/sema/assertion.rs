@@ -1,5 +1,6 @@
 use super::names::ItemResolution;
 use crate::ast::*;
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::ir::{
     BindingId, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type, Value,
@@ -25,7 +26,7 @@ pub(super) fn validate(
         unit,
         types,
         errors: Vec::new(),
-        return_type: None,
+        context: StatementContext::default(),
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
@@ -64,7 +65,23 @@ struct Checker<'a> {
     unit: &'a TranslationUnit,
     types: &'a mut TypeResolver,
     errors: Vec<SemaError>,
-    return_type: Option<QualType>,
+    context: StatementContext,
+}
+
+#[derive(Default)]
+struct StatementContext {
+    returns: Returns,
+    loops: usize,
+    breakables: usize,
+    switches: usize,
+}
+
+#[derive(Default, Clone, Copy)]
+enum Returns {
+    #[default]
+    Unknown,
+    Void,
+    Value(QualType),
 }
 
 impl Checker<'_> {
@@ -148,7 +165,7 @@ impl Checker<'_> {
     fn function(&mut self, node: NodeId, owner: Option<Span<()>>, function: &FunctionDefinition) {
         let owner_linkage = owner.is_some();
         let mut names = None;
-        let mut return_type = None;
+        let mut returns = Returns::Unknown;
         let owner = std::mem::replace(&mut self.types.owner, owner);
         let resolved = self
             .types
@@ -161,14 +178,21 @@ impl Checker<'_> {
                 .declarator
                 .name()
                 .map(|name| self.types.function_names(ty, name));
-            return_type = self
-                .types
-                .ctypes
-                .function_parts(ty)
-                .map(|(returned, ..)| returned)
-                .filter(|&returned| !self.types.ctypes.is_void(returned));
+            if let Some((returned, ..)) = self.types.ctypes.function_parts(ty) {
+                returns = if self.types.ctypes.is_void(returned) {
+                    Returns::Void
+                } else {
+                    Returns::Value(returned)
+                };
+            }
         }
-        let enclosing_return = std::mem::replace(&mut self.return_type, return_type);
+        let enclosing_context = std::mem::replace(
+            &mut self.context,
+            StatementContext {
+                returns,
+                ..StatementContext::default()
+            },
+        );
         let enclosing = std::mem::replace(&mut self.types.function_names, names);
         for parameter in function
             .declarator
@@ -199,7 +223,7 @@ impl Checker<'_> {
             self.statement(stmt);
         }
         self.types.function_names = enclosing;
-        self.return_type = enclosing_return;
+        self.context = enclosing_context;
     }
 
     fn declaration(&mut self, declaration: &Declaration, global: bool) {
@@ -392,29 +416,43 @@ impl Checker<'_> {
                     self.statement(stmt);
                 }
             }
-            StmtKind::NestedFunction(function) => self.function(stmt.id, None, function),
+            StmtKind::NestedFunction(function) => {
+                if self.types.compiler_flavor() != CompilerFlavor::Gcc {
+                    self.reject(stmt, "function definition is not allowed here");
+                }
+                self.function(stmt.id, None, function)
+            }
             StmtKind::If {
                 condition,
                 then_branch,
                 else_branch,
             } => {
-                self.expression(condition);
+                self.condition(condition);
                 self.statement(then_branch);
                 if let Some(branch) = else_branch {
                     self.statement(branch);
                 }
             }
             StmtKind::DoWhile { condition, body } => {
-                self.statement(body);
-                self.expression(condition);
+                self.loop_body(body);
+                self.condition(condition);
             }
-            StmtKind::While { condition, body }
-            | StmtKind::Switch {
-                discriminant: condition,
-                body,
-            } => {
-                self.expression(condition);
+            StmtKind::While { condition, body } => {
+                self.condition(condition);
+                self.loop_body(body);
+            }
+            StmtKind::Switch { discriminant, body } => {
+                self.expression(discriminant);
+                if let Ok(ty) = self.types.operand_type(discriminant)
+                    && !self.types.ctypes.is_integer(ty)
+                {
+                    self.reject(stmt, "noninteger switch discriminant");
+                }
+                self.context.breakables += 1;
+                self.context.switches += 1;
                 self.statement(body);
+                self.context.switches -= 1;
+                self.context.breakables -= 1;
             }
             StmtKind::For {
                 init,
@@ -425,21 +463,38 @@ impl Checker<'_> {
                 if let Some(init) = init {
                     self.statement(init);
                 }
-                for expr in condition.iter().chain(increment) {
-                    self.expression(expr);
+                if let Some(condition) = condition {
+                    self.condition(condition);
                 }
-                self.statement(body);
+                if let Some(increment) = increment {
+                    self.expression(increment);
+                }
+                self.loop_body(body);
             }
             StmtKind::SwitchLabel { label, body } => {
+                if self.context.switches == 0 {
+                    self.reject(stmt, "case or default outside switch");
+                }
                 match label {
-                    SwitchLabel::Case(value) => self.expression(value),
+                    SwitchLabel::Case(value) => self.case_value(stmt, value),
                     SwitchLabel::CaseRange { start, end } => {
-                        self.expression(start);
-                        self.expression(end);
+                        self.case_value(stmt, start);
+                        self.case_value(stmt, end);
                     }
                     SwitchLabel::Default => {}
                 }
                 self.statement(body);
+            }
+            StmtKind::Break if self.context.breakables == 0 => {
+                self.reject(stmt, "break outside loop or switch")
+            }
+            StmtKind::Continue if self.context.loops == 0 => {
+                self.reject(stmt, "continue outside loop")
+            }
+            StmtKind::Attribute(attributes)
+                if self.context.switches == 0 && is_fallthrough(attributes) =>
+            {
+                self.reject(stmt, "fallthrough outside switch")
             }
             StmtKind::Asm(asm) => {
                 for operand in asm
@@ -450,18 +505,81 @@ impl Checker<'_> {
                     self.expression(&operand.expr);
                 }
             }
-            StmtKind::Labeled { body, .. } | StmtKind::Attributed { body, .. } => {
+            StmtKind::Attributed { attributes, body } => {
+                if self.types.compiler_flavor() != CompilerFlavor::Gcc && is_fallthrough(attributes)
+                {
+                    self.reject(stmt, "fallthrough attribute on a non-empty statement");
+                }
                 self.statement(body)
             }
+            StmtKind::Labeled { body, .. } => self.statement(body),
             StmtKind::Return(expr) => {
                 self.expression(expr);
-                if let Some(to) = self.return_type {
-                    self.convert(expr, to, ConversionContext::Return);
+                match self.context.returns {
+                    Returns::Value(to) => self.convert(expr, to, ConversionContext::Return),
+                    Returns::Void => {
+                        if let Ok(ty) = self.types.operand_type(expr)
+                            && !self.types.ctypes.is_void(ty)
+                        {
+                            self.reject(stmt, "value return from void function");
+                        }
+                    }
+                    Returns::Unknown => {}
                 }
             }
-            StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => self.expression(expr),
+            StmtKind::ReturnVoid => {
+                let accepted = match self.types.compiler_flavor() {
+                    CompilerFlavor::Msvc => true,
+                    CompilerFlavor::Gcc => self.types.features().valueless_return_in_nonvoid,
+                    _ => false,
+                };
+                if matches!(self.context.returns, Returns::Value(_)) && !accepted {
+                    self.reject(stmt, "non-void function should return a value");
+                }
+            }
+            StmtKind::ComputedGoto(expr) => {
+                self.expression(expr);
+                if let Ok(ty) = self.types.operand_type(expr)
+                    && !self.types.ctypes.is_pointer(ty)
+                {
+                    self.reject(stmt, "nonpointer computed goto");
+                }
+            }
+            StmtKind::Expr(expr) => self.expression(expr),
             _ => {}
         }
+    }
+
+    fn loop_body(&mut self, body: &Stmt) {
+        self.context.loops += 1;
+        self.context.breakables += 1;
+        self.statement(body);
+        self.context.breakables -= 1;
+        self.context.loops -= 1;
+    }
+
+    fn condition(&mut self, condition: &Expr) {
+        self.expression(condition);
+        if let Ok(ty) = self.types.operand_type(condition)
+            && !self.types.ctypes.is_scalar(ty)
+        {
+            self.reject(condition, "non-scalar condition");
+        }
+    }
+
+    fn case_value(&mut self, label: &Stmt, value: &Expr) {
+        self.expression(value);
+        if self.types.constant_integer(value).is_err() {
+            self.reject(label, "nonconstant case expression");
+        }
+    }
+
+    fn reject<T>(&mut self, at: &Span<T>, reason: &'static str) {
+        self.errors.push(error(
+            at.provenance,
+            at.expansion,
+            ResolveError::Rejected(reason).to_string(),
+        ));
     }
 
     fn initializer(&mut self, initializer: &Initializer) {
@@ -914,6 +1032,12 @@ fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
             .map_or(Shape::Skip, |selected| ice_shape(types, selected)),
         _ => Shape::Skip,
     }
+}
+
+fn is_fallthrough(attributes: &[Span<Attribute>]) -> bool {
+    attributes
+        .iter()
+        .any(|attribute| matches!(attribute.value, Attribute::Fallthrough))
 }
 
 fn linkage(storage: StorageClass) -> Option<Linkage> {

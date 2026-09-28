@@ -180,7 +180,24 @@ redeclared library builtin the same way); `extern void` objects are declared;
 and each item's implicit function declarations are declared from
 `NameResolution.implicit_functions` (`CTypes::implicit_function`). It walks
 every expression lowering evaluates: `case` labels, asm operands, declarator
-array sizes and `typeof` operands included. Anything that scans all tags must bound itself by position:
+array sizes and `typeof` operands included.
+
+The checker also owns statement-context rules (slate-parser-cc94.5.2): its
+`StatementContext` counts enclosing loops, breakables and switches and knows
+the function's `Returns` (unknown, void, value), reset per function so a GNU
+nested function starts fresh. It rejects `break`/`continue`/`case`/`default`/
+`[[fallthrough]]` outside their construct, a non-integer switch discriminant,
+a case label `constant_integer` cannot fold, a non-pointer computed goto, a
+non-scalar `if`/`while`/`do`/`for` condition, a non-void `return` in a void
+function (a void operand is allowed, as clang and gcc do; lowering emits it
+as a statement then `return`), a valueless `return` per flavor, a fallthrough
+attribute on a non-empty statement (non-gcc) and a nested function definition
+(non-gcc). Lowering's copies of these are `Internal`. Case labels fold like
+gcc and clang: `constant_value` evaluates a conditional whose condition folds
+without requiring the unselected arm to be constant, so `case (1 ? 1 : i)`
+and `int [0 ? f() : 1]` are constant.
+
+Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has
 already defined later tags.

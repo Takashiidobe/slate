@@ -1,18 +1,11 @@
-/* Test use of sizeof with [*] in type name: should not refer to
-   zero-size array.  PR 39582.  */
-/* { dg-do compile } */
-/* { dg-options "-std=c99 -pedantic-errors" } */
-
-void foo11d(int x[sizeof(int *[*])]); /* { dg-warning "not in a declaration" } */
-
-/* Although the size is not constant, it may nevertheless appear in a
-   constant expression if not evaluated.  */
-
-void foo11e(int x[1 ? 0 : sizeof(int *[*])]); /* { dg-warning "not in a declaration" } */
-/* { dg-error "zero-size array" "correct zero size" { target *-*-* } .-1 } */
-
-// SLATE-FILECHECK-STD DEFAULT c99
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ARGS --dump-ir
+void f(void);
+void g(int x) {
+    if (x)
+        return f();
+    return (void)x;
+}
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: module {
@@ -37,7 +30,13 @@ void foo11e(int x[1 ? 0 : sizeof(int *[*])]); /* { dg-warning "not in a declarat
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo11d(%4 x: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo11e(%5 x: ptr<i32> [array=0]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @g(%2 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             return;
+// DEFAULT-NEXT:         read<i32>(%2);
+// DEFAULT-NEXT:         return;
+// DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

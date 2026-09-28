@@ -504,11 +504,30 @@ impl TypeResolver {
             } => {
                 let condition = self.constant_value_with_context(context, condition)?;
                 let left = match then_value {
-                    Some(left) => self.constant_value_with_context(context, left)?,
-                    None => condition.clone(),
+                    Some(left) => self.constant_value_with_context(context, left),
+                    None => Ok(condition.clone()),
                 };
-                let right = self.constant_value_with_context(context, else_value)?;
-                let (left, right) = self.arithmetic_operands(context, left, right)?;
+                let right = self.constant_value_with_context(context, else_value);
+                let (left, right) = match (left, right) {
+                    (Ok(left), Ok(right)) => self.arithmetic_operands(context, left, right)?,
+                    (left, right) => {
+                        let truth = context.condition(condition.value.clone());
+                        let chosen =
+                            match super::fold::integer_constant(&truth, self.dialect.flavor()) {
+                                Some(truth) if truth.sign() == Sign::NoSign => right?,
+                                Some(_) => left?,
+                                None => return left.and(right),
+                            };
+                        let c = self.operand_type(e)?;
+                        let chosen = self.promote_operand(context, chosen, None)?;
+                        return self.arithmetic_conversion(
+                            context,
+                            chosen,
+                            c,
+                            crate::ir::ConversionReason::UsualArith,
+                        );
+                    }
+                };
                 (
                     left.c,
                     ValueKind::Conditional {

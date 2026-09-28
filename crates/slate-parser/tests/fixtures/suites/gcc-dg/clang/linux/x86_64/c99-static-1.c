@@ -73,11 +73,11 @@ void g6(void) { sizeof(sizeof(int [f6()])); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @f2() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %5 @g2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %16: i32 [synthetic];
+// DEFAULT-NEXT:         let %15: i32 [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%16, call<i32, signature=fn() -> i32>(%4));
+// DEFAULT-NEXT:             write<i32>(%15, call<i32, signature=fn() -> i32>(%4));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%16, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%15, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @f3() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %7 @g3() -> void [linkage=external] [fallthrough=ret_void] {
@@ -89,12 +89,7 @@ void g6(void) { sizeof(sizeof(int [f6()])); }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @f5() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %11 @g5() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17: i32 [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%17, call<i32, signature=fn() -> i32>(%10));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%17, const<i32>(1));
-// DEFAULT-NEXT:         let %15: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%17)));
+// DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %12 @f6() -> i32 [linkage=internal];
 // DEFAULT-NEXT:     fn %13 @g6() -> void [linkage=external] [fallthrough=ret_void] {

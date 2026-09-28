@@ -158,12 +158,11 @@ v4si invalid(v4si a, v2si b, v4sf c) {
 // CONDITION: Error:   × semantic analysis failed
 // CONDITION: Error:
 // CONDITION: × non-scalar condition
-// CONDITION: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_vector_invalid.c:38:5]
-// CONDITION: 37 │     #ifdef CONDITION
-// CONDITION: 38 │ ╭─▶     if (a) {
-// CONDITION: 39 │ │           return a;
-// CONDITION: 40 │ ╰─▶     }
-// CONDITION: 41 │     #endif
+// CONDITION: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_vector_invalid.c:38:9]
+// CONDITION: 37 │ #ifdef CONDITION
+// CONDITION: 38 │     if (a) {
+// CONDITION: ·         ─
+// CONDITION: 39 │         return a;
 // CONDITION: ╰────
 // SLATE-FILECHECK-END CONDITION
 // SLATE-FILECHECK-BEGIN LOGICAL

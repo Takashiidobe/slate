@@ -1322,7 +1322,7 @@ impl Lowerer {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
         let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
-            .ok_or(ResolveError::Rejected("nonconstant case expression"))?;
+            .ok_or(ResolveError::Internal("nonconstant case expression"))?;
         Ok(self.value(
             expr,
             self.types.ir_type(ty),
@@ -1386,13 +1386,20 @@ impl Lowerer {
             }
             StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?.value),
             StmtKind::Return(expr) => {
-                let ty =
-                    return_type.ok_or(ResolveError::Rejected("value return from void function"))?;
                 let value = self.expr(expr)?;
-                Statement::Return(Some(
-                    self.convert_recorded(expr, value, ty, ConversionReason::Return)?
-                        .value,
-                ))
+                match return_type {
+                    Some(ty) => Statement::Return(Some(
+                        self.convert_recorded(expr, value, ty, ConversionReason::Return)?
+                            .value,
+                    )),
+                    None if self.types.ctypes.is_void(value.c) => {
+                        result.push(statement.derive(Statement::Expression(value.value)));
+                        Statement::Return(None)
+                    }
+                    None => {
+                        return Err(ResolveError::Internal("value return from void function"));
+                    }
+                }
             }
             StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
             StmtKind::If {
@@ -1463,19 +1470,19 @@ impl Lowerer {
                 *self
                     .break_targets
                     .last()
-                    .ok_or(ResolveError::Rejected("break outside loop or switch"))?,
+                    .ok_or(ResolveError::Internal("break outside loop or switch"))?,
             ),
             StmtKind::Continue => Statement::Continue(
                 *self
                     .continue_targets
                     .last()
-                    .ok_or(ResolveError::Rejected("continue outside loop"))?,
+                    .ok_or(ResolveError::Internal("continue outside loop"))?,
             ),
             StmtKind::Switch { discriminant, body } => {
                 let value = self.expr(discriminant)?;
                 let discriminant = self.promote(value)?;
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
-                    return Err(ResolveError::Rejected("noninteger switch discriminant"));
+                    return Err(ResolveError::Internal("noninteger switch discriminant"));
                 }
                 let id = self.fresh();
                 self.break_targets.push(id);
@@ -1494,7 +1501,7 @@ impl Lowerer {
                     .switches
                     .last()
                     .cloned()
-                    .ok_or(ResolveError::Rejected("case or default outside switch"))?;
+                    .ok_or(ResolveError::Internal("case or default outside switch"))?;
                 match label {
                     ast::SwitchLabel::Default => Statement::Default {
                         switch,
@@ -1521,7 +1528,7 @@ impl Lowerer {
                     .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
             {
                 if self.switches.is_empty() {
-                    return Err(ResolveError::Rejected("fallthrough outside switch"));
+                    return Err(ResolveError::Internal("fallthrough outside switch"));
                 }
                 annotations.push(("c_attribute".into(), "fallthrough".into()));
                 Statement::Null
@@ -1531,7 +1538,7 @@ impl Lowerer {
             StmtKind::ComputedGoto(expr) => {
                 let value = self.expr(expr)?;
                 if !matches!(value.ty, Type::Pointer { .. }) {
-                    return Err(ResolveError::Rejected("nonpointer computed goto"));
+                    return Err(ResolveError::Internal("nonpointer computed goto"));
                 }
                 Statement::ComputedGoto(value.value)
             }
@@ -1563,7 +1570,7 @@ impl Lowerer {
                     Statement::Return(None)
                 }
                 _ => {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "non-void function should return a value",
                     ));
                 }
@@ -1574,7 +1581,7 @@ impl Lowerer {
                         .iter()
                         .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
                 {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "fallthrough attribute on a non-empty statement",
                     ));
                 }
@@ -1585,7 +1592,7 @@ impl Lowerer {
                 return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
                     ResolveError::Unimplemented("GNU nested function")
                 } else {
-                    ResolveError::Rejected("function definition is not allowed here")
+                    ResolveError::Internal("function definition is not allowed here")
                 });
             }
         };
