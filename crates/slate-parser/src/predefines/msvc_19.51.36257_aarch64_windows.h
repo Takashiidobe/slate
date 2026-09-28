@@ -13,7 +13,7 @@
 #define _M_ARM64 1
 #define __STDC_HOSTED__ 1
 #define __ARM_ARCH 8
-#define _MSC_FULL_VER 195136256
+#define _MSC_FULL_VER 195136257
 #define _MSC_VER 1951
 #define _MSVC_TRADITIONAL 0
 #define _ISO_VOLATILE 1

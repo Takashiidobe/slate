@@ -334,7 +334,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     flavors: MSVC,
                     ..clang_only(
                         "<msvc-x86_64-windows-predefines>",
-                        include_str!("predefines/msvc_19.51.36256_x86_64_windows.h"),
+                        include_str!("predefines/msvc_19.51.36257_x86_64_windows.h"),
                     )
                 },
                 clang_only(
@@ -354,7 +354,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     flavors: MSVC,
                     ..clang_only(
                         "<msvc-x86-windows-predefines>",
-                        include_str!("predefines/msvc_19.51.36256_x86_windows.h"),
+                        include_str!("predefines/msvc_19.51.36257_x86_windows.h"),
                     )
                 },
                 Predefines {
@@ -377,7 +377,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     flavors: MSVC,
                     ..clang_only(
                         "<msvc-aarch64-windows-predefines>",
-                        include_str!("predefines/msvc_19.51.36256_aarch64_windows.h"),
+                        include_str!("predefines/msvc_19.51.36257_aarch64_windows.h"),
                     )
                 },
                 clang_only(

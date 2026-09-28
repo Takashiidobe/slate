@@ -438,7 +438,7 @@ pointers are 4 bytes, the stack alignment is 4, and the convention is
 pointers, stack alignment 8, a `char *` va_list, and the same
 `aapcs32_hard_float` convention as armv7 gnueabihf, whose clang signatures it
 matches. Their target triples do not implicitly select compiler flavor:
-`--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots (19.44.35228
+`--flavor=msvc` loads the checked-in MSVC 19.51.36257 snapshots (19.44.35228
 for thumbv7a, the last toolset with Arm32); the default
 Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
 shim defaults. GCC on these Windows profiles is rejected rather than falling
