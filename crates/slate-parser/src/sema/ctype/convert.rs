@@ -85,6 +85,29 @@ impl CTypes {
                 "conversion between a struct or union and an unrelated type",
             ));
         }
+        if self.is_nullptr(to) {
+            if is_null_pointer_constant {
+                return Ok(Conversion::plain(CastKind::NullPointer));
+            }
+            return Err(ResolveError::Invalid(
+                "conversion to nullptr_t from a type other than nullptr_t",
+            ));
+        }
+        if self.is_nullptr(from) {
+            if self.is_pointer(to) {
+                return Ok(Conversion::plain(if is_null_pointer_constant {
+                    CastKind::NullPointer
+                } else {
+                    CastKind::Pointer
+                }));
+            }
+            if matches!(self.canonical_kind(to), CTypeKind::Bool) {
+                return Ok(Conversion::plain(CastKind::PtrToBool));
+            }
+            return Err(ResolveError::Invalid(
+                "conversion from nullptr_t to a type other than bool or a pointer",
+            ));
+        }
         if self.is_vector(from) || self.is_vector(to) {
             return Ok(Conversion::plain(CastKind::Vector));
         }
@@ -285,6 +308,10 @@ impl CTypes {
         )
     }
 
+    pub fn is_nullptr(&self, q: QualType) -> bool {
+        matches!(self.canonical_kind(q), CTypeKind::NullPtr)
+    }
+
     pub fn is_fixed_point(&self, q: QualType) -> bool {
         matches!(self.canonical_kind(q), CTypeKind::FixedPoint(_))
     }
@@ -294,7 +321,7 @@ impl CTypes {
     }
 
     pub fn is_scalar(&self, q: QualType) -> bool {
-        self.is_arithmetic(q) || self.is_pointer(q)
+        self.is_arithmetic(q) || self.is_pointer(q) || self.is_nullptr(q)
     }
 }
 

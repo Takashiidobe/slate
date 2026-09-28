@@ -207,6 +207,7 @@ pub enum CTypeKind {
         bytes: u64,
     },
     VaList,
+    NullPtr,
     Record {
         id: TypeId,
         union: bool,

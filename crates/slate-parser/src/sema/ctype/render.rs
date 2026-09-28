@@ -253,6 +253,7 @@ impl Printer<'_> {
                 self.print(*element, Declarator::empty())
             ),
             CTypeKind::VaList => "__builtin_va_list".into(),
+            CTypeKind::NullPtr => "nullptr_t".into(),
             CTypeKind::Record { id, union } => {
                 tag_name(if *union { "union" } else { "struct" }, self.tag(*id))
             }

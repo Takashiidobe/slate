@@ -28,6 +28,12 @@ impl CTypes {
                 lanes: *lanes,
             },
             CTypeKind::VaList => Type::VaList,
+            CTypeKind::NullPtr => Type::Pointer {
+                pointee: Box::new(Type::Void),
+                is_const: false,
+                access: Access::default(),
+                space: PointerSpace::Default,
+            },
             CTypeKind::Record { id, .. } | CTypeKind::Enum(id) => Type::Defined(*id),
             CTypeKind::Pointer(pointee, space) => {
                 let quals = self.quals(*pointee);
@@ -123,6 +129,7 @@ impl CTypes {
             | CTypeKind::Imaginary(_)
             | CTypeKind::Vector { .. }
             | CTypeKind::VaList
+            | CTypeKind::NullPtr
             | CTypeKind::Record { .. }
             | CTypeKind::Enum(_)
             | CTypeKind::Pointer(..)

@@ -2302,6 +2302,28 @@ Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
 is shown in the type (`ptr<const T>`) since Rust distinguishes it.
 
+### `nullptr_t`
+
+C23's `nullptr` has type `nullptr_t` (`CTypeKind::NullPtr`), a scalar type
+distinct from `void *` in sema, so `_Generic(nullptr, void *: 1,
+nullptr_t: 2)` is 2. It has no IR type of its own: like clang's `ptr`, it
+lowers to `ptr<void>`, and the C spelling survives only in metadata
+(`c_canon="nullptr_t"`). `nullptr` itself is `null<ptr<void>>` and a null
+pointer constant.
+
+Conversions follow C23 6.3.2.4 as gcc and clang enforce them. `nullptr_t`
+converts implicitly to any pointer (`pointer_cast` from an object,
+`null<ptr<T>>` from `nullptr`) and to `bool` (`ne(n, null)`); a null pointer
+constant converts to `nullptr_t`; every other conversion to or from it is
+`ResolveError::Invalid`, cast or not. Equality between `nullptr_t` and a
+pointer converts to the pointer's type and never warns; relational
+comparison and arithmetic are rejected. A `nullptr_t` variadic argument is
+passed as `ptr<void>`, and `__builtin_classify_type` of one is -1, as in
+both compilers.
+
+Fixtures: `tests/fixtures/{clang,gcc}/linux/x86_64/ir_nullptr.c`,
+`tests/fixtures/error/clang/linux/x86_64/ir_nullptr_invalid.c`.
+
 ### MS mixed-size pointers
 
 Under MS extensions, `__ptr32`, `__ptr64`, `__sptr` and `__uptr` give a pointer

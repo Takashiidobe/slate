@@ -432,7 +432,11 @@ impl Lowerer {
                 let class = type_class(&self.types.ctypes, resolved)
                     .ok_or(ResolveError::Unsupported("classify builtin operand"))?;
                 let c = self.types.ctypes.int();
-                Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(class.into()))))
+                let number = match u32::try_from(class) {
+                    Ok(class) => Number::Integer(class.into()),
+                    Err(_) => Number::SignedInteger(class.into()),
+                };
+                Ok(self.operand(e, c, ValueKind::Constant(number)))
             }
         }
     }
@@ -826,6 +830,9 @@ impl Lowerer {
         right_expr: &Expr,
         right: &Operand,
     ) {
+        if self.types.ctypes.is_nullptr(left.c) || self.types.ctypes.is_nullptr(right.c) {
+            return;
+        }
         let pointers = (
             self.types.ctypes.is_pointer(left.c),
             self.types.ctypes.is_pointer(right.c),
@@ -2107,8 +2114,7 @@ impl Lowerer {
                 Ok(self.operand(e, ty, ValueKind::LabelAddress(id)))
             }
             ExprKind::NullPtrLiteral => {
-                let void = self.types.ctypes.qual(CTypeKind::Void);
-                let ty = self.types.ctypes.pointer(void);
+                let ty = self.types.ctypes.qual(CTypeKind::NullPtr);
                 Ok(self.operand(e, ty, ValueKind::Null))
             }
             ExprKind::StringLiteral(lit) => {
@@ -2317,10 +2323,16 @@ impl Lowerer {
                 if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual)
                     && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
                 {
-                    let ty = if self.pointee(&left.ty).is_ok() {
+                    let is_c_pointer = |operand: &Operand| {
+                        self.pointee(&operand.ty).is_ok()
+                            && !self.types.ctypes.is_nullptr(operand.c)
+                    };
+                    let ty = if is_c_pointer(&left) {
                         left.c
-                    } else {
+                    } else if is_c_pointer(&right) || self.pointee(&left.ty).is_err() {
                         right.c
+                    } else {
+                        left.c
                     };
                     self.warn_comparison(e, left_expr, &left, right_expr, &right);
                     let left =
@@ -3000,8 +3012,9 @@ fn swizzle_lanes(field: &str, lanes: u32) -> Option<Vec<Option<u32>>> {
     )
 }
 
-fn type_class(ctypes: &CTypes, q: QualType) -> Option<u32> {
+fn type_class(ctypes: &CTypes, q: QualType) -> Option<i32> {
     Some(match ctypes.canonical_kind(q) {
+        CTypeKind::NullPtr => -1,
         CTypeKind::Void => 0,
         CTypeKind::Char
         | CTypeKind::SChar

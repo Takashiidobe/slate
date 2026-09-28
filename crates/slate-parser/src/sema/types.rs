@@ -713,6 +713,7 @@ impl TypeResolver {
                 )),
             },
             ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
+            ExprKind::NullPtrLiteral => Ok(self.ctypes.qual(CTypeKind::NullPtr)),
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
                 if let Some((element, Extent::Incomplete)) = self.ctypes.element(resolved) {

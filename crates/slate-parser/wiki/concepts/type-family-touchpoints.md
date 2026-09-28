@@ -183,6 +183,14 @@ Four families exist, all following this walk: complex and imaginary
 (`Type::FixedPoint`). `ir-spec.md` has a section per family covering the shape
 decision and what is implemented.
 
+`CTypeKind::NullPtr` (C23 `nullptr_t`) is the smallest example of a
+sema-only type: it reuses `ir::Type::Pointer`, so only the three caught
+`CTypeKind` sites needed arms. The silent sites it needed were
+`classify_conversion` (its own guard before the vector case), `is_scalar`,
+the equality lowering in `expression.rs` (which picks the comparison type by
+*IR* pointer-ness and so would pick `nullptr_t` over a real pointer),
+`warn_comparison`, and `type_class`.
+
 Fixed-point is the most recent and the most complete worked example, including
 a new `ArithSema` variant, five new `ConversionKind`s, and its own common-type
 rule:
