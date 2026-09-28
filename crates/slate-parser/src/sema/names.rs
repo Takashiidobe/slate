@@ -158,7 +158,7 @@ impl Resolver {
                 name, fixed_type, ..
             }) = &declaration.specifiers.ty
         {
-            self.declare_incomplete_tag(name, span)?;
+            self.declare_incomplete_tag(&name.value, name)?;
             if let Some(fixed_type) = fixed_type {
                 self.type_name(fixed_type, span)?;
             }
@@ -515,11 +515,11 @@ impl Resolver {
         span: &Span<T>,
     ) -> Result<(), ResolveError> {
         match ty {
-            TypeSpecifier::Named(name) => self.reference_typedef(name, span),
+            TypeSpecifier::Named(name) => self.reference_typedef(&name.value, name),
             TypeSpecifier::Tag(TagSpecifier::Reference {
                 name, fixed_type, ..
             }) => {
-                self.reference_tag(name, span)?;
+                self.reference_tag(&name.value, name)?;
                 if let Some(fixed_type) = fixed_type {
                     self.type_name(fixed_type, span)?;
                 }
@@ -584,10 +584,17 @@ impl Resolver {
                     entry
                 }
             };
+            self.resolution.tags.insert(id, entry.id);
             self.tag_ids.insert(id, entry);
         }
         match &tag.body {
-            TagBody::Enum { enumerators, .. } => {
+            TagBody::Enum {
+                enumerators,
+                fixed_type,
+            } => {
+                if let Some(fixed_type) = fixed_type {
+                    self.type_name(fixed_type, span)?;
+                }
                 for item in enumerators {
                     if let EnumItemKind::Enumerator(enumerator) = &item.value {
                         if let Some(value) = &enumerator.value {
@@ -848,7 +855,8 @@ impl Resolver {
         {
             return self.reference_tag(name, span);
         }
-        self.declare_tag_in_scope(name, span);
+        let entry = self.declare_tag_in_scope(name, span);
+        self.resolution.declarations.insert(span.id, entry.id);
         Ok(())
     }
 

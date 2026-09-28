@@ -147,7 +147,7 @@ TypeSpecifier = "Void" | "Bool"
               | "TypeOfUnqual(" TypeOfOperand ")"
               | "TargetBuiltin(" string ")"
               | "Inferred"
-              | "Named(" string ")"
+              | "Named(" span<string> ")"
               | "Tag(" TagSpecifier ")" ;
 
 IntegerType  = Char { signed: opt<bool> }
@@ -169,7 +169,7 @@ FixedPointType = FixedPointType {
                    saturated: bool } ;
 TypeOfOperand  = "Expression(" expr ")" | "Type(" TypeName ")" ;
 
-TagSpecifier = Reference { kind: TagKind, name: string,
+TagSpecifier = Reference { kind: TagKind, name: span<string>,
                            fixed_type?: Some(TypeName) }
              | "Definition(" TagId ")" ;
 TagKind      = "Struct" | "Union" | "Enum" ;

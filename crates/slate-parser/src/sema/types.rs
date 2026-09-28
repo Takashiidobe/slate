@@ -40,8 +40,9 @@ pub struct TypeResolver {
     pub ctypes: CTypes,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
-    ordinary: Vec<HashMap<String, Ordinary>>,
-    tag_names: Vec<HashMap<(TagKind, String), TypeId>>,
+    tag_bindings: HashMap<BindingId, TypeId>,
+    tag_definitions: HashMap<TagId, BindingId>,
+    aliases: HashMap<BindingId, QualType>,
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
@@ -58,11 +59,6 @@ pub struct TypeResolver {
     prototype_scope: bool,
 }
 
-pub(super) enum Ordinary {
-    Declared,
-    Alias(QualType),
-}
-
 impl TypeResolver {
     pub(super) fn target_info(&self) -> &TargetInfo {
         self.dialect.target()
@@ -74,8 +70,9 @@ impl TypeResolver {
             ctypes: CTypes::default(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
-            ordinary: vec![HashMap::new()],
-            tag_names: vec![HashMap::new()],
+            tag_bindings: HashMap::new(),
+            tag_definitions: HashMap::new(),
+            aliases: HashMap::new(),
             definitions: Vec::new(),
             assertion_scope: false,
             extents: HashMap::new(),
@@ -134,6 +131,7 @@ impl TypeResolver {
         let mut resolver = Self::new(unit.dialect.clone());
         resolver.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
         resolver.declarations = names.declarations.clone();
+        resolver.tag_definitions = names.tags.clone();
         resolver.ctypes.ptr32_extension_is_qualifier =
             unit.dialect.flavor() == CompilerFlavor::Msvc;
         resolver.tags = unit.tags.clone();
@@ -345,54 +343,58 @@ impl TypeResolver {
         ))
     }
 
-    pub(super) fn push_scope(&mut self) {
-        self.ordinary.push(HashMap::new());
-        self.tag_names.push(HashMap::new());
+    pub(super) fn alias(&self, binding: BindingId) -> Option<QualType> {
+        self.aliases.get(&binding).copied()
     }
 
-    pub(super) fn pop_scope(&mut self) {
-        if self.ordinary.len() > 1 {
-            self.ordinary.pop();
-            self.tag_names.pop();
-        }
-    }
-
-    pub(super) fn with_scope<T>(
+    fn referenced_tag(
         &mut self,
-        resolve: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
-    ) -> Result<T, ResolveError> {
-        self.push_scope();
-        let result = resolve(self);
-        self.pop_scope();
-        result
-    }
-
-    pub(super) fn declare(&mut self, name: &str, entry: Ordinary) {
-        if let Some(scope) = self.ordinary.last_mut() {
-            scope.insert(name.to_owned(), entry);
+        kind: TagKind,
+        name: &Span<String>,
+    ) -> Result<TypeId, ResolveError> {
+        let binding = self
+            .tag_binding(name)
+            .ok_or(ResolveError::Internal("unresolved tag reference"))?;
+        match self.tag_bindings.get(&binding).copied() {
+            Some(id) => self.same_tag_kind(kind, id),
+            None => {
+                let id = self.push(incomplete_tag(kind));
+                self.definitions[id.0 as usize].name = Some(name.value.clone());
+                self.tag_bindings.insert(binding, id);
+                Ok(id)
+            }
         }
     }
 
-    pub(super) fn lookup(&self, name: &str) -> Option<&Ordinary> {
-        self.ordinary.iter().rev().find_map(|scope| scope.get(name))
-    }
-
-    pub(super) fn lookup_local(&self, name: &str) -> Option<&Ordinary> {
-        self.ordinary.last().and_then(|scope| scope.get(name))
-    }
-
-    fn declare_tag(&mut self, key: (TagKind, String), id: TypeId) {
-        if let Some(scope) = self.tag_names.last_mut() {
-            scope.insert(key, id);
-        }
-    }
-
-    fn lookup_tag(&self, key: &(TagKind, String)) -> Option<TypeId> {
-        self.tag_names
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(key))
+    fn tag_binding(&self, name: &Span<String>) -> Option<BindingId> {
+        self.references
+            .get(&name.id)
+            .or_else(|| self.declarations.get(&name.id))
             .copied()
+    }
+
+    fn same_tag_kind(&self, kind: TagKind, id: TypeId) -> Result<TypeId, ResolveError> {
+        let declared = match &self.definitions[id.0 as usize].kind {
+            TypeDefinitionKind::Record {
+                kind: RecordKind::Struct,
+                ..
+            } => TagKind::Struct,
+            TypeDefinitionKind::Record {
+                kind: RecordKind::Union,
+                ..
+            } => TagKind::Union,
+            TypeDefinitionKind::Enum { .. } => TagKind::Enum,
+            TypeDefinitionKind::Alias(_) => {
+                return Err(ResolveError::Internal("tag bound to an alias"));
+            }
+        };
+        if declared == kind {
+            Ok(id)
+        } else {
+            Err(ResolveError::Rejected(
+                "use of tag with a kind that does not match its previous declaration",
+            ))
+        }
     }
 
     pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Operand, ResolveError> {
@@ -1122,13 +1124,17 @@ impl TypeResolver {
     }
 
     pub(super) fn ms_asm_field(&self, name: &str) -> Result<(Type, u64), ResolveError> {
+        let mut tags = self.tag_bindings.iter().collect::<Vec<_>>();
+        tags.sort_by_key(|(binding, _)| std::cmp::Reverse(binding.0));
         let mut shadowed = HashSet::new();
         let mut records = Vec::new();
-        for scope in self.tag_names.iter().rev() {
-            for ((kind, tag), id) in scope {
-                if *kind != TagKind::Enum && shadowed.insert(tag.as_str()) {
-                    self.with_anonymous_records(*id, &mut records);
-                }
+        for (_, id) in tags {
+            let definition = &self.definitions[id.0 as usize];
+            if matches!(definition.kind, TypeDefinitionKind::Record { .. })
+                && let Some(name) = &definition.name
+                && shadowed.insert(name.as_str())
+            {
+                self.with_anonymous_records(*id, &mut records);
             }
         }
         let mut hits = records
@@ -1188,14 +1194,18 @@ impl TypeResolver {
 
     pub fn define_alias<'a>(
         &mut self,
+        node: crate::ast::NodeId,
         name: String,
         resolved: QualType,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Result<(), ResolveError> {
-        let previous = match self.lookup_local(&name) {
-            Some(Ordinary::Alias(previous)) => self.ctypes.typedef_alignment(*previous),
-            _ => None,
-        };
+        let binding = *self
+            .declarations
+            .get(&node)
+            .ok_or(ResolveError::Internal("unresolved typedef declaration"))?;
+        let previous = self
+            .alias(binding)
+            .and_then(|previous| self.ctypes.typedef_alignment(previous));
         let alignment = requested_alignment(self, attributes)?.max(previous);
         let ty = self.ir_type(resolved);
         let id = self.push(TypeDefinitionKind::Alias(ty));
@@ -1205,7 +1215,7 @@ impl TypeResolver {
             underlying: resolved,
             alignment,
         });
-        self.declare(&name, Ordinary::Alias(alias));
+        self.aliases.insert(binding, alias);
         Ok(())
     }
 
@@ -1353,10 +1363,11 @@ impl TypeResolver {
                 }
             }
             TypeSpecifier::Named(name) => {
-                let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
-                    return Err(ResolveError::Internal("unknown typedef"));
-                };
-                return Ok(*alias);
+                return self
+                    .references
+                    .get(&name.id)
+                    .and_then(|binding| self.alias(*binding))
+                    .ok_or(ResolveError::Internal("unknown typedef"));
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
                 let tag = self
@@ -1373,15 +1384,7 @@ impl TypeResolver {
                 name,
                 fixed_type,
             }) => {
-                let key = (*kind, name.clone());
-                let id = if let Some(id) = self.lookup_tag(&key) {
-                    id
-                } else {
-                    let id = self.push(incomplete_tag(*kind));
-                    self.definitions[id.0 as usize].name = Some(name.clone());
-                    self.declare_tag(key, id);
-                    id
-                };
+                let id = self.referenced_tag(*kind, name)?;
                 if let Some(fixed_type) = fixed_type
                     && matches!(
                         self.definitions[id.0 as usize].kind,
@@ -1639,23 +1642,18 @@ impl TypeResolver {
                 self.derive(core, q, innermost)
             }
             Declarator::Function { inner, parameters } => {
-                let params = self.with_scope(|this| {
-                    let mut params = Vec::new();
-                    for parameter in parameters.parameters() {
-                        let resolved =
-                            this.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
-                        if this.ctypes.is_void(resolved) {
-                            return Err(ResolveError::Rejected("void parameter"));
-                        }
-                        params.push(match parameters {
-                            ParameterList::IdentifierList { .. } => {
-                                this.promoted_parameter(resolved)
-                            }
-                            _ => resolved,
-                        });
+                let mut params = Vec::new();
+                for parameter in parameters.parameters() {
+                    let resolved =
+                        self.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
+                    if self.ctypes.is_void(resolved) {
+                        return Err(ResolveError::Rejected("void parameter"));
                     }
-                    Ok(params)
-                })?;
+                    params.push(match parameters {
+                        ParameterList::IdentifierList { .. } => self.promoted_parameter(resolved),
+                        _ => resolved,
+                    });
+                }
                 let prototyped = match parameters {
                     ParameterList::IdentifierList { .. } => false,
                     ParameterList::Empty => self.dialect.features().empty_parens_are_prototype,
@@ -1821,47 +1819,37 @@ impl TypeResolver {
         else {
             return false;
         };
-        let key = (*kind, name.to_owned());
-        let declared_here = self
-            .tag_names
-            .last()
-            .is_some_and(|scope| scope.contains_key(&key));
-        // `enum E : T;` names a new type in this scope like `struct S;`, but the caller
-        // still resolves it so T (which may define E itself) is lowered normally
-        let shadows = fixed_type.is_some() && self.lookup_tag(&key).is_some();
-        if !declared_here && (fixed_type.is_none() || shadows) {
-            let id = self.push(incomplete_tag(*kind));
-            self.definitions[id.0 as usize].name = Some(name.to_owned());
-            self.declare_tag(key, id);
+        let Some(binding) = self.tag_binding(name) else {
+            return false;
+        };
+        if fixed_type.is_some() || self.tag_bindings.contains_key(&binding) {
+            return false;
         }
-        fixed_type.is_none()
-    }
-
-    fn redeclare_tag_names(&mut self, tag: &TagDefinition, id: TypeId) {
-        if let Some(name) = &tag.name {
-            self.declare_tag((tag.kind, name.clone()), id);
-        }
+        let id = self.push(incomplete_tag(*kind));
+        self.definitions[id.0 as usize].name = Some(name.value.clone());
+        self.tag_bindings.insert(binding, id);
+        true
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
         if let Some(id) = self.tag_ids.get(&tag.id).copied() {
-            self.redeclare_tag_names(tag, id);
             return Ok(id);
         }
-        let previous = tag.name.as_ref().and_then(|name| {
-            self.tag_names
-                .last()
-                .and_then(|scope| scope.get(&(tag.kind, name.clone())))
-                .copied()
-        });
+        let binding = *self
+            .tag_definitions
+            .get(&tag.id)
+            .ok_or(ResolveError::Internal("unresolved tag definition"))?;
+        let previous = self
+            .tag_bindings
+            .get(&binding)
+            .map(|id| self.same_tag_kind(tag.kind, *id))
+            .transpose()?;
         let redefines = previous.filter(|id| is_complete(&self.definitions[id.0 as usize].kind));
         let redefined_fields = redefines.and_then(|id| self.record_fields.get(&id).cloned());
         let id = previous.unwrap_or_else(|| self.push(incomplete_tag(tag.kind)));
         self.tag_ids.insert(tag.id, id);
+        self.tag_bindings.insert(binding, id);
         self.definitions[id.0 as usize].name = tag.name.clone();
-        if let Some(name) = &tag.name {
-            self.declare_tag((tag.kind, name.clone()), id);
-        }
         let kind = match &tag.body {
             TagBody::Record(items) => {
                 let union = tag.kind == TagKind::Union;
@@ -3185,6 +3173,7 @@ pub(super) fn resolve_type_module(
                     )?;
                     let c_entries = resolver.render(resolved).entries();
                     resolver.define_alias(
+                        declarator.id,
                         name,
                         resolved,
                         item.specifiers

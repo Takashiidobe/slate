@@ -30,7 +30,7 @@ BAD_TYPE macro_missing;
 // SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:5:1]
 // SEMANTIC: 4 │ void invalid_array[2];
 // SEMANTIC: 5 │ MissingType missing;
-// SEMANTIC: · ────────────────────
+// SEMANTIC: · ───────────
 // SEMANTIC: 6 │ #define BAD_TYPE MissingMacroType
 // SEMANTIC: ╰────
 // SEMANTIC: Error:
@@ -38,7 +38,7 @@ BAD_TYPE macro_missing;
 // SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:7:1]
 // SEMANTIC: 6 │ #define BAD_TYPE MissingMacroType
 // SEMANTIC: 7 │ BAD_TYPE macro_missing;
-// SEMANTIC: · ───────────────────────
+// SEMANTIC: · ────────
 // SEMANTIC: 8 │
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

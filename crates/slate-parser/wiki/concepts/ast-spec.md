@@ -233,7 +233,7 @@ or functions; those come only from declarators.
 | `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, in any specifier order, `signed` unless `unsigned` |
 | `Atomic(TypeName)`                                                 | `_Atomic(T)` specifier form                                            |
 | `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                   |
-| `TypedefName(String)`                                              | an identifier the parser knows is a typedef name                       |
+| `TypedefName(Span<String>)`                                        | an identifier the parser knows is a typedef name; its `NodeId` keys the reference to the typedef's binding |
 | `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                |
 | `TargetBuiltin(String)`                                            | `__builtin_va_list` etc.                                               |
 | `Inferred`                                                         | `__auto_type`, or C23 `auto` standing in for the type                  |
@@ -396,7 +396,7 @@ GNU nested functions are `FunctionDefinition`s in block item position.
 
 ```
 TagSpecifier =
-    | Reference { kind: Struct | Union | Enum, name: String, fixed_type: Option<Box<TypeName>> }
+    | Reference { kind: Struct | Union | Enum, name: Span<String>, fixed_type: Option<Box<TypeName>> }   // name's NodeId keys the tag reference or forward declaration
     | Definition(TagId)
 
 TagDefinition {

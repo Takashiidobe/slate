@@ -3,7 +3,6 @@ use super::expression::Lowerer;
 use super::ms_asm_effects::{X87_STACK, clobbered, effects, union, writes};
 use super::numeric::ResolveError;
 use super::operand::Lvalue;
-use super::types::Ordinary;
 use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
@@ -563,7 +562,7 @@ impl Lowerer {
                 ..Value::default()
             });
         }
-        let kind = reference.kind;
+        let (kind, binding) = (reference.kind, reference.binding);
         let identifier = Box::new(
             expr.clone()
                 .with_value(ast::ExprKind::Identifier(name.to_owned())),
@@ -593,10 +592,10 @@ impl Lowerer {
                 )
             }
             BindingKind::Typedef => {
-                let Some(Ordinary::Alias(alias)) = self.types.lookup(name) else {
-                    return Err(ResolveError::Internal("unknown typedef"));
-                };
-                let alias = *alias;
+                let alias = self
+                    .types
+                    .alias(binding)
+                    .ok_or(ResolveError::Internal("unknown typedef"))?;
                 Value {
                     ty: Some(self.types.ir_type(alias)),
                     ..Value::default()

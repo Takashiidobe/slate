@@ -70,23 +70,14 @@ any type is resolved, so it cannot answer it and must not pre-empt it
 ## Prototype scope
 
 C11 6.2.1p4: names declared in a function declarator's parameter list have
-block scope ending at the `)`. Three passes push that scope independently, and
-all three had leaked it:
+block scope ending at the `)`. Only `names.rs::declarator` models scopes: it
+pushes one around the `Declarator::Function` parameter loop. `TypeResolver`
+and the lowerer have no scopes of their own; every typedef, tag and ordinary
+name reaches them already bound to a `BindingId`, so resolving a prototype's
+parameters twice (once for the type, once in `module.rs` to build
+`Parameters`) cannot leak or lose a name.
 
-- `names.rs::declarator` around the `Declarator::Function` parameter loop.
-- `types.rs::resolve` likewise, through `TypeResolver::with_scope`.
-- `module.rs`, which resolves parameters a *second* time to build `Parameters`:
-  inside `scoped` for a prototype, and for a definition inside one scope that
-  also covers the body, since a definition's parameter scope extends into it.
-
-That second resolution is why `types.rs::define_tag` re-declares its tag name
-on the memoized path (enumerator constants are keyed by `BindingId`, so they
-need no re-declaring). A tag body is resolved once, keyed by
-AST `TagId`, but its *names* belong to whichever scope the specifier is written
-in, and for a definition that is the function scope rather than the discarded
-prototype scope the first resolution ran in.
-
-Without this a file-scope `typedef double T` was destroyed by an unrelated
+Before that, a file-scope `typedef double T` was destroyed by an unrelated
 `int f(enum { T = 2 } v);` later in the file. Fixture:
 `sema/ir_prototype_scope_redeclaration.c`, where `int a[sizeof(T)]` in the same
 prototype is `array=4` (the enumerator) while `T after_prototype` is still
@@ -102,9 +93,10 @@ identifier's type is `entities.ty(binding)`; its constant value, for an
 enumerator or a folded `constexpr` object, is `constants[binding]`. The
 assertion checker fills both before lowering exists, so a `_Static_assert`
 sees function definitions and names that shadow an enumerator exactly as
-lowering does (slate-parser-evdx). Only typedef aliases and tags still live in
-string scope stacks (slate-parser-cc94.3), because their references carry no
-`NodeId` of their own.
+lowering does (slate-parser-evdx). A typedef name (`TypeSpecifier::Named`)
+and a tag reference (`TagSpecifier::Reference`) carry their name as a
+`Span<String>`, whose `NodeId` is the reference key, so typedef aliases are
+`aliases[binding]` and tags `tag_bindings[binding]` (slate-parser-cc94.3).
 
 Name resolution binds prototype parameters in their prototype scope and
 visits their declarators, so `int a[COUNT]` and `int a[n]` in a prototype
@@ -112,35 +104,34 @@ have references like any other expression.
 
 ## Tags
 
-Tags are not in this table. A tag has no `BindingId`; its identity is a
-`TypeId` and its properties (kind, name, fields, completeness, layout) live in
-`TypeResolver.definitions`. `TypeResolver` is the tag entity table:
+A tag's `BindingId` comes from name resolution like any other name; its
+identity as a type is a `TypeId`, and its properties (kind, name, fields,
+completeness, layout) live in `TypeResolver.definitions`:
 
-- `tag_ids: HashMap<TagId, TypeId>` maps an AST tag occurrence to its type.
-- `tag_names: Vec<HashMap<(TagKind, String), TypeId>>` is a scope stack, pushed
-  and popped with the lowerer's scopes, so two block-scoped `struct Local`
-  definitions get distinct `TypeId`s (slate-parser-rsm).
-- `declare_forward_tag` makes a standalone `struct S;` declare an incomplete
-  tag *in the current scope*, hiding any outer one, per C11 6.7.2.3p8
-  (slate-parser-9wx). Both the lowerer (`module.rs`) and the static-assertion
-  checker (`assertion.rs`) call it; the checker used to skip the form, so
-  a `static_assert` after a block-scope `struct S;` still saw the outer tag
-  (slate-parser-rdj). A declarator-less declaration declares the tag even when
-  it carries a fixed underlying type (`enum E : unsigned char;`).
+- `tag_bindings: HashMap<BindingId, TypeId>` maps a tag binding to its type,
+  and `tag_ids: HashMap<TagId, TypeId>` memoizes an AST tag body. Name
+  resolution exports `NameResolution.tags` (`TagId` -> `BindingId`) for
+  definitions, a reference for each `TagSpecifier::Reference`, and a
+  declaration for a standalone `struct S;` that opens a new tag.
+- Scoping is entirely `names.rs`: two block-scoped `struct Local` definitions
+  are two bindings, so two `TypeId`s (slate-parser-rsm). A standalone
+  `struct S;` binds a new tag in the current scope, hiding any outer one, per
+  C11 6.7.2.3p8 (slate-parser-9wx); `declare_forward_tag` only gives that
+  binding an incomplete `TypeId`. Both the lowerer and the static-assertion
+  checker call it (slate-parser-rdj).
 - A tag reference that resolves to nothing is not an error: per C11 6.7.2.3p8 it
   *declares* an incomplete tag in the current scope, so `typedef struct _IO_FILE
   FILE;` and `struct Holder { struct Member *m; };` work with no prior
-  declaration (slate-parser-dyd.5).
-- Because of that, both `names.rs::define_tag` and `types.rs::define_tag`
-  complete the entry already present in the *innermost* scope instead of minting
-  a fresh one, so a forward or implicit declaration and its later definition are
-  one binding and one `TypeId`.
-- `TypeSpecifier::Tag(Reference)` in `types.rs` never falls back to searching
-  `unit.tags` by name. That fallback bound a block-scope `struct T *p;` to an
-  unrelated file-scope `struct T` defined later; a miss must push a fresh
-  incomplete tag into the current scope and let `define_tag` complete it.
+  declaration (slate-parser-dyd.5). `names.rs::define_tag` completes the entry
+  already present in the innermost scope, so a forward or implicit declaration
+  and its later definition are one binding and one `TypeId`.
+- Names are not keyed by kind, so `struct S` after `union S` in the same scope
+  is the same binding; `same_tag_kind` rejects it, as clang and gcc do.
+- The MS inline-asm member lookup (`ms_asm_field`) scans every tag binding,
+  newest first, rather than only the visible ones: permissive.
 
-Fixture: `sema/ir_tag_scopes.c`.
+Fixtures: `sema/ir_tag_scopes.c`, `typedef_tag_binding_scopes.c`,
+`error/.../tag_kind_mismatch.c`.
 
 ## Audit
 

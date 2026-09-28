@@ -37,6 +37,7 @@ pub struct NameResolution {
     pub references: Vec<Span<Reference>>,
     pub label_definitions: std::collections::HashMap<crate::ast::NodeId, BindingId>,
     pub declarations: std::collections::HashMap<crate::ast::NodeId, BindingId>,
+    pub tags: std::collections::HashMap<crate::ast::TagId, BindingId>,
     pub implicit_functions: std::collections::HashSet<BindingId>,
 }
 

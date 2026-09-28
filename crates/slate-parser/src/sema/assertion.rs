@@ -7,7 +7,7 @@ use num_bigint::{BigInt, Sign};
 use super::ctype::QualType;
 use super::entity::ObjectRequest;
 use super::numeric::ResolveError;
-use super::types::{Ordinary, TypeResolver};
+use super::types::TypeResolver;
 use super::validate::{SemaError, error};
 use crate::ir::NameResolution;
 
@@ -105,7 +105,6 @@ impl Checker<'_> {
         {
             self.declare_object(node, ty, None);
         }
-        self.types.push_scope();
         for parameter in function
             .declarator
             .function_parameters()
@@ -127,7 +126,6 @@ impl Checker<'_> {
         for stmt in &function.body {
             self.statement(stmt);
         }
-        self.types.pop_scope();
     }
 
     fn completed_array(
@@ -191,24 +189,19 @@ impl Checker<'_> {
                 &declarator.attributes,
             );
             self.types.inferred = None;
-            let typedef = declaration.specifiers.storage == StorageClass::Typedef;
-            if typedef && resolved.is_err() {
-                self.types.declare(name, Ordinary::Declared);
-            }
             if let Ok(resolved) = resolved {
-                if typedef {
+                if declaration.specifiers.storage == StorageClass::Typedef {
                     let attributes = declaration
                         .specifiers
                         .attributes
                         .iter()
                         .chain(&declarator.attributes);
-                    if self
-                        .types
-                        .define_alias(name.to_owned(), resolved, attributes)
-                        .is_err()
-                    {
-                        self.types.declare(name, Ordinary::Declared);
-                    }
+                    let _ = self.types.define_alias(
+                        declarator.id,
+                        name.to_owned(),
+                        resolved,
+                        attributes,
+                    );
                 } else if !self.types.ctypes.is_void(resolved) {
                     let completed = self.completed_array(resolved, declarator.initializer.as_ref());
                     let attributes = declaration
@@ -317,22 +310,14 @@ impl Checker<'_> {
         let _ = self.types.resolve(&specifiers, &Declarator::Abstract);
     }
 
-    fn scoped(&mut self, stmt: &Stmt) {
-        self.types.push_scope();
-        self.statement(stmt);
-        self.types.pop_scope();
-    }
-
     fn statement(&mut self, stmt: &Stmt) {
         match &stmt.value {
             StmtKind::StaticAssert(assertion) => self.assertion(assertion),
             StmtKind::Decl(declaration) => self.declaration(declaration, false),
             StmtKind::Block(body) => {
-                self.types.push_scope();
                 for stmt in body {
                     self.statement(stmt);
                 }
-                self.types.pop_scope();
             }
             StmtKind::NestedFunction(function) => self.function(stmt.id, function),
             StmtKind::If {
@@ -341,9 +326,9 @@ impl Checker<'_> {
                 else_branch,
             } => {
                 self.expression(condition);
-                self.scoped(then_branch);
+                self.statement(then_branch);
                 if let Some(branch) = else_branch {
-                    self.scoped(branch);
+                    self.statement(branch);
                 }
             }
             StmtKind::While { condition, body }
@@ -353,7 +338,7 @@ impl Checker<'_> {
                 body,
             } => {
                 self.expression(condition);
-                self.scoped(body);
+                self.statement(body);
             }
             StmtKind::For {
                 init,
@@ -361,15 +346,13 @@ impl Checker<'_> {
                 increment,
                 body,
             } => {
-                self.types.push_scope();
                 if let Some(init) = init {
                     self.statement(init);
                 }
                 for expr in condition.iter().chain(increment) {
                     self.expression(expr);
                 }
-                self.scoped(body);
-                self.types.pop_scope();
+                self.statement(body);
             }
             StmtKind::Labeled { body, .. }
             | StmtKind::Attributed { body, .. }
@@ -395,11 +378,9 @@ impl Checker<'_> {
     fn expression(&mut self, expr: &Expr) {
         match &expr.value {
             ExprKind::StatementExpression(body) => {
-                self.types.push_scope();
                 for stmt in body {
                     self.statement(stmt);
                 }
-                self.types.pop_scope();
             }
             ExprKind::Paren(expr)
             | ExprKind::Unary { operand: expr, .. }

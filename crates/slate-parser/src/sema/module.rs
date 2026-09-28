@@ -301,14 +301,15 @@ fn lower_item(
             lower.function_name = Some(name.to_string());
             lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
             lower.return_type = return_type.as_ref().map(|_| return_c);
-            let body = lower.scoped(|lower| {
-                let parameters = lower.parameters(params, Some(&mut prologue))?;
-                let body = lower.compound(|lower| {
-                    lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
-                })?;
-                prologue.extend(body);
-                Ok((parameters, prologue))
-            });
+            let body = lower
+                .parameters(params, Some(&mut prologue))
+                .and_then(|parameters| {
+                    let body = lower.compound(|lower| {
+                        lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
+                    })?;
+                    prologue.extend(body);
+                    Ok((parameters, prologue))
+                });
             lower.in_function = false;
             lower.in_naked_function = false;
             lower.function_name = None;
@@ -944,8 +945,12 @@ impl Lowerer {
             }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
-                self.types
-                    .define_alias(name.into(), resolved, attributes.clone())?;
+                self.types.define_alias(
+                    declarator.id,
+                    name.into(),
+                    resolved,
+                    attributes.clone(),
+                )?;
                 for definition in &self.types.definitions[start..] {
                     let span = declarator.derive(definition.clone());
                     if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
@@ -1004,7 +1009,7 @@ impl Lowerer {
                 self.types.pragmas.apply(name, &mut symbol);
                 self.record_function(id, &item.specifiers, &attributes, false, global)?;
                 let parameters = match declarator.declarator.function_parameters() {
-                    Some(params) => self.scoped(|lower| lower.parameters(params, None))?,
+                    Some(params) => self.parameters(params, None)?,
                     None if !prototyped => Parameters::Unprototyped,
                     None => Parameters::Prototype {
                         fixed: parameter_types
@@ -1303,37 +1308,13 @@ impl Lowerer {
         }
     }
 
-    pub(super) fn scoped<T>(
-        &mut self,
-        lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
-    ) -> Result<T, ResolveError> {
-        self.types.push_scope();
-        let result = lower(self);
-        self.types.pop_scope();
-        result
-    }
-
-    /// C99 6.8.4p3/6.8.5p5: a selection or iteration statement is a block,
-    /// so a tag or enumerator declared in its controlling expression ends
-    /// with the statement. C89 has no such block.
-    fn control_scoped<T>(
-        &mut self,
-        lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
-    ) -> Result<T, ResolveError> {
-        if self.types.features().control_statement_scopes {
-            self.scoped(lower)
-        } else {
-            lower(self)
-        }
-    }
-
     pub(super) fn compound<T>(
         &mut self,
         lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
     ) -> Result<T, ResolveError> {
         let region = self.context.region;
         self.compound_start = true;
-        let result = self.scoped(lower);
+        let result = lower(self);
         self.context.region = region;
         result
     }
@@ -1358,7 +1339,7 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         self.break_targets.push(id);
         self.continue_targets.push(id);
-        let result = self.scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
+        let result = self.statements(std::slice::from_ref(body), return_type);
         self.continue_targets.pop();
         self.break_targets.pop();
         result
@@ -1419,75 +1400,66 @@ impl Lowerer {
                 condition,
                 then_branch,
                 else_branch,
-            } => self.control_scoped(|lower| {
-                let value = lower.expr(condition)?;
-                Ok(Statement::If {
-                    condition: lower.condition(value.value, None)?,
-                    then_body: lower.scoped(|lower| {
-                        lower.statements(std::slice::from_ref(then_branch), return_type)
-                    })?,
+            } => {
+                let value = self.expr(condition)?;
+                Statement::If {
+                    condition: self.condition(value.value, None)?,
+                    then_body: self.statements(std::slice::from_ref(then_branch), return_type)?,
                     else_body: else_branch
                         .as_ref()
-                        .map(|body| {
-                            lower.scoped(|lower| {
-                                lower.statements(std::slice::from_ref(body), return_type)
-                            })
-                        })
+                        .map(|body| self.statements(std::slice::from_ref(body), return_type))
                         .transpose()?,
-                })
-            })?,
-            StmtKind::While { condition, body } => self.control_scoped(|lower| {
-                let id = lower.fresh();
-                let value = lower.expr(condition)?;
-                let condition = lower.condition(value.value, None)?;
-                let body = lower.loop_body(id, body, return_type)?;
-                Ok(Statement::While {
+                }
+            }
+            StmtKind::While { condition, body } => {
+                let id = self.fresh();
+                let value = self.expr(condition)?;
+                let condition = self.condition(value.value, None)?;
+                let body = self.loop_body(id, body, return_type)?;
+                Statement::While {
                     id,
                     condition: condition.into(),
                     body,
-                })
-            })?,
-            StmtKind::DoWhile { body, condition } => self.control_scoped(|lower| {
-                let id = lower.fresh();
-                let body = lower.loop_body(id, body, return_type)?;
-                let value = lower.expr(condition)?;
-                Ok(Statement::DoWhile {
+                }
+            }
+            StmtKind::DoWhile { body, condition } => {
+                let id = self.fresh();
+                let body = self.loop_body(id, body, return_type)?;
+                let value = self.expr(condition)?;
+                Statement::DoWhile {
                     id,
                     body,
-                    condition: lower.condition(value.value, None)?.into(),
-                })
-            })?,
+                    condition: self.condition(value.value, None)?.into(),
+                }
+            }
             StmtKind::For {
                 init,
                 condition,
                 increment,
                 body,
-            } => self.scoped(|lower| {
-                let id = lower.fresh();
+            } => {
+                let id = self.fresh();
                 let init = match init {
-                    Some(init) => lower.statements(std::slice::from_ref(init), return_type)?,
+                    Some(init) => self.statements(std::slice::from_ref(init), return_type)?,
                     None => Vec::new(),
                 };
                 let condition = condition
                     .as_ref()
                     .map(|expr| {
-                        let value = lower.expr(expr)?;
-                        lower.condition(value.value, None)
+                        let value = self.expr(expr)?;
+                        self.condition(value.value, None)
                     })
                     .transpose()?;
-                let increment = increment
-                    .as_ref()
-                    .map(|expr| lower.expr(expr))
-                    .transpose()?;
-                let body = lower.loop_body(id, body, return_type)?;
-                Ok(Statement::For {
+                let increment = increment.as_ref().map(|expr| self.expr(expr)).transpose()?;
+                let body = self.loop_body(id, body, return_type)?;
+                Statement::For {
                     id,
                     init,
                     condition: condition.map(Into::into),
                     increment: increment.map(|value| value.value.into()),
                     body,
-                })
-            })?,
+                }
+            }
             StmtKind::Break => Statement::Break(
                 *self
                     .break_targets
@@ -1500,25 +1472,24 @@ impl Lowerer {
                     .last()
                     .ok_or(ResolveError::Rejected("continue outside loop"))?,
             ),
-            StmtKind::Switch { discriminant, body } => self.control_scoped(|lower| {
-                let value = lower.expr(discriminant)?;
-                let discriminant = lower.promote(value)?;
+            StmtKind::Switch { discriminant, body } => {
+                let value = self.expr(discriminant)?;
+                let discriminant = self.promote(value)?;
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                     return Err(ResolveError::Rejected("noninteger switch discriminant"));
                 }
-                let id = lower.fresh();
-                lower.break_targets.push(id);
-                lower.switches.push((id, discriminant.c));
-                let body =
-                    lower.scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
-                lower.switches.pop();
-                lower.break_targets.pop();
-                Ok(Statement::Switch {
+                let id = self.fresh();
+                self.break_targets.push(id);
+                self.switches.push((id, discriminant.c));
+                let body = self.statements(std::slice::from_ref(body), return_type);
+                self.switches.pop();
+                self.break_targets.pop();
+                Statement::Switch {
                     id,
                     discriminant: discriminant.value,
                     body: body?,
-                })
-            })?,
+                }
+            }
             StmtKind::SwitchLabel { label, body } => {
                 let (switch, ty) = self
                     .switches

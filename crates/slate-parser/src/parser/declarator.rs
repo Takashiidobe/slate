@@ -185,7 +185,11 @@ impl<'a> DeclaratorParser<'a> {
             Token::Ident(name) if is_target_builtin_name(&name) => {
                 TypeSpecifier::TargetBuiltin(name.into())
             }
-            Token::Ident(name) => TypeSpecifier::Named(name.into()),
+            Token::Ident(name) => TypeSpecifier::Named(span_tokens(
+                name.into(),
+                &self.tokens[self.pos - 1..self.pos],
+                self.context,
+            )),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
         })
     }
@@ -196,20 +200,26 @@ impl<'a> DeclaratorParser<'a> {
     ) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
         let mut attributes = self.parse_attributes()?;
-        let name = match self.peek() {
-            Some(Token::Ident(name)) => {
-                let name = name.to_string();
-                self.pos += 1;
-                Some(name)
-            }
-            _ => None,
-        };
+        let name = self.tag_name();
         if self.peek() == Some(&Token::LBrace) {
             let body = TagBody::Record(self.parse_field_list()?);
             attributes.extend(self.parse_attributes()?);
-            return self.define_tag(kind, name, attributes, body, start);
+            return self.define_tag(kind, name.map(|name| name.value), attributes, body, start);
         }
         tag_reference(kind, name, None)
+    }
+
+    fn tag_name(&mut self) -> Option<Span<String>> {
+        let Some(Token::Ident(name)) = self.peek() else {
+            return None;
+        };
+        let name = span_tokens(
+            name.to_string(),
+            &self.tokens[self.pos..self.pos + 1],
+            self.context,
+        );
+        self.pos += 1;
+        Some(name)
     }
 
     fn define_tag(
@@ -242,14 +252,7 @@ impl<'a> DeclaratorParser<'a> {
     pub(super) fn parse_enum_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
         let mut attributes = self.parse_attributes()?;
-        let name = match self.peek() {
-            Some(Token::Ident(name)) => {
-                let name = name.to_string();
-                self.pos += 1;
-                Some(name)
-            }
-            _ => None,
-        };
+        let name = self.tag_name();
         let mut fixed_type = None;
         if self.peek() == Some(&Token::Colon)
             && self
@@ -266,7 +269,13 @@ impl<'a> DeclaratorParser<'a> {
                 enumerators: self.parse_enumerator_list()?,
             };
             attributes.extend(self.parse_attributes()?);
-            return self.define_tag(TagKind::Enum, name, attributes, body, start);
+            return self.define_tag(
+                TagKind::Enum,
+                name.map(|name| name.value),
+                attributes,
+                body,
+                start,
+            );
         }
         tag_reference(TagKind::Enum, name, fixed_type.map(Box::new))
     }
@@ -937,7 +946,7 @@ pub(crate) fn is_target_builtin_name(name: &str) -> bool {
 
 fn tag_reference(
     kind: TagKind,
-    name: Option<String>,
+    name: Option<Span<String>>,
     fixed_type: Option<Box<TypeName>>,
 ) -> Result<TypeSpecifier, DeclaratorError> {
     let name = name.ok_or(DeclaratorError::ExpectedTagNameOrBrace)?;

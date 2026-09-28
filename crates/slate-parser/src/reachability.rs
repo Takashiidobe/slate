@@ -667,6 +667,7 @@ impl<'a> Reachability<'a> {
         let TypeSpecifier::Named(name) = ty else {
             return false;
         };
+        let name = name.value.as_str();
         self.symbols
             .get(name)
             .into_iter()

@@ -1035,9 +1035,9 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
         TypeSpecifier::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
         TypeSpecifier::TargetBuiltin(name) => name.clone(),
         TypeSpecifier::Inferred => "auto".to_owned(),
-        TypeSpecifier::Named(name) => name.clone(),
+        TypeSpecifier::Named(name) => name.value.clone(),
         TypeSpecifier::Tag(TagSpecifier::Reference { kind, name, .. }) => {
-            format!("{} {name}", tag_name(*kind))
+            format!("{} {}", tag_name(*kind), name.value)
         }
         TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
             let (kind, name) = defined_tag(*id);

@@ -1065,7 +1065,7 @@ pub enum TypeSpecifier {
     Imaginary(Box<Self>),
     TargetBuiltin(String),
     Inferred,
-    Named(String),
+    Named(Span<String>),
     Tag(TagSpecifier),
 }
 
@@ -1560,7 +1560,7 @@ pub struct TagId(pub usize);
 pub enum TagSpecifier {
     Reference {
         kind: TagKind,
-        name: String,
+        name: Span<String>,
         #[debug(skip_if = Option::is_none)]
         fixed_type: Option<Box<TypeName>>,
     },
