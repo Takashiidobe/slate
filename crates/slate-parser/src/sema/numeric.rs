@@ -88,28 +88,17 @@ type Resolved = (Type, ValueKind);
 impl Context {
     pub fn for_dialect(dialect: &crate::dialect::Dialect) -> Self {
         let options = dialect.options();
-        let mut context = Self::new(dialect.target().clone()).with_features(dialect.features());
-        context.signed_overflow = options.operations.signed_overflow;
-        context.pointer_wrap = options.operations.pointer_wrap;
-        context.region.floating = options.operations.floating;
-        context.region.contract =
-            super::pragmas::default_contraction(dialect.flavor(), dialect.standard());
-        context.asm_dialect = options.asm_dialect;
-        context
-    }
-    pub fn with_features(mut self, features: StandardFeatures) -> Self {
-        self.features = features;
-        self
-    }
-
-    pub fn new(target: TargetInfo) -> Self {
         Self {
-            target,
-            features: StandardFeatures::default(),
-            signed_overflow: Overflow::Undefined,
-            pointer_wrap: false,
-            region: FloatingRegion::default(),
-            asm_dialect: AsmDialect::Att,
+            target: dialect.target().clone(),
+            features: dialect.features(),
+            signed_overflow: options.operations.signed_overflow,
+            pointer_wrap: options.operations.pointer_wrap,
+            region: FloatingRegion {
+                floating: options.operations.floating,
+                contract: super::pragmas::default_contraction(dialect.flavor(), dialect.standard()),
+                ..FloatingRegion::default()
+            },
+            asm_dialect: options.asm_dialect,
         }
     }
 

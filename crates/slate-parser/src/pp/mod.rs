@@ -94,8 +94,7 @@ pub struct Preprocessor<'a> {
 
 impl<'a> Preprocessor<'a> {
     fn lex(&self, src: &str) -> Vec<Token> {
-        Lexer::new(FileId(0), src)
-            .with_features(self.dialect.features())
+        Lexer::new(FileId(0), src, self.dialect.features())
             .tokenize()
             .into_iter()
             .map(|span| span.value)
@@ -434,9 +433,8 @@ impl<'a> Preprocessor<'a> {
             .collect();
         self.files.set_line_starts(file, starts.clone());
         self.line_starts.insert(file, starts);
-        let tokens = Lexer::new(file, src)
+        let tokens = Lexer::new(file, src, self.dialect.features())
             .with_newlines()
-            .with_features(self.dialect.features())
             .tokenize();
         let items = syntax::parse(src, tokens)?;
         self.walk_group(&items)

@@ -583,11 +583,16 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    pub fn new(file: FileId, src: &str) -> Self {
-        Self::with_offset(file, src, 0)
+    pub fn new(file: FileId, src: &str, features: StandardFeatures) -> Self {
+        Self::with_offset(file, src, 0, features)
     }
 
-    pub fn with_offset(file: FileId, src: &str, base_offset: usize) -> Self {
+    pub fn with_offset(
+        file: FileId,
+        src: &str,
+        base_offset: usize,
+        features: StandardFeatures,
+    ) -> Self {
         let mut chars = Vec::with_capacity(src.len());
         let mut byte_offsets = Vec::with_capacity(src.len() + 1);
         let mut indices = src.char_indices();
@@ -616,17 +621,12 @@ impl Lexer {
             emit_newlines: false,
             space_before: false,
             tokens: Vec::new(),
-            features: StandardFeatures::default(),
+            features,
         }
     }
 
     pub fn with_newlines(mut self) -> Self {
         self.emit_newlines = true;
-        self
-    }
-
-    pub fn with_features(mut self, features: StandardFeatures) -> Self {
-        self.features = features;
         self
     }
 
