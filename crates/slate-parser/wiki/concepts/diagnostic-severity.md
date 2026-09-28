@@ -249,7 +249,7 @@ the IR), `sema/attribute_applicability_warnings.c` (the diagnostics),
 and `error/field-section-attribute.c`.
 
 The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
-types, so they come from IR lowering rather than `TranslationUnit::analyze`.
+types, so they come from IR lowering rather than `Sema::analyze`.
 So do the four above. So does
 `conflicting-types`, which has no clang counterpart (clang errors) and is
 named after clang's "conflicting types" error. `Lowerer`
@@ -326,17 +326,19 @@ failed"), and a `⚠ …` only when the run produced no error marker at all.
 
 Sema reports up to 20 errors, clang's default `-ferror-limit`, then adds
 "too many errors emitted, stopping now". Any error still means no IR: this is
-reporting, not recovery. The limit lives in `with_sources`, so `analyze` and
-`resolve_module` share it; only errors count toward it. `-ferror-limit` is not
+reporting, not recovery. The limit lives in `with_sources`, so `Sema::analyze`
+and `Sema::lower` share it; only errors count toward it. `-ferror-limit` is not
 accepted because it changes no code's meaning.
 
 Both IR-stage passes continue item by item over the top-level declarations:
 
-- `names::resolve_items` records an unresolved reference (ordinary, typedef,
-  label, MS asm label) and keeps visiting, so declarations after it are still
+- `names::resolve_items` runs once, in `Sema::new`, and both passes read its
+  per-item results; `analyze` reports the unresolved typedef names ("unknown
+  type name"), lowering the rest. It records an unresolved reference (ordinary,
+  typedef, label, MS asm label) and keeps visiting, so declarations after it are still
   bound and `int a = undeclared, b;` does not cascade into errors on `b`. Any
   other names error ends that item and resets the resolver to file scope.
-- `resolve_module` does not lower an item with names errors. A lowering error
+- `Sema::lower` does not lower an item with names errors. A lowering error
   resets per-function `Lowerer` state and moves on. Raise sites don't carry a
   span; instead `Lowerer::expr`, `Lowerer::place` and `Lowerer::statements`
   wrap an error with `ResolveError::at(loc)`, which only sets `Located` when no

@@ -135,7 +135,7 @@ walk its declarator too.
 
 - `src/visit.rs` — shared recursion traverses embedded type names and their
   declarators.
-- `src/sema/validate.rs` — `check_type`, `collect_tag_names`, and
+- `src/sema/validate.rs` — `check_type` and
   `is_register_scalar_type` assign type-specific validation semantics.
 - `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
   declarations referenced through the type.

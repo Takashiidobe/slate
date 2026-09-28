@@ -231,7 +231,7 @@ Two smaller residues worth knowing about:
 
 `TypeResolver` carries a `CompilerFlavor`, set once in `with_tags` from
 `unit.flavor`. Since all four resolvers (module lowering,
-`resolve_type_module`, `resolve_module`, `assertion.rs`) are built through
+`resolve_type_module`, `Sema::lower`, `assertion.rs`) are built through
 that one constructor, they cannot disagree about personality — which matters
 because `static_assert(sizeof(_Atomic struct { char a[3]; }) == 3)` has to
 pass under `--flavor=gcc`, and the assertion checker builds its own resolver.

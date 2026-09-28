@@ -13,6 +13,8 @@ use num_bigint::BigUint;
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
+use super::names::{ItemResolution, ResolveError as NameError};
+
 #[derive(Debug, Error, Clone)]
 #[error("{message}")]
 pub struct SemaError {
@@ -51,165 +53,137 @@ pub struct SemaErrors {
     pub errors: Vec<SemaError>,
 }
 
-impl TranslationUnit {
+impl super::Sema<'_> {
     pub fn analyze(&self, files: &Files) -> Result<Vec<SemaError>, SemaErrors> {
-        let dialect = &self.dialect;
-        let flavor = dialect.flavor();
-        let features = dialect.features();
-        let literals = LiteralContext {
-            target: dialect.target(),
-            features,
-            diagnostics: &dialect.options().diagnostics,
-            standard: dialect.standard(),
-            flavor,
-        };
-        let typedefs = self
-            .decls
-            .iter()
-            .filter_map(|decl| match &decl.value {
-                DeclKind::Declaration(declaration)
-                    if declaration.specifiers.storage == StorageClass::Typedef =>
-                {
-                    Some(declaration.names().map(str::to_string))
-                }
-                _ => None,
-            })
-            .flatten()
-            .collect::<HashSet<_>>();
-        let mut tags = HashSet::new();
-        for tag in &self.tags {
-            if let Some(name) = &tag.value.name {
-                tags.insert(name.clone());
-            }
-            if let TagBody::Record(fields) = &tag.value.body {
-                for field_item in fields {
-                    if let FieldItemKind::Field(field) = &field_item.value {
-                        collect_tag_names(&field.specifiers.ty, &mut tags);
-                    }
-                }
-            }
-        }
-        for decl in &self.decls {
-            match &decl.value {
-                DeclKind::Function(function) => {
-                    collect_tag_names(&function.specifiers.ty, &mut tags);
-                    for parameter in function
-                        .declarator
-                        .function_parameters()
-                        .map_or(&[][..], ParameterList::parameters)
-                    {
-                        collect_tag_names(&parameter.specifiers.ty, &mut tags);
-                    }
-                }
-                DeclKind::Declaration(declaration) => {
-                    collect_tag_names(&declaration.specifiers.ty, &mut tags);
-                }
-                DeclKind::Comment(_)
-                | DeclKind::StaticAssert { .. }
-                | DeclKind::Asm { .. }
-                | DeclKind::Pragma(_) => {}
-            }
-        }
+        analyze(self.unit, &self.items, files)
+    }
+}
 
-        let types = TypeContext {
-            typedefs: &typedefs,
-            tags: &tags,
-            features,
-            diagnostics: &dialect.options().diagnostics,
-            standard: dialect.standard(),
-            flavor,
-        };
-        let mut errors = super::assertion::validate(self);
-        for decl in &self.decls {
-            match &decl.value {
-                DeclKind::Comment(_) | DeclKind::Asm { .. } | DeclKind::Pragma(_) => {}
-                DeclKind::StaticAssert { .. } => {
-                    visit_literals(decl, literals, &mut errors);
+fn analyze(
+    unit: &TranslationUnit,
+    items: &[ItemResolution],
+    files: &Files,
+) -> Result<Vec<SemaError>, SemaErrors> {
+    let dialect = &unit.dialect;
+    let flavor = dialect.flavor();
+    let features = dialect.features();
+    let literals = LiteralContext {
+        target: dialect.target(),
+        features,
+        diagnostics: &dialect.options().diagnostics,
+        standard: dialect.standard(),
+        flavor,
+    };
+    let types = TypeContext {
+        features,
+        diagnostics: &dialect.options().diagnostics,
+        standard: dialect.standard(),
+        flavor,
+    };
+    let mut errors = super::assertion::validate(unit);
+    for (decl, item) in unit.decls.iter().zip(items) {
+        for unresolved in &item.errors {
+            if let NameError::Unresolved {
+                namespace: "typedef",
+                name,
+                loc,
+            } = unresolved
+            {
+                errors.push(error(
+                    decl.provenance,
+                    *loc,
+                    format!("unknown type name `{name}`"),
+                ));
+            }
+        }
+        match &decl.value {
+            DeclKind::Comment(_) | DeclKind::Asm { .. } | DeclKind::Pragma(_) => {}
+            DeclKind::StaticAssert { .. } => {
+                visit_literals(decl, literals, &mut errors);
+            }
+            DeclKind::Function(function) => {
+                let provenance = decl.provenance;
+                check_attributes(&function.specifiers.attributes, &mut errors);
+                check_attributes(&function.attributes, &mut errors);
+                check_type(
+                    &function.specifiers.ty,
+                    types,
+                    provenance,
+                    decl.expansion,
+                    &mut errors,
+                );
+                check_declarator(
+                    &function.declarator,
+                    types,
+                    provenance,
+                    decl.expansion,
+                    &mut errors,
+                );
+                if matches!(flavor, CompilerFlavor::Clang | CompilerFlavor::Gcc) {
+                    check_function_asm(unit, function, flavor, provenance, &mut errors);
                 }
-                DeclKind::Function(function) => {
-                    let provenance = decl.provenance;
-                    check_attributes(&function.specifiers.attributes, &mut errors);
-                    check_attributes(&function.attributes, &mut errors);
-                    check_type(
-                        &function.specifiers.ty,
-                        types,
-                        provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    check_declarator(
-                        &function.declarator,
-                        types,
-                        provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    if matches!(flavor, CompilerFlavor::Clang | CompilerFlavor::Gcc) {
-                        check_function_asm(self, function, flavor, provenance, &mut errors);
-                    }
-                    check_unnamed_parameters(function, types, &mut errors);
-                    visit_literals(function, literals, &mut errors);
-                    check_body_types(function, types, provenance, &mut errors);
+                check_unnamed_parameters(function, types, &mut errors);
+                visit_literals(function, literals, &mut errors);
+                check_body_types(function, types, provenance, &mut errors);
+            }
+            DeclKind::Declaration(declaration) => {
+                let provenance = decl.provenance;
+                let specifiers = &declaration.specifiers;
+                if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
+                    && let Some(tag) = unit.tag(*id)
+                {
+                    check_tag_definition(tag, types, decl.expansion, &mut errors);
+                    visit_literals(tag, literals, &mut errors);
                 }
-                DeclKind::Declaration(declaration) => {
-                    let provenance = decl.provenance;
-                    let specifiers = &declaration.specifiers;
-                    if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
-                        && let Some(tag) = self.tag(*id)
+                check_type(
+                    &specifiers.ty,
+                    types,
+                    provenance,
+                    decl.expansion,
+                    &mut errors,
+                );
+                check_attributes(&specifiers.attributes, &mut errors);
+                visit_literals(declaration, literals, &mut errors);
+                for init_declarator in &declaration.declarators {
+                    let declarator = &init_declarator.declarator;
+                    if matches!(specifiers.ty, TypeSpecifier::Void)
+                        && !matches!(
+                            specifiers.storage,
+                            StorageClass::Extern | StorageClass::Typedef
+                        )
+                        && declarator.name().is_some()
+                        && !declarator_indirects_void(declarator)
                     {
-                        check_tag_definition(tag, types, decl.expansion, &mut errors);
-                        visit_literals(tag, literals, &mut errors);
+                        errors.push(error(
+                            provenance,
+                            decl.expansion,
+                            "object cannot have type void",
+                        ));
                     }
-                    check_type(
-                        &specifiers.ty,
+                    check_declarator(
+                        declarator,
                         types,
-                        provenance,
+                        init_declarator.provenance,
                         decl.expansion,
                         &mut errors,
                     );
-                    check_attributes(&specifiers.attributes, &mut errors);
-                    visit_literals(declaration, literals, &mut errors);
-                    for init_declarator in &declaration.declarators {
-                        let declarator = &init_declarator.declarator;
-                        if matches!(specifiers.ty, TypeSpecifier::Void)
-                            && !matches!(
-                                specifiers.storage,
-                                StorageClass::Extern | StorageClass::Typedef
-                            )
-                            && declarator.name().is_some()
-                            && !declarator_indirects_void(declarator)
-                        {
-                            errors.push(error(
-                                provenance,
-                                decl.expansion,
-                                "object cannot have type void",
-                            ));
-                        }
-                        check_declarator(
-                            declarator,
-                            types,
+                    check_attributes(&init_declarator.attributes, &mut errors);
+                    if flavor == CompilerFlavor::Clang {
+                        check_register_variable(
+                            unit,
+                            specifiers,
+                            init_declarator,
+                            true,
                             init_declarator.provenance,
                             decl.expansion,
                             &mut errors,
                         );
-                        check_attributes(&init_declarator.attributes, &mut errors);
-                        if flavor == CompilerFlavor::Clang {
-                            check_register_variable(
-                                self,
-                                specifiers,
-                                init_declarator,
-                                true,
-                                init_declarator.provenance,
-                                decl.expansion,
-                                &mut errors,
-                            );
-                        }
                     }
                 }
             }
         }
-        with_sources(errors, files)
     }
+    with_sources(errors, files)
 }
 
 pub fn with_sources(
@@ -339,8 +313,6 @@ fn check_extensions(
 
 #[derive(Clone, Copy)]
 struct TypeContext<'a> {
-    typedefs: &'a HashSet<String>,
-    tags: &'a HashSet<String>,
     features: StandardFeatures,
     diagnostics: &'a DiagnosticOptions,
     standard: LanguageStandard,
@@ -529,33 +501,6 @@ fn check_tag_definition(
     }
 }
 
-fn collect_tag_names(ty: &TypeSpecifier, tags: &mut HashSet<String>) {
-    match ty {
-        TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => {
-            tags.insert(name.clone());
-        }
-        TypeSpecifier::Complex(ty) | TypeSpecifier::Imaginary(ty) => collect_tag_names(ty, tags),
-        TypeSpecifier::Atomic(ty) => collect_tag_names(&ty.specifiers.ty, tags),
-        TypeSpecifier::Vector(vector) => collect_tag_names(&vector.element, tags),
-        TypeSpecifier::Mode(mode) => collect_tag_names(&mode.base, tags),
-        TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            collect_tag_names(&ty.specifiers.ty, tags)
-        }
-        TypeSpecifier::Void
-        | TypeSpecifier::Bool
-        | TypeSpecifier::Integer(_)
-        | TypeSpecifier::Floating(_)
-        | TypeSpecifier::FixedPoint(_)
-        | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
-        | TypeSpecifier::TargetBuiltin(_)
-        | TypeSpecifier::Inferred
-        | TypeSpecifier::Named(_)
-        | TypeSpecifier::Tag(TagSpecifier::Definition(_)) => {}
-    }
-}
-
 fn check_type(
     ty: &TypeSpecifier,
     context: TypeContext<'_>,
@@ -565,21 +510,10 @@ fn check_type(
 ) {
     check_extensions(ty, context, provenance, loc, errors);
     match ty {
-        TypeSpecifier::Named(name) if !context.typedefs.contains(name) => errors.push(error(
-            provenance,
-            loc,
-            format!("unknown type name `{name}`"),
-        )),
         TypeSpecifier::Tag(TagSpecifier::Reference {
-            name, fixed_type, ..
-        }) => {
-            if !context.tags.contains(name) {
-                errors.push(error(provenance, loc, format!("unknown tag `{name}`")));
-            }
-            if let Some(fixed_type) = fixed_type {
-                check_type_name(fixed_type, context, provenance, loc, errors);
-            }
-        }
+            fixed_type: Some(fixed_type),
+            ..
+        }) => check_type_name(fixed_type, context, provenance, loc, errors),
         TypeSpecifier::Atomic(ty) => check_type_name(ty, context, provenance, loc, errors),
         TypeSpecifier::Vector(vector) => {
             check_type(&vector.element, context, provenance, loc, errors)

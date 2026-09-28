@@ -45,17 +45,6 @@ struct Entry {
     display_name: String,
 }
 
-pub fn resolve(unit: &TranslationUnit) -> Result<NameResolution, ResolveError> {
-    let (resolution, items) = resolve_items(unit);
-    match items
-        .into_iter()
-        .find_map(|item| item.errors.into_iter().next())
-    {
-        Some(error) => Err(error),
-        None => Ok(resolution),
-    }
-}
-
 pub fn resolve_items(unit: &TranslationUnit) -> (NameResolution, Vec<ItemResolution>) {
     let mut resolver = Resolver::new(unit);
     let items = unit.decls.iter().map(|decl| resolver.item(decl)).collect();

@@ -112,7 +112,8 @@ fn run() -> miette::Result<()> {
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
-    for warning in ast.analyze(&files)? {
+    let sema = slate_parser::sema::Sema::new(&ast);
+    for warning in sema.analyze(&files)? {
         eprintln!("{:?}", miette::Report::new(warning));
     }
     if dump_ir || dump_ir_types {
@@ -120,7 +121,7 @@ fn run() -> miette::Result<()> {
             slate_parser::sema::types::resolve_type_module(&ast)
                 .map_err(|error| miette::miette!("{error}"))?
         } else {
-            let (module, diagnostics) = slate_parser::sema::resolve_module(&ast, &files)?;
+            let (module, diagnostics) = sema.lower(&files)?;
             for warning in diagnostics {
                 eprintln!("{:?}", miette::Report::new(warning));
             }
@@ -138,8 +139,7 @@ fn run() -> miette::Result<()> {
         return Ok(());
     }
     if dump_ir_names {
-        let resolution =
-            slate_parser::sema::names::resolve(&ast).map_err(|error| miette::miette!("{error}"))?;
+        let resolution = sema.names().map_err(|error| miette::miette!("{error}"))?;
         print!("{resolution}");
         return Ok(());
     }

@@ -19,14 +19,22 @@ use crate::target_info::TargetEnvironment;
 use num_bigint::Sign;
 use std::collections::{HashMap, HashSet};
 
-/// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
-/// diagnostics, including failed static assertions.
-pub fn resolve_module(
+impl super::Sema<'_> {
+    pub fn lower(
+        self,
+        files: &crate::files::Files,
+    ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
+        resolve_module(self.unit, self.names, self.items, files)
+    }
+}
+
+fn resolve_module(
     unit: &TranslationUnit,
+    names: NameResolution,
+    items: Vec<super::names::ItemResolution>,
     files: &crate::files::Files,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let context = Context::for_dialect(&unit.dialect);
-    let (names, items) = super::names::resolve_items(unit);
     let next_id = names
         .bindings
         .iter()

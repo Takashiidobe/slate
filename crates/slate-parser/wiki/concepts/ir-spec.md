@@ -49,7 +49,7 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
   Resolves types and operation contracts while constructing IR nodes;
   there is no intermediate semantic AST or second tree-copying pass.
 - `src/sema/validate.rs` — existing early validation, still exposed through
-  `TranslationUnit::analyze`. Passing it does not establish full semantic
+  `Sema::analyze`. Passing it does not establish full semantic
   validity.
 - `src/ir/` — typed node definitions, required semantic properties, source
   spans, and text printing. Does not interpret AST nodes or compiler flags.
@@ -72,7 +72,7 @@ can triage by variant instead of by message:
 ### Implemented module lowering
 
 `slate-parser ir <source.c>` (also `parse <source.c> --dump-ir`) invokes
-`sema::resolve_module`. The module retains the effective target and spanned
+`Sema::lower`. The module retains the effective target and spanned
 function declarations, definitions, globals, and statements. Direct calls,
 local declarations, assignment, compound assignment, increments, member and
 index access, conditional and comma expressions, and scalar casts are typed

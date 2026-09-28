@@ -26,12 +26,31 @@ pub mod types;
 mod validate;
 
 pub use ctype::compat::PointerMerge;
-pub use module::resolve_module;
 pub use validate::{SemaError, SemaErrors};
 
 use crate::ast::{DeclKind, Expr, StmtKind, TranslationUnit};
-use crate::ir::Value;
+use crate::ir::{NameResolution, Value};
 use numeric::{Context, ResolveError};
+
+pub struct Sema<'u> {
+    unit: &'u TranslationUnit,
+    names: NameResolution,
+    items: Vec<names::ItemResolution>,
+}
+
+impl<'u> Sema<'u> {
+    pub fn new(unit: &'u TranslationUnit) -> Self {
+        let (names, items) = names::resolve_items(unit);
+        Self { unit, names, items }
+    }
+
+    pub fn names(&self) -> Result<&NameResolution, &names::ResolveError> {
+        match self.items.iter().find_map(|item| item.errors.first()) {
+            Some(error) => Err(error),
+            None => Ok(&self.names),
+        }
+    }
+}
 
 pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, ResolveError> {
     let context = Context::for_dialect(&unit.dialect);
@@ -48,7 +67,9 @@ pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, Re
                         }
                         StmtKind::Comment(_) | StmtKind::ReturnVoid => {}
                         _ => {
-                            return Err(ResolveError::Unimplemented("statement in expression dump"));
+                            return Err(ResolveError::Unimplemented(
+                                "statement in expression dump",
+                            ));
                         }
                     }
                 }
