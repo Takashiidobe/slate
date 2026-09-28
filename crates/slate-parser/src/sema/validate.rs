@@ -1,6 +1,8 @@
 use crate::ast::*;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
-use crate::const_expr::{CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp};
+use crate::const_expr::{
+    BinaryOp, CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp,
+};
 use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::standard_features::{Availability, StandardFeatures};
@@ -141,8 +143,8 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
-                    if flavor == CompilerFlavor::Clang {
-                        check_function_asm(self, function, provenance, &mut errors);
+                    if matches!(flavor, CompilerFlavor::Clang | CompilerFlavor::Gcc) {
+                        check_function_asm(self, function, flavor, provenance, &mut errors);
                     }
                     check_unnamed_parameters(function, types, &mut errors);
                     visit_literals(function, literals, &mut errors);
@@ -989,13 +991,14 @@ impl Visitor for BodyTypeVisitor<'_, '_> {
 fn check_function_asm(
     unit: &TranslationUnit,
     function: &FunctionDefinition,
+    flavor: CompilerFlavor,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
     let mut labels = HashMap::new();
     let mut collector = AsmLabelVisitor::new(&mut labels);
     visit::walk_stmts(&mut collector, &function.body).unwrap_or_else(|never| match never {});
-    let mut checker = AsmCheckVisitor::new(unit, &labels, provenance, errors);
+    let mut checker = AsmCheckVisitor::new(unit, &labels, flavor, provenance, errors);
     visit::walk_stmts(&mut checker, &function.body).unwrap_or_else(|never| match never {});
 }
 
@@ -1041,6 +1044,7 @@ impl<'a> Visitor for AsmLabelVisitor<'a> {
 struct AsmCheckVisitor<'a, 'b> {
     unit: &'a TranslationUnit,
     labels: &'a HashMap<String, Vec<usize>>,
+    flavor: CompilerFlavor,
     provenance: Provenance,
     errors: &'b mut Vec<SemaError>,
     scope: Vec<usize>,
@@ -1051,12 +1055,14 @@ impl<'a, 'b> AsmCheckVisitor<'a, 'b> {
     fn new(
         unit: &'a TranslationUnit,
         labels: &'a HashMap<String, Vec<usize>>,
+        flavor: CompilerFlavor,
         provenance: Provenance,
         errors: &'b mut Vec<SemaError>,
     ) -> Self {
         Self {
             unit,
             labels,
+            flavor,
             provenance,
             errors,
             scope: Vec::new(),
@@ -1074,6 +1080,7 @@ impl Visitor for AsmCheckVisitor<'_, '_> {
                 asm,
                 self.labels,
                 &self.scope,
+                self.flavor,
                 self.provenance,
                 stmt.expansion,
                 self.errors,
@@ -1113,6 +1120,7 @@ fn check_asm_operands(
     asm: &GnuAsm,
     labels: &HashMap<String, Vec<usize>>,
     scope: &[usize],
+    flavor: CompilerFlavor,
     provenance: Provenance,
     asm_loc: Loc,
     errors: &mut Vec<SemaError>,
@@ -1120,7 +1128,7 @@ fn check_asm_operands(
     let Some(operands) = &asm.operands else {
         return;
     };
-    if let Some((loc, message)) = asm_operand_error(operands) {
+    if let Some((loc, message)) = asm_operand_error(operands, flavor) {
         errors.push(error(provenance, loc, message));
     }
     let mut operand_names = HashSet::new();
@@ -1154,8 +1162,17 @@ fn check_asm_operands(
     }
 }
 
-fn asm_operand_error(operands: &AsmOperands) -> Option<(Loc, String)> {
+fn asm_operand_error(operands: &AsmOperands, flavor: CompilerFlavor) -> Option<(Loc, String)> {
     for output in &operands.outputs {
+        if flavor == CompilerFlavor::Gcc {
+            if !is_gcc_output_lvalue(&output.expr) {
+                return Some((
+                    output.expr.expansion,
+                    "lvalue required in 'asm' statement".into(),
+                ));
+            }
+            continue;
+        }
         match output_lvalue(&output.expr) {
             OutputLvalue::Valid => {}
             OutputLvalue::Cast => {
@@ -1175,12 +1192,14 @@ fn asm_operand_error(operands: &AsmOperands) -> Option<(Loc, String)> {
         match expected {
             None => expected = Some(count),
             Some(expected) if expected != count => {
-                return Some((
-                    operand.expr.expansion,
+                let message = if flavor == CompilerFlavor::Gcc {
+                    "operand constraints for 'asm' differ in number of alternatives".into()
+                } else {
                     format!(
                         "asm constraint has an unexpected number of alternatives: {expected} vs {count}"
-                    ),
-                ));
+                    )
+                };
+                return Some((operand.expr.expansion, message));
             }
             Some(_) => {}
         }
@@ -1218,6 +1237,57 @@ fn output_lvalue(expr: &Expr) -> OutputLvalue {
         }
         _ => OutputLvalue::Invalid,
     }
+}
+
+// gcc strips same-mode casts and folds before its lvalue check, which needs types this pass lacks.
+fn is_gcc_output_lvalue(expr: &Expr) -> bool {
+    match &expr.value {
+        ExprKind::Identifier(_)
+        | ExprKind::Unary {
+            op: UnaryOp::Deref, ..
+        }
+        | ExprKind::Index { .. }
+        | ExprKind::Member { arrow: true, .. }
+        | ExprKind::CompoundLiteral { .. }
+        | ExprKind::Generic { .. }
+        | ExprKind::StatementExpression(_) => true,
+        ExprKind::Paren(inner)
+        | ExprKind::Member { base: inner, .. }
+        | ExprKind::Cast { value: inner, .. }
+        | ExprKind::BitCast { value: inner, .. }
+        | ExprKind::Comma { right: inner, .. } => is_gcc_output_lvalue(inner),
+        ExprKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            is_gcc_output_lvalue(then_value.as_ref().unwrap_or(condition))
+                && is_gcc_output_lvalue(else_value)
+        }
+        ExprKind::Binary { op, left, right } => match (
+            identity_operand(*op, right, true),
+            identity_operand(*op, left, false),
+        ) {
+            (true, _) => is_gcc_output_lvalue(left),
+            (_, true) => is_gcc_output_lvalue(right),
+            _ => false,
+        },
+        _ => false,
+    }
+}
+
+fn identity_operand(op: BinaryOp, operand: &Expr, on_right: bool) -> bool {
+    let ExprKind::IntegerLiteral(literal) = &operand.value else {
+        return false;
+    };
+    let identity = match op {
+        BinaryOp::Add | BinaryOp::BitOr | BinaryOp::BitXor => 0u32,
+        BinaryOp::Sub | BinaryOp::ShiftLeft | BinaryOp::ShiftRight if on_right => 0,
+        BinaryOp::Mul => 1,
+        BinaryOp::Div if on_right => 1,
+        _ => return false,
+    };
+    literal.value == BigUint::from(identity)
 }
 
 fn check_register_variable(

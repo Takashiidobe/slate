@@ -15,7 +15,23 @@ int f(int x) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unresolved label name `missing`
+// DEFAULT: × lvalue required in 'asm' statement
+// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/asm-sema.c:5:17]
+// DEFAULT: 4 │   register int unknown asm("notareg");
+// DEFAULT: 5 │   asm("" : "=r"(x + 1));
+// DEFAULT: ·                 ─────
+// DEFAULT: 6 │   asm("" : "=r,m"(x) : "r"(x));
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × operand constraints for 'asm' differ in number of alternatives
+// DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/asm-sema.c:6:28]
+// DEFAULT: 5 │   asm("" : "=r"(x + 1));
+// DEFAULT: 6 │   asm("" : "=r,m"(x) : "r"(x));
+// DEFAULT: ·                            ─
+// DEFAULT: 7 │   asm goto("" : : : : missing);
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × use of undeclared label 'missing'
 // DEFAULT: ╭─[tests/fixtures/gcc/linux/x86_64/asm-sema.c:7:23]
 // DEFAULT: 6 │   asm("" : "=r,m"(x) : "r"(x));
 // DEFAULT: 7 │   asm goto("" : : : : missing);
