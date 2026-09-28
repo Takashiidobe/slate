@@ -7,6 +7,10 @@ _Static_assert(SAME(unsigned __int32, unsigned int), "__int32");
 _Static_assert(SAME(__int64, long long), "__int64");
 _Static_assert(SAME(__int64 unsigned int, unsigned long long), "__int64 width");
 _Static_assert(SAME(long __int64, long long), "long __int64");
+_Static_assert(SAME(int __int64, long long), "int __int64");
+_Static_assert(SAME(long long __int64, long long), "long long __int64");
+_Static_assert(SAME(__int64 __int64, long long), "__int64 __int64");
+_Static_assert(SAME(__int64 const int, long long), "__int64 const int");
 
 typedef unsigned __int64 uintptr_like;
 _int64 const volatile counter;

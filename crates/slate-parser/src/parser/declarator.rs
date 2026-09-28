@@ -26,6 +26,8 @@ pub(crate) enum DeclaratorError {
     ExpectedCommaOrRBrace,
     #[error("expected `_Fract` or `_Accum`")]
     ExpectedFractOrAccum,
+    #[error("cannot combine `{0}` with previous declaration specifiers")]
+    CannotCombine(String),
     #[error("unsupported typeof expression")]
     UnsupportedTypeofExpression,
     #[error("expected declarator")]
@@ -100,259 +102,60 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    // clang accepts `long __int64` as `long long`
-    fn matches_long_long_tail(&mut self) -> bool {
-        self.matches(Token::Keyword(Keyword::Long)) || self.matches(Token::Keyword(Keyword::Int64))
+    fn parse_type_specifiers(
+        &mut self,
+        specifiers: &mut DeclarationSpecifiers,
+    ) -> Result<TypeSpecifier, DeclaratorError> {
+        let mut set = TypeSpecifierSet::default();
+        while self.take_type_specifier(&mut set)? {
+            self.parse_specifier_keywords(specifiers)?;
+        }
+        if set.shape.is_empty() {
+            return Err(match self.peek().cloned() {
+                Some(token) => {
+                    self.pos += 1;
+                    DeclaratorError::UnexpectedToken(token)
+                }
+                None => DeclaratorError::ExpectedDeclarationType,
+            });
+        }
+        set.finish()
     }
 
-    fn complex_tail(&mut self, float: FloatingType) -> TypeSpecifier {
-        let float = TypeSpecifier::Floating(float);
-        if self.matches(Token::Keyword(Keyword::Complex)) {
-            TypeSpecifier::Complex(Box::new(float))
-        } else {
-            float
-        }
-    }
-
-    pub(crate) fn parse_base_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
-        if self.fixed_point_ahead() {
-            return self.parse_fixed_point();
-        }
+    fn take_type_specifier(&mut self, set: &mut TypeSpecifierSet) -> Result<bool, DeclaratorError> {
         let Some(token) = self.peek().cloned() else {
-            return Err(DeclaratorError::ExpectedDeclarationType);
+            return Ok(false);
+        };
+        let shape = set.shape;
+        let Some(piece) = specifier_piece(&token, shape.is_empty()) else {
+            return Ok(false);
+        };
+        let Some(next) = shape.add(piece) else {
+            return Err(DeclaratorError::CannotCombine(match token {
+                Token::Keyword(keyword) => <&str>::from(keyword).to_string(),
+                Token::Ident(name) => name,
+                other => format!("{other:?}"),
+            }));
         };
         self.pos += 1;
-        let ty = match token {
-            Token::Keyword(Keyword::Bool) => TypeSpecifier::Bool,
-            Token::Keyword(Keyword::BFloat16) => TypeSpecifier::Floating(FloatingType::BFloat16),
-            Token::Keyword(Keyword::Char) => {
-                TypeSpecifier::Integer(IntegerType::Char { signed: None })
-            }
-            Token::Keyword(Keyword::Double) => {
-                if self.matches(Token::Keyword(Keyword::Complex)) {
-                    TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(FloatingType::Double)))
-                } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                    TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(
-                        FloatingType::Double,
-                    )))
-                } else {
-                    TypeSpecifier::Floating(FloatingType::Double)
-                }
-            }
-            Token::Keyword(Keyword::Float) => {
-                if self.matches(Token::Keyword(Keyword::Complex)) {
-                    TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(FloatingType::Float)))
-                } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                    TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(FloatingType::Float)))
-                } else {
-                    TypeSpecifier::Floating(FloatingType::Float)
-                }
-            }
-            Token::Keyword(Keyword::Float16) => self.complex_tail(FloatingType::Float16),
-            Token::Keyword(Keyword::Fp16) => TypeSpecifier::Floating(FloatingType::Fp16),
-            Token::Keyword(Keyword::Float32) => self.complex_tail(FloatingType::Float32),
-            Token::Keyword(Keyword::Float64) => self.complex_tail(FloatingType::Float64),
-            Token::Keyword(Keyword::Float32x) => self.complex_tail(FloatingType::Float32x),
-            Token::Keyword(Keyword::Float64x) => self.complex_tail(FloatingType::Float64x),
-            Token::Keyword(Keyword::Float128) => self.complex_tail(FloatingType::Float128),
-            Token::Keyword(Keyword::Float128Ext) => self.complex_tail(FloatingType::Float128Ext),
-            Token::Keyword(Keyword::Float80) => self.complex_tail(FloatingType::Float80),
-            Token::Keyword(Keyword::Decimal32) => TypeSpecifier::Floating(FloatingType::Decimal32),
-            Token::Keyword(Keyword::Decimal64) => TypeSpecifier::Floating(FloatingType::Decimal64),
-            Token::Keyword(Keyword::Decimal128) => {
-                TypeSpecifier::Floating(FloatingType::Decimal128)
-            }
-            Token::Keyword(Keyword::Int) => TypeSpecifier::Integer(IntegerType::Ranked {
-                rank: IntegerRank::Int,
-                signed: true,
-            }),
-            Token::Keyword(Keyword::Int128) => TypeSpecifier::Integer(IntegerType::Ranked {
-                rank: IntegerRank::Int128,
-                signed: true,
-            }),
-            Token::Keyword(Keyword::Int64) => {
-                let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
-                if signed {
-                    self.matches(Token::Keyword(Keyword::Signed));
-                }
-                self.matches(Token::Keyword(Keyword::Int));
-                TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::LongLong,
-                    signed,
-                })
-            }
-            Token::Keyword(Keyword::Long) => {
-                if self.matches_long_long_tail() {
-                    let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
-                    if signed {
-                        self.matches(Token::Keyword(Keyword::Signed));
-                    }
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::LongLong,
-                        signed,
-                    })
-                } else if self.matches(Token::Keyword(Keyword::Double)) {
-                    if self.matches(Token::Keyword(Keyword::Complex)) {
-                        TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(
-                            FloatingType::LongDouble,
-                        )))
-                    } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                        TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(
-                            FloatingType::LongDouble,
-                        )))
-                    } else {
-                        TypeSpecifier::Floating(FloatingType::LongDouble)
-                    }
-                } else {
-                    let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
-                    if signed {
-                        self.matches(Token::Keyword(Keyword::Signed));
-                    }
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Long,
-                        signed,
-                    })
-                }
-            }
-            Token::Keyword(Keyword::Short) => {
-                let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
-                if signed {
-                    self.matches(Token::Keyword(Keyword::Signed));
-                }
-                self.matches(Token::Keyword(Keyword::Int));
-                TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Short,
-                    signed,
-                })
-            }
-            Token::Keyword(Keyword::Signed) => match self.peek() {
-                Some(Token::Keyword(Keyword::Char)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Char { signed: Some(true) })
-                }
-                Some(Token::Keyword(Keyword::Short)) => {
-                    self.pos += 1;
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Short,
-                        signed: true,
-                    })
-                }
-                Some(Token::Keyword(Keyword::Long)) => {
-                    self.pos += 1;
-                    if self.matches_long_long_tail() {
-                        self.matches(Token::Keyword(Keyword::Int));
-                        TypeSpecifier::Integer(IntegerType::Ranked {
-                            rank: IntegerRank::LongLong,
-                            signed: true,
-                        })
-                    } else {
-                        self.matches(Token::Keyword(Keyword::Int));
-                        TypeSpecifier::Integer(IntegerType::Ranked {
-                            rank: IntegerRank::Long,
-                            signed: true,
-                        })
-                    }
-                }
-                Some(Token::Keyword(Keyword::Int64)) => {
-                    self.pos += 1;
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::LongLong,
-                        signed: true,
-                    })
-                }
-                Some(Token::Keyword(Keyword::Int128)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Int128,
-                        signed: true,
-                    })
-                }
-                Some(Token::Keyword(Keyword::BitInt)) => {
-                    self.pos += 1;
-                    self.parse_bit_int(false)?
-                }
-                Some(Token::Keyword(Keyword::Int)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Int,
-                        signed: true,
-                    })
-                }
-                _ => TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Int,
+        match piece {
+            Piece::Base(BaseKind::BitInt) => {
+                set.payload = Some(TypeSpecifier::Integer(IntegerType::BitInt {
+                    width: self.parse_bit_int_width()?,
                     signed: true,
-                }),
-            },
-            Token::Keyword(Keyword::Unsigned) => match self.peek() {
-                Some(Token::Keyword(Keyword::Char)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Char {
-                        signed: Some(false),
-                    })
-                }
-                Some(Token::Keyword(Keyword::Short)) => {
-                    self.pos += 1;
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Short,
-                        signed: false,
-                    })
-                }
-                Some(Token::Keyword(Keyword::Long)) => {
-                    self.pos += 1;
-                    if self.matches_long_long_tail() {
-                        self.matches(Token::Keyword(Keyword::Int));
-                        TypeSpecifier::Integer(IntegerType::Ranked {
-                            rank: IntegerRank::LongLong,
-                            signed: false,
-                        })
-                    } else {
-                        self.matches(Token::Keyword(Keyword::Int));
-                        TypeSpecifier::Integer(IntegerType::Ranked {
-                            rank: IntegerRank::Long,
-                            signed: false,
-                        })
-                    }
-                }
-                Some(Token::Keyword(Keyword::Int64)) => {
-                    self.pos += 1;
-                    self.matches(Token::Keyword(Keyword::Int));
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::LongLong,
-                        signed: false,
-                    })
-                }
-                Some(Token::Keyword(Keyword::Int128)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Int128,
-                        signed: false,
-                    })
-                }
-                Some(Token::Keyword(Keyword::BitInt)) => {
-                    self.pos += 1;
-                    self.parse_bit_int(true)?
-                }
-                Some(Token::Keyword(Keyword::Int)) => {
-                    self.pos += 1;
-                    TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Int,
-                        signed: false,
-                    })
-                }
-                _ => TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Int,
-                    signed: false,
-                }),
-            },
-            Token::Keyword(Keyword::Void) => TypeSpecifier::Void,
-            Token::Keyword(Keyword::Saturated) => {
-                return Err(DeclaratorError::ExpectedFractOrAccum);
+                }));
             }
+            Piece::Base(BaseKind::Other) => set.payload = Some(self.parse_other_type(token)?),
+            _ => {}
+        }
+        set.shape = next;
+        Ok(true)
+    }
+
+    fn parse_other_type(&mut self, token: Token) -> Result<TypeSpecifier, DeclaratorError> {
+        Ok(match token {
+            Token::Keyword(Keyword::Bool) => TypeSpecifier::Bool,
+            Token::Keyword(Keyword::Void) => TypeSpecifier::Void,
             Token::Keyword(Keyword::Atomic) => {
                 self.expect(
                     Token::LParen,
@@ -365,39 +168,6 @@ impl<'a> DeclaratorParser<'a> {
                 )?;
                 TypeSpecifier::Atomic(Box::new(ty))
             }
-            Token::Keyword(Keyword::Complex) => {
-                let element = if matches!(
-                    self.peek(),
-                    Some(Token::Keyword(
-                        Keyword::Char
-                            | Keyword::Double
-                            | Keyword::Float
-                            | Keyword::Int
-                            | Keyword::Long
-                            | Keyword::Short
-                            | Keyword::Signed
-                            | Keyword::Unsigned
-                            | Keyword::Float16
-                            | Keyword::BFloat16
-                            | Keyword::Float32
-                            | Keyword::Float64
-                            | Keyword::Float32x
-                            | Keyword::Float64x
-                            | Keyword::Float128
-                            | Keyword::Float128Ext
-                            | Keyword::Float80
-                    ))
-                ) {
-                    self.parse_base_type()?
-                } else {
-                    TypeSpecifier::Floating(FloatingType::Double)
-                };
-                TypeSpecifier::Complex(Box::new(element))
-            }
-            Token::Keyword(Keyword::Imaginary) => {
-                TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(FloatingType::Double)))
-            }
-            Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false)?,
             Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
             Token::Keyword(Keyword::TypeofUnqual) => {
                 TypeSpecifier::TypeOfUnqual(self.parse_typeof_operand()?)
@@ -422,13 +192,7 @@ impl<'a> DeclaratorParser<'a> {
             }
             Token::Ident(name) => TypeSpecifier::Named(name),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
-        };
-        if matches!(ty, TypeSpecifier::Integer(_)) && self.matches(Token::Keyword(Keyword::Complex))
-        {
-            Ok(TypeSpecifier::Complex(Box::new(ty)))
-        } else {
-            Ok(ty)
-        }
+        })
     }
 
     pub(super) fn parse_record_type(
@@ -632,59 +396,7 @@ impl<'a> DeclaratorParser<'a> {
         Ok(items)
     }
 
-    fn fixed_point_ahead(&self) -> bool {
-        let mut index = self.pos;
-        loop {
-            match self.tokens.get(index).map(|span| &span.value) {
-                Some(Token::Keyword(Keyword::Fract | Keyword::Accum)) => return true,
-                Some(Token::Keyword(
-                    Keyword::Saturated
-                    | Keyword::Signed
-                    | Keyword::Unsigned
-                    | Keyword::Short
-                    | Keyword::Long,
-                )) => index += 1,
-                _ => return false,
-            }
-        }
-    }
-
-    pub(super) fn parse_fixed_point(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
-        let mut rank = FixedPointRank::Default;
-        let mut signed = true;
-        let mut saturated = false;
-        let kind = loop {
-            match self.peek() {
-                Some(Token::Keyword(Keyword::Fract)) => break FixedPointKind::Fract,
-                Some(Token::Keyword(Keyword::Accum)) => break FixedPointKind::Accum,
-                Some(Token::Keyword(Keyword::Saturated)) => saturated = true,
-                Some(Token::Keyword(Keyword::Signed)) => signed = true,
-                Some(Token::Keyword(Keyword::Unsigned)) => signed = false,
-                Some(Token::Keyword(Keyword::Short)) => rank = FixedPointRank::Short,
-                Some(Token::Keyword(Keyword::Long)) => {
-                    rank = if rank == FixedPointRank::Long {
-                        FixedPointRank::LongLong
-                    } else {
-                        FixedPointRank::Long
-                    };
-                }
-                _ => return Err(DeclaratorError::ExpectedFractOrAccum),
-            }
-            self.pos += 1;
-        };
-        self.pos += 1;
-        Ok(TypeSpecifier::FixedPoint(FixedPointType {
-            kind,
-            rank,
-            signed,
-            saturated,
-        }))
-    }
-
-    pub(super) fn parse_bit_int(
-        &mut self,
-        is_unsigned: bool,
-    ) -> Result<TypeSpecifier, DeclaratorError> {
+    fn parse_bit_int_width(&mut self) -> Result<Expr, DeclaratorError> {
         self.expect(
             Token::LParen,
             DeclaratorError::ExpectedToken(Token::LParen, "after `_BitInt`"),
@@ -696,10 +408,7 @@ impl<'a> DeclaratorParser<'a> {
             Token::RParen,
             DeclaratorError::ExpectedToken(Token::RParen, "after `_BitInt` width"),
         )?;
-        Ok(TypeSpecifier::Integer(IntegerType::BitInt {
-            width,
-            signed: !is_unsigned,
-        }))
+        Ok(width)
     }
 
     pub(super) fn parse_typeof(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
@@ -925,7 +634,12 @@ impl<'a> DeclaratorParser<'a> {
                 signed: true,
             })
         } else {
-            self.parse_base_type()?
+            let ty = self.parse_type_specifiers(&mut specifiers)?;
+            if specifiers.ty == TypeSpecifier::Inferred {
+                TypeSpecifier::Inferred
+            } else {
+                ty
+            }
         };
         self.parse_specifier_keywords(&mut specifiers)?;
         Ok(specifiers)
@@ -1233,4 +947,256 @@ fn tag_reference(
         name,
         fixed_type,
     }))
+}
+
+#[derive(Default)]
+struct TypeSpecifierSet {
+    shape: SpecifierShape,
+    payload: Option<TypeSpecifier>,
+}
+
+impl TypeSpecifierSet {
+    fn finish(self) -> Result<TypeSpecifier, DeclaratorError> {
+        let shape = self.shape;
+        let signed = shape.sign != Some(false);
+        let rank = match shape.width {
+            SpecifierWidth::None => IntegerRank::Int,
+            SpecifierWidth::Short => IntegerRank::Short,
+            SpecifierWidth::Long => IntegerRank::Long,
+            SpecifierWidth::LongLong => IntegerRank::LongLong,
+        };
+        let ranked = TypeSpecifier::Integer(IntegerType::Ranked { rank, signed });
+        let ty = match shape.base {
+            None if shape.sign.is_some() || shape.width != SpecifierWidth::None => ranked,
+            None if shape.complex || shape.imaginary => {
+                TypeSpecifier::Floating(FloatingType::Double)
+            }
+            None => return Err(DeclaratorError::ExpectedFractOrAccum),
+            Some(BaseKind::Int) => ranked,
+            Some(BaseKind::Char) => {
+                TypeSpecifier::Integer(IntegerType::Char { signed: shape.sign })
+            }
+            Some(BaseKind::Int128) => TypeSpecifier::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int128,
+                signed,
+            }),
+            Some(BaseKind::Floating(FloatingType::Double))
+                if shape.width == SpecifierWidth::Long =>
+            {
+                TypeSpecifier::Floating(FloatingType::LongDouble)
+            }
+            Some(BaseKind::Floating(float)) => TypeSpecifier::Floating(float),
+            Some(BaseKind::FixedPoint(kind)) => TypeSpecifier::FixedPoint(FixedPointType {
+                kind,
+                rank: match shape.width {
+                    SpecifierWidth::None => FixedPointRank::Default,
+                    SpecifierWidth::Short => FixedPointRank::Short,
+                    SpecifierWidth::Long => FixedPointRank::Long,
+                    SpecifierWidth::LongLong => FixedPointRank::LongLong,
+                },
+                signed,
+                saturated: shape.saturated,
+            }),
+            Some(BaseKind::BitInt) => match self.payload {
+                Some(TypeSpecifier::Integer(IntegerType::BitInt { width, .. })) => {
+                    TypeSpecifier::Integer(IntegerType::BitInt { width, signed })
+                }
+                _ => return Err(DeclaratorError::ExpectedDeclarationType),
+            },
+            Some(BaseKind::Other) => self
+                .payload
+                .ok_or(DeclaratorError::ExpectedDeclarationType)?,
+        };
+        Ok(if shape.complex {
+            TypeSpecifier::Complex(Box::new(ty))
+        } else if shape.imaginary {
+            TypeSpecifier::Imaginary(Box::new(ty))
+        } else {
+            ty
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+enum SpecifierWidth {
+    #[default]
+    None,
+    Short,
+    Long,
+    LongLong,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum BaseKind {
+    Char,
+    Int,
+    Int128,
+    Floating(FloatingType),
+    FixedPoint(FixedPointKind),
+    BitInt,
+    Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Piece {
+    Sign(bool),
+    Short,
+    Long,
+    Int64,
+    Complex,
+    Imaginary,
+    Saturated,
+    Base(BaseKind),
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct SpecifierShape {
+    base: Option<BaseKind>,
+    sign: Option<bool>,
+    width: SpecifierWidth,
+    complex: bool,
+    imaginary: bool,
+    saturated: bool,
+}
+
+impl SpecifierShape {
+    fn is_empty(self) -> bool {
+        self.base.is_none()
+            && self.sign.is_none()
+            && self.width == SpecifierWidth::None
+            && !self.complex
+            && !self.imaginary
+            && !self.saturated
+    }
+
+    fn add(self, piece: Piece) -> Option<Self> {
+        let mut next = self;
+        match piece {
+            Piece::Sign(signed) => {
+                if self.sign.is_some_and(|sign| sign != signed) {
+                    return None;
+                }
+                next.sign = Some(signed);
+            }
+            Piece::Short => {
+                if self.width != SpecifierWidth::None {
+                    return None;
+                }
+                next.width = SpecifierWidth::Short;
+            }
+            Piece::Long => {
+                next.width = match self.width {
+                    SpecifierWidth::None => SpecifierWidth::Long,
+                    SpecifierWidth::Long => SpecifierWidth::LongLong,
+                    SpecifierWidth::Short | SpecifierWidth::LongLong => return None,
+                };
+            }
+            // clang-cl reads `__int64` as a `long long` width, so `long __int64` and `int __int64` combine
+            Piece::Int64 => {
+                if self.width == SpecifierWidth::Short {
+                    return None;
+                }
+                next.width = SpecifierWidth::LongLong;
+            }
+            Piece::Complex => next.complex = true,
+            Piece::Imaginary => next.imaginary = true,
+            Piece::Saturated => next.saturated = true,
+            Piece::Base(base) => {
+                if self.base.is_some() {
+                    return None;
+                }
+                next.base = Some(base);
+            }
+        }
+        next.is_valid().then_some(next)
+    }
+
+    fn is_valid(self) -> bool {
+        if self.complex && self.imaginary {
+            return false;
+        }
+        let Some(base) = self.base else {
+            return true;
+        };
+        let no_width = self.width == SpecifierWidth::None;
+        let integer = !self.imaginary && !self.saturated;
+        match base {
+            BaseKind::Int => integer,
+            BaseKind::Char | BaseKind::Int128 | BaseKind::BitInt => integer && no_width,
+            BaseKind::Floating(float) => {
+                self.sign.is_none()
+                    && !self.saturated
+                    && (no_width
+                        || float == FloatingType::Double && self.width == SpecifierWidth::Long)
+                    && (!self.complex || has_complex_form(float))
+                    && (!self.imaginary
+                        || matches!(float, FloatingType::Float | FloatingType::Double))
+            }
+            BaseKind::FixedPoint(_) => !self.complex && !self.imaginary,
+            BaseKind::Other => {
+                self.sign.is_none()
+                    && no_width
+                    && !self.complex
+                    && !self.imaginary
+                    && !self.saturated
+            }
+        }
+    }
+}
+
+fn specifier_piece(token: &Token, nothing_before: bool) -> Option<Piece> {
+    let Token::Keyword(keyword) = token else {
+        return (nothing_before && matches!(token, Token::Ident(_)))
+            .then_some(Piece::Base(BaseKind::Other));
+    };
+    Some(match keyword {
+        Keyword::Signed => Piece::Sign(true),
+        Keyword::Unsigned => Piece::Sign(false),
+        Keyword::Short => Piece::Short,
+        Keyword::Long => Piece::Long,
+        Keyword::Int64 => Piece::Int64,
+        Keyword::Complex => Piece::Complex,
+        Keyword::Imaginary => Piece::Imaginary,
+        Keyword::Saturated => Piece::Saturated,
+        Keyword::Char => Piece::Base(BaseKind::Char),
+        Keyword::Int => Piece::Base(BaseKind::Int),
+        Keyword::Int128 => Piece::Base(BaseKind::Int128),
+        Keyword::BitInt => Piece::Base(BaseKind::BitInt),
+        Keyword::Fract => Piece::Base(BaseKind::FixedPoint(FixedPointKind::Fract)),
+        Keyword::Accum => Piece::Base(BaseKind::FixedPoint(FixedPointKind::Accum)),
+        Keyword::Float => Piece::Base(BaseKind::Floating(FloatingType::Float)),
+        Keyword::Double => Piece::Base(BaseKind::Floating(FloatingType::Double)),
+        Keyword::Float16 => Piece::Base(BaseKind::Floating(FloatingType::Float16)),
+        Keyword::Fp16 => Piece::Base(BaseKind::Floating(FloatingType::Fp16)),
+        Keyword::BFloat16 => Piece::Base(BaseKind::Floating(FloatingType::BFloat16)),
+        Keyword::Float32 => Piece::Base(BaseKind::Floating(FloatingType::Float32)),
+        Keyword::Float64 => Piece::Base(BaseKind::Floating(FloatingType::Float64)),
+        Keyword::Float32x => Piece::Base(BaseKind::Floating(FloatingType::Float32x)),
+        Keyword::Float64x => Piece::Base(BaseKind::Floating(FloatingType::Float64x)),
+        Keyword::Float128 => Piece::Base(BaseKind::Floating(FloatingType::Float128)),
+        Keyword::Float128Ext => Piece::Base(BaseKind::Floating(FloatingType::Float128Ext)),
+        Keyword::Float80 => Piece::Base(BaseKind::Floating(FloatingType::Float80)),
+        Keyword::Decimal32 => Piece::Base(BaseKind::Floating(FloatingType::Decimal32)),
+        Keyword::Decimal64 => Piece::Base(BaseKind::Floating(FloatingType::Decimal64)),
+        Keyword::Decimal128 => Piece::Base(BaseKind::Floating(FloatingType::Decimal128)),
+        Keyword::Bool
+        | Keyword::Void
+        | Keyword::Atomic
+        | Keyword::Typeof
+        | Keyword::TypeofUnqual
+        | Keyword::Struct
+        | Keyword::Union
+        | Keyword::Enum => Piece::Base(BaseKind::Other),
+        _ => return None,
+    })
+}
+
+fn has_complex_form(float: FloatingType) -> bool {
+    !matches!(
+        float,
+        FloatingType::Fp16
+            | FloatingType::Decimal32
+            | FloatingType::Decimal64
+            | FloatingType::Decimal128
+    )
 }

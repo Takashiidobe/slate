@@ -37,8 +37,8 @@ int invalid(double _Imaginary y, double x) {
 }
 
 // SLATE-FILECHECK-BEGIN INTEGER
-// INTEGER: Error:   × expected declarator
-// INTEGER: ╰─▶ expected declarator
+// INTEGER: Error:   × cannot combine `_Imaginary` with previous declaration specifiers
+// INTEGER: ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
 // INTEGER: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:3:5]
 // INTEGER: 2 │ #ifdef INTEGER
 // INTEGER: 3 │ int _Imaginary integer;
@@ -47,8 +47,8 @@ int invalid(double _Imaginary y, double x) {
 // INTEGER: ╰────
 // SLATE-FILECHECK-END INTEGER
 // SLATE-FILECHECK-BEGIN DECIMAL
-// DECIMAL: Error:   × expected declarator
-// DECIMAL: ╰─▶ expected declarator
+// DECIMAL: Error:   × cannot combine `_Imaginary` with previous declaration specifiers
+// DECIMAL: ╰─▶ cannot combine `_Imaginary` with previous declaration specifiers
 // DECIMAL: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:6:12]
 // DECIMAL: 5 │ #ifdef DECIMAL
 // DECIMAL: 6 │ _Decimal64 _Imaginary decimal;

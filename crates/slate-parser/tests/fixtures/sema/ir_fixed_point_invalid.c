@@ -54,8 +54,8 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SWITCH: Error:   × unsupported in numeric IR lowering: noninteger switch discriminant
 // SLATE-FILECHECK-END SWITCH
 // SLATE-FILECHECK-BEGIN SPELLING
-// SPELLING: Error:   × expected `_Fract` or `_Accum`
-// SPELLING: ╰─▶ expected `_Fract` or `_Accum`
+// SPELLING: Error:   × cannot combine `int` with previous declaration specifiers
+// SPELLING: ╰─▶ cannot combine `int` with previous declaration specifiers
 // SPELLING: ╭─[tests/fixtures/sema/ir_fixed_point_invalid.c:3:6]
 // SPELLING: 2 │ #ifdef SPELLING
 // SPELLING: 3 │ _Sat int saturating_integer;
