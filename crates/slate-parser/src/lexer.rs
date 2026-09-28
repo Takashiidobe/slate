@@ -820,19 +820,20 @@ impl Lexer {
 
     fn numeric_end(&self, start: usize) -> usize {
         let mut i = start;
-        while i < self.chars.len()
-            && (self.chars[i].is_ascii_alphanumeric()
-                || self.chars[i] == '.'
-                || (self.chars[i] == '\''
-                    && self
-                        .chars
-                        .get(i + 1)
-                        .is_some_and(char::is_ascii_alphanumeric))
-                || (self.chars[i] == '+' || self.chars[i] == '-')
-                    && i > 0
-                    && matches!(self.chars[i - 1], 'e' | 'E' | 'p' | 'P'))
-        {
-            i += 1;
+        while let Some(&c) = self.chars.get(i) {
+            let next = self.chars.get(i + 1).copied();
+            if matches!(c, 'e' | 'E' | 'p' | 'P') && matches!(next, Some('+' | '-')) {
+                i += 2;
+            } else if c.is_ascii_alphanumeric() || c == '.' {
+                i += 1;
+            } else if c == '\''
+                && self.features.digit_separators
+                && next.is_some_and(|next| next.is_ascii_alphanumeric())
+            {
+                i += 2;
+            } else {
+                break;
+            }
         }
         i
     }

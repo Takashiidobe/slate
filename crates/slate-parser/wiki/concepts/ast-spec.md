@@ -689,13 +689,18 @@ does not reject; input is assumed to have compiled with the real compiler.
 | `_BitInt`                                                       | C23        | warn                        | warn                      | extension                           |
 | `[[…]]` attributes                                               | C23        | warn (all modes before C23) | warn                      | extension                           |
 | `0b` binary literals                                             | C23        | warn                        | warn                      | extension                           |
-| digit separators (`1'000`)                                       | C23        | err                         | err                       | extension                           |
+| digit separators (`1'000`)                                       | C23        | char constant               | char constant             | gated by `digit_separators`         |
 
-Digit separators are the one construct both compilers reject before C23
-(both lex the `'` as the start of an unterminated character constant, so
-there is no dedicated extension diagnostic). slate-parser still accepts
-them in every mode: the input is assumed to have compiled, so rejecting
-buys no fidelity. `0b` literals are likewise an extension.
+Digit separators are the one construct gated by standard rather than
+accepted as an extension. Before C23 both compilers lex the `'` as the start
+of a character constant, and that is not always an error: in gcc.dg's
+`#define m(x) 0` / `m(1'2)+(3'4)`, C11 reads `'2)+(3'` as one character
+constant inside `m`'s argument (value 0) while C23 reads two separated
+numbers (value 34). Accepting separators early would change what valid code
+means, so the lexer only continues a pp-number through `'` when
+`StandardFeatures::digit_separators` is set. A separator consumes the
+character after it, so the `e`/`p` sign rule does not apply across one:
+`0x0'e-0xe` is `0x0'e`, `-`, `0xe`. `0b` literals are an extension.
 
 ## Migration
 
