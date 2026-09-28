@@ -40,11 +40,11 @@ foo ()
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %1 @a() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64, i32>];
-// DEFAULT-NEXT:     fn %2 @b(%4 <unnamed>: @type0) -> void [linkage=external] [abi=sysv64(coerce<i64, i32>) -> void];
+// DEFAULT-NEXT:     fn %1 @a() -> @type0 [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %2 @b(%4 <unnamed>: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i32>>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(coerce<i64, i32>) -> void>(%2, copy<@type0, reason=arg>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i32>>(%1)));
+// DEFAULT-NEXT:         call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%2, copy<@type0, reason=arg>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

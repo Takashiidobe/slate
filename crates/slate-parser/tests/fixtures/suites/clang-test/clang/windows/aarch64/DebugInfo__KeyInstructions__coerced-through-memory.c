@@ -44,9 +44,9 @@ void f() {
 // DEFAULT-NEXT:         field2 c: i16;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     type @type1 S = @type0;
-// DEFAULT-NEXT:     fn %2 @getS() -> @type0 [linkage=external] [abi=win_arm64() -> coerce<i64, i64>];
+// DEFAULT-NEXT:     fn %2 @getS() -> @type0 [linkage=external] [abi=win_arm64() -> native_c];
 // DEFAULT-NEXT:     fn %3 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=win_arm64() -> coerce<i64, i64>>(%2));
+// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=win_arm64() -> native_c>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

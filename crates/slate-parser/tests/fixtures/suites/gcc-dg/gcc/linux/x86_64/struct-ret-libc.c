@@ -48,9 +48,9 @@ int main ()
 // DEFAULT-NEXT:     type @type1 div_t = @type0;
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%7 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @div(%8 __numer: i32, %9 __denom: i32) -> @type0 [linkage=external] [memory=none] [abi=sysv64(scalar, scalar) -> coerce<i64>];
+// DEFAULT-NEXT:     fn %4 @div(%8 __numer: i32, %9 __denom: i32) -> @type0 [linkage=external] [memory=none] [abi=sysv64(scalar, scalar) -> native_c];
 // DEFAULT-NEXT:     fn %5 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 d: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> coerce<i64>>(%4, const<i32>(20), const<i32>(5)));
+// DEFAULT-NEXT:         let %6 d: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> native_c>(%4, const<i32>(20), const<i32>(5)));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%6)), const<i32>(4)), ne<i32>(read<i32>(field1(%6)), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));

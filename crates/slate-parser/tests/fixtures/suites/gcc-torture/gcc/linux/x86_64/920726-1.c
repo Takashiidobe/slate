@@ -135,7 +135,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%13)), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return read<i32>(%12);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @second(%15 buf: ptr<i8>, %16 fmt: ptr<i8>, ...) -> @type2 [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @second(%15 buf: ptr<i8>, %16 fmt: ptr<i8>, ...) -> @type2 [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %17 pos: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %18 number: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %19 args: va_list [storage=automatic];
@@ -176,7 +176,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %23 buf1: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %24 buf2: array<i8, 100> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<i8>, ...) -> i32>(%6, array_decay<ptr<i8>, length=Some(100)>(%23), array_decay<ptr<i8>, length=Some(5)>(%34), const<i32>(5), const<i32>(20));
-// DEFAULT-NEXT:         call<@type2, signature=fn(ptr<i8>, ptr<i8>, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar) -> coerce<i32>>(%14, array_decay<ptr<i8>, length=Some(100)>(%24), array_decay<ptr<i8>, length=Some(5)>(%35), const<i32>(5), const<i32>(20));
+// DEFAULT-NEXT:         call<@type2, signature=fn(ptr<i8>, ptr<i8>, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar) -> native_c>(%14, array_decay<ptr<i8>, length=Some(100)>(%24), array_decay<ptr<i8>, length=Some(5)>(%35), const<i32>(5), const<i32>(20));
 // DEFAULT-NEXT:         let %53: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%38, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%39)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(100)>(%23))), const<i32>(0))
 // DEFAULT-NEXT:             write<bool>(%53, const<bool>(true));

@@ -80,19 +80,19 @@ toPoint(int x1, int y1)
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %4 @main(%7 argc: i32, %8 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(coerce<i64>, coerce<i64>) -> scalar>(%5, copy<@type0, reason=arg>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> coerce<i64>>(%6, const<i32>(0), const<i32>(0))), copy<@type0, reason=arg>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> coerce<i64>>(%6, const<i32>(1000), const<i32>(1000)))), const<i32>(1))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%5, copy<@type0, reason=arg>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> native_c>(%6, const<i32>(0), const<i32>(0))), copy<@type0, reason=arg>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> native_c>(%6, const<i32>(1000), const<i32>(1000)))), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @printPoints(%9 a: @type0, %10 b: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64>, coerce<i64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @printPoints(%9 a: @type0, %10 b: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(0)), ne<i32>(read<i32>(field1(%9)), const<i32>(0))), ne<i32>(read<i32>(field0(%10)), const<i32>(1000))), ne<i32>(read<i32>(field1(%10)), const<i32>(1000)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @toPoint(%11 x1: i32, %12 y1: i32) -> @type0 [linkage=external] [abi=sysv64(scalar, scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @toPoint(%11 x1: i32, %12 y1: i32) -> @type0 [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %13 p: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%13), read<i32>(%11));
 // DEFAULT-NEXT:         write<i32>(field1(%13), read<i32>(%12));

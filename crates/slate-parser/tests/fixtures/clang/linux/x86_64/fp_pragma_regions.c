@@ -117,7 +117,7 @@ double popped(double a, double b) { return a / b; }
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<f64>(%13);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @limited_range(%15 a: complex<f64>, %16 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @limited_range(%15 a: complex<f64>, %16 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %17 full: complex<f64> [storage=automatic] = div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%15), read<complex<f64>>(%16));
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(read<complex<f64>>(%17), div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(read<complex<f64>>(%15), read<complex<f64>>(%16)), read<complex<f64>>(%16)));

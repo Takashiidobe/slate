@@ -61,7 +61,7 @@ int fallthrough(int x) {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     fn %2 @make() -> @type1 [linkage=external] [abi=sysv64() -> coerce<i32>] [c="struct result(void)"];
+// IR-NEXT:     fn %2 @make() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [c="struct result(void)"];
 // IR-NEXT:     fn %4 @take(%13 p: ptr<@type2> [c="struct pair *"]) -> void [linkage=external] [c="void(struct pair *)"];
 // IR-NEXT:     fn %5 @conversions() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // IR-NEXT:         let %6 size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8) [size_of="i64"])) [c="int"];

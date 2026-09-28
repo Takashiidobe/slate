@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %39 .str39: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([116, 101, 115, 116, 95, 108, 111, 110, 103, 95, 105, 110, 116, 32, 102, 97, 105, 108, 101, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%34 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @ctest_float(%4 x: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @ctest_float(%4 x: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 res: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<f32>>(%5, not<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f32>>(%4)));
 // DEFAULT-NEXT:         return read<complex<f32>>(%5);
@@ -96,8 +96,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %7 res: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         let %8 x: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<f32>>(%8, complex_convert<complex<f32>, reason=assign, rounding=nearest_even, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<complex<f32>>(%7, call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%3, read<complex<f32>>(%8)));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%3, read<complex<f32>>(%8));
+// DEFAULT-NEXT:         write<complex<f32>>(%7, call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(native_c) -> native_c>(%3, read<complex<f32>>(%8)));
+// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(native_c) -> native_c>(%3, read<complex<f32>>(%8));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%7)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%35)));
@@ -106,7 +106,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%41));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @ctest_double(%10 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %9 @ctest_double(%10 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 res: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<f64>>(%11, not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%10)));
 // DEFAULT-NEXT:         return read<complex<f64>>(%11);
@@ -115,8 +115,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %13 res: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         let %14 x: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<f64>>(%14, add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))));
-// DEFAULT-NEXT:         write<complex<f64>>(%13, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%9, read<complex<f64>>(%14)));
-// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%9, read<complex<f64>>(%14));
+// DEFAULT-NEXT:         write<complex<f64>>(%13, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%9, read<complex<f64>>(%14)));
+// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%9, read<complex<f64>>(%14));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%13), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%36)));
@@ -144,7 +144,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%45));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @ctest_int(%22 x: complex<i32>) -> complex<i32> [linkage=external] [abi=sysv64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %21 @ctest_int(%22 x: complex<i32>) -> complex<i32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %23 res: complex<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<i32>>(%23, not<complex<i32>, complex=true, overflow=ub>(read<complex<i32>>(%22)));
 // DEFAULT-NEXT:         return read<complex<i32>>(%23);
@@ -153,8 +153,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %25 res: complex<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %26 x: complex<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<i32>>(%26, complex_convert<complex<i32>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<complex<i32>>(%25, call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(coerce<i64>) -> coerce<i64>>(%21, read<complex<i32>>(%26)));
-// DEFAULT-NEXT:         call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(coerce<i64>) -> coerce<i64>>(%21, read<complex<i32>>(%26));
+// DEFAULT-NEXT:         write<complex<i32>>(%25, call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(native_c) -> native_c>(%21, read<complex<i32>>(%26)));
+// DEFAULT-NEXT:         call<complex<i32>, signature=fn(complex<i32>) -> complex<i32>, abi=sysv64(native_c) -> native_c>(%21, read<complex<i32>>(%26));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%25)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%38)));
@@ -163,7 +163,7 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%47));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @ctest_long_int(%28 x: complex<i64>) -> complex<i64> [linkage=external] [abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %27 @ctest_long_int(%28 x: complex<i64>) -> complex<i64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %29 res: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<i64>>(%29, not<complex<i64>, complex=true, overflow=ub>(read<complex<i64>>(%28)));
 // DEFAULT-NEXT:         return read<complex<i64>>(%29);
@@ -172,8 +172,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %31 res: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         let %32 x: complex<i64> [storage=automatic];
 // DEFAULT-NEXT:         write<complex<i64>>(%32, complex_convert<complex<i64>, reason=assign, out_of_range=ub, exceptions=ignore>(add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         write<complex<i64>>(%31, call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>>(%27, read<complex<i64>>(%32)));
-// DEFAULT-NEXT:         call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(coerce<i64, i64>) -> coerce<i64, i64>>(%27, read<complex<i64>>(%32));
+// DEFAULT-NEXT:         write<complex<i64>>(%31, call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(native_c) -> native_c>(%27, read<complex<i64>>(%32)));
+// DEFAULT-NEXT:         call<complex<i64>, signature=fn(complex<i64>) -> complex<i64>, abi=sysv64(native_c) -> native_c>(%27, read<complex<i64>>(%32));
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(complex_convert<complex<f64>, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<complex<i64>>(%31)), sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%39)));

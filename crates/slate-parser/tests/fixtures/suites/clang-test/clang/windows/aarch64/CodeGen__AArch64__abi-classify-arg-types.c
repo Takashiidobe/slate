@@ -140,11 +140,11 @@ void arg_bitint129(_BitInt(129) x) {}
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @arg_matrix(%30 m: f32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @arg_transparent_union_int(%34 tu: @type1) -> void [linkage=external] [abi=win_arm64(coerce<i64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %33 @arg_transparent_union_int(%34 tu: @type1) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @arg_transparent_union_char(%38 tu: @type3) -> void [linkage=external] [abi=win_arm64(coerce<i64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %37 @arg_transparent_union_char(%38 tu: @type3) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @arg_transparent_union_ptr(%42 tu: @type5) -> void [linkage=external] [abi=win_arm64(coerce<i64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %41 @arg_transparent_union_ptr(%42 tu: @type5) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %43 @arg_bitint7(%44 x: i7b) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }

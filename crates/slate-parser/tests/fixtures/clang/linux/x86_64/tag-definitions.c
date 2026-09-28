@@ -83,6 +83,6 @@ void takes(struct inner *p, pair q);
 // DEFAULT-NEXT:         write<i32>(field0(%12), reinterpret<i32, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type7>(%17))));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field0(%12)))), const<u64>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @takes(%20 p: ptr<@type2>, %21 q: @type4) -> void [linkage=external] [abi=sysv64(scalar, coerce<i64>) -> void];
+// DEFAULT-NEXT:     fn %19 @takes(%20 p: ptr<@type2>, %21 q: @type4) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

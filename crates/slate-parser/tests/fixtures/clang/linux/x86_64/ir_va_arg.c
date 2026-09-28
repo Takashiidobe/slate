@@ -39,7 +39,7 @@ double sequenced(va_list ap) { return __builtin_va_arg(ap, double) + __builtin_v
 // IR-NEXT:     fn %2 @fixed_type(%3 ap: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return va_arg<i32>(%3);
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @struct_type(%5 ap: va_list) -> @type1 [linkage=external] [abi=sysv64(scalar) -> coerce<i64, f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %4 @struct_type(%5 ap: va_list) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type1, reason=return>(va_arg<@type1>(%5));
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @sequenced(%7 ap: va_list) -> f64 [linkage=external] [fallthrough=ub_if_used] {

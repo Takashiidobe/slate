@@ -49,14 +49,14 @@ int main(void) {
 // DEFAULT-NEXT:     global %8 z: complex<f32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @p(%3 a: complex<f32>, %4 b: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @p(%3 a: complex<f32>, %4 b: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%3), read<complex<f32>>(%4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<complex<f32>>(%8, call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), read<complex<f32>>(%6)));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), read<complex<f32>>(%6));
-// DEFAULT-NEXT:         write<complex<f32>>(%6, call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%8))));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>, coerce<pair<f32>>) -> coerce<pair<f32>>>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%8)));
+// DEFAULT-NEXT:         write<complex<f32>>(%8, call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f32>>(%5), read<complex<f32>>(%6)));
+// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f32>>(%5), read<complex<f32>>(%6));
+// DEFAULT-NEXT:         write<complex<f32>>(%6, call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%8))));
+// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f32>>(%5), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%8)));
 // DEFAULT-NEXT:         if ne<complex<f32>, exceptions=observable>(read<complex<f32>>(%8), read<complex<f32>>(%7))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

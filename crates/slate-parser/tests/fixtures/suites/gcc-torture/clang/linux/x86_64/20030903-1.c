@@ -59,10 +59,10 @@ carg_test (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %4 minus_zero: f64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @check_complex(%10 <unnamed>: complex<f64>, %11 <unnamed>: complex<f64>, %12 <unnamed>: complex<f64>, %13 <unnamed>: complex<i32>) -> void [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<i64>) -> void];
+// DEFAULT-NEXT:     fn %0 @check_complex(%10 <unnamed>: complex<f64>, %11 <unnamed>: complex<f64>, %12 <unnamed>: complex<f64>, %13 <unnamed>: complex<i32>) -> void [linkage=external] [abi=sysv64(native_c, native_c, native_c, native_c) -> void];
 // DEFAULT-NEXT:     fn %1 @check_float(%14 <unnamed>: f64, %15 <unnamed>: f64, %16 <unnamed>: f64, %17 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @conj(%18 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>];
-// DEFAULT-NEXT:     fn %3 @carg(%19 __z: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar];
+// DEFAULT-NEXT:     fn %2 @conj(%18 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(native_c) -> native_c];
+// DEFAULT-NEXT:     fn %3 @carg(%19 __z: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT:     fn %5 @conj_test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %20: complex<f64> [synthetic];
 // DEFAULT-NEXT:         {
@@ -78,7 +78,7 @@ carg_test (void)
 // DEFAULT-NEXT:             write<f64>(imag(%7), read<f64>(%4));
 // DEFAULT-NEXT:             write<complex<f64>>(%21, read<complex<f64>>(%7));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>, complex<f64>, complex<f64>, complex<i32>) -> void, abi=sysv64(coerce<f64, f64>, coerce<f64, f64>, coerce<f64, f64>, coerce<i64>) -> void>(%0, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%2, read<complex<f64>>(%20)), read<complex<f64>>(%21), real_to_complex<complex<f64>, reason=arg>(int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), real_to_complex<complex<i32>, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>, complex<f64>, complex<f64>, complex<i32>) -> void, abi=sysv64(native_c, native_c, native_c, native_c) -> void>(%0, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%2, read<complex<f64>>(%20)), read<complex<f64>>(%21), real_to_complex<complex<f64>, reason=arg>(int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), real_to_complex<complex<i32>, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @carg_test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %22: complex<f64> [synthetic];
@@ -88,7 +88,7 @@ carg_test (void)
 // DEFAULT-NEXT:             write<f64>(imag(%9), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
 // DEFAULT-NEXT:             write<complex<f64>>(%22, read<complex<f64>>(%9));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, i32) -> void>(%1, call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%3, read<complex<f64>>(%22)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, i32) -> void>(%1, call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%3, read<complex<f64>>(%22)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

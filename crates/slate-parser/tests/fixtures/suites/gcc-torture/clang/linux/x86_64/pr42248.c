@@ -52,16 +52,16 @@ int main() {
 // DEFAULT-NEXT:     type @type1 Scf10 = @type0;
 // DEFAULT-NEXT:     global %2 g1s: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @check(%4 x: @type0, %5 y: complex<f64>) -> void [linkage=external] [abi=sysv64(native_c, coerce<f64, f64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %3 @check(%4 x: @type0, %5 y: complex<f64>) -> void [linkage=external] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(field0(%4)), read<complex<f64>>(%5))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @init(%7 p: ptr<@type0>, %8 y: complex<f64>) -> void [linkage=external] [abi=sysv64(scalar, coerce<f64, f64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %6 @init(%7 p: ptr<@type0>, %8 y: complex<f64>) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<complex<f64>>(field0(deref(read<ptr<@type0>>(%7))), read<complex<f64>>(%8));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, complex<f64>) -> void, abi=sysv64(scalar, coerce<f64, f64>) -> void>(%6, addr_of<ptr<@type0>>(%2), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0, complex<f64>) -> void, abi=sysv64(native_c, coerce<f64, f64>) -> void>(%3, copy<@type0, reason=arg>(read<@type0>(%2)), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, complex<f64>) -> void, abi=sysv64(scalar, native_c) -> void>(%6, addr_of<ptr<@type0>>(%2), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0, complex<f64>) -> void, abi=sysv64(native_c, native_c) -> void>(%3, copy<@type0, reason=arg>(read<@type0>(%2)), real_to_complex<complex<f64>, reason=explicit>(int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

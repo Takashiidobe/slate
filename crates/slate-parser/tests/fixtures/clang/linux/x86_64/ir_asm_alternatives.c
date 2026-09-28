@@ -42,7 +42,7 @@ void alternatives(int x, int *p, long double f, struct Big big) {
 // IR-NEXT:         field1 b: i64;
 // IR-NEXT:         field2 c: i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// IR-NEXT:     fn %1 @alternatives(%2 x: i32, %3 p: ptr<i32>, %4 f: f80, %5 big: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, byval<align=8>) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %1 @alternatives(%2 x: i32, %3 p: ptr<i32>, %4 f: f80, %5 big: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%2);

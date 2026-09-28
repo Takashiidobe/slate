@@ -38,7 +38,7 @@ ld a (ld x, ld y)
 // DEFAULT-NEXT:         field0 l: f80;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 ld = @type0;
-// DEFAULT-NEXT:     fn %2 @a(%3 x: @type0, %4 y: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @a(%3 x: @type0, %4 y: @type0) -> @type0 [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 b: @type0 [storage=automatic];
 // DEFAULT-NEXT:         write<f80>(field0(%5), add<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(field0(%3)), read<f80>(field0(%4))));
 // DEFAULT-NEXT:     }

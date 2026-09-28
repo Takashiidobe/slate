@@ -91,13 +91,13 @@ int foo2(arg)
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         return read<i32>(%9);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 d: f64, %6 i: i32, %7 s: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, coerce<f64, i32>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %4 @bar(%5 d: f64, %6 i: i32, %7 s: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6)));
 // DEFAULT-NEXT:         call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6));
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<f64>(%5)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<f64>(%5));
-// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> coerce<f64, i32>>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6))));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> coerce<f64, i32>>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6)));
+// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6))));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), read<i32>(%6)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%0)), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<f64>(%5)));
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%6)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%6));
@@ -106,8 +106,8 @@ int foo2(arg)
 // DEFAULT-NEXT:         call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6));
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<f64>(%5)));
 // DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<f64>(%5));
-// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> coerce<f64, i32>>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6))));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> coerce<f64, i32>>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6)));
+// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6))));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(i32) -> @type0, abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type0>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<f64>(%5)));
 // DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%1)), read<i32>(%6));

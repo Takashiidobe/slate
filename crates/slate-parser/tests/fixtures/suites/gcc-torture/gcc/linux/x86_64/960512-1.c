@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @f() -> complex<f64> [linkage=external] [abi=sysv64() -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @f() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 a: array<i32, 40> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %4 c: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(40)>(%3), const<i32>(9))), const<i32>(0));
@@ -55,8 +55,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %6 c: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%6, call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> coerce<f64, f64>>(%2));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> coerce<f64, f64>>(%2), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0)))
+// DEFAULT-NEXT:         write<complex<f64>>(%6, call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%2));
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%2), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }

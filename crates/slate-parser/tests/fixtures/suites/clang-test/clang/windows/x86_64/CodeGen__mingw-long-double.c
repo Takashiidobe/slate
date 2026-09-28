@@ -59,7 +59,7 @@ void VarArgLD(int a, ...) {
 // DEFAULT-NEXT:     fn %4 @TestLD(%5 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%5), read<f64>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @TestLDC(%7 x: complex<f64>) -> complex<f64> [linkage=external] [abi=win64(byref<align=8>) -> sret<align=8>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @TestLDC(%7 x: complex<f64>) -> complex<f64> [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%7), read<complex<f64>>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @VarArgLD(%9 a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {

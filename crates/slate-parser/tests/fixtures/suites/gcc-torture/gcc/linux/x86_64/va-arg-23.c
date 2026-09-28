@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         field1 y: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo(%5 a: i32, %6 b: i32, %7 c: i32, %8 d: i32, %9 e: i32, %10 f: @type2, %11 g: i32, ...) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %4 @foo(%5 a: i32, %6 b: i32, %7 c: i32, %8 d: i32, %9 e: i32, %10 f: @type2, %11 g: i32, ...) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %12 args: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %13 h: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%12);
@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %15 t: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, @type2, i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>, scalar, scalar) -> void>(%4, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=arg>(read<@type2>(%15)), const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, @type2, i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar, scalar) -> void>(%4, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=arg>(read<@type2>(%15)), const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

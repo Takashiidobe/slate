@@ -67,7 +67,7 @@ foo (_Complex double z)
 // DEFAULT-NEXT:     global %6 g: complex<f64> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 h: complex<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 i: complex<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %9 @foo(%10 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %9 @foo(%10 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return not<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%10));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

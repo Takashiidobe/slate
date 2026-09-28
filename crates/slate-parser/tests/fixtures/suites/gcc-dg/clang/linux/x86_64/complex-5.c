@@ -118,7 +118,7 @@ main (void)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%4), read<i32>(%7))), read<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%6), read<i32>(%7)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @use_complex(%10 c: complex<f64>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(coerce<f64, f64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %9 @use_complex(%10 c: complex<f64>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<complex<f64>, volatile>(%8, read<complex<f64>>(%10));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %15 @use_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
@@ -130,28 +130,28 @@ main (void)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(real(%16), read<f64>(%11));
 // DEFAULT-NEXT:                 write<f64>(imag(%16), read<f64>(%12));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(coerce<f64, f64>) -> void>(%9, read<complex<f64>>(%16));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%16));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %27
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(real(%17), read<f64>(%12));
 // DEFAULT-NEXT:                 write<f64>(imag(%17), read<f64>(%13));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(coerce<f64, f64>) -> void>(%9, read<complex<f64>>(%17));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%17));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %28
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(real(%18), read<f64>(%13));
 // DEFAULT-NEXT:                 write<f64>(imag(%18), read<f64>(%14));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(coerce<f64, f64>) -> void>(%9, read<complex<f64>>(%18));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%18));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %29
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(real(%19), read<f64>(%14));
 // DEFAULT-NEXT:                 write<f64>(imag(%19), read<f64>(%11));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(coerce<f64, f64>) -> void>(%9, read<complex<f64>>(%19));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%19));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

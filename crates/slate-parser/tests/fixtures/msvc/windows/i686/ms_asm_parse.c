@@ -68,7 +68,7 @@ int syntax(int x, struct pair p) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     global %1 table: array<i32, 4> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @callee() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @syntax(%5 x: i32, %6 p: @type0) -> i32 [linkage=external] [abi=x86_win32(scalar, coerce<i32, i32>) -> scalar] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%11)))] {
+// DEFAULT-NEXT:     fn %3 @syntax(%5 x: i32, %6 p: @type0) -> i32 [linkage=external] [abi=x86_win32(scalar, native_c) -> scalar] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%11)))] {
 // DEFAULT-NEXT:         let %11: u32 [synthetic];
 // DEFAULT-NEXT:         let %7 a: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %8 b: i32 [storage=automatic];

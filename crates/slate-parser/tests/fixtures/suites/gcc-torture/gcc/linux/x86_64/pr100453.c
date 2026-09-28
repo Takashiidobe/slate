@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %3 e: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %4 f: @type0 [storage=static] [const] [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @g(%6 h: @type0 [const]) -> void [linkage=internal] [abi=sysv64(coerce<i32>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %5 @g(%6 h: @type0 [const]) -> void [linkage=internal] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %8
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%2), const<i32>(1))
@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(%2, read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%6)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(coerce<i32>) -> void>(%5, copy<@type0, reason=arg>(read<@type0>(%4)));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%5, copy<@type0, reason=arg>(read<@type0>(%4)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

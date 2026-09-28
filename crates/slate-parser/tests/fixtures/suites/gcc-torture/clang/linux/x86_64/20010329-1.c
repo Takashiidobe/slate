@@ -46,7 +46,7 @@ union u foo (void)
 // DEFAULT-NEXT:         field1 b: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     global %1 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 b: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
 // DEFAULT-NEXT:             write<u8>(field0(%3), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));

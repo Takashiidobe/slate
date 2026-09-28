@@ -52,18 +52,18 @@ int main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @__builtin_conjf(%7 <unnamed>: complex<f32>) -> complex<f32> [linkage=external] [memory=none] [abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>];
-// DEFAULT-NEXT:     fn %2 @foo() -> complex<f32> [linkage=external] [abi=sysv64() -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %8 @__builtin_conjf(%7 <unnamed>: complex<f32>) -> complex<f32> [linkage=external] [memory=none] [abi=sysv64(native_c) -> native_c];
+// DEFAULT-NEXT:     fn %2 @foo() -> complex<f32> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 f: array<complex<f32>, 1> [storage=automatic];
 // DEFAULT-NEXT:         write<f32>(real(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0)))), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:         write<f32>(imag(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0)))), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f32>>(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0))), call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>>(%8, read<complex<f32>>(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0))))));
+// DEFAULT-NEXT:         write<complex<f32>>(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0))), call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(native_c) -> native_c>(%8, read<complex<f32>>(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0))))));
 // DEFAULT-NEXT:         return read<complex<f32>>(deref(ptr_offset<ptr<complex<f32>>, subtract=false, element=complex<f32>, overflow=ub>(array_decay<ptr<complex<f32>>, length=Some(1)>(%3), const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %5 d: array<complex<f64>, 1> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         write<complex<f64>>(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))), complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> coerce<pair<f32>>>(%2)));
-// DEFAULT-NEXT:         complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> coerce<pair<f32>>>(%2));
+// DEFAULT-NEXT:         write<complex<f64>>(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))), complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> native_c>(%2)));
+// DEFAULT-NEXT:         complex_convert<complex<f64>, reason=assign>(call<complex<f32>, signature=fn() -> complex<f32>, abi=sysv64() -> native_c>(%2));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=observable>(read<f64>(real(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1))), ne<f64, exceptions=observable>(read<f64>(imag(deref(ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(1)>(%5), const<i32>(0))))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));

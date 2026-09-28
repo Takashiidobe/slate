@@ -40,16 +40,16 @@ int imag_array_size[__imag__ 5];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %8 real_array_size: array<i32, 5> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %9 imag_array_size: array<i32, 0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @real_double_under(%1 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @real_double_under(%1 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(real(%1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @imag_double_under(%3 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @imag_double_under(%3 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(imag(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @real_single_under(%5 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %4 @real_single_under(%5 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(real(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @imag_single_under(%7 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @imag_single_under(%7 c: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<f64>(imag(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

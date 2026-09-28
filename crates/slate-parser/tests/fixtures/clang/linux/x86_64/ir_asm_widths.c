@@ -49,7 +49,7 @@ void vectors(v4f v, v8f w, v16f z, float f) {
 // IR-NEXT:         field0 a: i16;
 // IR-NEXT:         field1 b: i16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     fn %4 @widths(%5 c: i8, %6 s: i16, %7 i: i32, %8 l: i64, %9 b: bool, %10 h: @type3) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i32>) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     fn %4 @widths(%5 c: i8, %6 s: i16, %7 i: i32, %8 l: i64, %9 b: bool, %10 h: @type3) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
 // IR-NEXT:             inlateout 0 "r" [reg] width 8 place<i8>(%5);

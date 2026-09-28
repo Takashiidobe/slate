@@ -48,14 +48,14 @@ static int mmap_mem (void)
 // DEFAULT-NEXT:         field0 p: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 pt = @type0;
-// DEFAULT-NEXT:     fn %2 @f(%3 _p: @type0) -> @type0 [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @f(%3 _p: @type0) -> @type0 [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 p: i64 [storage=automatic] = read<i64>(field0(%3));
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(compound_literal %7 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i64>(%4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @mmap_mem() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %6 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(%6, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(coerce<i64>) -> coerce<i64>>(%2, copy<@type0, reason=arg>(read<@type0>(%6)))));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(coerce<i64>) -> coerce<i64>>(%2, copy<@type0, reason=arg>(read<@type0>(%6))));
+// DEFAULT-NEXT:         write<@type0>(%6, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%2, copy<@type0, reason=arg>(read<@type0>(%6)))));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%2, copy<@type0, reason=arg>(read<@type0>(%6))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

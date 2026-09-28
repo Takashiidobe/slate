@@ -70,12 +70,12 @@ int main(void) {
 // DEFAULT-NEXT:     global %5 d: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %6 e: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @fn1() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64, i48>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %7 @fn1() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @fn2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i48>>(%7)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i48>>(%7));
+// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7)));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7));
 // DEFAULT-NEXT:         write<i16>(%2, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type0>(%5, copy<@type0, reason=assign>(read<@type0>(%6)));
 // DEFAULT-NEXT:     }

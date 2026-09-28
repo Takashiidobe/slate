@@ -51,12 +51,12 @@ int main(void) {
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type1 Point = @type0;
-// DEFAULT-NEXT:     fn %2 @sum_point(%3 p: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @sum_point(%3 p: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%3)), read<i32>(field1(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @compute() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %9 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2))));
-// DEFAULT-NEXT:         let %6 total: i32 [storage=automatic] = call<i32, signature=fn(@type0) -> i32, abi=sysv64(coerce<i64>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(compound_literal %10 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)))));
+// DEFAULT-NEXT:         let %6 total: i32 [storage=automatic] = call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(compound_literal %10 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)))));
 // DEFAULT-NEXT:         let %7 b: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %11 [storage=automatic] = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5))));
 // DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%6);
 // DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), add<i32, overflow=ub>(read<i32>(field0(%5)), read<i32>(field1(%7))));

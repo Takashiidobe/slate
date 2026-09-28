@@ -215,7 +215,7 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // VALID-NEXT:     global %24 a10: i32 [storage=static] = const<i32>(2) [linkage=internal];
 // VALID-NEXT:     fn %5 @g(%35 <unnamed>: i32) -> i32 [linkage=external];
 // VALID-NEXT:     fn %6 @h(%36 <unnamed>: i64) -> i64 [linkage=external];
-// VALID-NEXT:     fn %9 @deduce(%10 n: i32, %11 ip: ptr<i32>, %12 cip: ptr<const i32>, %13 s: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, coerce<i32>) -> void] [fallthrough=ret_void] {
+// VALID-NEXT:     fn %9 @deduce(%10 n: i32, %11 ip: ptr<i32>, %12 cip: ptr<const i32>, %13 s: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // VALID-NEXT:         let %37: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%10)));
 // VALID-NEXT:         let %14 vla: vla<i32, %37> [storage=automatic];
 // VALID-NEXT:         let %15 a1: i32 [storage=automatic] = read<i32>(%2);

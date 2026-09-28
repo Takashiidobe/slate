@@ -52,10 +52,10 @@ bar (_BitInt(3924) p)
 // DEFAULT-NEXT:     type @type1 T = struct {
 // DEFAULT-NEXT:         field0 b: i3924b;
 // DEFAULT-NEXT:     } [size=496, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: i64b) -> @type0 [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @foo(%2 p: i64b) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(compound_literal %6 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i64b>(%2))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 p: i3924b) -> @type1 [linkage=external] [abi=sysv64(scalar) -> sret<align=8>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %4 @bar(%5 p: i3924b) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(compound_literal %7 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = read<i3924b>(%5))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

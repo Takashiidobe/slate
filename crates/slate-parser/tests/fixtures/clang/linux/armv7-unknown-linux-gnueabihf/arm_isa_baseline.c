@@ -220,7 +220,7 @@ struct hfa pass_hfa(struct hfa value) {
 // CHECK-NEXT:     global %8 val__ARM_PCS_VFP: array<i32, 1> [storage=static] [linkage=external];
 // CHECK-NEXT:     global %9 val__ARM_VFPV2__: array<i32, 1> [storage=static] [linkage=external];
 // CHECK-NEXT:     global %10 val__ARM_VFPV3__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     fn %12 @pass_hfa(%13 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(coerce<f32, f32>) -> coerce<f32, f32>] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     fn %12 @pass_hfa(%13 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return copy<@type0, reason=return>(read<@type0>(%13));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

@@ -258,9 +258,9 @@ int main()
 // DEFAULT-NEXT:         write<@type14>(deref(read<ptr<@type14>>(%43)), copy<@type14, reason=assign>(read<@type14>(%44)));
 // DEFAULT-NEXT:         return read<ptr<fn() -> @type0>>(field0(deref(read<ptr<@type14>>(%42))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @Bd() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %45 @Bd() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @Qd() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %46 @Qd() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %58 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %47 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

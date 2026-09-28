@@ -87,7 +87,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %4 @fetch(%5 p: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%5))), const<i32>(128));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @next(%7 p: ptr<@type1>) -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(scalar) -> coerce<i16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @next(%7 p: ptr<@type1>) -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 rv: @type0 [storage=automatic];
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(field0(deref(read<ptr<@type1>>(%7)))), read<i32>(field1(deref(read<ptr<@type1>>(%7)))))
 // DEFAULT-NEXT:             {
@@ -95,7 +95,7 @@ int main(void) {
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%3, const<i32>(0));
 // DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type1>) -> void>(%4, read<ptr<@type1>>(%7));
-// DEFAULT-NEXT:                         return copy<@type0, reason=return>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> coerce<i16>>(%6, read<ptr<@type1>>(%7)));
+// DEFAULT-NEXT:                         return copy<@type0, reason=return>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> native_c>(%6, read<ptr<@type1>>(%7)));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 write<i32>(%3, const<i32>(1));
 // DEFAULT-NEXT:                 write<u16>(field0(%8), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(65535))));
@@ -122,7 +122,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %12 rv: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> coerce<i16>>(%6, addr_of<ptr<@type1>>(%10)));
+// DEFAULT-NEXT:                     let %12 rv: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> native_c>(%6, addr_of<ptr<@type1>>(%10)));
 // DEFAULT-NEXT:                     if logical_or<bool>(logical_and<bool>(eq<i32>(read<i32>(%11), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%12)))), const<i32>(65535))), logical_and<bool>(gt<i32>(read<i32>(%11), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%12)))), const<i32>(0))))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:                 }

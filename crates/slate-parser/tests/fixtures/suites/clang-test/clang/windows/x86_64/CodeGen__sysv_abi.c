@@ -77,10 +77,10 @@ void use_target_attr_vectors(void) {
 // DEFAULT-NEXT:     type @type2 my_m512 = vector<f32, 16>;
 // DEFAULT-NEXT:     extern %1 gc: volatile i8 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %19 .str19: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 115, 100, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @take_stringref(%18 s: @type0) -> void [linkage=external] [abi=win64(byref<align=8>) -> void];
+// DEFAULT-NEXT:     fn %2 @take_stringref(%18 s: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
 // DEFAULT-NEXT:     fn %3 @callit() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = array_decay<ptr<i8>, length=Some(5)>(%19), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=win64(byref<align=8>) -> void>(%2, copy<@type0, reason=arg>(read<@type0>(%4)));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=win64(native_c) -> void>(%2, copy<@type0, reason=arg>(read<@type0>(%4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @get_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
 // DEFAULT-NEXT:     fn %8 @take_m256(%20 <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];

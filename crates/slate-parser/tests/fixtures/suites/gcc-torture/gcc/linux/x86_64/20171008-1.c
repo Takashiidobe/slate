@@ -72,7 +72,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%3, const<i32>(1));
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> coerce<i32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 ret: @type0 [storage=automatic];
 // DEFAULT-NEXT:         let %6 r: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %7 s: i8 [storage=automatic];
@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i32>>(%2));
+// DEFAULT-NEXT:         let %12 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%2));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%12))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
 // DEFAULT-NEXT:         return const<i32>(0);

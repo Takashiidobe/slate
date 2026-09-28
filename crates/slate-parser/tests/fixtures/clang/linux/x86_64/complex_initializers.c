@@ -47,7 +47,7 @@ _Complex float local(float x) {
 // IR-NEXT:     global %3 plain: complex<f32> [storage=static] = real_to_complex<complex<f32>, reason=assign>(const<f32>(4.0)) [linkage=external];
 // IR-NEXT:     global %5 s: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(5.0), index1 = const<f32>(6.0)), field1 = const<i32>(7)) [linkage=external];
 // IR-NEXT:     global %6 array: array<complex<f32>, 2> [storage=static] [align=16] = aggregate<array<complex<f32>, 2>, zero_fill=false>(index0 = aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(1.0), index1 = const<f32>(2.0)), index1 = aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(3.0), index1 = const<f32>(4.0))) [linkage=external];
-// IR-NEXT:     fn %7 @local(%8 x: f32) -> complex<f32> [linkage=external] [abi=sysv64(scalar) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %7 @local(%8 x: f32) -> complex<f32> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %9 l: complex<f32> [storage=automatic] = aggregate<complex<f32>, zero_fill=false>(index0 = read<f32>(%8), index1 = const<f32>(1.0));
 // IR-NEXT:         return read<complex<f32>>(%9);
 // IR-NEXT:     }

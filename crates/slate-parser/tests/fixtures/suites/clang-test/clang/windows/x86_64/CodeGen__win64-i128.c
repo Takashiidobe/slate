@@ -71,10 +71,10 @@ void vararg_struct(int a, ...) {
 // DEFAULT-NEXT:     type @type1 Align16 = struct {
 // DEFAULT-NEXT:         field0 x: array<i8, 16>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo() -> i128 [linkage=external] [abi=win64() -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @foo() -> i128 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return widen<i128, reason=return>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar(%3 a: i128, %4 b: i128) -> i128 [linkage=external] [abi=win64(byref<align=16>, byref<align=16>) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @bar(%3 a: i128, %4 b: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<i128, overflow=ub>(read<i128>(%3), read<i128>(%4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %5 @vararg(%6 a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {

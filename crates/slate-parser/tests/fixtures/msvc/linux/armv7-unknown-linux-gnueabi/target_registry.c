@@ -45,7 +45,7 @@ struct pair record(struct pair value) { return value; }
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     global %4 alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
-// ARMV7-LINUX-GNUEABI-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=aapcs32(coerce<i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// ARMV7-LINUX-GNUEABI-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=aapcs32(native_c) -> native_c] [fallthrough=ub_if_used] {
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT:     }
 // ARMV7-LINUX-GNUEABI-MSVC-NEXT: }

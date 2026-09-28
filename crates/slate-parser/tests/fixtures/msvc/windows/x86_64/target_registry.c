@@ -46,7 +46,7 @@ struct pair record(struct pair value) { return value; }
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     global %4 alignof_long_long: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
-// X86-64-WINDOWS-MSVC-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=win64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// X86-64-WINDOWS-MSVC-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
 // X86-64-WINDOWS-MSVC-MSVC-NEXT:     }
 // X86-64-WINDOWS-MSVC-MSVC-NEXT: }

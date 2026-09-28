@@ -67,7 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type3 T = @type2;
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @f(%7 x: i32, ...) -> @type2 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @f(%7 x: i32, ...) -> @type2 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         let %9 X: @type2 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%8);
@@ -88,7 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %13 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(field0(%12), const<i32>(20));
-// DEFAULT-NEXT:         call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, coerce<i32>, coerce<i32>) -> coerce<i32>>(%6, const<i32>(2), copy<@type2, reason=vararg>(read<@type2>(%11)), copy<@type2, reason=vararg>(read<@type2>(%12)));
+// DEFAULT-NEXT:         call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, native_c, native_c) -> native_c>(%6, const<i32>(2), copy<@type2, reason=vararg>(read<@type2>(%11)), copy<@type2, reason=vararg>(read<@type2>(%12)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

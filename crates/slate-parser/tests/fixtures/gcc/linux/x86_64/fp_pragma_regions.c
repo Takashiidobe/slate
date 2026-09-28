@@ -43,7 +43,7 @@ _Complex double full_range(_Complex double a, _Complex double b) { return a / b;
 // DEFAULT-NEXT:         let %4 x: f64 [storage=automatic] = read<f64>(%1);
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%4), read<f64>(%2)), read<f64>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -75,7 +75,7 @@ _Complex double full_range(_Complex double a, _Complex double b) { return a / b;
 // ISO-NEXT:         let %4 x: f64 [storage=automatic] = read<f64>(%1);
 // ISO-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=off>(mul<f64, rounding=nearest_even, exceptions=observable, contract=off>(read<f64>(%4), read<f64>(%2)), read<f64>(%3));
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// ISO-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
 // ISO-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7));
 // ISO-NEXT:     }
 // ISO-NEXT: }

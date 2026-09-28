@@ -48,13 +48,13 @@ int main() {
 // DEFAULT-NEXT:         field2 d: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     global %1 e: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=external] [abi=sysv64() -> coerce<i64, i32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 h: array<@type0, 30> [storage=automatic] [align=16] = aggregate<array<@type0, 30>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0)));
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(30)>(%3), const<i32>(29)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<@type0>(%1, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i32>>(%2)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> coerce<i64, i32>>(%2));
+// DEFAULT-NEXT:         write<@type0>(%1, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%2)));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%2));
 // DEFAULT-NEXT:         return read<i32>(field0(%1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

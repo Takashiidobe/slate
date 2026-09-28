@@ -72,13 +72,13 @@ int main(void) {
 // DEFAULT-NEXT:     global %1 to_input: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 from_input: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @assemblez_1(%4 internal_number: i32, %5 o1: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, byval<align=4>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %3 @assemblez_1(%4 internal_number: i32, %5 o1: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%5)), read<i32>(field0(%2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @t0(%7 to: @type0, %8 from: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(byval<align=4>, byval<align=4>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %6 @t0(%7 to: @type0, %8 from: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32, @type0) -> void, abi=sysv64(scalar, byval<align=4>) -> void>(%3, const<i32>(32), copy<@type0, reason=arg>(read<@type0>(%8)));
+// DEFAULT-NEXT:             call<void, signature=fn(i32, @type0) -> void, abi=sysv64(scalar, native_c) -> void>(%3, const<i32>(32), copy<@type0, reason=arg>(read<@type0>(%8)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field2(%2), const<i32>(7));
 // DEFAULT-NEXT:         write<i32>(field3(%2), const<i32>(8));
 // DEFAULT-NEXT:         write<i32>(field4(%2), const<i32>(9));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0, @type0) -> void, abi=sysv64(byval<align=4>, byval<align=4>) -> void>(%6, copy<@type0, reason=arg>(read<@type0>(%1)), copy<@type0, reason=arg>(read<@type0>(%2)));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0, @type0) -> void, abi=sysv64(native_c, native_c) -> void>(%6, copy<@type0, reason=arg>(read<@type0>(%1)), copy<@type0, reason=arg>(read<@type0>(%2)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -197,7 +197,7 @@
 // DEFAULT-NEXT:             clobbers: "st" as st, "st(1)" as st(1), "st(2)" as st(2), "st(3)" as st(3), "st(4)" as st(4), "st(5)" as st(5), "st(6)" as st(6), "st(7)" as st(7);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @aggregate() -> @type4 [linkage=external] [abi=x86_win32() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %34 @aggregate() -> @type4 [linkage=external] [abi=x86_win32() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "mov eax, 1" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1";
 // DEFAULT-NEXT:             clobbers: "eax" as ax;

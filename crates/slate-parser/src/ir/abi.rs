@@ -61,6 +61,7 @@ pub enum AbiChunk {
     Integer(u32),
     Float(FloatType),
     FloatPair(FloatType),
+    FloatQuad(FloatType),
 }
 
 impl fmt::Display for AbiChunk {
@@ -69,6 +70,7 @@ impl fmt::Display for AbiChunk {
             Self::Integer(width) => write!(f, "i{width}"),
             Self::Float(format) => write!(f, "{format}"),
             Self::FloatPair(format) => write!(f, "pair<{format}>"),
+            Self::FloatQuad(format) => write!(f, "quad<{format}>"),
         }
     }
 }

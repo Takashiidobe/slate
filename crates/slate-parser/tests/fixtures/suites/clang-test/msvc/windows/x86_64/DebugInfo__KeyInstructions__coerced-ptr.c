@@ -35,9 +35,9 @@ void f() {
 // DEFAULT-NEXT:         field0 p: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 Ptr = @type0;
-// DEFAULT-NEXT:     fn %2 @getPtr(unprototyped) -> @type0 [linkage=external] [abi=win64() -> coerce<i64>];
+// DEFAULT-NEXT:     fn %2 @getPtr(unprototyped) -> @type0 [linkage=external] [abi=win64() -> native_c];
 // DEFAULT-NEXT:     fn %3 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 p: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(unprototyped) -> @type0, abi=win64() -> coerce<i64>>(%2));
+// DEFAULT-NEXT:         let %4 p: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(unprototyped) -> @type0, abi=win64() -> native_c>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

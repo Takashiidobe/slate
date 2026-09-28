@@ -7,7 +7,7 @@ use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, Field, FloatType, NumericType,
     RecordKind, Type, TypeDefinitionKind, Value,
 };
-use crate::target_info::TargetInfo;
+use crate::target_info::{TargetInfo, TargetOs};
 
 impl Lowerer {
     pub(super) fn abi_signature(
@@ -128,11 +128,17 @@ impl<'a> AbiClassifier<'a> {
                 } else if convention == AbiConvention::WinArm64
                     && variadic
                     && index >= fixed_count
-                    && matches!(pass, AbiPass::Coerce(_))
-                    && matches!(operand.ty, Type::Complex(_) | Type::Defined(_))
+                    && (operand.atomic && matches!(pass, AbiPass::Coerce(_))
+                        || self.rust_passes_in_float_registers(&operand.ty))
                 {
                     let layout = self.layout(operand)?;
-                    Ok(integer_chunks(layout.size_bytes, 64))
+                    Ok(if layout.size_bytes <= 16 {
+                        integer_chunks(layout.size_bytes, 64)
+                    } else {
+                        AbiPass::ByReference {
+                            align: layout.alignment_bytes,
+                        }
+                    })
                 } else {
                     Ok(pass)
                 }
@@ -179,6 +185,7 @@ impl<'a> AbiClassifier<'a> {
             return Ok(pass);
         }
         if fixed
+            && pass != AbiPass::NativeC
             && !self.atomic_is_memory(operand, AbiConvention::X86Win32)
             && self
                 .types
@@ -196,6 +203,9 @@ impl<'a> AbiClassifier<'a> {
             return Ok(false);
         }
         Ok(match ty {
+            Type::Numeric(NumericType::Integer {
+                bit_precise: true, ..
+            }) => false,
             Type::Bool
             | Type::Numeric(_)
             | Type::Imaginary(_)
@@ -215,7 +225,17 @@ impl<'a> AbiClassifier<'a> {
                     ..
                 } => {
                     for field in fields {
+                        if matches!(field.ty, Type::Array { length: None, .. }) {
+                            return Ok(false);
+                        }
                         if field.name.is_none() && field.bit_width.is_some()
+                            || matches!(
+                                field.ty,
+                                Type::Array {
+                                    length: Some(0),
+                                    ..
+                                }
+                            )
                             || self.is_empty_record(&field.ty)
                         {
                             continue;
@@ -336,22 +356,13 @@ impl<'a> AbiClassifier<'a> {
         let ty = &operand.ty;
         match ty {
             Type::Void => Ok(AbiPass::Void),
-            Type::Numeric(NumericType::Integer { width: 128, .. })
-                if convention == AbiConvention::Win64 =>
-            {
-                if result {
-                    Ok(AbiPass::Coerce(vec![AbiChunk::Integer(64); 2]))
-                } else {
-                    Ok(AbiPass::ByReference { align: 16 })
-                }
-            }
             Type::Bool
             | Type::Numeric(_)
             | Type::Imaginary(_)
             | Type::FixedPoint(_)
             | Type::Pointer { .. }
             | Type::VaList => Ok(AbiPass::Scalar),
-            Type::Complex(component) => self.complex_abi(*component, result, convention),
+            Type::Complex(component) => self.complex_pass(*component, result, convention),
             Type::Vector { .. } => self.vector_abi(operand, result, convention),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.abi_pass(
@@ -366,40 +377,19 @@ impl<'a> AbiClassifier<'a> {
                 TypeDefinitionKind::Record {
                     kind,
                     fields: Some(fields),
-                    layout: Some(record_layout),
+                    layout: Some(_),
                     ..
                 } => {
                     let layout = self.layout(operand)?;
-                    if convention == AbiConvention::X86Win32 && result {
-                        return Ok(if self.win32_returns_in_register(ty)? {
-                            AbiPass::Coerce(vec![AbiChunk::Integer((layout.size_bytes * 8) as u32)])
-                        } else {
-                            AbiPass::SRet {
-                                align: layout.alignment_bytes,
-                            }
-                        });
-                    }
-                    let homogeneous = if operand.atomic && self.types.flavor != CompilerFlavor::Gcc
-                    {
-                        None
-                    } else {
-                        self.homogeneous_record(*kind, fields)
+                    let record = AbiRecord {
+                        ty,
+                        kind: *kind,
+                        fields,
+                        size: layout.size_bytes,
+                        align: layout.alignment_bytes,
+                        atomic: operand.atomic,
                     };
-                    Ok(record_abi(
-                        layout.size_bytes,
-                        layout.alignment_bytes,
-                        homogeneous,
-                        sysv_record_chunks(fields, &record_layout.offsets, layout.size_bytes),
-                        record_field_chunks(fields, self.target.pointer_width),
-                        fields.iter().all(|field| {
-                            matches!(
-                                field.ty,
-                                Type::Numeric(_) | Type::Bool | Type::Pointer { .. }
-                            )
-                        }),
-                        result,
-                        convention,
-                    ))
+                    self.record_abi(&record, result, convention)
                 }
                 _ => Err(ResolveError::Unsupported("incomplete ABI type")),
             },
@@ -409,57 +399,309 @@ impl<'a> AbiClassifier<'a> {
         }
     }
 
-    fn homogeneous_type(&self, ty: &Type) -> Option<(FloatType, usize)> {
-        match ty {
-            Type::Numeric(NumericType::Float(format)) => Some((*format, 1)),
-            Type::Array {
-                element,
-                length: Some(length @ 1..=4),
-            } => {
-                let (format, count) = self.homogeneous_type(element)?;
-                let count = count.checked_mul(usize::try_from(*length).ok()?)?;
-                (count <= 4).then_some((format, count))
+    fn record_abi(
+        &self,
+        record: &AbiRecord<'_>,
+        result: bool,
+        convention: AbiConvention,
+    ) -> Result<AbiPass, ResolveError> {
+        let AbiRecord { size, align, .. } = *record;
+        let flexible_in_memory =
+            self.types.flavor != CompilerFlavor::Gcc && has_flexible_array(record.fields);
+        Ok(match convention {
+            AbiConvention::SysV64 => self.sysv_record(record, flexible_in_memory, result)?,
+            AbiConvention::Win64 if flexible_in_memory && matches!(size, 1 | 2 | 4 | 8) => {
+                if result {
+                    AbiPass::SRet { align }
+                } else {
+                    AbiPass::ByReference { align }
+                }
             }
+            AbiConvention::X86Cdecl if result && size == 0 => AbiPass::SRet {
+                align: align.min(4),
+            },
+            AbiConvention::X86Win32
+                if result
+                    && matches!(size, 1 | 2 | 4 | 8)
+                    && !self.win32_returns_in_register(record.ty)? =>
+            {
+                AbiPass::SRet { align }
+            }
+            AbiConvention::Aapcs64 | AbiConvention::WinArm64 | AbiConvention::Aapcs32HardFloat => {
+                let c = if record.atomic && self.types.flavor != CompilerFlavor::Gcc {
+                    None
+                } else {
+                    self.homogeneous_record(
+                        record.kind,
+                        record.fields,
+                        HfaView::c_compiler(convention),
+                    )
+                };
+                if c == self.rust_homogeneous_record(record.kind, record.fields, convention) {
+                    AbiPass::NativeC
+                } else {
+                    aapcs_record(size, align, c, result, convention)
+                }
+            }
+            _ => AbiPass::NativeC,
+        })
+    }
+
+    fn rust_homogeneous_record(
+        &self,
+        kind: RecordKind,
+        fields: &[Span<Field>],
+        convention: AbiConvention,
+    ) -> Option<(FloatType, usize)> {
+        if convention == AbiConvention::Aapcs32HardFloat && self.target.os == TargetOs::Windows {
+            return None;
+        }
+        self.homogeneous_record(kind, fields, HfaView::RUST)
+    }
+
+    fn rust_passes_in_float_registers(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Complex(component) => is_rust_float(*component),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
-                TypeDefinitionKind::Alias(inner) => self.homogeneous_type(inner),
+                TypeDefinitionKind::Alias(inner) => self.rust_passes_in_float_registers(inner),
                 TypeDefinitionKind::Record {
                     kind,
                     fields: Some(fields),
                     ..
-                } => self.homogeneous_record(*kind, fields),
+                } => self
+                    .rust_homogeneous_record(*kind, fields, AbiConvention::WinArm64)
+                    .is_some(),
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
+    fn homogeneous_type(&self, ty: &Type, view: HfaView) -> Option<HfaMembers> {
+        match ty {
+            Type::Numeric(NumericType::Float(format)) => {
+                (view.base)(*format).then_some(HfaMembers {
+                    format: Some(*format),
+                    count: 1,
+                })
+            }
+            Type::Array {
+                length: Some(0) | None,
+                ..
+            } => view.skip_zero_arrays.then_some(HfaMembers::NONE),
+            Type::Array {
+                element,
+                length: Some(length),
+            } => {
+                let members = self.homogeneous_type(element, view)?;
+                let count = members.count.checked_mul(usize::try_from(*length).ok()?)?;
+                (count <= 4).then_some(HfaMembers { count, ..members })
+            }
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.homogeneous_type(inner, view),
+                TypeDefinitionKind::Record {
+                    kind,
+                    fields: Some(fields),
+                    ..
+                } => {
+                    let members = self.homogeneous_members(*kind, fields, view)?;
+                    let empty = members.format.is_none()
+                        && self
+                            .types
+                            .qualified_storage(ty.clone(), false)
+                            .is_ok_and(|layout| layout.size_bytes == 0);
+                    (members.format.is_some() || empty).then_some(members)
+                }
                 _ => None,
             },
             _ => None,
         }
     }
 
+    fn homogeneous_members(
+        &self,
+        kind: RecordKind,
+        fields: &[Span<Field>],
+        view: HfaView,
+    ) -> Option<HfaMembers> {
+        let mut members = HfaMembers::NONE;
+        for field in fields {
+            if field.bit_width.is_some() {
+                return None;
+            }
+            let member = self.homogeneous_type(&field.ty, view)?;
+            let Some(format) = member.format else {
+                continue;
+            };
+            if members.format.is_some_and(|existing| existing != format) {
+                return None;
+            }
+            members.format = Some(format);
+            members.count = match kind {
+                RecordKind::Struct => members.count.checked_add(member.count)?,
+                RecordKind::Union => members.count.max(member.count),
+            };
+            if members.count > 4 {
+                return None;
+            }
+        }
+        Some(members)
+    }
+
     fn homogeneous_record(
         &self,
         kind: RecordKind,
         fields: &[Span<Field>],
+        view: HfaView,
     ) -> Option<(FloatType, usize)> {
-        let mut members = fields.iter().map(|field| {
-            field
-                .bit_width
-                .is_none()
-                .then(|| self.homogeneous_type(&field.ty))
-                .flatten()
-        });
-        let (format, mut count) = members.next().flatten()?;
-        for member in members {
-            let (next_format, next_count) = member?;
-            if next_format != format {
-                return None;
-            }
-            count = match kind {
-                RecordKind::Struct => count.checked_add(next_count)?,
-                RecordKind::Union => count.max(next_count),
-            };
-            if count > 4 {
-                return None;
-            }
+        let members = self.homogeneous_members(kind, fields, view)?;
+        Some((members.format?, members.count))
+    }
+
+    fn sysv_record(
+        &self,
+        record: &AbiRecord<'_>,
+        flexible_in_memory: bool,
+        result: bool,
+    ) -> Result<AbiPass, ResolveError> {
+        if record.size > 16 {
+            return Ok(AbiPass::NativeC);
         }
-        Some((format, count))
+        let mut c_leaves = Vec::new();
+        let mut rust_leaves = Vec::new();
+        if !self.sysv_leaves(record.ty, 0, false, &mut c_leaves)?
+            || !self.sysv_leaves(record.ty, 0, true, &mut rust_leaves)?
+        {
+            return Ok(AbiPass::NativeC);
+        }
+        let c = if flexible_in_memory {
+            Some(SysvShape::Memory)
+        } else {
+            sysv_classify(&c_leaves, record.size, result)
+        };
+        let rust = sysv_classify(&rust_leaves, record.size, result);
+        Ok(match c {
+            Some(shape) if Some(&shape) != rust.as_ref() => match shape {
+                SysvShape::Memory if result => AbiPass::SRet {
+                    align: record.align,
+                },
+                SysvShape::Memory => AbiPass::ByValue {
+                    align: record.align,
+                },
+                SysvShape::Chunks(chunks) => AbiPass::Coerce(chunks),
+            },
+            _ => AbiPass::NativeC,
+        })
+    }
+
+    fn sysv_leaves(
+        &self,
+        ty: &Type,
+        offset: u64,
+        rust_view: bool,
+        leaves: &mut Vec<SysvLeaf>,
+    ) -> Result<bool, ResolveError> {
+        let size = || -> Result<u64, ResolveError> {
+            Ok(self.types.qualified_storage(ty.clone(), false)?.size_bytes)
+        };
+        match ty {
+            Type::Numeric(NumericType::Float(format)) | Type::Imaginary(format) => {
+                let kind = if rust_view && !is_rust_float(NumericType::Float(*format)) {
+                    SysvLeafKind::Integer
+                } else {
+                    SysvLeafKind::Float(*format)
+                };
+                leaves.push(SysvLeaf {
+                    offset,
+                    size: size()?,
+                    kind,
+                });
+            }
+            Type::Bool | Type::Numeric(_) | Type::FixedPoint(_) | Type::Pointer { .. } => {
+                leaves.push(SysvLeaf {
+                    offset,
+                    size: size()?,
+                    kind: SysvLeafKind::Integer,
+                });
+            }
+            Type::Complex(component) => {
+                let part = Type::Numeric(*component);
+                let part_size = self
+                    .types
+                    .qualified_storage(part.clone(), false)?
+                    .size_bytes;
+                for index in 0..2 {
+                    if !self.sysv_leaves(&part, offset + index * part_size, rust_view, leaves)? {
+                        return Ok(false);
+                    }
+                }
+            }
+            Type::Array {
+                element,
+                length: Some(length),
+            } => {
+                let element_size = self
+                    .types
+                    .qualified_storage((**element).clone(), false)?
+                    .size_bytes;
+                for index in 0..*length {
+                    if !self.sysv_leaves(
+                        element,
+                        offset + index * element_size,
+                        rust_view,
+                        leaves,
+                    )? {
+                        return Ok(false);
+                    }
+                }
+            }
+            Type::Array { length: None, .. } => {}
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => {
+                    return self.sysv_leaves(inner, offset, rust_view, leaves);
+                }
+                TypeDefinitionKind::Enum { .. } => leaves.push(SysvLeaf {
+                    offset,
+                    size: size()?,
+                    kind: SysvLeafKind::Integer,
+                }),
+                TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    layout: Some(layout),
+                    ..
+                } => {
+                    for (index, field) in fields.iter().enumerate() {
+                        match (
+                            field.bit_width,
+                            layout.bit_offsets.get(index).copied().flatten(),
+                        ) {
+                            (Some(0), _) => {}
+                            (Some(width), Some(bit_offset)) => leaves.push(SysvLeaf {
+                                offset: offset + bit_offset / 8,
+                                size: (bit_offset % 8 + u64::from(width)).div_ceil(8),
+                                kind: SysvLeafKind::BitField,
+                            }),
+                            _ => {
+                                let Some(field_offset) = layout.offsets.get(index) else {
+                                    return Ok(false);
+                                };
+                                if !self.sysv_leaves(
+                                    &field.ty,
+                                    offset + field_offset,
+                                    rust_view,
+                                    leaves,
+                                )? {
+                                    return Ok(false);
+                                }
+                            }
+                        }
+                    }
+                }
+                TypeDefinitionKind::Record { .. } => return Ok(false),
+            },
+            _ => return Ok(false),
+        }
+        Ok(true)
     }
 
     fn vector_abi(
@@ -526,7 +768,7 @@ impl<'a> AbiClassifier<'a> {
         Ok(pass)
     }
 
-    fn complex_abi(
+    fn complex_pass(
         &self,
         component: NumericType,
         result: bool,
@@ -536,9 +778,6 @@ impl<'a> AbiClassifier<'a> {
         let align = layout.alignment_bytes;
         let size = layout.size_bytes;
         let pass = match (convention, component) {
-            (AbiConvention::SysV64, NumericType::Float(FloatType::F32)) => {
-                AbiPass::Coerce(vec![AbiChunk::FloatPair(FloatType::F32)])
-            }
             (AbiConvention::SysV64, NumericType::Float(FloatType::F80)) => {
                 if result {
                     AbiPass::Coerce(vec![AbiChunk::Float(FloatType::F80); 2])
@@ -546,110 +785,152 @@ impl<'a> AbiClassifier<'a> {
                     AbiPass::ByValue { align }
                 }
             }
-            (AbiConvention::SysV64, NumericType::Float(format)) => {
-                AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
-            }
-            (AbiConvention::Win64, _) if size <= 8 => {
-                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
-            }
-            (AbiConvention::Win64, _) => {
-                if result {
-                    AbiPass::SRet { align }
-                } else {
-                    AbiPass::ByReference { align }
-                }
-            }
-            (AbiConvention::X86Cdecl, NumericType::Float(FloatType::F32)) if result => {
-                AbiPass::Coerce(vec![AbiChunk::Integer(64)])
-            }
-            (AbiConvention::X86Cdecl, _) if result => AbiPass::SRet {
-                align: align.min(4),
-            },
-            (AbiConvention::X86Cdecl | AbiConvention::X86Win32, _) if !result => AbiPass::ByValue {
-                align: align.min(4),
-            },
-            (AbiConvention::X86Win32, _) if matches!(size, 1 | 2 | 4 | 8) => {
-                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
-            }
-            (AbiConvention::X86Win32, _) => AbiPass::SRet { align },
-            (AbiConvention::Aapcs64 | AbiConvention::WinArm64, NumericType::Float(format)) => {
-                AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
-            }
-            (AbiConvention::Aapcs32HardFloat, NumericType::Float(format)) => {
-                AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
-            }
-            (AbiConvention::Aapcs32 | AbiConvention::Aapcs32HardFloat, _) if result => {
-                AbiPass::SRet { align }
-            }
-            (AbiConvention::Aapcs32 | AbiConvention::Aapcs32HardFloat, _) => {
-                integer_chunks(size, if align >= 8 { 64 } else { 32 })
-            }
-            _ if result && size > 16 => AbiPass::SRet { align },
-            _ if size > 16 => AbiPass::ByReference { align },
-            _ => integer_chunks(size, 64),
-        };
-        Ok(pass)
-    }
-}
-
-#[expect(
-    clippy::too_many_arguments,
-    reason = "Abi needs to take lots of params"
-)]
-fn record_abi(
-    size: u64,
-    align: u32,
-    homogeneous: Option<(FloatType, usize)>,
-    sysv_chunks: Option<Vec<AbiChunk>>,
-    field_chunks: Option<Vec<AbiChunk>>,
-    flat: bool,
-    result: bool,
-    convention: AbiConvention,
-) -> AbiPass {
-    match convention {
-        // win64 classifies on size alone, so it needs no field walk to be sure
-        AbiConvention::Win64 => {
-            if matches!(size, 1 | 2 | 4 | 8) {
-                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
-            } else if result {
-                AbiPass::SRet { align }
-            } else {
-                AbiPass::ByReference { align }
-            }
-        }
-        _ if !flat && !matches!(convention, AbiConvention::Aapcs64 | AbiConvention::WinArm64) => {
-            AbiPass::NativeC
-        }
-        AbiConvention::SysV64 => {
-            if size > 16 {
+            (
+                AbiConvention::SysV64,
+                NumericType::Float(format @ (FloatType::F16 | FloatType::BF16)),
+            ) => AbiPass::Coerce(vec![AbiChunk::FloatPair(format)]),
+            (AbiConvention::SysV64, NumericType::Float(_)) if !is_rust_float(component) => {
                 if result {
                     AbiPass::SRet { align }
                 } else {
                     AbiPass::ByValue { align }
                 }
-            } else if align > 8 {
-                AbiPass::NativeC
-            } else if let Some(chunks) = sysv_chunks {
-                AbiPass::Coerce(chunks)
-            } else {
-                AbiPass::NativeC
             }
-        }
-        AbiConvention::X86Cdecl | AbiConvention::X86Win32 => {
-            if result {
-                AbiPass::SRet {
-                    align: align.min(4),
-                }
-            } else if let Some(chunks) = field_chunks {
-                AbiPass::Coerce(chunks)
-            } else {
-                AbiPass::NativeC
+            (AbiConvention::Aapcs64 | AbiConvention::WinArm64, NumericType::Float(format))
+                if !is_rust_float(component) =>
+            {
+                AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
             }
+            (AbiConvention::X86Cdecl, _) if result && size <= 8 => {
+                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
+            }
+            (AbiConvention::Aapcs32HardFloat, NumericType::Float(format))
+                if is_rust_float(component) && self.target.os == TargetOs::Windows =>
+            {
+                AbiPass::Coerce(vec![AbiChunk::Float(format); 2])
+            }
+            _ => AbiPass::NativeC,
+        };
+        Ok(pass)
+    }
+}
+
+struct AbiRecord<'a> {
+    ty: &'a Type,
+    kind: RecordKind,
+    fields: &'a [Span<Field>],
+    size: u64,
+    align: u32,
+    atomic: bool,
+}
+
+#[derive(Clone, Copy)]
+struct HfaView {
+    base: fn(FloatType) -> bool,
+    skip_zero_arrays: bool,
+}
+
+impl HfaView {
+    const RUST: Self = Self {
+        base: |format| matches!(format, FloatType::F32 | FloatType::F64),
+        skip_zero_arrays: true,
+    };
+
+    fn c_compiler(convention: AbiConvention) -> Self {
+        Self {
+            base: if convention == AbiConvention::Aapcs32HardFloat {
+                |format| matches!(format, FloatType::F32 | FloatType::F64)
+            } else {
+                |format| !format.is_decimal()
+            },
+            skip_zero_arrays: false,
         }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct HfaMembers {
+    format: Option<FloatType>,
+    count: usize,
+}
+
+impl HfaMembers {
+    const NONE: Self = Self {
+        format: None,
+        count: 0,
+    };
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SysvLeaf {
+    offset: u64,
+    size: u64,
+    kind: SysvLeafKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SysvLeafKind {
+    Integer,
+    BitField,
+    Float(FloatType),
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum SysvShape {
+    Memory,
+    Chunks(Vec<AbiChunk>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SysvClass {
+    NoClass,
+    Integer,
+    Sse,
+    SseUp,
+    X87,
+    X87Up,
+    Memory,
+}
+
+impl SysvClass {
+    fn merge(self, other: Self) -> Self {
+        match (self, other) {
+            (a, b) if a == b => a,
+            (Self::NoClass, class) | (class, Self::NoClass) => class,
+            (Self::Memory, _) | (_, Self::Memory) => Self::Memory,
+            (Self::Integer, _) | (_, Self::Integer) => Self::Integer,
+            (Self::X87 | Self::X87Up, _) | (_, Self::X87 | Self::X87Up) => Self::Memory,
+            _ => Self::Sse,
+        }
+    }
+}
+
+fn is_rust_float(component: NumericType) -> bool {
+    matches!(
+        component,
+        NumericType::Float(FloatType::F32 | FloatType::F64)
+    )
+}
+
+fn has_flexible_array(fields: &[Span<Field>]) -> bool {
+    fields
+        .last()
+        .is_some_and(|field| matches!(field.ty, Type::Array { length: None, .. }))
+}
+
+fn aapcs_record(
+    size: u64,
+    align: u32,
+    homogeneous: Option<(FloatType, usize)>,
+    result: bool,
+    convention: AbiConvention,
+) -> AbiPass {
+    if let Some((format, count)) = homogeneous {
+        return AbiPass::Coerce(vec![AbiChunk::Float(format); count]);
+    }
+    match convention {
         AbiConvention::Aapcs64 | AbiConvention::WinArm64 => {
-            if let Some((format, count)) = homogeneous {
-                AbiPass::Coerce(vec![AbiChunk::Float(format); count])
-            } else if size <= 16 {
+            if size <= 16 {
                 integer_chunks(size, 64)
             } else if result {
                 AbiPass::SRet { align }
@@ -657,101 +938,120 @@ fn record_abi(
                 AbiPass::ByReference { align }
             }
         }
-        AbiConvention::Aapcs32HardFloat if homogeneous.is_some() => {
-            let (format, count) = homogeneous.unwrap();
-            AbiPass::Coerce(vec![AbiChunk::Float(format); count])
-        }
-        AbiConvention::Aapcs32 | AbiConvention::Aapcs32HardFloat => {
-            if result {
-                AbiPass::SRet { align }
-            } else {
-                integer_chunks(size, if align >= 8 { 64 } else { 32 })
-            }
-        }
+        _ if result && size <= 4 => AbiPass::Coerce(vec![AbiChunk::Integer(32)]),
+        _ if result => AbiPass::SRet { align },
+        _ => integer_chunks(size, if align >= 8 { 64 } else { 32 }),
     }
 }
 
-fn record_field_chunks(fields: &[Span<Field>], pointer_width: u32) -> Option<Vec<AbiChunk>> {
-    fields
+fn sysv_classify(leaves: &[SysvLeaf], size: u64, result: bool) -> Option<SysvShape> {
+    let words = size.div_ceil(8) as usize;
+    let mut classes = vec![SysvClass::NoClass; words];
+    for leaf in leaves {
+        let natural = match leaf.kind {
+            SysvLeafKind::BitField => 1,
+            SysvLeafKind::Float(FloatType::F80) => 16,
+            _ => leaf.size.max(1),
+        };
+        if leaf.offset % natural != 0 {
+            return Some(SysvShape::Memory);
+        }
+        let first = (leaf.offset / 8) as usize;
+        let last = ((leaf.offset + leaf.size).div_ceil(8) as usize).max(first + 1);
+        let pieces: Vec<SysvClass> = match leaf.kind {
+            SysvLeafKind::Integer | SysvLeafKind::BitField => {
+                vec![SysvClass::Integer; last - first]
+            }
+            SysvLeafKind::Float(FloatType::F80) => vec![SysvClass::X87, SysvClass::X87Up],
+            SysvLeafKind::Float(_) if leaf.size == 16 => vec![SysvClass::Sse, SysvClass::SseUp],
+            SysvLeafKind::Float(_) => vec![SysvClass::Sse],
+        };
+        for (index, class) in pieces.into_iter().enumerate() {
+            let slot = classes.get_mut(first + index)?;
+            *slot = slot.merge(class);
+        }
+    }
+    for index in 0..words {
+        let previous = index.checked_sub(1).map(|previous| classes[previous]);
+        match classes[index] {
+            SysvClass::Memory => return Some(SysvShape::Memory),
+            SysvClass::X87 if !result => return Some(SysvShape::Memory),
+            SysvClass::X87Up if previous != Some(SysvClass::X87) => {
+                return Some(SysvShape::Memory);
+            }
+            SysvClass::SseUp if previous != Some(SysvClass::Sse) => {
+                classes[index] = SysvClass::Sse;
+            }
+            _ => {}
+        }
+    }
+    let mut chunks = Vec::with_capacity(words);
+    for (index, class) in classes.iter().enumerate() {
+        let start = index as u64 * 8;
+        let in_word: Vec<&SysvLeaf> = leaves
+            .iter()
+            .filter(|leaf| leaf.offset < start + 8 && leaf.offset + leaf.size > start)
+            .collect();
+        match class {
+            SysvClass::Integer => {
+                chunks.push(AbiChunk::Integer(sysv_integer_bits(&in_word, start, size)))
+            }
+            SysvClass::Sse => chunks.push(sysv_sse_chunk(&in_word)?),
+            SysvClass::X87 => chunks.push(AbiChunk::Float(FloatType::F80)),
+            SysvClass::NoClass | SysvClass::SseUp | SysvClass::X87Up | SysvClass::Memory => {}
+        }
+    }
+    Some(SysvShape::Chunks(chunks))
+}
+
+// clang narrows an eightbyte to a lone leading integer when nothing follows it
+fn sysv_integer_bits(in_word: &[&SysvLeaf], start: u64, size: u64) -> u32 {
+    let end = in_word
         .iter()
-        .map(|field| {
-            if field.bit_width.is_some() {
-                return None;
-            }
-            match &field.ty {
-                Type::Numeric(NumericType::Float(format)) => Some(AbiChunk::Float(*format)),
-                Type::Numeric(NumericType::Integer { width, .. }) => {
-                    Some(AbiChunk::Integer(*width))
-                }
-                Type::Bool => Some(AbiChunk::Integer(8)),
-                Type::Pointer { space, .. } => Some(AbiChunk::Integer(space.width(pointer_width))),
-                _ => None,
-            }
-        })
-        .collect()
+        .map(|leaf| leaf.offset + leaf.size)
+        .max()
+        .unwrap_or(start);
+    let leading = in_word.iter().find(|leaf| {
+        leaf.offset == start && leaf.kind == SysvLeafKind::Integer && leaf.offset + leaf.size == end
+    });
+    match leading {
+        Some(leaf) if matches!(leaf.size, 1 | 2 | 4) => (leaf.size * 8) as u32,
+        _ => ((size - start).min(8) * 8) as u32,
+    }
 }
 
-fn sysv_record_chunks(fields: &[Span<Field>], offsets: &[u64], size: u64) -> Option<Vec<AbiChunk>> {
-    if size == 0 || size > 16 || fields.len() != offsets.len() {
-        return None;
-    }
-    let mut slots = vec![Vec::new(); size.div_ceil(8) as usize];
-    let mut integers = vec![0u32; slots.len()];
-    for (field, offset) in fields.iter().zip(offsets) {
-        let slot = usize::try_from(offset / 8).ok()?;
-        if slot >= slots.len() {
+fn sysv_sse_chunk(in_word: &[&SysvLeaf]) -> Option<AbiChunk> {
+    let mut floats: Vec<(u64, u64, FloatType)> = Vec::new();
+    for leaf in in_word {
+        let SysvLeafKind::Float(format) = leaf.kind else {
             return None;
-        }
-        match &field.ty {
-            Type::Numeric(NumericType::Float(format @ (FloatType::F32 | FloatType::F64)))
-                if field.bit_width.is_none() =>
-            {
-                let bytes: u64 = if *format == FloatType::F32 { 4 } else { 8 };
-                if offset % bytes != 0 || offset % 8 + bytes > 8 {
-                    return None;
-                }
-                slots[slot].push(*format);
+        };
+        match floats
+            .iter_mut()
+            .find(|(offset, ..)| *offset == leaf.offset)
+        {
+            Some(existing) if existing.1 < leaf.size => {
+                *existing = (leaf.offset, leaf.size, format)
             }
-            Type::Numeric(NumericType::Integer { width, .. }) => {
-                let bytes = u64::from(width.div_ceil(8));
-                if offset % bytes != 0 || offset % 8 + bytes > 8 {
-                    return None;
-                }
-                integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + *width);
-            }
-            Type::Bool => integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + 8),
-            Type::Pointer { space, .. } => {
-                let width = space.width(64);
-                if offset % u64::from(width / 8) != 0 {
-                    return None;
-                }
-                integers[slot] = integers[slot].max((offset % 8 * 8) as u32 + width);
-            }
-            _ => return None,
+            Some(_) => {}
+            None => floats.push((leaf.offset, leaf.size, format)),
         }
     }
-    let mut chunks = Vec::with_capacity(slots.len());
-    for (index, formats) in slots.into_iter().enumerate() {
-        if integers[index] != 0 || formats.is_empty() {
-            let remaining = size - index as u64 * 8;
-            let float_bits = formats
-                .iter()
-                .map(|format| if *format == FloatType::F32 { 32 } else { 64 })
-                .sum::<u32>();
-            let bits = integers[index]
-                .max(float_bits)
-                .max(8)
-                .min((remaining.min(8) * 8) as u32);
-            chunks.push(AbiChunk::Integer(bits.next_multiple_of(8)));
-        } else if formats.len() == 2 && formats.iter().all(|kind| *kind == FloatType::F32) {
-            chunks.push(AbiChunk::FloatPair(FloatType::F32));
-        } else if formats.len() == 1 {
-            chunks.push(AbiChunk::Float(formats[0]));
-        } else {
-            return None;
+    let half = floats
+        .iter()
+        .map(|(.., format)| *format)
+        .find(|format| matches!(format, FloatType::F16 | FloatType::BF16));
+    match (floats.as_slice(), half) {
+        ([(.., format)], _) => Some(AbiChunk::Float(*format)),
+        ([(.., FloatType::F32), (.., FloatType::F32)], None) => {
+            Some(AbiChunk::FloatPair(FloatType::F32))
         }
+        ([(_, 2, first), (_, 2, second)], Some(format)) if first == second => {
+            Some(AbiChunk::FloatPair(format))
+        }
+        (_, Some(format)) => Some(AbiChunk::FloatQuad(format)),
+        _ => None,
     }
-    Some(chunks)
 }
 
 const WIN32_VECTOR_REGISTERS: usize = 3;

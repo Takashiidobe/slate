@@ -299,7 +299,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%9, read<i32>(%196));
 // DEFAULT-NEXT:         return read<i32>(%9);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %91 @__builtin_conj(%90 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>];
+// DEFAULT-NEXT:     fn %91 @__builtin_conj(%90 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(native_c) -> native_c];
 // DEFAULT-NEXT:     fn %93 @__builtin_abs(%92 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %95 @__builtin_labs(%94 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %97 @__builtin_llabs(%96 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
@@ -312,11 +312,11 @@ int main(void) {
 // DEFAULT-NEXT:     fn %108 @__builtin_nan(%107 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %111 @__builtin_nanf(%110 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %114 @__builtin_nanl(%113 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %117 @__builtin_creal(%116 <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(coerce<f64, f64>) -> scalar];
-// DEFAULT-NEXT:     fn %119 @__builtin_cimag(%118 <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(coerce<f64, f64>) -> scalar];
+// DEFAULT-NEXT:     fn %117 @__builtin_creal(%116 <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %119 @__builtin_cimag(%118 <unnamed>: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT:     fn %10 @gnu_builtin_floating() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %11 value: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(3.0), index1 = const<f64>(4.0));
-// DEFAULT-NEXT:         let %12 conjugate: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%91, read<complex<f64>>(%11));
+// DEFAULT-NEXT:         let %12 conjugate: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%91, read<complex<f64>>(%11));
 // DEFAULT-NEXT:         let %13 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %197: i32 [synthetic] = read<i32>(%13);
 // DEFAULT-NEXT:         let %198: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%197), call<i32, signature=fn(i32) -> i32>(%93, neg<i32, overflow=ub>(const<i32>(5))));
@@ -385,16 +385,16 @@ int main(void) {
 // DEFAULT-NEXT:         let %240: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%239), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(const<f64>(31.0))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(const<f64>(37.0)))), const<i32>(0)))));
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%240));
 // DEFAULT-NEXT:         let %241: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %242: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%241), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%117, read<complex<f64>>(%11))));
+// DEFAULT-NEXT:         let %242: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%241), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%117, read<complex<f64>>(%11))));
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%242));
 // DEFAULT-NEXT:         let %243: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %244: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%243), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%119, read<complex<f64>>(%11))));
+// DEFAULT-NEXT:         let %244: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%243), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%119, read<complex<f64>>(%11))));
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%244));
 // DEFAULT-NEXT:         let %245: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %246: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%245), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%117, read<complex<f64>>(%12))));
+// DEFAULT-NEXT:         let %246: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%245), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%117, read<complex<f64>>(%12))));
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%246));
 // DEFAULT-NEXT:         let %247: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %248: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%247), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f64>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(coerce<f64, f64>) -> scalar>(%119, read<complex<f64>>(%12)))));
+// DEFAULT-NEXT:         let %248: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%247), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(neg<f64>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%119, read<complex<f64>>(%12)))));
 // DEFAULT-NEXT:         write<i32>(%13, read<i32>(%248));
 // DEFAULT-NEXT:         return read<i32>(%13);
 // DEFAULT-NEXT:     }

@@ -103,19 +103,19 @@ void caller(void) {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     fn %7 @atomic_three(%32 v: atomic @type0) -> void [linkage=external] [abi=win64(coerce<i64>) -> void];
-// IR-NEXT:     fn %8 @plain_three(%33 v: @type0) -> void [linkage=external] [abi=win64(byref<align=1>) -> void];
-// IR-NEXT:     fn %9 @atomic_arr3(%34 v: atomic @type1) -> void [linkage=external] [abi=win64(coerce<i64>) -> void];
-// IR-NEXT:     fn %10 @plain_arr3(%35 v: @type1) -> void [linkage=external] [abi=win64(byref<align=1>) -> void];
-// IR-NEXT:     fn %11 @atomic_one(%36 v: atomic @type2) -> void [linkage=external] [abi=win64(coerce<i32>) -> void];
-// IR-NEXT:     fn %12 @atomic_pair(%37 v: atomic @type3) -> void [linkage=external] [abi=win64(coerce<i64>) -> void];
-// IR-NEXT:     fn %13 @plain_pair(%38 v: @type3) -> void [linkage=external] [abi=win64(coerce<i64>) -> void];
-// IR-NEXT:     fn %14 @atomic_five(%39 v: atomic @type4) -> void [linkage=external] [abi=win64(byref<align=4>) -> void];
-// IR-NEXT:     fn %15 @atomic_wide(%40 v: atomic @type5) -> void [linkage=external] [abi=win64(byref<align=8>) -> void];
-// IR-NEXT:     fn %16 @atomic_union(%41 v: atomic @type6) -> void [linkage=external] [abi=win64(coerce<i32>) -> void];
+// IR-NEXT:     fn %7 @atomic_three(%32 v: atomic @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %8 @plain_three(%33 v: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %9 @atomic_arr3(%34 v: atomic @type1) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %10 @plain_arr3(%35 v: @type1) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %11 @atomic_one(%36 v: atomic @type2) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %12 @atomic_pair(%37 v: atomic @type3) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %13 @plain_pair(%38 v: @type3) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %14 @atomic_five(%39 v: atomic @type4) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %15 @atomic_wide(%40 v: atomic @type5) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %16 @atomic_union(%41 v: atomic @type6) -> void [linkage=external] [abi=win64(native_c) -> void];
 // IR-NEXT:     fn %17 @atomic_scalar(%42 v: atomic i64) -> void [linkage=external];
-// IR-NEXT:     fn %18 @atomic_result() -> @type0 [linkage=external] [abi=win64() -> coerce<i64>];
-// IR-NEXT:     fn %19 @atomic_result_indirect() -> @type4 [linkage=external] [abi=win64() -> sret<align=4>];
+// IR-NEXT:     fn %18 @atomic_result() -> @type0 [linkage=external] [abi=win64() -> native_c];
+// IR-NEXT:     fn %19 @atomic_result_indirect() -> @type4 [linkage=external] [abi=win64() -> native_c];
 // IR-NEXT:     fn %20 @caller() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         let %21 a: atomic @type0 [storage=automatic];
 // IR-NEXT:         let %22 a2: @type0 [storage=automatic];
@@ -128,16 +128,16 @@ void caller(void) {
 // IR-NEXT:         let %29 f: atomic @type5 [storage=automatic];
 // IR-NEXT:         let %30 g: atomic @type6 [storage=automatic];
 // IR-NEXT:         let %31 h: atomic i64 [storage=automatic];
-// IR-NEXT:         call<void, abi=win64(coerce<i64>) -> void>(%7, copy<@type0, reason=arg>(read<@type0, atomic=seq_cst>(%21)));
-// IR-NEXT:         call<void, abi=win64(byref<align=1>) -> void>(%8, copy<@type0, reason=arg>(read<@type0>(%22)));
-// IR-NEXT:         call<void, abi=win64(coerce<i64>) -> void>(%9, copy<@type1, reason=arg>(read<@type1, atomic=seq_cst>(%23)));
-// IR-NEXT:         call<void, abi=win64(byref<align=1>) -> void>(%10, copy<@type1, reason=arg>(read<@type1>(%24)));
-// IR-NEXT:         call<void, abi=win64(coerce<i32>) -> void>(%11, copy<@type2, reason=arg>(read<@type2, atomic=seq_cst>(%25)));
-// IR-NEXT:         call<void, abi=win64(coerce<i64>) -> void>(%12, copy<@type3, reason=arg>(read<@type3, atomic=seq_cst>(%26)));
-// IR-NEXT:         call<void, abi=win64(coerce<i64>) -> void>(%13, copy<@type3, reason=arg>(read<@type3>(%27)));
-// IR-NEXT:         call<void, abi=win64(byref<align=4>) -> void>(%14, copy<@type4, reason=arg>(read<@type4, atomic=seq_cst>(%28)));
-// IR-NEXT:         call<void, abi=win64(byref<align=8>) -> void>(%15, copy<@type5, reason=arg>(read<@type5, atomic=seq_cst>(%29)));
-// IR-NEXT:         call<void, abi=win64(coerce<i32>) -> void>(%16, copy<@type6, reason=arg>(read<@type6, atomic=seq_cst>(%30)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%7, copy<@type0, reason=arg>(read<@type0, atomic=seq_cst>(%21)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%8, copy<@type0, reason=arg>(read<@type0>(%22)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%9, copy<@type1, reason=arg>(read<@type1, atomic=seq_cst>(%23)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%10, copy<@type1, reason=arg>(read<@type1>(%24)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%11, copy<@type2, reason=arg>(read<@type2, atomic=seq_cst>(%25)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%12, copy<@type3, reason=arg>(read<@type3, atomic=seq_cst>(%26)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%13, copy<@type3, reason=arg>(read<@type3>(%27)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%14, copy<@type4, reason=arg>(read<@type4, atomic=seq_cst>(%28)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%15, copy<@type5, reason=arg>(read<@type5, atomic=seq_cst>(%29)));
+// IR-NEXT:         call<void, abi=win64(native_c) -> void>(%16, copy<@type6, reason=arg>(read<@type6, atomic=seq_cst>(%30)));
 // IR-NEXT:         call<void>(%17, read<i64, atomic=seq_cst>(%31));
 // IR-NEXT:     }
 // IR-NEXT: }

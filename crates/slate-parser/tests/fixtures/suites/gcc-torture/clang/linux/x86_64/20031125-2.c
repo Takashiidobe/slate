@@ -45,7 +45,7 @@ void render_blob_line(struct BlobSpan blobdata) {
 // DEFAULT-NEXT:     type @type0 BlobSpan = struct {
 // DEFAULT-NEXT:         field0 right: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @render_blob_line(%2 blobdata: @type0) -> void [linkage=external] [abi=sysv64(coerce<i32>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %1 @render_blob_line(%2 blobdata: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 buf: array<i32, 32> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %4 data: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(32)>(%3);
 // DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];

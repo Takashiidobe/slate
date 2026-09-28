@@ -105,7 +105,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(field1(%10), const<i32>(21845));
 // DEFAULT-NEXT:         write<i32>(field0(%11), const<i32>(65535));
 // DEFAULT-NEXT:         write<i32>(field1(%11), const<i32>(4369));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<i64>, scalar, coerce<i64>) -> void>(%4, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%10)), const<i32>(3), copy<@type1, reason=vararg>(read<@type1>(%11)));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, scalar, native_c) -> void>(%4, const<i32>(2), copy<@type1, reason=vararg>(read<@type1>(%10)), const<i32>(3), copy<@type1, reason=vararg>(read<@type1>(%11)));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

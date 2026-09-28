@@ -72,31 +72,31 @@ int read_member(int x) { return ((union U)x).i; }
 // IR-NEXT:     global %8 g: array<i8, 4> [storage=static] [linkage=external];
 // IR-NEXT:     global %25 global: @type2 [storage=static] = copy<@type2, reason=assign>(aggregate<@type2, zero_fill=false>(field1 = const<i32>(1))) [linkage=external];
 // IR-NEXT:     fn %7 @h() -> void [linkage=external];
-// IR-NEXT:     fn %9 @cast_int(%10 x: i32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %9 @cast_int(%10 x: i32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(aggregate<@type2, zero_fill=false>(field1 = read<i32>(%10)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @cast_float(%12 x: f32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %11 @cast_float(%12 x: f32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(aggregate<@type2, zero_fill=false>(field2 = read<f32>(%12)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @cast_const(%14 x: i32 [const]) -> @type3 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %13 @cast_const(%14 x: i32 [const]) -> @type3 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type3, reason=return>(aggregate<@type3, zero_fill=false>(field0 = read<i32>(%14)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @cast_array() -> @type4 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %15 @cast_array() -> @type4 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type4, reason=return>(aggregate<@type4, zero_fill=false>(field0 = array_decay<ptr<i8>, length=Some(4)>(%8)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @cast_function() -> @type4 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %16 @cast_function() -> @type4 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type4, reason=return>(aggregate<@type4, zero_fill=false>(field1 = function_decay<ptr<fn() -> void>>(%7)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @cast_record(%18 p: @type1) -> @type5 [linkage=external] [abi=sysv64(coerce<i32>) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %17 @cast_record(%18 p: @type1) -> @type5 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type5, reason=return>(aggregate<@type5, zero_fill=false>(field0 = read<@type1>(%18)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @cast_same(%20 u: @type2) -> @type2 [linkage=external] [abi=sysv64(coerce<i32>) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %19 @cast_same(%20 u: @type2) -> @type2 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%20));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @cast_bit(%22 x: i32) -> @type6 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %21 @cast_bit(%22 x: i32) -> @type6 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type6, reason=return>(aggregate<@type6, zero_fill=false>(field0 = read<i32>(%22)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %23 @cast_qualified(%24 x: i32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %23 @cast_qualified(%24 x: i32) -> @type2 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(aggregate<@type2, zero_fill=false>(field1 = read<i32>(%24)));
 // IR-NEXT:     }
 // IR-NEXT:     fn %26 @read_member(%27 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {

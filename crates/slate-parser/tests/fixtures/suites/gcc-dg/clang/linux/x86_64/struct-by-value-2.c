@@ -46,10 +46,10 @@ void bar(void)
 // DEFAULT-NEXT:         field2 i2: i32;
 // DEFAULT-NEXT:         field3 f2: f32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     fn %1 @foo(%4 <unnamed>: @type0) -> void [linkage=external] [abi=sysv64(coerce<i64, i32>) -> void];
+// DEFAULT-NEXT:     fn %1 @foo(%4 <unnamed>: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
 // DEFAULT-NEXT:     fn %2 @bar() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %3 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(coerce<i64, i32>) -> void>(%1, copy<@type0, reason=arg>(read<@type0>(%3)));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%1, copy<@type0, reason=arg>(read<@type0>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

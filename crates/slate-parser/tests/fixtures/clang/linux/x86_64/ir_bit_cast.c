@@ -46,10 +46,10 @@ unsigned long address(int *p) { return __builtin_bit_cast(unsigned long, p); }
 // IR-NEXT:     fn %3 @from_bits(%4 x: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return bit_cast<f64, reason=explicit>(read<u64>(%4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @split(%6 x: i32) -> @type0 [linkage=external] [abi=sysv64(scalar) -> coerce<i32>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %5 @split(%6 x: i32) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type0, reason=return>(bit_cast<@type0, reason=explicit>(read<i32>(%6)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @join(%8 p: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i32>) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %7 @join(%8 p: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         return bit_cast<i32, reason=explicit>(read<@type0>(%8));
 // IR-NEXT:     }
 // IR-NEXT:     fn %9 @address(%10 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {

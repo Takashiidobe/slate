@@ -64,7 +64,7 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%3)))), const<i32>(1)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%3)))), const<i32>(2))), ne<i32>(read<i32>(field2(deref(read<ptr<@type0>>(%3)))), const<i32>(3))), ne<i32>(read<i32>(%5), const<i32>(4)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo(%7 a: @type0, %8 b: i32) -> void [linkage=external] [abi=sysv64(coerce<i64, i32>, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %6 @foo(%7 a: @type0, %8 b: i32) -> void [linkage=external] [abi=sysv64(native_c, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<@type0>>(%3, addr_of<ptr<@type0>>(%7));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, read<i32>(%8));
 // DEFAULT-NEXT:     }
@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field0(%10), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%10), const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(field2(%10), const<i32>(3));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0, i32) -> void, abi=sysv64(coerce<i64, i32>, scalar) -> void>(%6, copy<@type0, reason=arg>(read<@type0>(%10)), const<i32>(4));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0, i32) -> void, abi=sysv64(native_c, scalar) -> void>(%6, copy<@type0, reason=arg>(read<@type0>(%10)), const<i32>(4));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -47,7 +47,7 @@ struct pair record(struct pair value) { return value; }
 // I686-LINUX-GNU-MSVC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(12) [linkage=external];
 // I686-LINUX-GNU-MSVC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
 // I686-LINUX-GNU-MSVC-NEXT:     global %4 alignof_long_long: u32 [storage=static] = const<u32>(4) [linkage=external];
-// I686-LINUX-GNU-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=x86_cdecl(coerce<i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// I686-LINUX-GNU-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
 // I686-LINUX-GNU-MSVC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
 // I686-LINUX-GNU-MSVC-NEXT:     }
 // I686-LINUX-GNU-MSVC-NEXT: }

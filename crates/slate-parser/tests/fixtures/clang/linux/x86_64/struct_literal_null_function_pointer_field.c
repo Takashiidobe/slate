@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([110, 111, 110, 101, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @report(%4 h: @type1) -> i32 [linkage=internal] [abi=sysv64(byval<align=8>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @report(%4 h: @type1) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(field1(%4)), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
@@ -80,7 +80,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 h: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(5)>(%9)), field1 = null<ptr<fn(i32) -> i32>>, field2 = null<ptr<i32>>);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn(@type1) -> i32, abi=sysv64(byval<align=8>) -> scalar>(%3, copy<@type1, reason=arg>(read<@type1>(%7))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn(@type1) -> i32, abi=sysv64(native_c) -> scalar>(%3, copy<@type1, reason=arg>(read<@type1>(%7))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

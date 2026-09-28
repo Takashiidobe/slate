@@ -132,7 +132,7 @@ double variadic(int count, ...) { return count; }
 // IR-NEXT:     fn %9 @complex_long_double(%10 value: complex<f64>) -> complex<f64> [linkage=external] [abi=aapcs32_hard_float(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<complex<f64>>(%10);
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @record_pair(%12 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(coerce<i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %11 @record_pair(%12 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%12));
 // IR-NEXT:     }
 // IR-NEXT:     fn %13 @record_float_pair(%14 value: @type1) -> @type1 [linkage=external] [abi=aapcs32_hard_float(coerce<f32, f32>) -> coerce<f32, f32>] [fallthrough=ub_if_used] {
@@ -141,10 +141,10 @@ double variadic(int count, ...) { return count; }
 // IR-NEXT:     fn %15 @record_double_pair(%16 value: @type2) -> @type2 [linkage=external] [abi=aapcs32_hard_float(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%16));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @record_mixed(%18 value: @type3) -> @type3 [linkage=external] [abi=aapcs32_hard_float(coerce<i64, i64>) -> sret<align=8>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %17 @record_mixed(%18 value: @type3) -> @type3 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type3, reason=return>(read<@type3>(%18));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @record_large(%20 value: @type4) -> @type4 [linkage=external] [abi=aapcs32_hard_float(coerce<i32, i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %19 @record_large(%20 value: @type4) -> @type4 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%20));
 // IR-NEXT:     }
 // IR-NEXT:     fn %21 @scalar(%22 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -153,9 +153,9 @@ double variadic(int count, ...) { return count; }
 // IR-NEXT:     fn %23 @forward(%24 callback: ptr<fn(complex<f64>) -> complex<f64>>, %25 value: complex<f64>) -> complex<f64> [linkage=external] [abi=aapcs32_hard_float(scalar, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<complex<f64>, abi=aapcs32_hard_float(coerce<f64, f64>) -> coerce<f64, f64>>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%24), read<complex<f64>>(%25));
 // IR-NEXT:     }
-// IR-NEXT:     fn %26 @variadic_sink(%70 tag: i32, ...) -> complex<f64> [linkage=external] [abi=aapcs32(scalar) -> sret<align=8>];
+// IR-NEXT:     fn %26 @variadic_sink(%70 tag: i32, ...) -> complex<f64> [linkage=external] [abi=aapcs32(scalar) -> native_c];
 // IR-NEXT:     fn %27 @variadic_forward(%28 value: complex<f64>) -> complex<f64> [linkage=external] [abi=aapcs32_hard_float(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, abi=aapcs32(scalar, coerce<i64, i64>) -> sret<align=8>>(%26, const<i32>(1), read<complex<f64>>(%28));
+// IR-NEXT:         return call<complex<f64>, abi=aapcs32(scalar, native_c) -> native_c>(%26, const<i32>(1), read<complex<f64>>(%28));
 // IR-NEXT:     }
 // IR-NEXT:     fn %35 @vector_byte(%36 value: vector<i8, 1>) -> vector<i8, 1> [linkage=external] [abi=aapcs32_hard_float(coerce<i32>) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<vector<i8, 1>>(%36);
@@ -182,7 +182,7 @@ double variadic(int count, ...) { return count; }
 // IR-NEXT:     fn %55 @pass_hfa4(%56 value: @type11) -> @type11 [linkage=external] [abi=aapcs32_hard_float(coerce<f32, f32, f32, f32>) -> coerce<f32, f32, f32, f32>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type11, reason=return>(read<@type11>(%56));
 // IR-NEXT:     }
-// IR-NEXT:     fn %57 @pass_hfa5(%58 value: @type12) -> @type12 [linkage=external] [abi=aapcs32_hard_float(coerce<i32, i32, i32, i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %57 @pass_hfa5(%58 value: @type12) -> @type12 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type12, reason=return>(read<@type12>(%58));
 // IR-NEXT:     }
 // IR-NEXT:     fn %59 @pass_big(%60 value: @type13) -> @type13 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {

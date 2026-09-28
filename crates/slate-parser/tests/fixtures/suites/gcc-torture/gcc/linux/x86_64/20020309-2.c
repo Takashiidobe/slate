@@ -45,7 +45,7 @@ foo (A x, A **y, A z)
 // DEFAULT-NEXT:         field1 ll: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     fn %2 @foo(%3 x: @type0, %4 y: ptr<ptr<@type0>>, %5 z: @type0) -> void [linkage=external] [abi=sysv64(coerce<i64>, scalar, coerce<i64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %2 @foo(%3 x: @type0, %4 y: ptr<ptr<@type0>>, %5 z: @type0) -> void [linkage=external] [abi=sysv64(native_c, scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         for %6
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: ne<ptr<@type0>>(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))), null<ptr<@type0>>)

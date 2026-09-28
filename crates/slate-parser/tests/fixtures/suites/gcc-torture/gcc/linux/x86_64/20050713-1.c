@@ -69,35 +69,35 @@ int main(void) {
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo2(%3 x: @type0, %4 y: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i32>, coerce<i64, i32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @foo2(%3 x: @type0, %4 y: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%3)), const<i32>(3)), ne<i32>(read<i32>(field1(%3)), const<i32>(4))), ne<i32>(read<i32>(field2(%3)), const<i32>(5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%4)), const<i32>(6)), ne<i32>(read<i32>(field1(%4)), const<i32>(7))), ne<i32>(read<i32>(field2(%4)), const<i32>(8)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo3(%6 x: @type0, %7 y: @type0, %8 z: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%6)), copy<@type0, reason=arg>(read<@type0>(%7)));
+// DEFAULT-NEXT:     fn %5 @foo3(%6 x: @type0, %7 y: @type0, %8 z: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%6)), copy<@type0, reason=arg>(read<@type0>(%7)));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%8)), const<i32>(9)), ne<i32>(read<i32>(field1(%8)), const<i32>(10))), ne<i32>(read<i32>(field2(%8)), const<i32>(11)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bar2(%10 x: @type0, %11 y: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i32>, coerce<i64, i32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%10)));
+// DEFAULT-NEXT:     fn %9 @bar2(%10 x: @type0, %11 y: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%11)), copy<@type0, reason=arg>(read<@type0>(%10)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @bar3(%13 x: @type0, %14 y: @type0, %15 z: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%14)), copy<@type0, reason=arg>(read<@type0>(%13)), copy<@type0, reason=arg>(read<@type0>(%15)));
+// DEFAULT-NEXT:     fn %12 @bar3(%13 x: @type0, %14 y: @type0, %15 z: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%14)), copy<@type0, reason=arg>(read<@type0>(%13)), copy<@type0, reason=arg>(read<@type0>(%15)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @baz3(%17 x: @type0, %18 y: @type0, %19 z: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%18)), copy<@type0, reason=arg>(read<@type0>(%19)), copy<@type0, reason=arg>(read<@type0>(%17)));
+// DEFAULT-NEXT:     fn %16 @baz3(%17 x: @type0, %18 y: @type0, %19 z: @type0) -> i32 [linkage=external] [abi=sysv64(native_c, native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%18)), copy<@type0, reason=arg>(read<@type0>(%19)), copy<@type0, reason=arg>(read<@type0>(%17)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %21 a: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4), field2 = const<i32>(5));
 // DEFAULT-NEXT:         let %22 b: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(6), field1 = const<i32>(7), field2 = const<i32>(8));
 // DEFAULT-NEXT:         let %23 c: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(9), field1 = const<i32>(10), field2 = const<i32>(11));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%9, copy<@type0, reason=arg>(read<@type0>(%22)), copy<@type0, reason=arg>(read<@type0>(%21)));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%12, copy<@type0, reason=arg>(read<@type0>(%22)), copy<@type0, reason=arg>(read<@type0>(%21)), copy<@type0, reason=arg>(read<@type0>(%23)));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(coerce<i64, i32>, coerce<i64, i32>, coerce<i64, i32>) -> scalar>(%16, copy<@type0, reason=arg>(read<@type0>(%23)), copy<@type0, reason=arg>(read<@type0>(%21)), copy<@type0, reason=arg>(read<@type0>(%22)));
+// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%9, copy<@type0, reason=arg>(read<@type0>(%22)), copy<@type0, reason=arg>(read<@type0>(%21)));
+// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%12, copy<@type0, reason=arg>(read<@type0>(%22)), copy<@type0, reason=arg>(read<@type0>(%21)), copy<@type0, reason=arg>(read<@type0>(%23)));
+// DEFAULT-NEXT:         call<i32, signature=fn(@type0, @type0, @type0) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%16, copy<@type0, reason=arg>(read<@type0>(%23)), copy<@type0, reason=arg>(read<@type0>(%21)), copy<@type0, reason=arg>(read<@type0>(%22)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

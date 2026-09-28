@@ -64,7 +64,7 @@ baz (long x)
 // DEFAULT-NEXT:     fn %3 @foo(%4 x: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(10)>(%0), read<i64>(%4))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 x: i64) -> @type0 [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @bar(%6 x: i64) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(10)>(%2), read<i64>(%6)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @baz(%9 x: i64) -> u128 [linkage=external] [fallthrough=ub_if_used] {

@@ -54,14 +54,14 @@ _Complex double f8(void) { return 1.0; }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @f4(%7 a: u16) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f5(%9 a: complex<f32>) -> void [linkage=external] [abi=win64(coerce<i64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %8 @f5(%9 a: complex<f32>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f6(%11 a: complex<f64>) -> void [linkage=external] [abi=win64(byref<align=8>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %10 @f6(%11 a: complex<f64>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f7() -> complex<f32> [linkage=external] [abi=win64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %12 @f7() -> complex<f32> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return real_to_complex<complex<f32>, reason=return>(float_narrow<f32, reason=return, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f8() -> complex<f64> [linkage=external] [abi=win64() -> sret<align=8>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %13 @f8() -> complex<f64> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return real_to_complex<complex<f64>, reason=return>(const<f64>(1.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -201,7 +201,7 @@ ignore_3(void (*)(int*), int*); /* { dg-warning "ignored" } */
 // DEFAULT-NEXT:     fn %18 @not_used_on_fn_1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %19 a: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @incompatible_types_1(%92 <unnamed>: ptr<fn(ptr<@type1>) -> void>, %93 <unnamed>: @type1) -> void [linkage=external] [abi=sysv64(scalar, coerce<i32>) -> void];
+// DEFAULT-NEXT:     fn %25 @incompatible_types_1(%92 <unnamed>: ptr<fn(ptr<@type1>) -> void>, %93 <unnamed>: @type1) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];
 // DEFAULT-NEXT:     fn %26 @incompatible_types_2(%94 <unnamed>: ptr<fn(ptr<@type1>, ptr<i32>) -> void>, %95 <unnamed>: ptr<i32>, %96 <unnamed>: f64) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %27 @wrong_arg_type_1(%97 <unnamed>: ptr<fn(ptr<void>) -> void>, %98 <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %28 @wrong_arg_type_2(%99 <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %100 <unnamed>: ptr<void>) -> void [linkage=external];

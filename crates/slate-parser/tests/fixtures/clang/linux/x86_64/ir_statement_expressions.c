@@ -122,7 +122,7 @@ int nested_labels(int x) { return ({ outer: inner: x + 1; }); }
 // IR-NEXT:             write<bool>(%37, const<bool>(false));
 // IR-NEXT:         return from_bool<i32, reason=return>(read<bool>(%37));
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @pair(%15 x: i32) -> @type0 [linkage=external] [abi=sysv64(scalar) -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %14 @pair(%15 x: i32) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %39: @type0 [synthetic];
 // IR-NEXT:         {
 // IR-NEXT:             let %16 t: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%15), field1 = read<i32>(%15));

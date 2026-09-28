@@ -1169,7 +1169,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%170))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%152)))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%170))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%152))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%152)))), read<u32>(%169))), ne<u64>(read<u64>(field3(%170)), read<u64>(field3(%152)))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%167), read<u32>(%168)), read<u32>(%166)), read<u32>(%169)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %174 @retmeI(%175 x: @type8) -> @type8 [linkage=external] [abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %174 @retmeI(%175 x: @type8) -> @type8 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type8, reason=return>(read<@type8>(%175));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %176 @fn1I(%177 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1177,8 +1177,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %678: u16 [synthetic] = read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%178));
 // DEFAULT-NEXT:         let %679: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%678)))), read<u32>(%177)));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%178), read<u16>(%679));
-// DEFAULT-NEXT:         write<@type8>(%178, copy<@type8, reason=assign>(call<@type8, signature=fn(@type8) -> @type8, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%174, copy<@type8, reason=arg>(read<@type8>(%178)))));
-// DEFAULT-NEXT:         copy<@type8, reason=assign>(call<@type8, signature=fn(@type8) -> @type8, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%174, copy<@type8, reason=arg>(read<@type8>(%178))));
+// DEFAULT-NEXT:         write<@type8>(%178, copy<@type8, reason=assign>(call<@type8, signature=fn(@type8) -> @type8, abi=sysv64(native_c) -> native_c>(%174, copy<@type8, reason=arg>(read<@type8>(%178)))));
+// DEFAULT-NEXT:         copy<@type8, reason=assign>(call<@type8, signature=fn(@type8) -> @type8, abi=sysv64(native_c) -> native_c>(%174, copy<@type8, reason=arg>(read<@type8>(%178))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%178)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %179 @fn2I(%180 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2069,7 +2069,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%380))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%362)))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%380))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%362))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%362)))), read<u32>(%379))), ne<u64>(read<u64>(field3(%380)), read<u64>(field3(%362)))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%377), read<u32>(%378)), read<u32>(%376)), read<u32>(%379)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %384 @retmeS(%385 x: @type18) -> @type18 [linkage=external] [abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %384 @retmeS(%385 x: @type18) -> @type18 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type18, reason=return>(read<@type18>(%385));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %386 @fn1S(%387 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2077,8 +2077,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %798: u16 [synthetic] = read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%388));
 // DEFAULT-NEXT:         let %799: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%798)))), read<u32>(%387)));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%388), read<u16>(%799));
-// DEFAULT-NEXT:         write<@type18>(%388, copy<@type18, reason=assign>(call<@type18, signature=fn(@type18) -> @type18, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%384, copy<@type18, reason=arg>(read<@type18>(%388)))));
-// DEFAULT-NEXT:         copy<@type18, reason=assign>(call<@type18, signature=fn(@type18) -> @type18, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%384, copy<@type18, reason=arg>(read<@type18>(%388))));
+// DEFAULT-NEXT:         write<@type18>(%388, copy<@type18, reason=assign>(call<@type18, signature=fn(@type18) -> @type18, abi=sysv64(native_c) -> native_c>(%384, copy<@type18, reason=arg>(read<@type18>(%388)))));
+// DEFAULT-NEXT:         copy<@type18, reason=assign>(call<@type18, signature=fn(@type18) -> @type18, abi=sysv64(native_c) -> native_c>(%384, copy<@type18, reason=arg>(read<@type18>(%388))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%388)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %389 @fn2S(%390 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2249,7 +2249,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%422)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%404))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%422)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%404)))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%404))))), read<u32>(%421))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%422)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%404)))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%419), read<u32>(%420)), read<u32>(%418)), read<u32>(%421)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %426 @retmeU(%427 x: @type20) -> @type20 [linkage=external] [abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %426 @retmeU(%427 x: @type20) -> @type20 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type20, reason=return>(read<@type20>(%427));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %428 @fn1U(%429 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2257,8 +2257,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %822: u16 [synthetic] = read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%430));
 // DEFAULT-NEXT:         let %823: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%822)))), read<u32>(%429)));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%430), read<u16>(%823));
-// DEFAULT-NEXT:         write<@type20>(%430, copy<@type20, reason=assign>(call<@type20, signature=fn(@type20) -> @type20, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%426, copy<@type20, reason=arg>(read<@type20>(%430)))));
-// DEFAULT-NEXT:         copy<@type20, reason=assign>(call<@type20, signature=fn(@type20) -> @type20, abi=sysv64(coerce<i16, i64>) -> coerce<i16, i64>>(%426, copy<@type20, reason=arg>(read<@type20>(%430))));
+// DEFAULT-NEXT:         write<@type20>(%430, copy<@type20, reason=assign>(call<@type20, signature=fn(@type20) -> @type20, abi=sysv64(native_c) -> native_c>(%426, copy<@type20, reason=arg>(read<@type20>(%430)))));
+// DEFAULT-NEXT:         copy<@type20, reason=assign>(call<@type20, signature=fn(@type20) -> @type20, abi=sysv64(native_c) -> native_c>(%426, copy<@type20, reason=arg>(read<@type20>(%430))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%430)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %431 @fn2U(%432 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2429,7 +2429,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%464)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%446))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%464)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%446)))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%446))))), read<u32>(%463))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%464)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%446)))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%461), read<u32>(%462)), read<u32>(%460)), read<u32>(%463)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %468 @retmeW(%469 x: @type22) -> @type22 [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %468 @retmeW(%469 x: @type22) -> @type22 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type22, reason=return>(read<@type22>(%469));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %470 @fn1W(%471 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2437,8 +2437,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %846: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%472));
 // DEFAULT-NEXT:         let %847: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%846))), read<u32>(%471));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%472), read<u32>(%847));
-// DEFAULT-NEXT:         write<@type22>(%472, copy<@type22, reason=assign>(call<@type22, signature=fn(@type22) -> @type22, abi=sysv64(byval<align=16>) -> sret<align=16>>(%468, copy<@type22, reason=arg>(read<@type22>(%472)))));
-// DEFAULT-NEXT:         copy<@type22, reason=assign>(call<@type22, signature=fn(@type22) -> @type22, abi=sysv64(byval<align=16>) -> sret<align=16>>(%468, copy<@type22, reason=arg>(read<@type22>(%472))));
+// DEFAULT-NEXT:         write<@type22>(%472, copy<@type22, reason=assign>(call<@type22, signature=fn(@type22) -> @type22, abi=sysv64(native_c) -> native_c>(%468, copy<@type22, reason=arg>(read<@type22>(%472)))));
+// DEFAULT-NEXT:         copy<@type22, reason=assign>(call<@type22, signature=fn(@type22) -> @type22, abi=sysv64(native_c) -> native_c>(%468, copy<@type22, reason=arg>(read<@type22>(%472))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%472))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %473 @fn2W(%474 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2519,7 +2519,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%485))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%467)))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%485))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%467))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%467)))), read<u32>(%484))), ne<f80, exceptions=observable>(read<f80>(field0(%485)), read<f80>(field0(%467)))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%482), read<u32>(%483)), read<u32>(%481)), read<u32>(%484)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %489 @retmeX(%490 x: @type23) -> @type23 [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %489 @retmeX(%490 x: @type23) -> @type23 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type23, reason=return>(read<@type23>(%490));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %491 @fn1X(%492 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2527,8 +2527,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %858: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%493));
 // DEFAULT-NEXT:         let %859: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%858))), read<u32>(%492));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%493), read<u32>(%859));
-// DEFAULT-NEXT:         write<@type23>(%493, copy<@type23, reason=assign>(call<@type23, signature=fn(@type23) -> @type23, abi=sysv64(byval<align=16>) -> sret<align=16>>(%489, copy<@type23, reason=arg>(read<@type23>(%493)))));
-// DEFAULT-NEXT:         copy<@type23, reason=assign>(call<@type23, signature=fn(@type23) -> @type23, abi=sysv64(byval<align=16>) -> sret<align=16>>(%489, copy<@type23, reason=arg>(read<@type23>(%493))));
+// DEFAULT-NEXT:         write<@type23>(%493, copy<@type23, reason=assign>(call<@type23, signature=fn(@type23) -> @type23, abi=sysv64(native_c) -> native_c>(%489, copy<@type23, reason=arg>(read<@type23>(%493)))));
+// DEFAULT-NEXT:         copy<@type23, reason=assign>(call<@type23, signature=fn(@type23) -> @type23, abi=sysv64(native_c) -> native_c>(%489, copy<@type23, reason=arg>(read<@type23>(%493))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%493))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %494 @fn2X(%495 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2609,7 +2609,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%506))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%488)))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%506))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%488))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%488)))), read<u32>(%505))), ne<f80, exceptions=observable>(read<f80>(field3(%506)), read<f80>(field3(%488)))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%503), read<u32>(%504)), read<u32>(%502)), read<u32>(%505)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %510 @retmeY(%511 x: @type24) -> @type24 [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %510 @retmeY(%511 x: @type24) -> @type24 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type24, reason=return>(read<@type24>(%511));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %512 @fn1Y(%513 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2617,8 +2617,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %870: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%514));
 // DEFAULT-NEXT:         let %871: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%870))), read<u32>(%513));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%514), read<u32>(%871));
-// DEFAULT-NEXT:         write<@type24>(%514, copy<@type24, reason=assign>(call<@type24, signature=fn(@type24) -> @type24, abi=sysv64(byval<align=16>) -> sret<align=16>>(%510, copy<@type24, reason=arg>(read<@type24>(%514)))));
-// DEFAULT-NEXT:         copy<@type24, reason=assign>(call<@type24, signature=fn(@type24) -> @type24, abi=sysv64(byval<align=16>) -> sret<align=16>>(%510, copy<@type24, reason=arg>(read<@type24>(%514))));
+// DEFAULT-NEXT:         write<@type24>(%514, copy<@type24, reason=assign>(call<@type24, signature=fn(@type24) -> @type24, abi=sysv64(native_c) -> native_c>(%510, copy<@type24, reason=arg>(read<@type24>(%514)))));
+// DEFAULT-NEXT:         copy<@type24, reason=assign>(call<@type24, signature=fn(@type24) -> @type24, abi=sysv64(native_c) -> native_c>(%510, copy<@type24, reason=arg>(read<@type24>(%514))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%514))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %515 @fn2Y(%516 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2699,7 +2699,7 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%527))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%509)))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%527))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%509))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%509)))), read<u32>(%526))), ne<f80, exceptions=observable>(read<f80>(field3(%527)), read<f80>(field3(%509)))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%524), read<u32>(%525)), read<u32>(%523)), read<u32>(%526)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %531 @retmeZ(%532 x: @type25) -> @type25 [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %531 @retmeZ(%532 x: @type25) -> @type25 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type25, reason=return>(read<@type25>(%532));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %533 @fn1Z(%534 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2707,8 +2707,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %882: u32 [synthetic] = read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%535));
 // DEFAULT-NEXT:         let %883: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%882))), read<u32>(%534));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%535), read<u32>(%883));
-// DEFAULT-NEXT:         write<@type25>(%535, copy<@type25, reason=assign>(call<@type25, signature=fn(@type25) -> @type25, abi=sysv64(byval<align=16>) -> sret<align=16>>(%531, copy<@type25, reason=arg>(read<@type25>(%535)))));
-// DEFAULT-NEXT:         copy<@type25, reason=assign>(call<@type25, signature=fn(@type25) -> @type25, abi=sysv64(byval<align=16>) -> sret<align=16>>(%531, copy<@type25, reason=arg>(read<@type25>(%535))));
+// DEFAULT-NEXT:         write<@type25>(%535, copy<@type25, reason=assign>(call<@type25, signature=fn(@type25) -> @type25, abi=sysv64(native_c) -> native_c>(%531, copy<@type25, reason=arg>(read<@type25>(%535)))));
+// DEFAULT-NEXT:         copy<@type25, reason=assign>(call<@type25, signature=fn(@type25) -> @type25, abi=sysv64(native_c) -> native_c>(%531, copy<@type25, reason=arg>(read<@type25>(%535))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%535))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %536 @fn2Z(%537 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {

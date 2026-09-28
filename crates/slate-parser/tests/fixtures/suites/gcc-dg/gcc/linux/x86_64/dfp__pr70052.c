@@ -54,7 +54,7 @@ D256_add_finite (void)
 // DEFAULT-NEXT:         field1 td1: d128;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
 // DEFAULT-NEXT:     type @type1 TDx2_t = @type0;
-// DEFAULT-NEXT:     fn %2 @D256_add_finite() -> @type0 [linkage=external] [abi=sysv64() -> sret<align=16>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @D256_add_finite() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 z: d128 [storage=automatic];
 // DEFAULT-NEXT:         let %4 zz: d128 [storage=automatic];
 // DEFAULT-NEXT:         let %5 result: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<d128>(0.), field1 = const<d128>(0.));

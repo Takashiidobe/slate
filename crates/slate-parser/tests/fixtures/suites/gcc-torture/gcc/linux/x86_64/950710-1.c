@@ -81,7 +81,7 @@ int main(void) {
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %1 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @g() -> @type1 [linkage=external] [abi=sysv64() -> coerce<i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %4 @g() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 p: @type1 [storage=automatic];
 // DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%5));
 // DEFAULT-NEXT:     }
@@ -127,7 +127,7 @@ int main(void) {
 // DEFAULT-NEXT:                                             }
 // DEFAULT-NEXT:                                             body:
 // DEFAULT-NEXT:                                                 {
-// DEFAULT-NEXT:                                                     let %10 e: @type1 [storage=automatic] = copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> coerce<i64>>(%4));
+// DEFAULT-NEXT:                                                     let %10 e: @type1 [storage=automatic] = copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%4));
 // DEFAULT-NEXT:                                                 }
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                                 else

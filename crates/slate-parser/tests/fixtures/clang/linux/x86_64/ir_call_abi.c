@@ -77,31 +77,31 @@ double _Complex variadic_forward(double _Complex value) {
 // IR-NEXT:         field1 b: i64;
 // IR-NEXT:         field2 c: i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// IR-NEXT:     fn %6 @complex_float(%7 value: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %6 @complex_float(%7 value: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<complex<f32>>(%7);
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @complex_double(%9 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %8 @complex_double(%9 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<complex<f64>>(%9);
 // IR-NEXT:     }
 // IR-NEXT:     fn %10 @complex_long_double(%11 value: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<complex<f80>>(%11);
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @record_pair(%13 value: @type0) -> @type0 [linkage=external] [abi=sysv64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %12 @record_pair(%13 value: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%13));
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @record_float_pair(%15 value: @type1) -> @type1 [linkage=external] [abi=sysv64(coerce<pair<f32>>) -> coerce<pair<f32>>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %14 @record_float_pair(%15 value: @type1) -> @type1 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%15));
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @record_double_pair(%17 value: @type2) -> @type2 [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %16 @record_double_pair(%17 value: @type2) -> @type2 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%17));
 // IR-NEXT:     }
-// IR-NEXT:     fn %18 @record_mixed(%19 value: @type3) -> @type3 [linkage=external] [abi=sysv64(coerce<i32, f64>) -> coerce<i32, f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %18 @record_mixed(%19 value: @type3) -> @type3 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type3, reason=return>(read<@type3>(%19));
 // IR-NEXT:     }
 // IR-NEXT:     fn %20 @record_nested(%21 value: @type4) -> @type4 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%21));
 // IR-NEXT:     }
-// IR-NEXT:     fn %22 @record_large(%23 value: @type5) -> @type5 [linkage=external] [abi=sysv64(byval<align=8>) -> sret<align=8>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %22 @record_large(%23 value: @type5) -> @type5 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type5, reason=return>(read<@type5>(%23));
 // IR-NEXT:     }
 // IR-NEXT:     fn %24 @scalar(%25 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -110,12 +110,12 @@ double _Complex variadic_forward(double _Complex value) {
 // IR-NEXT:     fn %26 @wide_integer(%27 value: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i128>(%27);
 // IR-NEXT:     }
-// IR-NEXT:     fn %28 @forward(%29 callback: ptr<fn(complex<f64>) -> complex<f64>>, %30 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%29), read<complex<f64>>(%30));
+// IR-NEXT:     fn %28 @forward(%29 callback: ptr<fn(complex<f64>) -> complex<f64>>, %30 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%29), read<complex<f64>>(%30));
 // IR-NEXT:     }
-// IR-NEXT:     fn %31 @variadic_sink(%34 tag: i32, ...) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> coerce<f64, f64>];
-// IR-NEXT:     fn %32 @variadic_forward(%33 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=sysv64(scalar, coerce<f64, f64>) -> coerce<f64, f64>>(%31, const<i32>(1), read<complex<f64>>(%33));
+// IR-NEXT:     fn %31 @variadic_sink(%34 tag: i32, ...) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> native_c];
+// IR-NEXT:     fn %32 @variadic_forward(%33 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=sysv64(scalar, native_c) -> native_c>(%31, const<i32>(1), read<complex<f64>>(%33));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

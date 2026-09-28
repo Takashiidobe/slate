@@ -32,7 +32,7 @@ __complex__ double foo (__complex__ double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %0 @foo(%1 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.0), read<complex<f64>>(%1)), neg<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

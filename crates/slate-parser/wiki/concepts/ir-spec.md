@@ -1388,40 +1388,64 @@ types with hidden pointers or machine registers. Scalar passes remain implicit
 in the default dump; nontrivial signatures print `abi=...`. `coerce<...>`
 records direct value pieces, `direct` a value passed in registers as its own
 type, `byval` a copied memory argument, `byref` an indirect argument, and
-`sret` an indirect result. `native_c` leaves an
-unclassified record to the target's ordinary C ABI for `repr(C)` emission;
-it is explicit so Rust lowering does not mistake a guessed coercion for a
-verified one. Call nodes keep their own ABI signature because an indirect
-callee or a variadic call can differ from the enclosing function.
+`sret` an indirect result. Call nodes keep their own ABI signature because an
+indirect callee or a variadic call can differ from the enclosing function.
 
-`native_c` is an abstention, not a passing shape: the `flat` gate in
-`record_abi` (all fields `Numeric`/`Bool`/`Pointer`, non-recursive) asks
-whether the classifier trusts itself to name the register pieces. It applies
-to `sysv64`, x86 cdecl, and AAPCS32, whose coercions need a field walk.
-`win64` classifies on size alone -- one register at 1, 2, 4 or 8 bytes,
-indirect otherwise. AArch64 classifies homogeneous floating aggregates first,
-then other records by size. Its HFA walk descends through arrays, aliases,
-nested structs, and unions, and accepts one to four members of the same float
-format. Clang and MSVC atomic records use their qualified layout and do not
-use HFA passing; GCC preserves the ordinary record passing shape.
-The Windows x86-64 and both AArch64 `ir_record_abi_shape.c` fixtures pin these
-shapes against clang.
+**`native_c` means trust rustc.** The signature is a label for Slate, not a
+lowering: rustc's `extern "C"` (and `"stdcall"` etc.) computes coerce, sret and
+byval from a `repr(C)` type's layout and field kinds the same way clang does.
+A record or complex value is `native_c` whenever the obvious `repr(C)` stand-in
+(same size and alignment, stable Rust field types, `[T; 0]` for a zero-length or
+flexible array, a same-size integer for a float format stable Rust lacks)
+already makes rustc pass it like the C compiler for the flavor. An explicit
+shape means rustc would diverge, so Slate needs a boundary conversion (or a C
+shim, when the shape names a type stable Rust cannot express such as `f16`
+or `f80`). Scalars, vectors and `void` keep their own forms; `__int128` on
+`win64` is plain `scalar` because rustc's `i128` matches clang there.
+
+Every divergent case was found by comparing `rustc --emit=llvm-ir` (with
+`#![no_core]`, so it runs for every target without std) against
+`clang -emit-llvm` and gcc's assembly. They are exactly these; everything else
+(flat, nested, packed, over-aligned, bit-field, union and array records, i686
+record arguments, `x86_win32` over-aligned arguments, `win64` records) was
+verified to agree:
+
+| Case | Conventions | Explicit shape |
+| ---- | ----------- | -------------- |
+| `_Atomic` record/complex, clang and msvc flavors | `sysv64`, `x86_cdecl`, `x86_win32`, `aapcs64`, `win_arm64`, `aapcs32_hard_float` | memory, integer, or non-HFA form of the qualified layout |
+| flexible array member, clang and msvc flavors (gcc agrees with rustc) | `sysv64` (≤ 16 bytes), `win64` (1/2/4/8 bytes) | `byval`/`byref` + `sret` |
+| zero-length or flexible array in an otherwise homogeneous float record: C disqualifies it, rustc ignores the zero-sized field | `aapcs64`, `win_arm64`, `aapcs32_hard_float` | integer pieces |
+| `_Float16`, `__bf16`, `long double` (f80/f128), `__float128` members where they set the register class | `sysv64`, `aapcs64`, `win_arm64` | SysV eightbyte classes or HFA |
+| complex with such a component | `sysv64`, `aapcs64`, `win_arm64` | same |
+| GNU empty record result | `x86_cdecl` | `sret` |
+| register-sized record result clang still returns in memory (a `char[3]`, `_BitInt` or flexible array member) | `x86_win32` | `sret` |
+| complex result of ≤ 8 bytes (gcc agrees: `_Complex char` in AX, `int`/`float` in EDX:EAX) | `x86_cdecl` | `coerce<i16/i32/i64>` |
+| homogeneous float record, `_Complex float`/`double` (rustc only uses VFP for `hf` triples) | `aapcs32_hard_float` on Windows | `coerce<fN...>` |
+| homogeneous float record or complex float passed variadically | `win_arm64` | integer pieces, `byref` above 16 bytes |
+
+The divergence check runs the same classifier twice: once over the C types and
+once over the Rust stand-ins, and it prints `native_c` when the results agree.
+On `sysv64` that classifier is a full eightbyte classifier over flattened
+scalars (INTEGER/SSE/SSEUP/X87/X87UP/MEMORY, including unaligned members going
+to memory and X87 arguments going to memory). An SSE eightbyte of 16-bit floats
+prints as clang's vector types: `pair<f16>` is `<2 x half>`, `quad<f16>` is
+`<4 x half>`. A divergent record containing a vector member is not classified
+and stays `native_c`. On the HFA conventions the C view admits every binary
+float format on AArch64 and only `f32`/`f64` on ARM32 (clang does not use
+`_Float16` as an HFA base there), and it skips GNU empty records of size zero.
+`tests/fixtures/*/*/*/abi_rust_divergence.c` pins every row per target.
 
 `x86_win32` is i686-pc-windows-msvc's cdecl (clang's `X86_32ABIInfo` with
-`IsWin32StructABI`). It passes arguments like `x86_cdecl` except in two
-places. A fixed (non-variadic) record argument whose `required_align` is
-above 4 is `byref`; `required_align` is the record's explicitly requested
-alignment (`_Alignas`/`aligned` on the record or a field, or inherited from a
-nested record or an array of one), not its natural alignment, so a
-`struct { long long x; }` that is 8-aligned on Win32 still expands. The first
-three vector arguments are `direct` (XMM registers); later ones, and any
-wider than 64 bytes, are `byref`. Results differ more: a record, union,
-array field or complex whose size is 1, 2, 4 or 8 bytes and whose non-empty
-fields are all themselves register-sized comes back as one `coerce<iN>` (a
-single `float` or pointer member included, unlike Darwin); anything else,
-including a flexible array member or a field like `char[3]`, is `sret` with
-the natural alignment. `tests/fixtures/clang/windows/i686/abi_target.c`
-pins these against clang.
+`IsWin32StructABI`). A fixed (non-variadic) non-record argument whose
+`required_align` is above 4 is `byref` (records get the same from rustc, so
+they are `native_c`). The first three vector arguments are `direct` (XMM
+registers); later ones, and any wider than 64 bytes, are `byref`. Results:
+clang returns a record, union or complex of 1, 2, 4 or 8 bytes in registers
+only when its non-empty fields are all themselves register-sized (zero-length
+arrays are skipped; a flexible array member, a field like `char[3]`, or a
+`_BitInt` field disqualify it). rustc returns every record of those sizes in
+registers, so the disqualified ones are the explicit `sret` cases.
+`tests/fixtures/clang/windows/i686/abi_target.c` pins these against clang.
 
 **x86-32 calling conventions.** `__stdcall`, `__fastcall`, `__vectorcall`
 and `__thiscall` (keywords or GNU attributes) are part of the function type
@@ -1451,19 +1475,11 @@ uses. The argument `abi_pass` shapes are the platform's cdecl ones.
 `clang/linux/x86_64/calling_conventions_ignored.c` and the two
 `error/clang/windows/i686/calling_convention_*.c` fixtures pin this.
 
-The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
-AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
-128-bit integers where Clang supports them, and flat records. For example,
-`complex<f64>` is two direct floating pieces on SysV x86-64, a copied memory
-argument plus indirect result on i386, and a reference argument plus indirect
-result on Windows x86-64. ARM32 picks hard-float from the resolved float ABI
-(`TargetIsa::Arm`, default from the gnueabihf/gnueabi triple, overridden by
-`-mfloat-abi`), not from the triple environment directly. ARM hard-float
-variadic signatures use base AAPCS;
-Windows AArch64 variadic aggregate arguments use integer pieces. The
-`ir_call_abi.c` and target-specific `abi_target.c` FileCheck fixtures pin
-these cases against Clang IR signatures. More elaborate records use
-`native_c` until their ABI coercion is modeled explicitly.
+ARM32 picks hard-float from the resolved float ABI (`TargetIsa::Arm`, default
+from the gnueabihf/gnueabi triple, overridden by `-mfloat-abi`), not from the
+triple environment directly. ARM hard-float variadic signatures use base
+AAPCS, which rustc also does. The `ir_call_abi.c` and target-specific
+`abi_target.c` FileCheck fixtures pin the per-target signatures.
 
 **Implemented for imaginary (C23 Annex G):** `Type::Imaginary(FloatType)`
 prints as `imaginary<f64>`. Only binary real floating components are

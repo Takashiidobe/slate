@@ -214,11 +214,13 @@ convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "wi
 abi_pass      = "void" | "scalar" | "direct" | "native_c"
               | "coerce<" chunk { ", " chunk } ">"
               | "byval<align=" int ">" | "byref<align=" int ">" | "sret<align=" int ">" ;
-chunk         = "i" digits | float_type | "pair<" float_type ">" ;
+chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">" ;
 ```
 
-`native_c` leaves the record to the target's ordinary C ABI; it is not a
-verified coercion. `direct` is the opposite: the value is passed in registers
+`native_c` means rustc's `extern "C"` passes the value exactly as the C
+compiler does, given a `repr(C)` type of the same layout; every other record
+and complex shape is explicit because rustc would pass it differently.
+`pair<T>`/`quad<T>` are two or four `T` lanes in one SSE eightbyte. `direct` is the opposite: the value is passed in registers
 as its own type, with no coercion and no memory copy. It is what vectors that
 fit the target's vector registers use, where `scalar` would misdescribe them.
 

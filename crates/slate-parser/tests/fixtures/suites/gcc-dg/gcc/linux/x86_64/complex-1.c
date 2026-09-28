@@ -67,12 +67,12 @@ int main(void)
 // DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(imag(%8)), const<f32>(2.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bar(%10 arg1: i64, %11 arg2: i64, %12 arg3: i64, %13 arg4: i64, %14 arg5: i64, %15 arg6: complex<f32>) -> i32 [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<pair<f32>>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, i64, i64, i64, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<pair<f32>>) -> void>(%1, read<i64>(%10), read<i64>(%11), read<i64>(%12), read<i64>(%13), read<i64>(%14), read<complex<f32>>(%15));
+// DEFAULT-NEXT:     fn %9 @bar(%10 arg1: i64, %11 arg2: i64, %12 arg3: i64, %13 arg4: i64, %14 arg5: i64, %15 arg6: complex<f32>) -> i32 [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, i64, i64, i64, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%1, read<i64>(%10), read<i64>(%11), read<i64>(%12), read<i64>(%13), read<i64>(%14), read<complex<f32>>(%15));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i64, i64, i64, i64, i64, complex<f32>) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<pair<f32>>) -> scalar>(%9, widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(2.0)));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i64, i64, i64, i64, i64, complex<f32>) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar>(%9, widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(2.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

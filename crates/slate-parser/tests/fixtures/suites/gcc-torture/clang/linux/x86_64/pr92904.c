@@ -679,7 +679,7 @@ int main() {
 // DEFAULT-NEXT:         va_end(%17);
 // DEFAULT-NEXT:         return read<i128>(%16);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f2(%19 x: i32, ...) -> @type1 [linkage=external] [abi=sysv64(scalar) -> coerce<i64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %18 @f2(%19 x: i32, ...) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %20 r: @type1 [storage=automatic];
 // DEFAULT-NEXT:         let %21 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%21);
@@ -753,7 +753,7 @@ int main() {
 // DEFAULT-NEXT:         copy<@type2, reason=assign>(va_arg<@type2>(%34));
 // DEFAULT-NEXT:         va_end(%34);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @f7(%36 x: i32, ...) -> @type3 [linkage=external] [abi=sysv64(scalar) -> sret<align=8>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %35 @f7(%36 x: i32, ...) -> @type3 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %37 r: @type3 [storage=automatic];
 // DEFAULT-NEXT:         let %38 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%38);
@@ -769,7 +769,7 @@ int main() {
 // DEFAULT-NEXT:         va_end(%38);
 // DEFAULT-NEXT:         return copy<@type3, reason=return>(read<@type3>(%37));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @f8(%40 x: i32, ...) -> @type4 [linkage=external] [abi=sysv64(scalar) -> sret<align=32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %39 @f8(%40 x: i32, ...) -> @type4 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %41 r: @type4 [storage=automatic];
 // DEFAULT-NEXT:         let %42 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%42);
@@ -813,7 +813,7 @@ int main() {
 // DEFAULT-NEXT:         copy<@type4, reason=assign>(va_arg<@type4>(%48));
 // DEFAULT-NEXT:         va_end(%48);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @f11(%50 x: i32, ...) -> @type5 [linkage=external] [abi=sysv64(scalar) -> coerce<f64, i64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %49 @f11(%50 x: i32, ...) -> @type5 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %51 r: @type5 [storage=automatic];
 // DEFAULT-NEXT:         let %52 ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%52);
@@ -1031,8 +1031,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%289));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, native_c) -> native_c>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, native_c) -> native_c>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %92
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1045,8 +1045,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%293));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, native_c) -> native_c>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, native_c) -> native_c>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %93
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1059,8 +1059,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%297));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %94
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1073,8 +1073,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%301));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %95
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1087,8 +1087,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%305));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %96
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1101,8 +1101,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%309));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %97
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1115,8 +1115,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%313));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %98
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1129,8 +1129,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%317));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %99
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1143,8 +1143,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%321));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %100
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1157,8 +1157,8 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%325));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> coerce<i64, i64>>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
+// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
+// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
 // DEFAULT-NEXT:         do %101
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
@@ -1451,7 +1451,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%409));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<i64, i64>) -> void>(%29, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%29, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %122
 // DEFAULT-NEXT:             {
@@ -1465,7 +1465,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%413));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%29, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %123
 // DEFAULT-NEXT:             {
@@ -1479,7 +1479,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%417));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %124
 // DEFAULT-NEXT:             {
@@ -1493,7 +1493,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%421));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %125
 // DEFAULT-NEXT:             {
@@ -1507,7 +1507,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%425));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %126
 // DEFAULT-NEXT:             {
@@ -1521,7 +1521,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%429));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %127
 // DEFAULT-NEXT:             {
@@ -1535,7 +1535,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%433));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %128
 // DEFAULT-NEXT:             {
@@ -1549,7 +1549,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%437));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %129
 // DEFAULT-NEXT:             {
@@ -1563,7 +1563,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%441));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %130
 // DEFAULT-NEXT:             {
@@ -1577,7 +1577,7 @@ int main() {
 // DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%445));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<i64, i64>) -> void>(%29, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
 // DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
 // DEFAULT-NEXT:         do %131
 // DEFAULT-NEXT:             {
@@ -1735,8 +1735,8 @@ int main() {
 // DEFAULT-NEXT:         write<f64>(field1(field3(%65)), const<f64>(2.75));
 // DEFAULT-NEXT:         write<f64>(field2(field3(%65)), neg<f64>(const<f64>(3.5)));
 // DEFAULT-NEXT:         write<f64>(field3(field3(%65)), neg<f64>(const<f64>(2.0)));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, native_c) -> native_c>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, native_c) -> native_c>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %142
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1755,8 +1755,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%497));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, native_c) -> native_c>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, native_c) -> native_c>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %143
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1775,8 +1775,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%505));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %144
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1795,8 +1795,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%513));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %145
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1815,8 +1815,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%521));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %146
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1835,8 +1835,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%529));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %147
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1855,8 +1855,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%537));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %148
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1875,8 +1875,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%545));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %149
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1895,8 +1895,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%553));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %150
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1915,8 +1915,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%561));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> sret<align=8>>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
+// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
+// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
 // DEFAULT-NEXT:         do %151
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1935,8 +1935,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%569));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, native_c) -> native_c>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, native_c) -> native_c>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %152
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1955,8 +1955,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%577));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, native_c) -> native_c>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, native_c) -> native_c>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %153
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1975,8 +1975,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%585));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %154
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -1995,8 +1995,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%593));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %155
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2015,8 +2015,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%601));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %156
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2035,8 +2035,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%609));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %157
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2055,8 +2055,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%617));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %158
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2075,8 +2075,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%625));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %159
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2095,8 +2095,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%633));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %160
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2115,8 +2115,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%641));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> sret<align=32>>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
+// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
+// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
 // DEFAULT-NEXT:         do %161
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
@@ -2135,7 +2135,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%649));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, byval<align=8>) -> void>(%43, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%43, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %162
 // DEFAULT-NEXT:             {
@@ -2155,7 +2155,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%657));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%43, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %163
 // DEFAULT-NEXT:             {
@@ -2175,7 +2175,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%665));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %164
 // DEFAULT-NEXT:             {
@@ -2195,7 +2195,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%673));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %165
 // DEFAULT-NEXT:             {
@@ -2215,7 +2215,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%681));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %166
 // DEFAULT-NEXT:             {
@@ -2235,7 +2235,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%689));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %167
 // DEFAULT-NEXT:             {
@@ -2255,7 +2255,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%697));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %168
 // DEFAULT-NEXT:             {
@@ -2275,7 +2275,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%705));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %169
 // DEFAULT-NEXT:             {
@@ -2295,7 +2295,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%713));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %170
 // DEFAULT-NEXT:             {
@@ -2315,7 +2315,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%721));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=8>) -> void>(%43, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
 // DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
 // DEFAULT-NEXT:         do %171
 // DEFAULT-NEXT:             {
@@ -2335,7 +2335,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%729));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, byval<align=32>) -> void>(%46, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%46, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %172
 // DEFAULT-NEXT:             {
@@ -2355,7 +2355,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%737));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%46, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %173
 // DEFAULT-NEXT:             {
@@ -2375,7 +2375,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%745));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %174
 // DEFAULT-NEXT:             {
@@ -2395,7 +2395,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%753));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %175
 // DEFAULT-NEXT:             {
@@ -2415,7 +2415,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%761));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %176
 // DEFAULT-NEXT:             {
@@ -2435,7 +2435,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%769));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %177
 // DEFAULT-NEXT:             {
@@ -2455,7 +2455,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%777));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %178
 // DEFAULT-NEXT:             {
@@ -2475,7 +2475,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%785));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %179
 // DEFAULT-NEXT:             {
@@ -2495,7 +2495,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%793));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %180
 // DEFAULT-NEXT:             {
@@ -2515,7 +2515,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%801));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, byval<align=32>) -> void>(%46, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
 // DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
 // DEFAULT-NEXT:         do %181
 // DEFAULT-NEXT:             {
@@ -2537,8 +2537,8 @@ int main() {
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<f64>(field0(field5(%65)), const<f64>(9.5));
 // DEFAULT-NEXT:         write<i64>(field1(field5(%65)), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, native_c) -> native_c>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, native_c) -> native_c>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %182
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2551,8 +2551,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%813));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %183
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2565,8 +2565,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%817));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %184
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2579,8 +2579,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%821));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %185
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2593,8 +2593,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%825));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %186
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2607,8 +2607,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%829));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %187
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2621,8 +2621,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%833));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %188
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2635,8 +2635,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%837));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %189
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2649,8 +2649,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%841));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %190
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2663,8 +2663,8 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%845));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> coerce<f64, i64>>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
+// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
+// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
 // DEFAULT-NEXT:         do %191
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
@@ -2817,7 +2817,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%889));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, coerce<f64, i64>) -> void>(%57, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%57, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %202
 // DEFAULT-NEXT:             {
@@ -2831,7 +2831,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%893));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %203
 // DEFAULT-NEXT:             {
@@ -2845,7 +2845,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%897));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %204
 // DEFAULT-NEXT:             {
@@ -2859,7 +2859,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%901));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %205
 // DEFAULT-NEXT:             {
@@ -2873,7 +2873,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%905));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %206
 // DEFAULT-NEXT:             {
@@ -2887,7 +2887,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%909));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %207
 // DEFAULT-NEXT:             {
@@ -2901,7 +2901,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%913));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %208
 // DEFAULT-NEXT:             {
@@ -2915,7 +2915,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%917));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %209
 // DEFAULT-NEXT:             {
@@ -2929,7 +2929,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%921));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %210
 // DEFAULT-NEXT:             {
@@ -2943,7 +2943,7 @@ int main() {
 // DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%925));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, coerce<f64, i64>) -> void>(%57, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
 // DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
 // DEFAULT-NEXT:         do %211
 // DEFAULT-NEXT:             {

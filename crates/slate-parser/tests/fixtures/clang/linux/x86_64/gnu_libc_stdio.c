@@ -183,7 +183,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %3 @parse_printf_format(%78 __fmt: ptr<const i8> [restrict], %79 __n: u64, %80 __argtypes: ptr<i32> [restrict]) -> u64 [linkage=external];
 // DEFAULT-NEXT:     fn %29 @fclose(%81 __stream: ptr<@type0>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %30 @fflush(%82 __stream: ptr<@type0>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %31 @fopencookie(%83 __magic_cookie: ptr<void> [restrict], %84 __modes: ptr<const i8> [restrict], %85 __io_funcs: @type16) -> ptr<@type0> [linkage=external] [abi=sysv64(scalar, scalar, byval<align=8>) -> scalar];
+// DEFAULT-NEXT:     fn %31 @fopencookie(%83 __magic_cookie: ptr<void> [restrict], %84 __modes: ptr<const i8> [restrict], %85 __io_funcs: @type16) -> ptr<@type0> [linkage=external] [abi=sysv64(scalar, scalar, native_c) -> scalar];
 // DEFAULT-NEXT:     fn %32 @fmemopen(%86 __s: ptr<void>, %87 __len: u64, %88 __modes: ptr<const i8>) -> ptr<@type0> [linkage=external];
 // DEFAULT-NEXT:     fn %33 @open_memstream(%89 __bufloc: ptr<ptr<i8>>, %90 __sizeloc: ptr<u64>) -> ptr<@type0> [linkage=external];
 // DEFAULT-NEXT:     fn %34 @fprintf(%91 __stream: ptr<@type0> [restrict], %92 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
@@ -296,8 +296,8 @@ int main(void) {
 // DEFAULT-NEXT:         let %73 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(field1(%71), function_decay<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(%49));
 // DEFAULT-NEXT:         write<ptr<fn(ptr<void>) -> i32>>(field3(%71), function_decay<ptr<fn(ptr<void>) -> i32>>(%54));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%72, call<ptr<@type0>, signature=fn(ptr<void>, ptr<const i8>, @type16) -> ptr<@type0>, abi=sysv64(scalar, scalar, byval<align=8>) -> scalar>(%31, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type19>>(%70)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%126)), copy<@type16, reason=arg>(read<@type16>(%71))));
-// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<void>, ptr<const i8>, @type16) -> ptr<@type0>, abi=sysv64(scalar, scalar, byval<align=8>) -> scalar>(%31, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type19>>(%70)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%126)), copy<@type16, reason=arg>(read<@type16>(%71)));
+// DEFAULT-NEXT:         write<ptr<@type0>>(%72, call<ptr<@type0>, signature=fn(ptr<void>, ptr<const i8>, @type16) -> ptr<@type0>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%31, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type19>>(%70)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%126)), copy<@type16, reason=arg>(read<@type16>(%71))));
+// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<void>, ptr<const i8>, @type16) -> ptr<@type0>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%31, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type19>>(%70)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%126)), copy<@type16, reason=arg>(read<@type16>(%71)));
 // DEFAULT-NEXT:         let %171: i32 [synthetic] = read<i32>(%73);
 // DEFAULT-NEXT:         let %172: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%171), from_bool<i32, reason=promotion>(ne<ptr<@type0>>(read<ptr<@type0>>(%72), null<ptr<@type0>>)));
 // DEFAULT-NEXT:         write<i32>(%73, read<i32>(%172));

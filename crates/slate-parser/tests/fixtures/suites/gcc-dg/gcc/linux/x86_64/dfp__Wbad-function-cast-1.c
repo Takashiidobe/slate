@@ -77,7 +77,7 @@ foo(void)
 // DEFAULT-NEXT:     fn %5 @rf3() -> d32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @rf4() -> d64 [linkage=external];
 // DEFAULT-NEXT:     fn %7 @rf5() -> d128 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @cf() -> complex<f64> [linkage=external] [abi=sysv64() -> coerce<f64, f64>];
+// DEFAULT-NEXT:     fn %8 @cf() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %9 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<d32, signature=fn() -> d32>(%5);
 // DEFAULT-NEXT:         call<d64, signature=fn() -> d64>(%6);
@@ -97,7 +97,7 @@ foo(void)
 // DEFAULT-NEXT:         float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(call<d32, signature=fn() -> d32>(%5));
 // DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d64, signature=fn() -> d64>(%6));
 // DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d128, signature=fn() -> d128>(%7));
-// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> coerce<f64, f64>>(%8)));
+// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

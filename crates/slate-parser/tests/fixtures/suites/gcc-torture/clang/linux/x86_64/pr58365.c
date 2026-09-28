@@ -66,14 +66,14 @@ int main() {
 // DEFAULT-NEXT:     fn %6 @foo() -> i8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar() -> @type0 [linkage=internal] [abi=sysv64() -> sret<align=4>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %7 @bar() -> @type0 [linkage=internal] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn() -> i8>(%6), const<i8>(0))
 // DEFAULT-NEXT:             return copy<@type0, reason=return>(read<@type0>(%2));
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> sret<align=4>>(%7)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> sret<align=4>>(%7));
+// DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7)));
+// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7));
 // DEFAULT-NEXT:         write<i32>(field1(%2), const<i32>(1));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);

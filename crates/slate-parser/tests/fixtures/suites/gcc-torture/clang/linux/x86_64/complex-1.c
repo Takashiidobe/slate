@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %6 @g2(%7 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<f64>(0.0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @xcexp(%9 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %8 @xcexp(%9 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %10 r: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%10, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9))));
 // DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9)));
@@ -76,8 +76,8 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %12 x: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%12, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))));
-// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(coerce<f64, f64>) -> coerce<f64, f64>>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
+// DEFAULT-NEXT:         write<complex<f64>>(%12, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))));
+// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(real(%12)), neg<f64>(const<f64>(1.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(imag(%12)), const<f64>(0.0))

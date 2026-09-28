@@ -909,9 +909,9 @@ assuming `extern "C"` covers every signature.
 
 The implemented module IR stores a resolved `AbiSignature` on each function
 declaration and call. It classifies nontrivial value passing without changing
-the semantic function type. Flat records and complex values have target ABI
-classes; other records explicitly retain `native_c` for the target's ordinary
-foreign ABI. See [IR Spec](ir-spec.md#complex-imaginary-vector-and-fixed-point-types)
+the semantic function type. Records and complex values are `native_c`
+(rustc's `extern "C"` already agrees with the C compiler) except where rustc
+would diverge, which get an explicit shape and need a boundary conversion. See [IR Spec](ir-spec.md#complex-imaginary-vector-and-fixed-point-types)
 for the current matrix and fixtures.
 
 ### Attributes by meaning and attachment

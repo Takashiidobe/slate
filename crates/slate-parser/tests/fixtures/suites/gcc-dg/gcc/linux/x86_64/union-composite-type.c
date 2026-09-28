@@ -36,6 +36,6 @@ int f(int a);			/* { dg-warning "not truly compatible" } */
 // DEFAULT-NEXT:     type @type0 = union {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @f(%2 <unnamed>: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i32>) -> scalar];
+// DEFAULT-NEXT:     fn %1 @f(%2 <unnamed>: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

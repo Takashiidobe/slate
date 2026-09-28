@@ -47,7 +47,7 @@ struct pair record(struct pair value) { return value; }
 // X86-64-DARWIN-CLANG-NEXT:     global %2 sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
 // X86-64-DARWIN-CLANG-NEXT:     global %3 sizeof_va_list: u64 [storage=static] = const<u64>(24) [linkage=external];
 // X86-64-DARWIN-CLANG-NEXT:     global %4 alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// X86-64-DARWIN-CLANG-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=sysv64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// X86-64-DARWIN-CLANG-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // X86-64-DARWIN-CLANG-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
 // X86-64-DARWIN-CLANG-NEXT:     }
 // X86-64-DARWIN-CLANG-NEXT: }

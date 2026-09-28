@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 s = struct {
 // DEFAULT-NEXT:         field0 t: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %1 @f(%2 t: @type0, %3 a: i32, %4 b: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(coerce<i32>, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %1 @f(%2 t: @type0, %3 a: i32, %4 b: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 bd: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
 // DEFAULT-NEXT:             let %20: i32 [synthetic] = read<i32>(%3);
@@ -80,7 +80,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %10 b: i32 [storage=automatic] = const<i32>(15);
 // DEFAULT-NEXT:                     let %11 c: i32 [storage=automatic] = or<i32>(read<i32>(%9), read<i32>(%10));
 // DEFAULT-NEXT:                     let %12 t: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%8));
-// DEFAULT-NEXT:                     let %13 r: i32 [storage=automatic] = call<i32, signature=fn(@type0, i32, i32) -> i32, abi=sysv64(coerce<i32>, scalar, scalar) -> scalar>(%1, copy<@type0, reason=arg>(read<@type0>(%12)), read<i32>(%9), read<i32>(%10));
+// DEFAULT-NEXT:                     let %13 r: i32 [storage=automatic] = call<i32, signature=fn(@type0, i32, i32) -> i32, abi=sysv64(native_c, scalar, scalar) -> scalar>(%1, copy<@type0, reason=arg>(read<@type0>(%12)), read<i32>(%9), read<i32>(%10));
 // DEFAULT-NEXT:                     let %14 exp: i32 [storage=automatic] = conditional<i32>(ne<i32>(read<i32>(%8), const<i32>(0)), or<i32>(read<i32>(%9), read<i32>(%10)), read<i32>(%9));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%14), read<i32>(%13))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%19);

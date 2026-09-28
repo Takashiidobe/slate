@@ -98,7 +98,7 @@ void stf(void) {
 // DEFAULT-NEXT:         let %13 fp_qux: ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>> [storage=automatic] = function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%7);
 // DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%13), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @stparam(%17 a: @type1, %18 b: ptr<@type1>) -> void [linkage=external] [abi=win64(coerce<i64>, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %16 @stparam(%17 a: @type1, %18 b: ptr<@type1>) -> void [linkage=external] [abi=win64(native_c, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @stf() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %20 St1: @type0 [storage=automatic];
@@ -108,7 +108,7 @@ void stf(void) {
 // DEFAULT-NEXT:         write<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%21)), function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%7));
 // DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%21))), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
 // DEFAULT-NEXT:         let %22 fp_stparam: ptr<fn(@type1, ptr<@type1>) -> void> [storage=automatic] = function_decay<ptr<fn(@type1, ptr<@type1>) -> void>>(%16);
-// DEFAULT-NEXT:         call<void, signature=fn(@type1, ptr<@type1>) -> void, abi=win64(coerce<i64>, scalar) -> void>(read<ptr<fn(@type1, ptr<@type1>) -> void>>(%22), copy<@type1, reason=arg>(read<@type1>(%21)), addr_of<ptr<@type1>>(%21));
+// DEFAULT-NEXT:         call<void, signature=fn(@type1, ptr<@type1>) -> void, abi=win64(native_c, scalar) -> void>(read<ptr<fn(@type1, ptr<@type1>) -> void>>(%22), copy<@type1, reason=arg>(read<@type1>(%21)), addr_of<ptr<@type1>>(%21));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
