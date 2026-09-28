@@ -93,7 +93,8 @@ float_type    = "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
               | "d32" | "d64" | "d128" ;
 access_prefix = "volatile " | "atomic " | "volatile atomic " ;
 ptr_space     = "ptr32_sptr" | "ptr32_uptr" | "ptr64" ;
-fn_type       = "fn(" [ fn_params ] ") -> " type ;
+fn_type       = "fn" [ " " call_conv ] "(" [ fn_params ] ") -> " type ;
+call_conv     = "stdcall" | "fastcall" | "vectorcall" | "thiscall" ;
 fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 ```
 
@@ -191,7 +192,7 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
 - One `fn` per function: the body and parameters come from the definition,
   or else the first prototype.
 - `[abi=...]` is printed only when some argument or the result is not passed
-  as a plain scalar.
+  as a plain scalar, or the calling convention is not the default C one.
 - `fallthrough` is present only on definitions and says what reaching the end
   of the body means. `ret(value)` evaluates the value only when control reaches
   that point; its local bindings belong to the function body.
@@ -206,7 +207,8 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
 ## ABI signatures
 
 ```ebnf
-abi_signature = convention "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
+abi_signature = convention [ " " call_conv ] "(" [ abi_pass { ", " abi_pass } ] ") -> "
+                abi_pass ;
 convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "win_arm64"
               | "aapcs32" | "aapcs32_hard_float" ;
 abi_pass      = "void" | "scalar" | "direct" | "native_c"

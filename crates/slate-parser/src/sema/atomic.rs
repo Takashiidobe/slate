@@ -783,6 +783,7 @@ impl Lowerer {
             ],
             variadic: false,
             prototyped: true,
+            convention: CallConv::C,
         };
         let callee = self.libatomic_is_lock_free(e, &signature)?;
         let abi = self.abi_signature(&signature, None)?;

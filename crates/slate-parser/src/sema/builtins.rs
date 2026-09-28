@@ -300,6 +300,7 @@ impl TypeResolver {
             params,
             variadic: prototype.variadic,
             prototyped: true,
+            convention: crate::ir::CallConv::C,
         }))
     }
 

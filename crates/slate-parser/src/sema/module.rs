@@ -193,6 +193,8 @@ fn lower_item(
             lower.record_function(id, &function.specifiers, &attributes, true, true)?;
             let start = lower.types.definitions.len();
             let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
+            let resolved = lower.types.apply_convention(resolved, &function.attributes);
+            let resolved = lower.types.inherit_convention(id, resolved);
             let (return_c, ..) = lower
                 .types
                 .ctypes
@@ -866,6 +868,10 @@ impl Lowerer {
                 &declarator.declarator,
                 &declarator.attributes,
             )?;
+            let resolved = match self.declaration_id(declarator.id, name) {
+                Ok(id) => self.types.inherit_convention(id, resolved),
+                Err(_) => resolved,
+            };
             if let Some(value) = value {
                 self.check_inferred(resolved, value)?;
             }
@@ -907,6 +913,7 @@ impl Lowerer {
                 parameters: parameter_types,
                 variadic,
                 prototyped,
+                ..
             } = &ty
             {
                 if declarator.initializer.is_some() {

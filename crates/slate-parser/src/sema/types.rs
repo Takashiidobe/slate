@@ -9,11 +9,13 @@ use crate::ast::{
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::{DiagnosticContext, DiagnosticOptions, Warning};
 use crate::ir::{
-    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, Enumerator, Field, Number,
-    NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind,
-    TypeId, Value, ValueKind,
+    Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Enumerator, Field,
+    Number, NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition,
+    TypeDefinitionKind, TypeId, Value, ValueKind,
 };
-use crate::target_info::{LongDoubleFormat, StorageLayout, TargetEnvironment, TargetInfo};
+use crate::target_info::{
+    LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
+};
 use num_bigint::{BigInt, BigUint};
 
 use super::attributes::{Subject, Use};
@@ -811,6 +813,14 @@ impl TypeResolver {
         previous: QualType,
         declared: QualType,
     ) -> Result<&'static str, ResolveError> {
+        if self.ctypes.is_function(previous)
+            && self.ctypes.function_convention(previous)
+                != self.ctypes.function_convention(declared)
+        {
+            return Err(ResolveError::Invalid(
+                "function redeclared with a different calling convention",
+            ));
+        }
         let returns = self
             .ctypes
             .function_parts(previous)
@@ -1116,17 +1126,66 @@ impl TypeResolver {
             .into_iter()
             .chain(attributes)
             .collect::<Vec<_>>();
-        if !own
+        let resolved = if !own
             .iter()
             .any(|attribute| attribute.value.is_type_attribute())
         {
-            return self.resolve(specifiers, declarator);
-        }
-        let specifiers = DeclarationSpecifiers {
-            ty: specifiers.ty.clone().with_type_attributes(own),
-            ..specifiers.clone()
+            self.resolve(specifiers, declarator)?
+        } else {
+            let specifiers = DeclarationSpecifiers {
+                ty: specifiers.ty.clone().with_type_attributes(own),
+                ..specifiers.clone()
+            };
+            self.resolve(&specifiers, declarator)?
         };
-        self.resolve(&specifiers, declarator)
+        Ok(self.apply_convention(resolved, attributes))
+    }
+
+    pub(super) fn calling_convention<'a>(
+        &self,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+    ) -> Option<CallConv> {
+        if self.target.family != TargetFamily::X86 {
+            return None;
+        }
+        attributes
+            .into_iter()
+            .filter_map(|attribute| match &attribute.value {
+                Attribute::CallingConvention(convention) => match convention {
+                    crate::ast::CallingConvention::Cdecl => Some(CallConv::C),
+                    crate::ast::CallingConvention::Stdcall => Some(CallConv::X86Stdcall),
+                    crate::ast::CallingConvention::Fastcall => Some(CallConv::X86Fastcall),
+                    crate::ast::CallingConvention::Vectorcall => Some(CallConv::X86Vectorcall),
+                    crate::ast::CallingConvention::Thiscall => Some(CallConv::X86Thiscall),
+                    _ => None,
+                },
+                _ => None,
+            })
+            .last()
+    }
+
+    pub(super) fn inherit_convention(&mut self, id: BindingId, declared: QualType) -> QualType {
+        let Some(previous) = self.entities.ty(&id) else {
+            return declared;
+        };
+        let convention = self.ctypes.function_convention(previous);
+        if convention == CallConv::C || self.ctypes.function_convention(declared) != CallConv::C {
+            return declared;
+        }
+        self.ctypes
+            .with_convention(declared, convention)
+            .unwrap_or(declared)
+    }
+
+    pub(super) fn apply_convention<'a>(
+        &mut self,
+        q: QualType,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+    ) -> QualType {
+        match self.calling_convention(attributes) {
+            Some(convention) => self.ctypes.with_convention(q, convention).unwrap_or(q),
+            None => q,
+        }
     }
 
     pub fn resolve(
@@ -1142,7 +1201,20 @@ impl TypeResolver {
         }
         let base = self.base(&specifiers.ty)?;
         let base = self.qualify(base, &specifiers.qualifiers)?;
-        let resolved = self.derive(declarator, base)?;
+        let convention = self.calling_convention(&specifiers.attributes);
+        let resolved = match convention {
+            Some(convention) if has_function_declarator(declarator) => {
+                self.derive(declarator, base, Some(convention))?
+            }
+            Some(convention) => {
+                let base = self
+                    .ctypes
+                    .with_convention(base, convention)
+                    .unwrap_or(base);
+                self.derive(declarator, base, None)?
+            }
+            None => self.derive(declarator, base, None)?,
+        };
         Ok(if specifiers.is_constexpr {
             resolved.with(Qualifiers::CONST)
         } else {
@@ -1401,18 +1473,28 @@ impl TypeResolver {
         }
     }
 
-    fn derive(&mut self, declarator: &Declarator, q: QualType) -> Result<QualType, ResolveError> {
+    fn derive(
+        &mut self,
+        declarator: &Declarator,
+        q: QualType,
+        innermost: Option<CallConv>,
+    ) -> Result<QualType, ResolveError> {
         match declarator {
             Declarator::Name(_) | Declarator::Abstract => Ok(q),
-            Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
-                self.derive(inner, q)
+            Declarator::Grouped(inner) => self.derive(inner, q, innermost),
+            Declarator::Attributed { inner, attributes } => {
+                let q = self.apply_convention(q, attributes);
+                self.derive(inner, q, innermost)
             }
             Declarator::Pointer {
-                inner, qualifiers, ..
+                inner,
+                qualifiers,
+                attributes,
             } => {
+                let q = self.apply_convention(q, attributes);
                 let pointer = self.ctypes.pointer(q);
                 let q = self.qualify(pointer, qualifiers)?;
-                self.derive(inner, q)
+                self.derive(inner, q, innermost)
             }
             Declarator::Array { .. } => {
                 let mut extents = Vec::new();
@@ -1453,7 +1535,7 @@ impl TypeResolver {
                     }
                     q = self.ctypes.qual(CTypeKind::Array { element: q, extent });
                 }
-                self.derive(core, q)
+                self.derive(core, q, innermost)
             }
             Declarator::Function { inner, parameters } => {
                 let params = self.with_scope(|this| {
@@ -1484,8 +1566,15 @@ impl TypeResolver {
                     params,
                     variadic: parameters.is_variadic(),
                     prototyped,
+                    convention: CallConv::C,
                 });
-                self.derive(core, q)
+                let q = match innermost {
+                    Some(convention) if !has_function_declarator(core) => {
+                        self.ctypes.with_convention(q, convention).unwrap_or(q)
+                    }
+                    _ => q,
+                };
+                self.derive(core, q, innermost)
             }
         }
     }
@@ -1553,9 +1642,12 @@ impl TypeResolver {
         mut q: QualType,
     ) -> Result<(&'d Declarator, QualType), ResolveError> {
         while let Declarator::Pointer {
-            inner, qualifiers, ..
+            inner,
+            qualifiers,
+            attributes,
         } = core
         {
+            q = self.apply_convention(q, attributes);
             let pointer = self.ctypes.pointer(q);
             q = self.qualify(pointer, qualifiers)?;
             core = inner;
@@ -2864,6 +2956,43 @@ pub(super) fn same_layout(a: &Type, b: &Type) -> bool {
     }
 }
 
+fn without_conventions(specifiers: &DeclarationSpecifiers) -> DeclarationSpecifiers {
+    DeclarationSpecifiers {
+        attributes: specifiers
+            .attributes
+            .iter()
+            .filter(|attribute| !matches!(attribute.value, Attribute::CallingConvention(_)))
+            .cloned()
+            .collect(),
+        ..specifiers.clone()
+    }
+}
+
+fn view_convention<'a>(
+    resolver: &TypeResolver,
+    parameters: &crate::ir::Parameters,
+    attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+) -> CallConv {
+    if matches!(
+        parameters,
+        crate::ir::Parameters::Prototype { variadic: true, .. }
+    ) {
+        return CallConv::C;
+    }
+    resolver.calling_convention(attributes).unwrap_or_default()
+}
+
+fn has_function_declarator(declarator: &Declarator) -> bool {
+    match declarator {
+        Declarator::Name(_) | Declarator::Abstract => false,
+        Declarator::Function { .. } => true,
+        Declarator::Grouped(inner)
+        | Declarator::Attributed { inner, .. }
+        | Declarator::Pointer { inner, .. }
+        | Declarator::Array { inner, .. } => has_function_declarator(inner),
+    }
+}
+
 fn tag_kind(kind: TagKind, id: TypeId) -> CTypeKind {
     match kind {
         TagKind::Enum => CTypeKind::Enum(id),
@@ -2934,7 +3063,10 @@ pub fn resolve_type_module(
                     .declarator
                     .name()
                     .ok_or(ResolveError::Unsupported("function name"))?;
-                let return_c = resolver.resolve(&function.specifiers, &Declarator::Abstract)?;
+                let return_c = resolver.resolve(
+                    &without_conventions(&function.specifiers),
+                    &Declarator::Abstract,
+                )?;
                 let return_type = resolver.layout(return_c);
                 let parameters =
                     resolve_parameters(&mut resolver, signature, &mut module, &mut next_binding)?;
@@ -2951,6 +3083,16 @@ pub fn resolve_type_module(
                         crate::ir::Parameters::Prototype { variadic: true, .. }
                     ),
                     parameter_operands.len(),
+                    view_convention(
+                        &resolver,
+                        &parameters,
+                        function
+                            .specifiers
+                            .attributes
+                            .iter()
+                            .chain(function.declarator.grouped_attributes())
+                            .chain(&function.attributes),
+                    ),
                 )?;
                 let lowered = declaration.derive(Function {
                     id: BindingId(next_binding),
@@ -2981,7 +3123,10 @@ pub fn resolve_type_module(
                         .declarator
                         .name()
                         .ok_or(ResolveError::Unsupported("function name"))?;
-                    let return_c = resolver.resolve(&item.specifiers, &Declarator::Abstract)?;
+                    let return_c = resolver.resolve(
+                        &without_conventions(&item.specifiers),
+                        &Declarator::Abstract,
+                    )?;
                     let return_type = resolver.layout(return_c);
                     let parameters = resolve_parameters(
                         &mut resolver,
@@ -3003,6 +3148,15 @@ pub fn resolve_type_module(
                                 crate::ir::Parameters::Prototype { variadic: true, .. }
                             ),
                             parameter_operands.len(),
+                            view_convention(
+                                &resolver,
+                                &parameters,
+                                item.specifiers
+                                    .attributes
+                                    .iter()
+                                    .chain(declarator.declarator.grouped_attributes())
+                                    .chain(&declarator.attributes),
+                            ),
                         )?;
                     let lowered = declarator.derive(Function {
                         id: BindingId(next_binding),

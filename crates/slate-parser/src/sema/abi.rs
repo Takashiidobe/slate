@@ -4,8 +4,8 @@ use super::types::TypeResolver;
 use crate::ast::Span;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
-    AbiChunk, AbiConvention, AbiPass, AbiSignature, Field, FloatType, NumericType, RecordKind,
-    Type, TypeDefinitionKind, Value,
+    AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, Field, FloatType, NumericType,
+    RecordKind, Type, TypeDefinitionKind, Value,
 };
 use crate::target_info::TargetInfo;
 
@@ -62,6 +62,7 @@ impl<'a> AbiClassifier<'a> {
             return_type,
             parameters,
             variadic,
+            convention,
             ..
         } = signature
         else {
@@ -97,6 +98,7 @@ impl<'a> AbiClassifier<'a> {
             &argument_types,
             *variadic,
             parameters.len(),
+            *convention,
         )
     }
 
@@ -107,6 +109,7 @@ impl<'a> AbiClassifier<'a> {
         parameters: &[AbiOperand],
         variadic: bool,
         fixed_count: usize,
+        calling: CallConv,
     ) -> Result<AbiSignature, ResolveError> {
         let convention = self.abi_convention(variadic);
         let mut free_vector_registers = WIN32_VECTOR_REGISTERS;
@@ -141,6 +144,7 @@ impl<'a> AbiClassifier<'a> {
         };
         Ok(AbiSignature {
             convention,
+            calling,
             arguments,
             result,
         })

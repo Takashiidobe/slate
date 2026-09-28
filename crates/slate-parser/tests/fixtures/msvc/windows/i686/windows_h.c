@@ -58,7 +58,7 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:     global %15 long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
 // IR-NEXT:     global %16 large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
 // IR-NEXT:     global %17 large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
-// IR-NEXT:     fn %11 @Int64ShllMod32(%12 Value: u64, %13 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%23)), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%24)), const<u32>(32))))] {
+// IR-NEXT:     fn %11 @Int64ShllMod32(%12 Value: u64, %13 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%23)), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%24)), const<u32>(32))))] {
 // IR-NEXT:         let %23: u32 [synthetic];
 // IR-NEXT:         let %24: u32 [synthetic];
 // IR-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] [alternative=none] {
@@ -71,7 +71,7 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %18 @shift_left(%19 value: u64, %20 count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn(u64, u32) -> u64>(%11, read<u64>(%19), read<u32>(%20));
+// IR-NEXT:         return call<u64, signature=fn stdcall(u64, u32) -> u64, abi=x86_win32 stdcall(scalar, scalar) -> scalar>(%11, read<u64>(%19), read<u32>(%20));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

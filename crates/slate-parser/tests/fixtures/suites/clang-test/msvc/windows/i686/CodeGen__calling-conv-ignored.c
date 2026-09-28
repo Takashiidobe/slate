@@ -37,14 +37,14 @@ void __cdecl bar(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @foo_default(%5 lpString1: ptr<const i8>, %6 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo_std(%7 lpString1: ptr<const i8>, %8 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo_fast(%9 lpString1: ptr<const i8>, %10 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo_vector(%11 lpString1: ptr<const i8>, %12 lpString2: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @foo_std(%7 lpString1: ptr<const i8>, %8 lpString2: ptr<const i8>) -> void [linkage=external] [abi=x86_win32 stdcall(scalar, scalar) -> void];
+// DEFAULT-NEXT:     fn %2 @foo_fast(%9 lpString1: ptr<const i8>, %10 lpString2: ptr<const i8>) -> void [linkage=external] [abi=x86_win32 fastcall(scalar, scalar) -> void];
+// DEFAULT-NEXT:     fn %3 @foo_vector(%11 lpString1: ptr<const i8>, %12 lpString2: ptr<const i8>) -> void [linkage=external] [abi=x86_win32 vectorcall(scalar, scalar) -> void];
 // DEFAULT-NEXT:     fn %4 @bar() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%0, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%1, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%2, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%3, null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn stdcall(ptr<const i8>, ptr<const i8>) -> void, abi=x86_win32 stdcall(scalar, scalar) -> void>(%1, null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn fastcall(ptr<const i8>, ptr<const i8>) -> void, abi=x86_win32 fastcall(scalar, scalar) -> void>(%2, null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn vectorcall(ptr<const i8>, ptr<const i8>) -> void, abi=x86_win32 vectorcall(scalar, scalar) -> void>(%3, null<ptr<const i8>>, null<ptr<const i8>>);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

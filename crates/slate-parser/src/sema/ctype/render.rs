@@ -2,7 +2,7 @@ use super::{
     CTypeKind, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank, QualType,
     Qualifiers,
 };
-use crate::ir::{PointerSpace, TypeDefinition};
+use crate::ir::{CallConv, PointerSpace, TypeDefinition};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CTypeMetadata {
@@ -191,6 +191,7 @@ impl Printer<'_> {
                 params,
                 variadic,
                 prototyped,
+                convention,
             } => {
                 let mut parts = params
                     .iter()
@@ -206,7 +207,12 @@ impl Printer<'_> {
                     }
                     format!("({})", parts.join(", "))
                 };
-                self.print(*ret, suffixed(declarator, &list))
+                let text = self.print(*ret, suffixed(declarator, &list));
+                if *convention == CallConv::C {
+                    text
+                } else {
+                    format!("{text} __attribute__(({convention}))")
+                }
             }
             kind => self.base(q.quals, &self.name(kind), declarator),
         }

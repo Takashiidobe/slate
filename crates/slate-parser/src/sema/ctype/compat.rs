@@ -87,6 +87,7 @@ impl CTypes {
                 };
                 av == bv
                     && aproto == bproto
+                    && self.function_convention(a) == self.function_convention(b)
                     && ap.len() == bp.len()
                     && self.same_or_enum_underlying(ar, br)
                     && ap
@@ -105,7 +106,7 @@ impl CTypes {
         let Some((br, bp, bv, bproto)) = self.function_parts(b) else {
             return false;
         };
-        if !self.compatible(ar, br) {
+        if !self.compatible(ar, br) || self.function_convention(a) != self.function_convention(b) {
             return false;
         }
         match (aproto, bproto) {
@@ -217,11 +218,13 @@ impl CTypes {
             (false, true) => (bp, bv, true),
             (false, false) => (if ap.is_empty() { bp } else { ap }, false, false),
         };
+        let convention = self.function_convention(a);
         Some(self.qual(CTypeKind::Function {
             ret,
             params,
             variadic,
             prototyped,
+            convention,
         }))
     }
 

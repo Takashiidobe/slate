@@ -1423,6 +1423,34 @@ including a flexible array member or a field like `char[3]`, is `sret` with
 the natural alignment. `tests/fixtures/clang/windows/i686/abi_target.c`
 pins these against clang.
 
+**x86-32 calling conventions.** `__stdcall`, `__fastcall`, `__vectorcall`
+and `__thiscall` (keywords or GNU attributes) are part of the function type
+on 32-bit x86 targets only: `CTypeKind::Function` and `ir::Type::Function`
+carry a `CallConv`, printed `fn stdcall(i32) -> i32`, and the function's and
+each call's `AbiSignature.calling` repeats it (`x86_win32 stdcall(...)`), so
+a call keeps its convention even when compact printing drops the signature.
+`__cdecl` is the default `C`. Placement follows clang: a declaration-specifier
+or trailing attribute goes to the innermost function declarator (or to a
+function typedef named by the specifiers), and one on a pointer or grouped
+declarator to the function type beneath it. A convention on a variadic
+function is dropped, as clang does (`-Wignored-attributes`). On x86-64 and
+other targets the attributes are ignored, as clang does for all of them
+except `vectorcall`, which clang honours on x86-64 too but slate does not yet
+model. Types differing only in convention are incompatible (pointer
+conversions, `_Generic`, `__builtin_types_compatible_p`); a redeclaration
+without a convention inherits the earlier one, and one that adds or changes
+it is rejected, as clang, gcc and MSVC all do.
+
+The convention is recorded, not modelled. What it implies -- callee stack
+cleanup for stdcall, ECX/EDX (`inreg`) assignment for fastcall and
+vectorcall, XMM assignment of vectors and HVAs for vectorcall, and the
+Windows symbol decoration (`_f@8`, `@f@8`, `f@@8`) -- is left to the Rust
+side, where `extern "stdcall"` etc. lower to the same LLVM conventions clang
+uses. The argument `abi_pass` shapes are the platform's cdecl ones.
+`clang/{windows,linux}/i686/calling_conventions.c`,
+`clang/linux/x86_64/calling_conventions_ignored.c` and the two
+`error/clang/windows/i686/calling_convention_*.c` fixtures pin this.
+
 The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
 AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
 128-bit integers where Clang supports them, and flat records. For example,

@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 pub(super) use layout::rank_width;
 
-use crate::ir::{BindingId, PointerSpace, TypeId};
+use crate::ir::{BindingId, CallConv, PointerSpace, TypeId};
 
 pub use render::CTypeMetadata;
 
@@ -222,6 +222,7 @@ pub enum CTypeKind {
         params: Vec<QualType>,
         variadic: bool,
         prototyped: bool,
+        convention: CallConv,
     },
     Typedef {
         name: String,
@@ -360,6 +361,7 @@ impl CTypes {
                 params,
                 variadic,
                 prototyped,
+                convention,
             } => {
                 let canonical_ret = self.canonical(*ret);
                 let canonical_params = params
@@ -375,6 +377,7 @@ impl CTypes {
                         params: canonical_params,
                         variadic: *variadic,
                         prototyped: *prototyped,
+                        convention: *convention,
                     })
                 })
             }
@@ -491,9 +494,48 @@ impl CTypes {
                 params,
                 variadic,
                 prototyped,
+                ..
             } => Some((*ret, params, *variadic, *prototyped)),
             _ => None,
         }
+    }
+
+    pub fn function_convention(&self, q: QualType) -> CallConv {
+        match self.kind(self.desugar(q).ty) {
+            CTypeKind::Function { convention, .. } => *convention,
+            _ => CallConv::C,
+        }
+    }
+
+    pub fn with_convention(&mut self, q: QualType, convention: CallConv) -> Option<QualType> {
+        let q = self.desugar(q);
+        let rebuilt = match self.kind(q.ty).clone() {
+            CTypeKind::Function { variadic: true, .. } if convention != CallConv::C => {
+                return Some(q);
+            }
+            CTypeKind::Function {
+                ret,
+                params,
+                variadic,
+                prototyped,
+                ..
+            } => CTypeKind::Function {
+                ret,
+                params,
+                variadic,
+                prototyped,
+                convention,
+            },
+            CTypeKind::Pointer(pointee, space) => {
+                CTypeKind::Pointer(self.with_convention(pointee, convention)?, space)
+            }
+            CTypeKind::Array { element, extent } => CTypeKind::Array {
+                element: self.with_convention(element, convention)?,
+                extent,
+            },
+            _ => return None,
+        };
+        Some(self.qual(rebuilt).with(q.quals))
     }
 
     pub fn is_void(&self, q: QualType) -> bool {

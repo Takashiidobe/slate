@@ -34,6 +34,7 @@ pub enum Type {
         parameters: Vec<Type>,
         variadic: bool,
         prototyped: bool,
+        convention: super::CallConv,
     },
 }
 
@@ -103,8 +104,13 @@ impl fmt::Display for Type {
                 parameters,
                 variadic,
                 prototyped,
+                convention,
             } => {
-                f.write_str("fn(")?;
+                f.write_str("fn")?;
+                if *convention != super::CallConv::C {
+                    write!(f, " {convention}")?;
+                }
+                f.write_str("(")?;
                 if !prototyped {
                     f.write_str("unprototyped")?;
                 } else {

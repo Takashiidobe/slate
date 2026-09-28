@@ -61,6 +61,7 @@ impl CTypes {
                 params,
                 variadic,
                 prototyped,
+                convention,
             } => Type::Function {
                 return_type: (!self.is_void(*ret)).then(|| Box::new(self.ir_type(*ret, target))),
                 parameters: params
@@ -69,6 +70,7 @@ impl CTypes {
                     .collect(),
                 variadic: *variadic,
                 prototyped: *prototyped,
+                convention: *convention,
             },
             CTypeKind::Typedef { .. }
             | CTypeKind::TypeOf { .. }

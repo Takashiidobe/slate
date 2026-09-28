@@ -105,7 +105,10 @@ are and their sizes are equal or either is unknown, which makes a VLA
 compatible with any array of compatible element (6.7.6.2p6); functions compare
 return types, and an unprototyped declaration is compatible with a
 non-variadic prototype whose parameters are unchanged by the default argument
-promotions.
+promotions. Functions with different calling conventions (x86-32
+`stdcall`/`fastcall`/`vectorcall`/`thiscall`) are never compatible;
+`CTypes::with_convention` rebuilds a type with the convention on its first
+reachable function type.
 
 Tags are nominal (one `TypeId` per definition) except under C23 (N3037), where
 two complete struct, union or enum types with the same tag and matching

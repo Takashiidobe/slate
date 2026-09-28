@@ -28,6 +28,34 @@ impl fmt::Display for AbiConvention {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub enum CallConv {
+    #[default]
+    C,
+    X86Stdcall,
+    X86Fastcall,
+    X86Vectorcall,
+    X86Thiscall,
+}
+
+impl CallConv {
+    pub fn keyword(self) -> &'static str {
+        match self {
+            Self::C => "cdecl",
+            Self::X86Stdcall => "stdcall",
+            Self::X86Fastcall => "fastcall",
+            Self::X86Vectorcall => "vectorcall",
+            Self::X86Thiscall => "thiscall",
+        }
+    }
+}
+
+impl fmt::Display for CallConv {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.keyword())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AbiChunk {
     Integer(u32),
@@ -84,20 +112,26 @@ impl fmt::Display for AbiPass {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AbiSignature {
     pub convention: AbiConvention,
+    pub calling: CallConv,
     pub arguments: Vec<AbiPass>,
     pub result: AbiPass,
 }
 
 impl AbiSignature {
     pub fn has_nontrivial_pass(&self) -> bool {
-        self.result != AbiPass::Scalar && self.result != AbiPass::Void
+        self.calling != CallConv::C
+            || self.result != AbiPass::Scalar && self.result != AbiPass::Void
             || self.arguments.iter().any(|arg| *arg != AbiPass::Scalar)
     }
 }
 
 impl fmt::Display for AbiSignature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}(", self.convention)?;
+        write!(f, "{}", self.convention)?;
+        if self.calling != CallConv::C {
+            write!(f, " {}", self.calling)?;
+        }
+        f.write_str("(")?;
         for (index, argument) in self.arguments.iter().enumerate() {
             if index != 0 {
                 f.write_str(", ")?;

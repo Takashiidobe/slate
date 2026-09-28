@@ -719,7 +719,8 @@ As with other attributes, declaration-specifier positions apply to the
 whole declaration; nested declarator positions remain on `Attributed` or
 `Pointer` nodes, and trailing positions remain in declarator attributes.
 `regparm` keeps its expression unevaluated. Target support, conflicts, and
-the effective ABI are sema responsibilities.
+the effective ABI are sema responsibilities; sema turns the x86-32
+conventions into part of the function type (see `ir-spec.md`).
 
 `__declspec(...)` accepts single-parenthesis attribute groups, including
 space-separated entries. `dllimport` and `dllexport` become `DllImport` and

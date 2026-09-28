@@ -156,6 +156,7 @@ impl Lowerer {
             parameters,
             variadic,
             prototyped,
+            ..
         } = &ty
         else {
             return Err(ResolveError::Unsupported("non-function builtin"));
@@ -512,6 +513,7 @@ impl Lowerer {
             params,
             variadic: false,
             prototyped: true,
+            convention: crate::ir::CallConv::C,
         })
     }
 

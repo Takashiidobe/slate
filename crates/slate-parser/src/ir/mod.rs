@@ -7,7 +7,7 @@ mod module_print;
 mod names;
 mod numeric;
 
-pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
+pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv};
 pub use asm::{
     AsmAccess, AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmDialect, AsmDirection, AsmMemory, AsmOperand, AsmOperandClass,
