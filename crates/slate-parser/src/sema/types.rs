@@ -136,16 +136,16 @@ impl TypeResolver {
         self.ctypes.access(q)
     }
 
-    pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
-        let mut resolver = Self::new(target);
-        resolver.flavor = unit.flavor;
-        resolver.ctypes.ptr32_extension_is_qualifier = unit.flavor == CompilerFlavor::Msvc;
-        resolver.features =
-            StandardFeatures::for_compiler(unit.standard, unit.flavor, &unit.target);
+    pub fn with_tags(unit: &TranslationUnit) -> Self {
+        let dialect = &unit.dialect;
+        let mut resolver = Self::new(dialect.target().clone());
+        resolver.flavor = dialect.flavor();
+        resolver.ctypes.ptr32_extension_is_qualifier = dialect.flavor() == CompilerFlavor::Msvc;
+        resolver.features = dialect.features();
         resolver.tags = unit.tags.clone();
         resolver.pragmas = super::pragmas::collect(unit);
-        resolver.diagnostic_options = unit.options.diagnostics.clone();
-        resolver.standard = unit.standard;
+        resolver.diagnostic_options = dialect.options().diagnostics.clone();
+        resolver.standard = dialect.standard();
         resolver
     }
 
@@ -3170,9 +3170,8 @@ pub fn resolve_type_module(
     use crate::ast::{DeclKind, StorageClass};
     use crate::ir::{BindingId, Function, Linkage, Module};
 
-    let target = unit.options.effective_target(unit.target.clone());
-    let mut module = Module::new(target.clone());
-    let mut resolver = TypeResolver::with_tags(target, unit);
+    let mut module = Module::new(unit.dialect.target().clone());
+    let mut resolver = TypeResolver::with_tags(unit);
     let mut next_binding = 0u32;
     for declaration in &unit.decls {
         match &declaration.value {

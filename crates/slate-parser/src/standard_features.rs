@@ -55,7 +55,7 @@ pub struct StandardFeatures {
 }
 
 impl StandardFeatures {
-    pub fn new(standard: LanguageStandard) -> Self {
+    fn new(standard: LanguageStandard) -> Self {
         use Availability::{Extension, Rejected, Standard};
         let c89 = matches!(
             standard,

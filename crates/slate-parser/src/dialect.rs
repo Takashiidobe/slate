@@ -60,6 +60,8 @@ impl Dialect {
     }
 
     pub fn inline_semantics(&self) -> InlineSemantics {
-        self.options.effective_inline_semantics(self.standard)
+        self.options
+            .inline_semantics
+            .unwrap_or(self.features.inline_semantics)
     }
 }

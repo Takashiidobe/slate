@@ -303,12 +303,9 @@ impl Parser {
         }
         Ok(filter_translation_unit(
             &TranslationUnit {
-                standard: self.standard(),
-                options: self.dialect().options().clone(),
+                dialect: self.dialect().clone(),
                 decls,
                 tags: self.tags.take(),
-                flavor: self.flavor(),
-                target: self.dialect().target().clone(),
             },
             root_file,
             &self.forced_roots,

@@ -12,8 +12,7 @@ pub fn filter_translation_unit(
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file, forced_roots);
     TranslationUnit {
-        standard: tu.standard,
-        options: tu.options.clone(),
+        dialect: tu.dialect.clone(),
         decls: tu
             .decls
             .iter()
@@ -27,8 +26,6 @@ pub fn filter_translation_unit(
             .filter(|tag| reachability.reachable_tags.contains(&tag.value.id))
             .cloned()
             .collect(),
-        flavor: tu.flavor,
-        target: tu.target.clone(),
     }
 }
 
@@ -600,13 +597,13 @@ impl<'a> Reachability<'a> {
         };
         let semantics = if has_attribute(|attribute| matches!(attribute, Attribute::GnuInline)) {
             InlineSemantics::SupressDef
-        } else if self.tu.target.environment == TargetEnvironment::Msvc {
+        } else if self.tu.dialect.target().environment == TargetEnvironment::Msvc {
             return has_attribute(|attribute| matches!(attribute, Attribute::DllExport))
                 || redeclarations
                     .iter()
                     .any(|(specifiers, _)| specifiers.storage == StorageClass::Extern);
         } else {
-            self.tu.options.effective_inline_semantics(self.tu.standard)
+            self.tu.dialect.inline_semantics()
         };
         let is_extern = definition.specifiers.storage == StorageClass::Extern;
         match semantics {

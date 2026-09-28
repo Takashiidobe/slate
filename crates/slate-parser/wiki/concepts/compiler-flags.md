@@ -303,7 +303,7 @@ producing `bool` directly into typed IR. `src/ir/`
 owns nodes, spans, printing, and separate integer-overflow and floating-point
 properties. There is no intermediate semantic AST. `CompilerOptions` now
 groups operation settings, layout overrides, and ordered argument provenance.
-The parser retains it on `TranslationUnit`; sema materializes its operation
+The parser retains it in `TranslationUnit.dialect`; sema materializes its operation
 contracts without making IR consumers interpret options. See the
 [numeric operations](ir-spec.md#numeric-operations) for supported scope.
 

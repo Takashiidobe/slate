@@ -1,4 +1,4 @@
-use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::compiler_args::CompilerFlavor;
 use crate::diagnostics::DiagnosticOptions;
 use crate::ir::{AsmDialect, Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
@@ -65,12 +65,6 @@ impl Default for CompilerOptions {
 }
 
 impl CompilerOptions {
-    pub fn effective_inline_semantics(&self, standard: LanguageStandard) -> InlineSemantics {
-        self.inline_semantics.unwrap_or_else(|| {
-            crate::standard_features::StandardFeatures::new(standard).inline_semantics
-        })
-    }
-
     pub fn for_flavor(flavor: CompilerFlavor) -> Self {
         let mut options = Self::default();
         if flavor == CompilerFlavor::Gcc {

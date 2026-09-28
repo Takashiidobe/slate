@@ -52,7 +52,7 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 - All tag definitions print first, ordered by `TagId`; the index in
   `tag[N]` is the `TagId`. Declarations follow in source order, `decl[N]`
   being the position.
-- The `TranslationUnit`'s `standard`, `options`, `flavor` and `target` are
+- The `TranslationUnit`'s `dialect` (flavor, standard, target, options) is
   not printed.
 - Without `--show-comments`, `Comment` items are removed from declarations,
   function bodies, records and enums before printing.

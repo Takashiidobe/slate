@@ -3,7 +3,7 @@ use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
-use super::pragmas::{FloatingPragmas, PragmaPlacement, default_contraction};
+use super::pragmas::{FloatingPragmas, PragmaPlacement};
 use super::types::{Ordinary, TypeResolver, is_folded};
 use super::validate::{ERROR_LIMIT, with_sources};
 use super::{SemaError, SemaErrors};
@@ -25,11 +25,7 @@ pub fn resolve_module(
     unit: &TranslationUnit,
     files: &crate::files::Files,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
-    let features = StandardFeatures::for_compiler(unit.standard, unit.flavor, &unit.target);
-    let context = Context::new(unit.target.clone())
-        .with_options(&unit.options)
-        .with_features(features)
-        .with_contraction(default_contraction(unit.flavor, unit.standard));
+    let context = Context::for_dialect(&unit.dialect);
     let (names, items) = super::names::resolve_items(unit);
     let next_id = names
         .bindings
@@ -37,7 +33,7 @@ pub fn resolve_module(
         .map(|b| b.value.id.0 + 1)
         .max()
         .unwrap_or(0);
-    let mut types = TypeResolver::with_tags(context.target.clone(), unit);
+    let mut types = TypeResolver::with_tags(unit);
     types.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
     let mut lower = Lowerer {
         types,
@@ -57,7 +53,7 @@ pub fn resolve_module(
         files: files.clone(),
         return_type: None,
         ms_asm_return: Vec::new(),
-        floating_pragmas: FloatingPragmas::new(unit.flavor, context.region),
+        floating_pragmas: FloatingPragmas::new(unit.dialect.flavor(), context.region),
         compound_start: false,
         context,
     };
@@ -67,7 +63,7 @@ pub fn resolve_module(
         let errors: Vec<ResolveError> = if item.errors.is_empty() {
             let Err(error) = lower
                 .declare_implicit_functions(item.declared.clone())
-                .and_then(|()| lower_item(&mut lower, declaration, features))
+                .and_then(|()| lower_item(&mut lower, declaration, unit.dialect.features()))
             else {
                 continue;
             };
@@ -133,7 +129,7 @@ fn unlocated(error: ResolveError) -> SemaErrors {
 impl Lowerer {
     fn finish_module(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         self.resolve_object_requests(unit)?;
-        self.finish_functions(unit.options.effective_inline_semantics(unit.standard))?;
+        self.finish_functions(unit.dialect.inline_semantics())?;
         let declared: Vec<_> = self.types.entities.types().collect();
         let access = declared
             .into_iter()
@@ -585,7 +581,7 @@ impl Lowerer {
                 && !symbol.weak
                 && !symbol.selectany
                 && !(msvc_target && request.alignment.is_some());
-            global.common = tentative && request.common.unwrap_or(unit.options.common);
+            global.common = tentative && request.common.unwrap_or(unit.dialect.options().common);
         }
         Ok(())
     }

@@ -8,10 +8,10 @@ use crate::const_expr::{
     IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
 };
 use crate::ir::{
-    AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, Contraction,
-    ConversionKind, ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType,
-    FixedRounding, FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy,
-    UnaryArithOp, Value, ValueKind,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, ConversionKind,
+    ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType, FixedRounding,
+    FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy, UnaryArithOp,
+    Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -86,17 +86,16 @@ pub struct Context {
 type Resolved = (Type, ValueKind);
 
 impl Context {
-    pub fn with_options(mut self, options: &crate::compiler_options::CompilerOptions) -> Self {
-        self.target = options.effective_target(self.target);
-        self.signed_overflow = options.operations.signed_overflow;
-        self.pointer_wrap = options.operations.pointer_wrap;
-        self.region.floating = options.operations.floating;
-        self.asm_dialect = options.asm_dialect;
-        self
-    }
-    pub fn with_contraction(mut self, contract: Contraction) -> Self {
-        self.region.contract = contract;
-        self
+    pub fn for_dialect(dialect: &crate::dialect::Dialect) -> Self {
+        let options = dialect.options();
+        let mut context = Self::new(dialect.target().clone()).with_features(dialect.features());
+        context.signed_overflow = options.operations.signed_overflow;
+        context.pointer_wrap = options.operations.pointer_wrap;
+        context.region.floating = options.operations.floating;
+        context.region.contract =
+            super::pragmas::default_contraction(dialect.flavor(), dialect.standard());
+        context.asm_dialect = options.asm_dialect;
+        context
     }
     pub fn with_features(mut self, features: StandardFeatures) -> Self {
         self.features = features;

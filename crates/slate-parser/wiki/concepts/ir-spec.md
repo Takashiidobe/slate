@@ -712,7 +712,7 @@ in every earlier mode (diagnosed only under `-pedantic` /
 `-Wbit-int-extension`) and apply identical conversion rules there; result
 types were checked to be byte-identical across c89/c99/c11/c17/c23 and their
 gnu variants in both compilers. Lowering therefore applies them
-unconditionally, and `TranslationUnit.standard` does not reach this path.
+unconditionally, and the dialect's standard does not reach this path.
 
 A `wb`/`uwb` literal takes the narrowest bit-precise type that holds its
 value (C23 6.4.4.1p6): `N` is the value's bit count for `uwb`, one more than
@@ -807,7 +807,7 @@ resolved types, conversions, or layout belong to `src/sema/`. Failures
 there produce diagnostics; lowering must not assume that surviving early
 validation proves a node valid or silently discard failed operations.
 
-Name resolution reads `TranslationUnit.standard`. C89/GNU89 control statements
+Name resolution reads the unit's `Dialect` features. C89/GNU89 control statements
 and unbraced bodies introduce no implicit scope; explicit AST `Block` nodes do.
 C99+ selection/iteration statements and their bodies each have nested scopes,
 with an explicit `Block` supplying the braced body's scope. In these modes,

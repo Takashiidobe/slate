@@ -40,7 +40,7 @@ an empty statement without introducing a compound scope.
 - `src/visit.rs` — shared statement traversal, including attributes, asm
   operands, static assertions, nested functions, and single bodies.
 - `src/sema/names.rs` — visitor overrides implement scope, binding, and label
-  rules that depend on `TranslationUnit.standard`.
+  rules that depend on the unit's `Dialect` features.
 - `src/render.rs` — comment stripping recurses into single bodies and blocks.
 - `src/sema/module.rs` — `Lowerer::statements` is exhaustive over `StmtKind`
   (no catch-all since slate-parser-dyd.26), so the compiler flags a new variant.

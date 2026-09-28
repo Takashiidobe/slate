@@ -1664,12 +1664,9 @@ impl Span<DeclKind> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
-    pub standard: crate::compiler_args::LanguageStandard,
-    pub options: crate::compiler_options::CompilerOptions,
+    pub dialect: crate::dialect::Dialect,
     pub decls: Vec<Decl>,
     pub tags: Vec<Span<TagDefinition>>,
-    pub flavor: crate::compiler_args::CompilerFlavor,
-    pub target: crate::target_info::TargetInfo,
 }
 
 impl TranslationUnit {

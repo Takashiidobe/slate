@@ -53,13 +53,14 @@ pub struct SemaErrors {
 
 impl TranslationUnit {
     pub fn analyze(&self, files: &Files) -> Result<Vec<SemaError>, SemaErrors> {
-        let flavor = self.flavor;
-        let features = StandardFeatures::for_compiler(self.standard, flavor, &self.target);
+        let dialect = &self.dialect;
+        let flavor = dialect.flavor();
+        let features = dialect.features();
         let literals = LiteralContext {
-            target: &self.target,
+            target: dialect.target(),
             features,
-            diagnostics: &self.options.diagnostics,
-            standard: self.standard,
+            diagnostics: &dialect.options().diagnostics,
+            standard: dialect.standard(),
             flavor,
         };
         let typedefs = self
@@ -114,8 +115,8 @@ impl TranslationUnit {
             typedefs: &typedefs,
             tags: &tags,
             features,
-            diagnostics: &self.options.diagnostics,
-            standard: self.standard,
+            diagnostics: &dialect.options().diagnostics,
+            standard: dialect.standard(),
             flavor,
         };
         let mut errors = super::assertion::validate(self);

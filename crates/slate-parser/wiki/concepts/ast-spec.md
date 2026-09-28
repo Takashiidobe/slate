@@ -123,9 +123,7 @@ increment and body, then the enclosing bindings are restored.
 TranslationUnit {
     items: Vec<ExternalItem>,
     tags: Vec<TagDefinition>,      // indexed by TagId, every tag definition in the TU
-    flavor: CompilerFlavor,        // Gcc | Clang | Msvc personality
-    target: TargetInfo,
-    options: CompilerOptions,
+    dialect: Dialect,              // flavor, standard, features, effective target, options
 }
 
 ExternalItem =
@@ -450,7 +448,7 @@ Braced bodies retain an explicit `Block(Vec<Stmt>)` node spanning the braces;
 unbraced bodies retain their statement node. `Null` represents `;`, separately
 from an empty compound statement. Function bodies remain statement lists.
 
-`TranslationUnit.standard` preserves the configured language standard for sema.
+`TranslationUnit.dialect` preserves the configured language standard for sema.
 In C89/GNU89, only explicit compound statements introduce block scopes here;
 selection/iteration statements and unbraced bodies add no implicit scopes.
 In C99 and later (including GNU modes), each selection/iteration statement

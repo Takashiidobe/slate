@@ -5,7 +5,6 @@ use crate::ast::{
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
-use crate::standard_features::StandardFeatures;
 use crate::visit::Visitor;
 use std::collections::{HashMap, HashSet};
 
@@ -88,7 +87,7 @@ struct Resolver {
 impl Resolver {
     fn new(unit: &TranslationUnit) -> Self {
         Self {
-            control_scopes: StandardFeatures::new(unit.standard).control_statement_scopes,
+            control_scopes: unit.dialect.features().control_statement_scopes,
             resolution: NameResolution::default(),
             ordinary: vec![HashMap::new()],
             tags: vec![HashMap::new()],
@@ -108,7 +107,7 @@ impl Resolver {
                 .collect(),
             linked: HashMap::new(),
             implicit_builtin_calls: HashMap::new(),
-            flavor: unit.flavor,
+            flavor: unit.dialect.flavor(),
             next_id: 0,
             errors: Vec::new(),
         }

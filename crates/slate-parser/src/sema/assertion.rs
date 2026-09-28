@@ -11,7 +11,7 @@ use super::validate::{SemaError, error};
 pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
     let mut checker = Checker {
         unit,
-        types: TypeResolver::with_tags(unit.options.effective_target(unit.target.clone()), unit),
+        types: TypeResolver::with_tags(unit),
         errors: Vec::new(),
     };
     checker.types.assertion_scope = true;
@@ -52,7 +52,7 @@ impl Checker<'_> {
             .constant_value(condition)
             .and_then(|value| match value.ty {
                 Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-                    super::fold::integer_constant(&value, self.unit.flavor).ok_or(
+                    super::fold::integer_constant(&value, self.unit.dialect.flavor()).ok_or(
                         ResolveError::Unsupported("nonconstant or undefined integer expression"),
                     )
                 }
@@ -224,7 +224,7 @@ impl Checker<'_> {
                 if (global || declaration.specifiers.storage == StorageClass::Static)
                     && let Err((expr, reason)) = (InvalidConstantArithmetic {
                         types: &mut self.types,
-                        flavor: self.unit.flavor,
+                        flavor: self.unit.dialect.flavor(),
                     })
                     .visit_initializer(initializer)
                 {
