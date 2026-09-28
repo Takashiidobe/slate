@@ -4,7 +4,7 @@ use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement};
-use super::types::{Ordinary, TypeResolver, is_folded};
+use super::types::{TypeResolver, is_folded};
 use super::validate::{ERROR_LIMIT, with_sources};
 use super::{SemaError, SemaErrors};
 use crate::ast::{
@@ -41,8 +41,7 @@ fn resolve_module(
         .map(|b| b.value.id.0 + 1)
         .max()
         .unwrap_or(0);
-    let mut types = TypeResolver::with_tags(unit);
-    types.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
+    let types = TypeResolver::with_names(unit, &names);
     let mut lower = Lowerer {
         types,
         module: Module::new(context.target.clone()),
@@ -1132,12 +1131,12 @@ impl Lowerer {
                 && let Some(value) = &initializer
                 && is_folded(value)
             {
-                self.types.declare(
-                    name,
-                    Ordinary::Constant(super::operand::Operand {
+                self.types.constants.insert(
+                    id,
+                    super::operand::Operand {
                         value: value.clone(),
                         c: resolved,
-                    }),
+                    },
                 );
             }
             let automatic_alignment = if storage == StorageDuration::Automatic {

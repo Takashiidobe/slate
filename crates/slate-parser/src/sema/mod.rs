@@ -50,12 +50,23 @@ impl<'u> Sema<'u> {
             None => Ok(&self.names),
         }
     }
+
+    pub fn type_module(&self) -> Result<crate::ir::Module, ResolveError> {
+        types::resolve_type_module(self.unit, &self.names)
+    }
+
+    pub fn expression_roots(&self) -> Result<Vec<Value>, ResolveError> {
+        resolve_expression_roots(self.unit, &self.names)
+    }
 }
 
-pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, ResolveError> {
+fn resolve_expression_roots(
+    unit: &TranslationUnit,
+    names: &NameResolution,
+) -> Result<Vec<Value>, ResolveError> {
     let context = Context::for_dialect(&unit.dialect);
     let mut expressions: Vec<&Expr> = Vec::new();
-    let mut types = types::TypeResolver::with_tags(unit);
+    let mut types = types::TypeResolver::with_names(unit, names);
     for declaration in &unit.decls {
         match &declaration.value {
             DeclKind::Comment(_) => {}

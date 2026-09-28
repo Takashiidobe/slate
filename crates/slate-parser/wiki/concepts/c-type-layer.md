@@ -229,7 +229,7 @@ Two smaller residues worth knowing about:
 
 ## Where personality enters
 
-`TypeResolver` carries a `CompilerFlavor`, set once in `with_tags` from
+`TypeResolver` carries a `CompilerFlavor`, set once in `with_names` from
 `unit.flavor`. Since all four resolvers (module lowering,
 `resolve_type_module`, `Sema::lower`, `assertion.rs`) are built through
 that one constructor, they cannot disagree about personality — which matters

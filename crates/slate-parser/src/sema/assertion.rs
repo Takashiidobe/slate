@@ -4,14 +4,17 @@ use crate::ir::{Number, NumericType, Type, Value, ValueKind};
 use crate::visit::{self, Visitor};
 use num_bigint::{BigInt, Sign};
 
+use super::ctype::QualType;
+use super::entity::ObjectRequest;
 use super::numeric::ResolveError;
 use super::types::{Ordinary, TypeResolver};
 use super::validate::{SemaError, error};
+use crate::ir::NameResolution;
 
-pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
+pub(super) fn validate(unit: &TranslationUnit, names: &NameResolution) -> Vec<SemaError> {
     let mut checker = Checker {
         unit,
-        types: TypeResolver::with_tags(unit),
+        types: TypeResolver::with_names(unit, names),
         errors: Vec::new(),
     };
     checker.types.assertion_scope = true;
@@ -19,7 +22,7 @@ pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
         match &declaration.value {
             DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
             DeclKind::Declaration(declaration) => checker.declaration(declaration, true),
-            DeclKind::Function(function) => checker.function(function),
+            DeclKind::Function(function) => checker.function(declaration.id, function),
             _ => {}
         }
     }
@@ -73,7 +76,35 @@ impl Checker<'_> {
             .push(error(condition.provenance, condition.expansion, message));
     }
 
-    fn function(&mut self, function: &FunctionDefinition) {
+    fn declare_object(&mut self, node: NodeId, ty: QualType, alignment: Option<u64>) {
+        let Some(&id) = self.types.declarations.get(&node) else {
+            return;
+        };
+        let ty = match self.types.entities.ty(&id) {
+            Some(previous) => self
+                .types
+                .ctypes
+                .composite(previous, ty)
+                .unwrap_or(previous),
+            None => ty,
+        };
+        self.types.entities.declare(id, ty, false);
+        let _ = self.types.entities.merge_request(
+            id,
+            ObjectRequest {
+                alignment,
+                common: None,
+            },
+        );
+    }
+
+    fn function(&mut self, node: NodeId, function: &FunctionDefinition) {
+        if let Ok(ty) = self
+            .types
+            .resolve(&function.specifiers, &function.declarator)
+        {
+            self.declare_object(node, ty, None);
+        }
         self.types.push_scope();
         for parameter in function
             .declarator
@@ -84,22 +115,13 @@ impl Checker<'_> {
             let resolved = self
                 .types
                 .resolve(&parameter.specifiers, &parameter.declarator);
-            if let Some(name) = parameter.declarator.name() {
-                self.types.declare(name, Ordinary::Declared);
-                if let Ok(resolved) = resolved
-                    && !self.types.ctypes.is_void(resolved)
-                {
-                    let adjusted = self
-                        .types
-                        .adjusted_parameter(resolved, super::ctype::Qualifiers::NONE);
-                    self.types.declare(
-                        name,
-                        Ordinary::Object {
-                            ty: adjusted,
-                            alignment: None,
-                        },
-                    );
-                }
+            if let Ok(resolved) = resolved
+                && !self.types.ctypes.is_void(resolved)
+            {
+                let adjusted = self
+                    .types
+                    .adjusted_parameter(resolved, super::ctype::Qualifiers::NONE);
+                self.declare_object(parameter.id, adjusted, None);
             }
         }
         for stmt in &function.body {
@@ -169,12 +191,8 @@ impl Checker<'_> {
                 &declarator.attributes,
             );
             self.types.inferred = None;
-            let previous = match self.types.lookup_local(name) {
-                Some(Ordinary::Object { alignment, .. }) => *alignment,
-                _ => None,
-            };
             let typedef = declaration.specifiers.storage == StorageClass::Typedef;
-            if !typedef || resolved.is_err() {
+            if typedef && resolved.is_err() {
                 self.types.declare(name, Ordinary::Declared);
             }
             if let Ok(resolved) = resolved {
@@ -201,19 +219,13 @@ impl Checker<'_> {
                     let requested = super::types::requested_alignment(&mut self.types, attributes)
                         .ok()
                         .flatten();
-                    self.types.declare(
-                        name,
-                        Ordinary::Object {
-                            ty: completed,
-                            alignment: previous.max(requested),
-                        },
-                    );
+                    self.declare_object(declarator.id, completed, requested);
                     if declaration.specifiers.is_constexpr
                         && let Some(Initializer::Expr(expr)) = &declarator.initializer
                         && ice_shape(&mut self.types, expr).is_constant()
                         && let Ok(value) = self.types.constant_value(expr)
                     {
-                        self.types.declare(name, Ordinary::Constant(value));
+                        self.types.declare_constant(declarator.id, value);
                     }
                 }
             }
@@ -264,7 +276,6 @@ impl Checker<'_> {
                     Some(_) => None,
                     None => previous.as_ref().map(|value| value + 1),
                 };
-                self.types.declare(&enumerator.name, Ordinary::Declared);
                 previous = value.clone();
                 if let Some(value) = value {
                     let c = fixed.unwrap_or(int_ty);
@@ -277,9 +288,9 @@ impl Checker<'_> {
                     if value < min || value >= limit {
                         continue;
                     }
-                    self.types.declare(
-                        &enumerator.name,
-                        Ordinary::Constant(super::operand::Operand {
+                    self.types.declare_constant(
+                        item.id,
+                        super::operand::Operand {
                             c,
                             value: Value {
                                 ty,
@@ -287,7 +298,7 @@ impl Checker<'_> {
                                     .clone()
                                     .derive(ValueKind::Constant(Number::SignedInteger(value))),
                             },
-                        }),
+                        },
                     );
                 }
             }
@@ -323,7 +334,7 @@ impl Checker<'_> {
                 }
                 self.types.pop_scope();
             }
-            StmtKind::NestedFunction(function) => self.function(function),
+            StmtKind::NestedFunction(function) => self.function(stmt.id, function),
             StmtKind::If {
                 condition,
                 then_branch,

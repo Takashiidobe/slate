@@ -55,12 +55,13 @@ pub struct SemaErrors {
 
 impl super::Sema<'_> {
     pub fn analyze(&self, files: &Files) -> Result<Vec<SemaError>, SemaErrors> {
-        analyze(self.unit, &self.items, files)
+        analyze(self.unit, &self.names, &self.items, files)
     }
 }
 
 fn analyze(
     unit: &TranslationUnit,
+    names: &crate::ir::NameResolution,
     items: &[ItemResolution],
     files: &Files,
 ) -> Result<Vec<SemaError>, SemaErrors> {
@@ -80,7 +81,7 @@ fn analyze(
         standard: dialect.standard(),
         flavor,
     };
-    let mut errors = super::assertion::validate(unit);
+    let mut errors = super::assertion::validate(unit, names);
     for (decl, item) in unit.decls.iter().zip(items) {
         for unresolved in &item.errors {
             if let NameError::Unresolved {

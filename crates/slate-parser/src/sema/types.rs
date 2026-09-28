@@ -46,10 +46,11 @@ pub struct TypeResolver {
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
+    pub(super) declarations: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) inferred: Option<QualType>,
-    pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
+    pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
@@ -60,11 +61,6 @@ pub struct TypeResolver {
 pub(super) enum Ordinary {
     Declared,
     Alias(QualType),
-    Constant(Operand),
-    Object {
-        ty: QualType,
-        alignment: Option<u64>,
-    },
 }
 
 impl TypeResolver {
@@ -84,10 +80,11 @@ impl TypeResolver {
             assertion_scope: false,
             extents: HashMap::new(),
             references: HashMap::new(),
+            declarations: HashMap::new(),
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
             inferred: None,
-            enumerators: HashMap::new(),
+            constants: HashMap::new(),
             record_fields: HashMap::new(),
             field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
@@ -133,8 +130,10 @@ impl TypeResolver {
         self.ctypes.access(q)
     }
 
-    pub fn with_tags(unit: &TranslationUnit) -> Self {
+    pub(super) fn with_names(unit: &TranslationUnit, names: &crate::ir::NameResolution) -> Self {
         let mut resolver = Self::new(unit.dialect.clone());
+        resolver.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
+        resolver.declarations = names.declarations.clone();
         resolver.ctypes.ptr32_extension_is_qualifier =
             unit.dialect.flavor() == CompilerFlavor::Msvc;
         resolver.tags = unit.tags.clone();
@@ -409,11 +408,11 @@ impl TypeResolver {
         use crate::ast::ExprKind;
         let (ty, kind) = match &e.value {
             ExprKind::Paren(inner) => return self.constant_value_with_context(context, inner),
-            ExprKind::Identifier(name) => {
-                return match self.lookup(name) {
-                    Some(Ordinary::Constant(value)) => Ok(value.clone()),
-                    _ => Err(ResolveError::Rejected("nonconstant or unknown identifier")),
-                };
+            ExprKind::Identifier(_) => {
+                return self
+                    .constant(e)
+                    .cloned()
+                    .ok_or(ResolveError::Rejected("nonconstant or unknown identifier"));
             }
             ExprKind::CharLiteral(literal) => {
                 let (ty, number) = self.character_constant(literal)?;
@@ -631,14 +630,10 @@ impl TypeResolver {
                 .and_then(|record| self.field_alignment(record, &field.value))
                 .unwrap_or(natural);
         }
-        let requested = match (self.references.get(&operand.id), &operand.value) {
-            (Some(id), _) => self.entities.request(id).alignment,
-            (None, crate::ast::ExprKind::Identifier(name)) => match self.lookup(name) {
-                Some(Ordinary::Object { alignment, .. }) => *alignment,
-                _ => None,
-            },
-            (None, _) => None,
-        };
+        let requested = self
+            .references
+            .get(&operand.id)
+            .and_then(|id| self.entities.request(id).alignment);
         let Some(requested) = requested else {
             return natural;
         };
@@ -648,6 +643,16 @@ impl TypeResolver {
     fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
         let id = self.references.get(&e.id)?;
         self.entities.ty(id)
+    }
+
+    pub(super) fn constant(&self, e: &crate::ast::Expr) -> Option<&Operand> {
+        self.constants.get(self.references.get(&e.id)?)
+    }
+
+    pub(super) fn declare_constant(&mut self, node: crate::ast::NodeId, operand: Operand) {
+        if let Some(id) = self.declarations.get(&node) {
+            self.constants.insert(*id, operand);
+        }
     }
 
     pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
@@ -718,16 +723,12 @@ impl TypeResolver {
                 }
                 _ => Err(ResolveError::Unimplemented("nonconstant call expression")),
             },
-            ExprKind::Identifier(_) if self.object(e).is_some() => self
+            ExprKind::Identifier(_) => self
                 .object(e)
-                .ok_or(ResolveError::Internal("untyped binding")),
-            ExprKind::Identifier(name) => match self.lookup(name) {
-                Some(Ordinary::Object { ty, .. }) => Ok(*ty),
-                Some(Ordinary::Constant(value)) => Ok(value.c),
-                _ => Err(ResolveError::Unimplemented(
+                .or_else(|| self.constant(e).map(|value| value.c))
+                .ok_or(ResolveError::Unimplemented(
                     "unknown or unsupported sizeof operand type",
                 )),
-            },
             ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
             ExprKind::Cast { ty, .. } => {
                 let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
@@ -1840,18 +1841,6 @@ impl TypeResolver {
         if let Some(name) = &tag.name {
             self.declare_tag((tag.kind, name.clone()), id);
         }
-        let TagBody::Enum { enumerators, .. } = &tag.body else {
-            return;
-        };
-        for item in enumerators {
-            let EnumItemKind::Enumerator(enumerator) = &item.value else {
-                continue;
-            };
-            let Some(operand) = self.enumerators.get(&item.id).cloned() else {
-                continue;
-            };
-            self.declare(&enumerator.name, Ordinary::Constant(operand));
-        }
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
@@ -2067,15 +2056,15 @@ impl TypeResolver {
                     };
                     let value_c = self.ir_type(c);
                     let number = super::fold::integer_number(&value_c, value.clone());
-                    self.declare(
-                        &enumerator.name,
-                        Ordinary::Constant(Operand {
+                    self.declare_constant(
+                        item.id,
+                        Operand {
                             value: Value {
                                 ty: value_c,
                                 node: item.derive(ValueKind::Constant(number)),
                             },
                             c,
-                        }),
+                        },
                     );
                     previous = Some((value.clone(), c));
                     values.push((item, enumerator, value));
@@ -2125,14 +2114,7 @@ impl TypeResolver {
                             value,
                         ))),
                     };
-                    self.declare(
-                        &enumerator.name,
-                        Ordinary::Constant(Operand {
-                            value: value.clone(),
-                            c: enumerator_c,
-                        }),
-                    );
-                    self.enumerators.insert(
+                    self.declare_constant(
                         item.id,
                         Operand {
                             value: value.clone(),
@@ -3168,14 +3150,15 @@ fn tag_kind(kind: TagKind, id: TypeId) -> CTypeKind {
     }
 }
 
-pub fn resolve_type_module(
+pub(super) fn resolve_type_module(
     unit: &crate::ast::TranslationUnit,
+    names: &crate::ir::NameResolution,
 ) -> Result<crate::ir::Module, ResolveError> {
     use crate::ast::{DeclKind, StorageClass};
     use crate::ir::{BindingId, Function, Linkage, Module};
 
     let mut module = Module::new(unit.dialect.target().clone());
-    let mut resolver = TypeResolver::with_tags(unit);
+    let mut resolver = TypeResolver::with_names(unit, names);
     let mut next_binding = 0u32;
     for declaration in &unit.decls {
         match &declaration.value {

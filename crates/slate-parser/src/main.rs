@@ -118,7 +118,7 @@ fn run() -> miette::Result<()> {
     }
     if dump_ir || dump_ir_types {
         let module = if dump_ir_types {
-            slate_parser::sema::types::resolve_type_module(&ast)
+            sema.type_module()
                 .map_err(|error| miette::miette!("{error}"))?
         } else {
             let (module, diagnostics) = sema.lower(&files)?;
@@ -144,7 +144,8 @@ fn run() -> miette::Result<()> {
         return Ok(());
     }
     if dump_ir_expressions {
-        let expressions = slate_parser::sema::resolve_expression_roots(&ast)
+        let expressions = sema
+            .expression_roots()
             .map_err(|error| miette::miette!("{error}"))?;
         for expression in expressions {
             println!("{}", expression.display(show_spans));

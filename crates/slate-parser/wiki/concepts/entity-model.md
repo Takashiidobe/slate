@@ -80,7 +80,8 @@ all three had leaked it:
   also covers the body, since a definition's parameter scope extends into it.
 
 That second resolution is why `types.rs::define_tag` re-declares its tag name
-and enumerators on the memoized path. A tag body is resolved once, keyed by
+on the memoized path (enumerator constants are keyed by `BindingId`, so they
+need no re-declaring). A tag body is resolved once, keyed by
 AST `TagId`, but its *names* belong to whichever scope the specifier is written
 in, and for a definition that is the function scope rather than the discarded
 prototype scope the first resolution ran in.
@@ -90,6 +91,24 @@ Without this a file-scope `typedef double T` was destroyed by an unrelated
 `sema/ir_prototype_scope_redeclaration.c`, where `int a[sizeof(T)]` in the same
 prototype is `array=4` (the enumerator) while `T after_prototype` is still
 `f64` (the typedef).
+
+## Identifier lookup
+
+Every `TypeResolver` (lowering, the static-assertion checker, the type and
+expression dumps) is built by `TypeResolver::with_names` from the one
+`NameResolution` in `Sema`, which gives it `references` (identifier expression
+id -> `BindingId`) and `declarations` (declaring node id -> `BindingId`). An
+identifier's type is `entities.ty(binding)`; its constant value, for an
+enumerator or a folded `constexpr` object, is `constants[binding]`. The
+assertion checker fills both before lowering exists, so a `_Static_assert`
+sees function definitions and names that shadow an enumerator exactly as
+lowering does (slate-parser-evdx). Only typedef aliases and tags still live in
+string scope stacks (slate-parser-cc94.3), because their references carry no
+`NodeId` of their own.
+
+Name resolution binds prototype parameters in their prototype scope and
+visits their declarators, so `int a[COUNT]` and `int a[n]` in a prototype
+have references like any other expression.
 
 ## Tags
 

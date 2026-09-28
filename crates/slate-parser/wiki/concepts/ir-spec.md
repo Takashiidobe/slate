@@ -85,7 +85,7 @@ initializer values anchored at a declarator, type definitions created by a
 declarator) takes a fresh id via `Span::derive`. A rewrite of the same node
 (the effects pass) keeps its id with `Span::with_value`. Nothing looks up an
 IR node by an AST id: enumerator references resolve through
-`TypeResolver.enumerators`, keyed by the AST enumerator's id.
+`TypeResolver.constants`, keyed by the enumerator's `BindingId`.
 `Module.metadata` is keyed by IR node id and written with `Module::annotate`
 on the node that owns the fact, so each key prints on exactly one node. A
 declarator's C type annotates the declared entity (let, global, function,
@@ -1867,8 +1867,8 @@ lays a `aligned(1) int` out at 4 but reports 1, which is why
 rather than reusing it. Both rules read the same request, held once per
 `BindingId` on the sema entity — see the
 [declared-entity model](entity-model.md). `_Static_assert` is checked before
-lowering, without entities, so its resolver carries the same merged request on
-`Ordinary::Object`. `__alignof__` of a member (`s.m`, `p->m`) reports the
+lowering by its own resolver, which declares the same entities (type and
+merged request) by `BindingId`. `__alignof__` of a member (`s.m`, `p->m`) reports the
 field's laid-out alignment, which `layout_record` returns per field: `packed`
 gives 1, `packed, aligned(2)` gives 2, `aligned(16)` gives 16 (gcc and clang
 agree). A typedef redeclared in the same scope keeps the largest `aligned` of

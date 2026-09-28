@@ -1048,6 +1048,11 @@ impl Lowerer {
             .ok_or(ResolveError::Internal("missing declaration binding"))
     }
 
+    fn binding_kind(&self, e: &Expr) -> Option<BindingKind> {
+        let id = self.types.references.get(&e.id)?;
+        Some(self.names.bindings.get(id.0 as usize)?.kind)
+    }
+
     pub(super) fn reference(&self, e: &Expr) -> Result<BindingId, ResolveError> {
         self.types
             .references
@@ -2057,25 +2062,10 @@ impl Lowerer {
         }
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),
-            ExprKind::Identifier(_)
-                if self
-                    .names
-                    .references
-                    .iter()
-                    .any(|r| r.id == e.id && r.kind == BindingKind::Enumerator) =>
-            {
-                let binding = self.reference(e)?;
-                let node = self
-                    .names
-                    .bindings
-                    .iter()
-                    .find(|b| b.value.id == binding)
-                    .ok_or(ResolveError::Internal("missing enumerator binding"))?
-                    .id;
+            ExprKind::Identifier(_) if self.binding_kind(e) == Some(BindingKind::Enumerator) => {
                 let value = self
                     .types
-                    .enumerators
-                    .get(&node)
+                    .constant(e)
                     .cloned()
                     .ok_or(ResolveError::Internal("unresolved enumerator constant"))?;
                 Ok(self.operand(e, value.c, value.value.node.value))
