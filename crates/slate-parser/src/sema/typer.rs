@@ -1,9 +1,15 @@
+use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
+use super::builtins::{CustomBuiltin, DerivedSignature};
 use super::ctype::{CTypeKind, QualType};
+use super::expression::{
+    SourceLocationBuiltin, choose_expr_operands, constant_p_operand, source_location_builtin,
+    va_builtin,
+};
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, TypeName, TypeOfOperand, TypeSpecifier};
+use crate::ast::{Expr, ExprKind, TypeName};
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
-use crate::ir::{NumericType, Type, TypeDefinitionKind};
+use crate::ir::{Number, NumericType, Type, TypeDefinitionKind, ValueKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Typed {
@@ -35,12 +41,15 @@ const UNTYPED: ResolveError = ResolveError::Unimplemented("expression without a 
 impl TypeResolver {
     pub(super) fn typed(&mut self, e: &Expr) -> Result<Typed, ResolveError> {
         if let Some(typed) = self.expression_types.get(&e.id) {
-            return typed.ok_or(UNTYPED);
+            return Ok(*typed);
         }
-        let typed = self.type_expression(e);
-        self.expression_types
-            .insert(e.id, typed.as_ref().ok().copied());
-        typed
+        let typed = self.type_expression(e)?;
+        self.expression_types.insert(e.id, typed);
+        Ok(typed)
+    }
+
+    pub(super) fn expression_type(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        Ok(self.typed(e)?.c)
     }
 
     pub(super) fn rvalue_type(&mut self, typed: Typed) -> QualType {
@@ -71,12 +80,6 @@ impl TypeResolver {
     }
 
     fn type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
-        if let TypeSpecifier::TypeOf(TypeOfOperand::Expression(expr))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(expr)) = &ty.specifiers.ty
-            && !self.typeof_operands.contains_key(&expr.id)
-        {
-            return Err(UNTYPED);
-        }
         self.resolve(&ty.specifiers, &ty.declarator)
     }
 
@@ -192,10 +195,18 @@ impl TypeResolver {
             | ExprKind::Postfix { operand, .. } => self.updated(operand)?,
             ExprKind::Assign { op, target, value } => {
                 let value = self.operand_type(value)?;
-                if *op != AssignOp::Assign && !self.ctypes.is_arithmetic(value) {
+                if *op == AssignOp::Assign {
+                    let typed = self.typed(target)?;
+                    if !typed.lvalue {
+                        return Err(UNTYPED);
+                    }
+                    self.require_modifiable_lvalue(typed.c)?;
+                    Typed::rvalue(self.ctypes.unqualified(typed.c))
+                } else if self.ctypes.is_arithmetic(value) {
+                    self.updated(target)?
+                } else {
                     return Err(UNTYPED);
                 }
-                self.updated(target)?
             }
             ExprKind::Comma { left, right } => {
                 self.typed(left)?;
@@ -254,29 +265,294 @@ impl TypeResolver {
                 then_value,
                 else_value,
             } => {
-                let condition = self.operand_type(condition)?;
-                if !self.ctypes.is_scalar(condition) {
+                let tested = self.operand_type(condition)?;
+                if !self.ctypes.is_scalar(tested) {
                     return Err(UNTYPED);
                 }
                 let left = match then_value {
                     Some(then_value) => self.operand_type(then_value)?,
-                    None => condition,
+                    None => tested,
                 };
                 let right = self.operand_type(else_value)?;
+                let lp = self.ctypes.is_pointer(left);
+                let rp = self.ctypes.is_pointer(right);
                 if self.ctypes.is_arithmetic(left) && self.ctypes.is_arithmetic(right) {
                     let left = self.promoted(left);
                     let right = self.promoted(right);
                     Typed::rvalue(self.arithmetic_type(left, right)?)
-                } else if self.ctypes.is_pointer(left) || self.ctypes.is_pointer(right) {
-                    return Err(UNTYPED);
+                } else if lp && rp {
+                    let then_value: &Expr = match then_value {
+                        Some(then_value) => then_value,
+                        None => condition,
+                    };
+                    let else_null = self.null_pointer(else_value)?.ok_or(UNTYPED)?;
+                    let then_null = self.null_pointer(then_value)?.ok_or(UNTYPED)?;
+                    Typed::rvalue(if else_null {
+                        left
+                    } else if then_null {
+                        right
+                    } else {
+                        let rules = self.features().conditional_pointers;
+                        self.ctypes
+                            .merge_pointer(left, right, rules)
+                            .ok_or(UNTYPED)?
+                    })
+                } else if lp {
+                    Typed::rvalue(left)
+                } else if rp {
+                    Typed::rvalue(right)
                 } else if self.ctypes.compatible_unqualified(left, right) {
                     Typed::rvalue(left)
                 } else {
                     return Err(UNTYPED);
                 }
             }
-            _ => return Err(UNTYPED),
+            ExprKind::Call { callee, arguments } => self.call_type(callee, arguments)?,
+            ExprKind::SizeOfType { .. }
+            | ExprKind::AlignOf { .. }
+            | ExprKind::SizeOfExpr(_)
+            | ExprKind::AlignOfExpr(_)
+            | ExprKind::OffsetOf { .. } => {
+                let target = self.target_info().clone();
+                Typed::rvalue(self.ctypes.size_type(&target))
+            }
+            ExprKind::TypesCompatible { .. } => Typed::rvalue(self.ctypes.int()),
+            ExprKind::LabelAddress(_) => {
+                let void = self.ctypes.qual(CTypeKind::Void);
+                Typed::rvalue(self.ctypes.pointer(void))
+            }
+            ExprKind::BitCast { ty, value } | ExprKind::ConvertVector { ty, value } => {
+                self.typed(value)?;
+                Typed::rvalue(self.type_name(ty)?)
+            }
+            ExprKind::VaArg { list, ty } => {
+                if !self.typed(list)?.lvalue {
+                    return Err(UNTYPED);
+                }
+                Typed::rvalue(self.type_name(ty)?)
+            }
+            ExprKind::Unary {
+                op: UnaryOp::Real | UnaryOp::Imag,
+                operand,
+            } => {
+                let typed = self.typed(operand)?;
+                let complex = matches!(self.ctypes.canonical_kind(typed.c), CTypeKind::Complex(_));
+                if typed.lvalue && complex {
+                    let quals = self.ctypes.quals(typed.c);
+                    Typed::lvalue(self.ctypes.arithmetic_component(typed.c).with(quals))
+                } else {
+                    let c = self.rvalue_type(typed);
+                    if complex {
+                        Typed::rvalue(self.ctypes.arithmetic_component(c))
+                    } else if self.ctypes.is_arithmetic(c) {
+                        Typed::rvalue(self.promoted(c))
+                    } else {
+                        return Err(UNTYPED);
+                    }
+                }
+            }
+            ExprKind::StatementExpression(body) => {
+                match super::expression::statement_expression_parts(body).2 {
+                    Some(result) => Typed::rvalue(self.operand_type(result)?),
+                    None => Typed::rvalue(self.ctypes.qual(CTypeKind::Void)),
+                }
+            }
         })
+    }
+
+    pub(super) fn chosen_expr<'e>(
+        &mut self,
+        callee: &Expr,
+        arguments: &'e [Expr],
+    ) -> Result<&'e Expr, ResolveError> {
+        let (condition, when_true, when_false) = choose_expr_operands(callee, arguments)
+            .ok_or(ResolveError::Internal("__builtin_choose_expr"))?;
+        let taken = self.constant_integer(condition)?;
+        Ok(if taken.sign() == num_bigint::Sign::NoSign {
+            when_false
+        } else {
+            when_true
+        })
+    }
+
+    fn call_type(&mut self, callee: &Expr, arguments: &[Expr]) -> Result<Typed, ResolveError> {
+        if let Some(builtin) = atomic_builtin(callee) {
+            return self.atomic_type(builtin, arguments);
+        }
+        if let Some(operand) = constant_p_operand(callee, arguments) {
+            self.typed(operand)?;
+            return Ok(Typed::rvalue(self.ctypes.int()));
+        }
+        if arguments.is_empty()
+            && let Some(builtin) = source_location_builtin(callee)
+        {
+            return Ok(Typed::rvalue(match builtin {
+                SourceLocationBuiltin::Line | SourceLocationBuiltin::Column => self.ctypes.int(),
+                _ => {
+                    let char_type = self.ctypes.qual(CTypeKind::Char);
+                    self.ctypes.pointer(char_type)
+                }
+            }));
+        }
+        if choose_expr_operands(callee, arguments).is_some() {
+            let chosen = self.chosen_expr(callee, arguments)?;
+            return self.typed(chosen);
+        }
+        if va_builtin(callee).is_some() {
+            return Ok(Typed::rvalue(self.ctypes.qual(CTypeKind::Void)));
+        }
+        let signature = match self.builtin_callee(callee, arguments) {
+            Some((builtin, _)) => {
+                if let Some(custom) = super::builtins::custom_builtin(builtin) {
+                    return self.custom_builtin_type(custom, arguments);
+                }
+                match super::builtins::derived_signature(builtin) {
+                    Some(derived) => {
+                        let first = match (derived, arguments.first()) {
+                            (DerivedSignature::Declared, _) | (_, None) => None,
+                            (_, Some(argument)) => {
+                                let typed = self.typed(argument)?;
+                                Some(self.ctypes.lvalue_conversion(typed.c))
+                            }
+                        };
+                        self.derived_signature(builtin, derived, arguments.len(), first)?
+                    }
+                    None => self.builtin_signature(builtin).ok_or(UNTYPED)?,
+                }
+            }
+            None => {
+                let pointer = self.operand_type(callee)?;
+                self.ctypes.pointee(pointer).ok_or(UNTYPED)?
+            }
+        };
+        let (returned, ..) = self.ctypes.function_parts(signature).ok_or(UNTYPED)?;
+        Ok(Typed::rvalue(returned))
+    }
+
+    fn atomic_type(
+        &mut self,
+        builtin: AtomicBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Typed, ResolveError> {
+        let boolean = self.ctypes.qual(CTypeKind::Bool);
+        let result = builtin.result(arguments).ok_or(UNTYPED)?;
+        Ok(Typed::rvalue(match result {
+            AtomicResult::Void => self.ctypes.qual(CTypeKind::Void),
+            AtomicResult::Bool => boolean,
+            AtomicResult::Object(object) | AtomicResult::Fetched(object) => {
+                let pointer = self.operand_type(object)?;
+                let pointee = self.ctypes.pointee(pointer).ok_or(UNTYPED)?;
+                match self.ir_type(pointee) {
+                    Type::Void | Type::Function { .. } => return Err(UNTYPED),
+                    Type::Bool if matches!(result, AtomicResult::Fetched(_)) => {
+                        self.ctypes.unqualified(pointee)
+                    }
+                    _ => pointee,
+                }
+            }
+            AtomicResult::Flag(object) => {
+                let pointer = self.operand_type(object)?;
+                let pointee = self.ctypes.pointee(pointer).ok_or(UNTYPED)?;
+                if self.ir_type(pointee) == Type::Bool {
+                    pointee
+                } else {
+                    boolean
+                }
+            }
+        }))
+    }
+
+    fn custom_builtin_type(
+        &mut self,
+        custom: CustomBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Typed, ResolveError> {
+        Ok(Typed::rvalue(match custom {
+            CustomBuiltin::Overflow(_) => self.ctypes.qual(CTypeKind::Bool),
+            CustomBuiltin::FloatClass(_)
+            | CustomBuiltin::QuietCompare(_)
+            | CustomBuiltin::Unordered
+            | CustomBuiltin::LessGreater
+            | CustomBuiltin::InfSign
+            | CustomBuiltin::FloatClassify
+            | CustomBuiltin::ClassifyType => self.ctypes.int(),
+            CustomBuiltin::AddressOf => {
+                let [operand] = arguments else {
+                    return Err(UNTYPED);
+                };
+                let typed = self.typed(operand)?;
+                if !typed.lvalue || typed.bits.is_some() {
+                    return Err(UNTYPED);
+                }
+                self.ctypes.pointer(typed.c)
+            }
+            CustomBuiltin::Complex => {
+                let [real, imaginary] = arguments else {
+                    return Err(UNTYPED);
+                };
+                let real = self.operand_type(real)?;
+                let real = self.real_floating_component(real)?;
+                let imaginary = self.operand_type(imaginary)?;
+                let imaginary = self.real_floating_component(imaginary)?;
+                let target = self.target_info().clone();
+                let common = self.ctypes.usual_real_type(real, imaginary, &target)?;
+                self.complex_of(common)
+            }
+            CustomBuiltin::Shuffle => return Err(UNTYPED),
+        }))
+    }
+
+    fn null_pointer(&mut self, e: &Expr) -> Result<Option<bool>, ResolveError> {
+        Ok(match &e.value {
+            ExprKind::Paren(inner) => self.null_pointer(inner)?,
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                let controlling = match controlling {
+                    crate::ast::GenericControl::Type { ty } => self.type_name(ty)?,
+                    crate::ast::GenericControl::Expr(expr) => {
+                        let typed = self.typed(expr)?;
+                        self.ctypes.lvalue_conversion(typed.c)
+                    }
+                };
+                let selected = self.select_association(controlling, associations)?;
+                self.null_pointer(selected)?
+            }
+            ExprKind::Call { callee, arguments }
+                if choose_expr_operands(callee, arguments).is_some() =>
+            {
+                let chosen = self.chosen_expr(callee, arguments)?;
+                self.null_pointer(chosen)?
+            }
+            ExprKind::NullPtrLiteral => Some(true),
+            ExprKind::Cast { value, .. } => {
+                let from = self.operand_type(value)?;
+                if self.ctypes.is_integer(from) {
+                    self.integer_zero(value)
+                } else if self.ctypes.is_pointer(from) {
+                    self.null_pointer(value)?
+                } else {
+                    None
+                }
+            }
+            _ => Some(false),
+        })
+    }
+
+    fn integer_zero(&self, e: &Expr) -> Option<bool> {
+        match &e.value {
+            ExprKind::Paren(inner) => self.integer_zero(inner),
+            ExprKind::IntegerLiteral(literal) if !literal.imaginary => {
+                Some(crate::const_expr::Parser::evaluate_ast(e).is_ok_and(|number| number == 0))
+            }
+            ExprKind::Identifier(_) if self.object(e).is_some() => Some(false),
+            ExprKind::Identifier(_) => Some(matches!(
+                &self.constant(e)?.value.node.value,
+                ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default()
+            )),
+            _ => None,
+        }
     }
 
     fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {

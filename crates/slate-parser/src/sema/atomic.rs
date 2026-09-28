@@ -272,6 +272,62 @@ fn sync_operation(operation: &str) -> Option<SyncBuiltin> {
     })
 }
 
+pub(super) enum AtomicResult<'e> {
+    Void,
+    Bool,
+    Object(&'e Expr),
+    Fetched(&'e Expr),
+    Flag(&'e Expr),
+}
+
+impl AtomicBuiltin {
+    pub(super) fn result(self, arguments: &[Expr]) -> Option<AtomicResult<'_>> {
+        let arguments = match arguments.split_last() {
+            Some((_, rest)) if self.scoped => rest,
+            _ => arguments,
+        };
+        Some(match (self.operation, arguments) {
+            (AtomicOperation::Init, [_, _])
+            | (AtomicOperation::Load { generic: true }, [_, _, _])
+            | (AtomicOperation::Store { .. }, [_, _, _])
+            | (AtomicOperation::Exchange { generic: true }, [_, _, _, _])
+            | (AtomicOperation::Clear, [_, _])
+            | (AtomicOperation::Fence(_), [_])
+            | (AtomicOperation::Sync(SyncBuiltin::LockRelease), [_, ..])
+            | (AtomicOperation::Sync(SyncBuiltin::Synchronize), _) => AtomicResult::Void,
+            (AtomicOperation::Fetch { .. }, [object, _, _])
+            | (AtomicOperation::Sync(SyncBuiltin::Fetch { .. }), [object, _, ..]) => {
+                AtomicResult::Fetched(object)
+            }
+            (AtomicOperation::Load { generic: false }, [object, _])
+            | (AtomicOperation::Exchange { generic: false }, [object, _, _])
+            | (
+                AtomicOperation::Sync(SyncBuiltin::LockTestAndSet | SyncBuiltin::Swap),
+                [object, _, ..],
+            )
+            | (
+                AtomicOperation::Sync(SyncBuiltin::CompareAndSwap(CompareExchangeForm::Old)),
+                [object, _, _, ..],
+            ) => AtomicResult::Object(object),
+            (
+                AtomicOperation::CompareExchange(CompareExchangeSource::C11 { .. }),
+                [_, _, _, _, _],
+            )
+            | (
+                AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { .. }),
+                [_, _, _, _, _, _],
+            )
+            | (AtomicOperation::Sync(SyncBuiltin::CompareAndSwap(_)), [_, _, _, ..])
+            | (AtomicOperation::LockFree(LockFreeQuery::C11), [_])
+            | (AtomicOperation::LockFree(LockFreeQuery::Always | LockFreeQuery::Runtime), [_, _]) => {
+                AtomicResult::Bool
+            }
+            (AtomicOperation::TestAndSet, [object, _]) => AtomicResult::Flag(object),
+            _ => return None,
+        })
+    }
+}
+
 impl SyncBuiltin {
     fn sized(self) -> bool {
         match self {

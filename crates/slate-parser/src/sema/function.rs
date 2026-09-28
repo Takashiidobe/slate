@@ -146,7 +146,7 @@ impl Lowerer {
             })
             .collect();
         for (node, id, builtin) in named_builtins {
-            if !self.declares_builtin(id, builtin) {
+            if !self.types.declares_builtin(id, builtin) {
                 if self.types.compiler_flavor() == CompilerFlavor::Clang
                     && builtin.has(BuiltinAttribute::NoReturn)
                     && matches!(self.types.entities.linkage(id), Some(Linkage::External))

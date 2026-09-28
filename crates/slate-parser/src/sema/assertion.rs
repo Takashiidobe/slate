@@ -138,7 +138,7 @@ impl Checker<'_> {
             return resolved;
         };
         let length = match initializer {
-            Some(Initializer::Expr(expr)) => match self.types.assertion_operand_type(expr) {
+            Some(Initializer::Expr(expr)) => match self.types.expression_type(expr) {
                 Ok(c) => match self.types.ctypes.element(c) {
                     Some((_, super::ctype::Extent::Fixed(length))) => Some(length),
                     _ => None,
@@ -178,7 +178,7 @@ impl Checker<'_> {
             };
             if matches!(declaration.specifiers.ty, TypeSpecifier::Inferred)
                 && let Some(Initializer::Expr(expr)) = &declarator.initializer
-                && let Ok(value) = self.types.assertion_operand_type(expr)
+                && let Ok(value) = self.types.expression_type(expr)
                 && let Ok((base, _)) = self.types.inferred_base(&declarator.declarator, value)
             {
                 self.types.inferred = Some(base);

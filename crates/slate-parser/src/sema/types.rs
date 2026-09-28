@@ -47,10 +47,11 @@ pub struct TypeResolver {
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
+    pub(super) function_references: HashSet<crate::ast::NodeId>,
     pub(super) declarations: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
-    pub(super) expression_types: HashMap<crate::ast::NodeId, Option<super::typer::Typed>>,
+    pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
     pub(super) inferred: Option<QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
@@ -78,6 +79,7 @@ impl TypeResolver {
             assertion_scope: false,
             extents: HashMap::new(),
             references: HashMap::new(),
+            function_references: HashSet::new(),
             declarations: HashMap::new(),
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
@@ -132,6 +134,12 @@ impl TypeResolver {
     pub(super) fn with_names(unit: &TranslationUnit, names: &crate::ir::NameResolution) -> Self {
         let mut resolver = Self::new(unit.dialect.clone());
         resolver.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
+        resolver.function_references = names
+            .references
+            .iter()
+            .filter(|r| r.kind == crate::ir::BindingKind::Function)
+            .map(|r| r.id)
+            .collect();
         resolver.declarations = names.declarations.clone();
         resolver.tag_definitions = names.tags.clone();
         resolver.ctypes.ptr32_extension_is_qualifier =
@@ -423,7 +431,7 @@ impl TypeResolver {
                 (ty, ValueKind::Constant(number))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let ty = self.assertion_operand_type(operand)?;
+                let ty = self.expression_type(operand)?;
                 if matches!(e.value, ExprKind::SizeOfExpr(_)) && self.ctypes.is_function(ty) {
                     let c = self.ctypes.size_type(self.dialect.target());
                     return Ok(Operand {
@@ -485,15 +493,7 @@ impl TypeResolver {
             ExprKind::Call { callee, arguments }
                 if super::expression::choose_expr_operands(callee, arguments).is_some() =>
             {
-                let (condition, when_true, when_false) =
-                    super::expression::choose_expr_operands(callee, arguments)
-                        .ok_or(ResolveError::Internal("__builtin_choose_expr"))?;
-                let taken = self.constant_integer(condition)?;
-                let chosen = if taken.sign() == num_bigint::Sign::NoSign {
-                    when_false
-                } else {
-                    when_true
-                };
+                let chosen = self.chosen_expr(callee, arguments)?;
                 return self.constant_value(chosen);
             }
             ExprKind::Call { callee, arguments }
@@ -623,7 +623,7 @@ impl TypeResolver {
             operand = inner;
         }
         if let crate::ast::ExprKind::Member { base, field, arrow } = &operand.value {
-            let record = self.assertion_operand_type(base).ok().and_then(|base| {
+            let record = self.expression_type(base).ok().and_then(|base| {
                 if *arrow {
                     self.ctypes.pointee(base)
                 } else {
@@ -672,7 +672,7 @@ impl TypeResolver {
         let controlling = match controlling {
             GenericControl::Type { ty } => self.resolve(&ty.specifiers, &ty.declarator)?,
             GenericControl::Expr(expr) => {
-                let ty = self.assertion_operand_type(expr)?;
+                let ty = self.expression_type(expr)?;
                 self.ctypes.lvalue_conversion(ty)
             }
         };
@@ -705,126 +705,6 @@ impl TypeResolver {
         selected
             .or(fallback)
             .ok_or(ResolveError::Rejected("unselected generic association"))
-    }
-
-    pub(super) fn assertion_operand_type(
-        &mut self,
-        e: &crate::ast::Expr,
-    ) -> Result<QualType, ResolveError> {
-        use crate::ast::ExprKind;
-        match &e.value {
-            ExprKind::Paren(inner) => self.assertion_operand_type(inner),
-            ExprKind::Generic {
-                controlling,
-                associations,
-            } => {
-                let selected = self.generic_selection(controlling, associations)?;
-                self.assertion_operand_type(selected)
-            }
-            ExprKind::Call { callee, .. } => match &callee.value {
-                ExprKind::Identifier(name) if builtin_result_type(name).is_some() => {
-                    Ok(self.ctypes.qual(CTypeKind::Bool))
-                }
-                _ => Err(ResolveError::Unimplemented("nonconstant call expression")),
-            },
-            ExprKind::Identifier(_) => self
-                .object(e)
-                .or_else(|| self.constant(e).map(|value| value.c))
-                .ok_or(ResolveError::Unimplemented(
-                    "unknown or unsupported sizeof operand type",
-                )),
-            ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
-            ExprKind::Cast { ty, .. } => {
-                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                Ok(self.ctypes.unqualified(ty))
-            }
-            ExprKind::NullPtrLiteral => Ok(self.ctypes.qual(CTypeKind::NullPtr)),
-            ExprKind::CompoundLiteral { ty, initializer } => {
-                let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
-                if let Some((element, Extent::Incomplete)) = self.ctypes.element(resolved) {
-                    let length = self.inferred_array_length(element, initializer)?;
-                    Ok(self.ctypes.qual(CTypeKind::Array {
-                        element,
-                        extent: Extent::Fixed(length),
-                    }))
-                } else {
-                    Ok(resolved)
-                }
-            }
-            ExprKind::Unary {
-                op: crate::const_expr::UnaryOp::Deref,
-                operand,
-            } => {
-                let pointer = self.assertion_operand_type(operand)?;
-                self.ctypes
-                    .pointee(pointer)
-                    .ok_or(ResolveError::Rejected("sizeof dereference of nonpointer"))
-            }
-            ExprKind::Index { base, .. } => {
-                let base = self.assertion_operand_type(base)?;
-                self.ctypes
-                    .element(base)
-                    .map(|(element, _)| element)
-                    .or_else(|| self.ctypes.pointee(base))
-                    .ok_or(ResolveError::Rejected("sizeof index of nonarray"))
-            }
-            ExprKind::Comma { right, .. } => {
-                let right = self.assertion_operand_type(right)?;
-                Ok(self.ctypes.lvalue_conversion(right))
-            }
-            ExprKind::Unary {
-                op: crate::const_expr::UnaryOp::AddrOf,
-                operand,
-            } => {
-                let pointee = self.assertion_operand_type(operand)?;
-                Ok(self.ctypes.pointer(pointee))
-            }
-            ExprKind::Member { base, field, arrow } => {
-                let base = self.assertion_operand_type(base)?;
-                let base = if *arrow {
-                    self.ctypes
-                        .pointee(base)
-                        .ok_or(ResolveError::Rejected("sizeof member of nonpointer"))?
-                } else {
-                    base
-                };
-                self.field_of(base, &field.value)
-                    .ok_or(ResolveError::Rejected("sizeof of unknown member"))
-            }
-            ExprKind::Conditional {
-                condition,
-                then_value,
-                else_value,
-            } => {
-                let left = match then_value {
-                    Some(then_value) => self.assertion_operand_type(then_value)?,
-                    None => self.assertion_operand_type(condition)?,
-                };
-                if self.ctypes.is_record(left) {
-                    return Ok(left);
-                }
-                let constant = self.constant_value(e).map(|value| value.c);
-                if constant.is_ok() {
-                    return constant;
-                }
-                let left = self.ctypes.lvalue_conversion(left);
-                let right = self.assertion_operand_type(else_value)?;
-                let right = self.ctypes.lvalue_conversion(right);
-                match (self.ctypes.is_pointer(left), self.ctypes.is_pointer(right)) {
-                    (true, true) => {
-                        let rules = self.dialect.features().conditional_pointers;
-                        Ok(self
-                            .ctypes
-                            .merge_pointer(left, right, rules)
-                            .unwrap_or(left))
-                    }
-                    (true, false) => Ok(left),
-                    (false, true) => Ok(right),
-                    (false, false) => constant,
-                }
-            }
-            _ => self.constant_value(e).map(|value| value.c),
-        }
     }
 
     pub(super) fn merge_redeclaration(
@@ -921,33 +801,6 @@ impl TypeResolver {
                 self.ctypes.quals(*field).is_const || self.has_const_member(*field, seen)
             })
         })
-    }
-
-    fn field_of(&self, q: QualType, name: &str) -> Option<QualType> {
-        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(q) else {
-            return None;
-        };
-        let TypeDefinitionKind::Record {
-            fields: Some(fields),
-            ..
-        } = &self.definitions[id.0 as usize].kind
-        else {
-            return None;
-        };
-        let types = self.record_fields.get(id)?;
-        let quals = self.ctypes.quals(q);
-        for (index, field) in fields.iter().enumerate() {
-            let member = types.get(index).copied()?;
-            if field.name.as_deref() == Some(name) {
-                return Some(member.with(quals));
-            }
-            if field.name.is_none()
-                && let Some(found) = self.field_of(member, name)
-            {
-                return Some(found.with(quals));
-            }
-        }
-        None
     }
 
     fn integer_fits(&self, value: &BigInt, q: QualType) -> bool {
@@ -1574,7 +1427,7 @@ impl TypeResolver {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
                     return Ok(*resolved);
                 }
-                self.assertion_operand_type(expr)
+                self.expression_type(expr)
             }
         }
     }
@@ -3403,14 +3256,6 @@ pub(super) fn is_folded(value: &Value) -> bool {
         }
         _ => matches!(value.node.value, ValueKind::Constant(_)),
     }
-}
-
-fn builtin_result_type(name: &str) -> Option<Type> {
-    matches!(
-        name,
-        "__builtin_add_overflow" | "__builtin_sub_overflow" | "__builtin_mul_overflow"
-    )
-    .then_some(Type::Bool)
 }
 
 fn has_machine_mode(specifier: &TypeSpecifier) -> bool {

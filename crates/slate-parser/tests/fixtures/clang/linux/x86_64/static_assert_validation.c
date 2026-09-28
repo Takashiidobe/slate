@@ -91,8 +91,6 @@ void valid(int n) {
 }
 #endif
 
-// SLATE-FILECHECK-IR-ERROR VALID
-
 // SLATE-FILECHECK-BEGIN FALSE_FILE
 // FALSE_FILE: Error:   × semantic analysis failed
 // FALSE_FILE: Error:
@@ -226,13 +224,52 @@ void valid(int n) {
 // CONCAT: ╰────
 // SLATE-FILECHECK-END CONCAT
 // SLATE-FILECHECK-BEGIN VALID
-// VALID: Error:   × semantic analysis failed
-// VALID: Error:
-// VALID: × static assertion requires an integer constant expression: not implemented:
-// VALID: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:51:15]
-// VALID: 50 │ static_assert(1 ? 1 : opaque());
-// VALID: 51 │ static_assert(sizeof(opaque()) == sizeof(int));
-// VALID: ·               ───────────────────────────────
-// VALID: 52 │ static_assert(_Generic(1, int: 1, default: opaque()));
-// VALID: ╰────
+// VALID: module {
+// VALID-NEXT:     target "x86_64-unknown-linux-gnu" {
+// VALID-NEXT:         endian = little;
+// VALID-NEXT:         pointer [size=8, align=8];
+// VALID-NEXT:         stack_alignment = 16;
+// VALID-NEXT:         long_double = f80;
+// VALID-NEXT:         storage bool [size=1, align=1];
+// VALID-NEXT:         storage i8, u8 [size=1, align=1];
+// VALID-NEXT:         storage i16, u16 [size=2, align=2];
+// VALID-NEXT:         storage i32, u32 [size=4, align=4];
+// VALID-NEXT:         storage i64, u64 [size=8, align=8];
+// VALID-NEXT:         storage i128, u128 [size=16, align=16];
+// VALID-NEXT:         storage bf16 [size=2, align=2];
+// VALID-NEXT:         storage f16 [size=2, align=2];
+// VALID-NEXT:         storage f32 [size=4, align=4];
+// VALID-NEXT:         storage f64 [size=8, align=8];
+// VALID-NEXT:         storage f80 [size=16, align=16];
+// VALID-NEXT:         storage f128 [size=16, align=16];
+// VALID-NEXT:         storage d32 [size=4, align=4];
+// VALID-NEXT:         storage d64 [size=8, align=8];
+// VALID-NEXT:         storage d128 [size=16, align=16];
+// VALID-NEXT:     }
+// VALID-NEXT:     type @type0 byte = u8;
+// VALID-NEXT:     type @type1 = enum : u32 {
+// VALID-NEXT:         %0 FIRST = const<i32>(2);
+// VALID-NEXT:         %1 SECOND = const<i32>(3);
+// VALID-NEXT:     } [size=4, align=4];
+// VALID-NEXT:     type @type2 Outer = struct {
+// VALID-NEXT:         field0 a: i32;
+// VALID-NEXT:     } [size=4, align=4, offsets=[0]];
+// VALID-NEXT:     type @type3 byte = i16;
+// VALID-NEXT:     type @type4 Outer = struct {
+// VALID-NEXT:         field0 a: i64;
+// VALID-NEXT:         field1 b: i64;
+// VALID-NEXT:     } [size=16, align=8, offsets=[0, 8]];
+// VALID-NEXT:     fn %4 @opaque() -> i32 [linkage=external];
+// VALID-NEXT:     fn %5 @strlen(%12 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// VALID-NEXT:     fn %7 @valid(%8 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:         {
+// VALID-NEXT:         }
+// VALID-NEXT:         {
+// VALID-NEXT:         }
+// VALID-NEXT:         {
+// VALID-NEXT:             let %11 SECOND: i32 [storage=automatic] = const<i32>(1);
+// VALID-NEXT:             read<i32>(%11);
+// VALID-NEXT:         }
+// VALID-NEXT:     }
+// VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

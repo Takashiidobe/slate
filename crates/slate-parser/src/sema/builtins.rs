@@ -1,7 +1,11 @@
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
+use super::numeric::ResolveError;
 use super::types::TypeResolver;
+use crate::ast::{Expr, ExprKind};
 use crate::compiler_args::CompilerFlavor;
-use crate::ir::{ArithOp, CompareOp, FloatClassTest, MemoryEffects, PointerSpace};
+use crate::ir::{
+    ArithOp, BindingId, CompareOp, FloatClassTest, Linkage, MemoryEffects, PointerSpace,
+};
 use crate::target_info::TargetInfo;
 
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
@@ -278,6 +282,115 @@ fn registered_builtin(name: &str) -> Option<&'static ClangBuiltin> {
 }
 
 impl TypeResolver {
+    pub(super) fn builtin_callee(
+        &mut self,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Option<(&'static ClangBuiltin, Option<BindingId>)> {
+        if super::expression::specially_lowered(callee, arguments) {
+            return None;
+        }
+        let ExprKind::Identifier(name) = &callee.value else {
+            return None;
+        };
+        let builtin = clang_builtin(name, self.compiler_flavor())?;
+        let Some(&binding) = self.references.get(&callee.id) else {
+            return Some((builtin, None));
+        };
+        if self.function_references.contains(&callee.id)
+            && (self.entities.ty(&binding).is_none() || self.declares_builtin(binding, builtin))
+        {
+            return Some((builtin, Some(binding)));
+        }
+        // A prefixed spelling (`__builtin_exit`) names the builtin even
+        // when the `exit` in scope was declared with another type.
+        (builtin.name != name).then_some((builtin, None))
+    }
+
+    pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
+        if matches!(self.entities.linkage(binding), Some(Linkage::External))
+            && let Some(declared) = self.entities.ty(&binding)
+            && let Some(signature) = self.builtin_signature(builtin)
+        {
+            return self.ctypes.compatible(declared, signature);
+        }
+        false
+    }
+
+    pub(super) fn derived_signature(
+        &mut self,
+        builtin: &ClangBuiltin,
+        derived: DerivedSignature,
+        arity: usize,
+        first: Option<QualType>,
+    ) -> Result<QualType, ResolveError> {
+        match (derived, first) {
+            (DerivedSignature::Declared, _) => {
+                let prototype = builtin
+                    .prototype
+                    .ok_or(ResolveError::Internal("builtin prototype"))?;
+                self.declared_signature(prototype)
+                    .ok_or(ResolveError::Internal("builtin prototype"))
+            }
+            (DerivedSignature::Uniform { least, most, class }, Some(first)) => {
+                if arity < least || arity > most {
+                    return Err(ResolveError::Rejected("elementwise builtin arity"));
+                }
+                let operand = self.classified_operand(first, class)?;
+                Ok(self.function_type(operand, vec![operand; arity]))
+            }
+            (DerivedSignature::Scaled, Some(first)) if arity == 2 => {
+                let operand = self.classified_operand(first, OperandClass::Floating)?;
+                let exponent = self.ctypes.int();
+                Ok(self.function_type(operand, vec![operand, exponent]))
+            }
+            (DerivedSignature::BitCount, Some(first)) if arity <= 2 => {
+                let operand = self.classified_operand(first, OperandClass::Integer)?;
+                let count = self.ctypes.int();
+                let mut params = vec![operand];
+                params.extend((1..arity).map(|_| count));
+                Ok(self.function_type(count, params))
+            }
+            (DerivedSignature::Uniform { .. } | DerivedSignature::Scaled, _) => {
+                Err(ResolveError::Rejected("elementwise builtin arity"))
+            }
+            (DerivedSignature::BitCount, _) => {
+                Err(ResolveError::Rejected("bit-counting builtin arity"))
+            }
+        }
+    }
+
+    fn classified_operand(
+        &self,
+        operand: QualType,
+        class: OperandClass,
+    ) -> Result<QualType, ResolveError> {
+        let component = match self.ctypes.canonical_kind(operand) {
+            CTypeKind::Vector { element, .. } => *element,
+            _ => operand,
+        };
+        let accepted = match class {
+            OperandClass::Integer => self.ctypes.is_integer(component),
+            OperandClass::Floating => self.ctypes.is_floating(component),
+            OperandClass::Arithmetic => self.ctypes.is_arithmetic(component),
+            OperandClass::Any => true,
+        };
+        if !accepted {
+            return Err(ResolveError::Rejected("elementwise builtin operand type"));
+        }
+        Ok(operand)
+    }
+
+    fn function_type(&mut self, ret: QualType, params: Vec<QualType>) -> QualType {
+        self.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: false,
+            prototyped: true,
+            convention: crate::ir::CallConv::C,
+        })
+    }
+
     pub(super) fn builtin_signature(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
         let prototype = builtin.prototype?;
         if builtin.has(BuiltinAttribute::CustomTypeChecking)

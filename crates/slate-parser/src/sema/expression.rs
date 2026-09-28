@@ -1,4 +1,4 @@
-use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass};
+use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature};
 use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
@@ -98,48 +98,6 @@ impl Lowerer {
         ))
     }
 
-    fn builtin_callee(
-        &mut self,
-        callee: &Expr,
-        arguments: &[Expr],
-    ) -> Option<(&'static ClangBuiltin, Option<BindingId>)> {
-        if specially_lowered(callee, arguments) {
-            return None;
-        }
-        let ExprKind::Identifier(name) = &callee.value else {
-            return None;
-        };
-        let builtin = super::builtins::clang_builtin(name, self.types.compiler_flavor())?;
-        let Some(&binding) = self.types.references.get(&callee.id) else {
-            return Some((builtin, None));
-        };
-        if self
-            .names
-            .references
-            .iter()
-            .any(|reference| reference.id == callee.id && reference.kind == BindingKind::Function)
-            && (self.types.entities.ty(&binding).is_none()
-                || self.declares_builtin(binding, builtin))
-        {
-            return Some((builtin, Some(binding)));
-        }
-        // A prefixed spelling (`__builtin_exit`) names the builtin even
-        // when the `exit` in scope was declared with another type.
-        (builtin.name != name).then_some((builtin, None))
-    }
-
-    pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
-        if matches!(
-            self.types.entities.linkage(binding),
-            Some(Linkage::External)
-        ) && let Some(declared) = self.types.entities.ty(&binding)
-            && let Some(signature) = self.types.builtin_signature(builtin)
-        {
-            return self.types.ctypes.compatible(declared, signature);
-        }
-        false
-    }
-
     fn builtin_declaration(
         &mut self,
         e: &Expr,
@@ -219,7 +177,7 @@ impl Lowerer {
         callee: &Expr,
         arguments: &[Expr],
     ) -> Result<Option<Operand>, ResolveError> {
-        let Some((builtin, declaration)) = self.builtin_callee(callee, arguments) else {
+        let Some((builtin, declaration)) = self.types.builtin_callee(callee, arguments) else {
             return Ok(None);
         };
         let name = builtin.name.to_owned();
@@ -350,8 +308,7 @@ impl Lowerer {
             }
             CustomBuiltin::Complex => {
                 let (real, imaginary) = self.real_floating_pair(arguments)?;
-                let component = self.types.ctypes.unqualified(real.c).ty;
-                let c = self.types.ctypes.qual(CTypeKind::Complex(component));
+                let c = self.types.complex_of(real.c);
                 Ok(self.operand(
                     e,
                     c,
@@ -447,93 +404,15 @@ impl Lowerer {
         derived: DerivedSignature,
         arguments: &[Expr],
     ) -> Result<QualType, ResolveError> {
-        match derived {
-            DerivedSignature::Declared => {
-                let prototype = builtin
-                    .prototype
-                    .ok_or(ResolveError::Internal("builtin prototype"))?;
-                self.types
-                    .declared_signature(prototype)
-                    .ok_or(ResolveError::Internal("builtin prototype"))
+        let first = match (derived, arguments.first()) {
+            (DerivedSignature::Declared, _) | (_, None) => None,
+            (_, Some(argument)) => {
+                let (resolved, _) = self.speculative_type(argument)?;
+                Some(self.types.ctypes.lvalue_conversion(resolved))
             }
-            DerivedSignature::Uniform { least, most, class } => {
-                if arguments.len() < least || arguments.len() > most {
-                    return Err(ResolveError::Rejected("elementwise builtin arity"));
-                }
-                let operand = self.classified_operand_type(&arguments[0], class)?;
-                Ok(self.function_type(operand, vec![operand; arguments.len()]))
-            }
-            DerivedSignature::Scaled => {
-                let [value, _] = arguments else {
-                    return Err(ResolveError::Rejected("elementwise builtin arity"));
-                };
-                let operand = self.classified_operand_type(value, OperandClass::Floating)?;
-                let exponent = self.types.ctypes.int();
-                Ok(self.function_type(operand, vec![operand, exponent]))
-            }
-            DerivedSignature::BitCount => {
-                let Some((value, fallback)) = arguments.split_first() else {
-                    return Err(ResolveError::Rejected("bit-counting builtin arity"));
-                };
-                if fallback.len() > 1 {
-                    return Err(ResolveError::Rejected("bit-counting builtin arity"));
-                }
-                let operand = self.classified_operand_type(value, OperandClass::Integer)?;
-                let count = self.types.ctypes.int();
-                let mut params = vec![operand];
-                params.extend(fallback.iter().map(|_| count));
-                Ok(self.function_type(count, params))
-            }
-        }
-    }
-
-    fn classified_operand_type(
-        &mut self,
-        argument: &Expr,
-        class: OperandClass,
-    ) -> Result<QualType, ResolveError> {
-        let (resolved, _) = self.speculative_type(argument)?;
-        let operand = self.types.ctypes.lvalue_conversion(resolved);
-        let component = match self.types.ctypes.canonical_kind(operand) {
-            CTypeKind::Vector { element, .. } => *element,
-            _ => operand,
         };
-        let ctypes = &self.types.ctypes;
-        let accepted = match class {
-            OperandClass::Integer => ctypes.is_integer(component),
-            OperandClass::Floating => ctypes.is_floating(component),
-            OperandClass::Arithmetic => ctypes.is_arithmetic(component),
-            OperandClass::Any => true,
-        };
-        if !accepted {
-            return Err(ResolveError::Rejected("elementwise builtin operand type"));
-        }
-        Ok(operand)
-    }
-
-    fn function_type(&mut self, ret: QualType, params: Vec<QualType>) -> QualType {
-        self.types.ctypes.qual(CTypeKind::Function {
-            ret,
-            params,
-            variadic: false,
-            prototyped: true,
-            convention: crate::ir::CallConv::C,
-        })
-    }
-
-    pub(super) fn chosen_expr<'e>(
-        &mut self,
-        callee: &Expr,
-        arguments: &'e [Expr],
-    ) -> Result<&'e Expr, ResolveError> {
-        let (condition, when_true, when_false) = choose_expr_operands(callee, arguments)
-            .ok_or(ResolveError::Internal("__builtin_choose_expr"))?;
-        let taken = self.types.constant_integer(condition)?;
-        Ok(if taken.sign() == num_bigint::Sign::NoSign {
-            when_false
-        } else {
-            when_true
-        })
+        self.types
+            .derived_signature(builtin, derived, arguments.len(), first)
     }
 
     fn source_location(
@@ -726,12 +605,7 @@ impl Lowerer {
 
     fn real_floating_operand(&mut self, argument: &Expr) -> Result<Operand, ResolveError> {
         let operand = self.expr(argument)?;
-        let c = self.types.ctypes.arithmetic_component(operand.c);
-        if !self.types.ctypes.is_floating(c) {
-            return Err(ResolveError::Rejected(
-                "floating classification builtin operand",
-            ));
-        }
+        let c = self.types.real_floating_component(operand.c)?;
         self.convert(operand, c, ConversionReason::UsualArith)
     }
 
@@ -2086,7 +1960,7 @@ impl Lowerer {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);
             }
-            if let Some((builtin, _)) = self.builtin_callee(callee, arguments) {
+            if let Some((builtin, _)) = self.types.builtin_callee(callee, arguments) {
                 return Err(ResolveError::UnsupportedBuiltin(builtin.name.to_owned()));
             }
         }
@@ -2590,7 +2464,7 @@ impl Lowerer {
             ExprKind::Call { callee, arguments }
                 if choose_expr_operands(callee, arguments).is_some() =>
             {
-                let chosen = self.chosen_expr(callee, arguments)?;
+                let chosen = self.types.chosen_expr(callee, arguments)?;
                 self.expr(chosen)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
@@ -2743,20 +2617,7 @@ impl Lowerer {
                         "statement expression outside a function",
                     ));
                 }
-                let last = body
-                    .iter()
-                    .rposition(|statement| !matches!(statement.value, StmtKind::Comment(_)));
-                let (leading, labels, result) = match last {
-                    Some(index) => match &body[index].value {
-                        StmtKind::Expr(result) => (&body[..index], None, Some(result)),
-                        StmtKind::Labeled { .. } => match labeled_result(&body[index]) {
-                            Some((labels, result)) => (&body[..index], Some(labels), Some(result)),
-                            None => (&body[..], None, None),
-                        },
-                        _ => (&body[..], None, None),
-                    },
-                    None => (&body[..], None, None),
-                };
+                let (leading, labels, result) = statement_expression_parts(body);
                 let (statements, value) = self.compound(|lower| {
                     let mut statements = lower.statements(leading, lower.return_type)?;
                     if let Some(labels) = &labels {
@@ -2820,6 +2681,25 @@ impl Lowerer {
                 Ok(self.operand(e, resolved, ValueKind::VaArg { list: list.place }))
             }
         }
+    }
+}
+
+pub(super) fn statement_expression_parts(
+    body: &[crate::ast::Stmt],
+) -> (&[crate::ast::Stmt], Option<crate::ast::Stmt>, Option<&Expr>) {
+    let last = body
+        .iter()
+        .rposition(|statement| !matches!(statement.value, StmtKind::Comment(_)));
+    match last {
+        Some(index) => match &body[index].value {
+            StmtKind::Expr(result) => (&body[..index], None, Some(result)),
+            StmtKind::Labeled { .. } => match labeled_result(&body[index]) {
+                Some((labels, result)) => (&body[..index], Some(labels), Some(result)),
+                None => (body, None, None),
+            },
+            _ => (body, None, None),
+        },
+        None => (body, None, None),
     }
 }
 

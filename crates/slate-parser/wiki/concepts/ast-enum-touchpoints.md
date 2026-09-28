@@ -100,6 +100,10 @@ attributes, `#if`), and wraps each node in a `Span` covering its tokens.
 - `src/sema/expression.rs` — `Lowerer::expr` is exhaustive (no catch-all
   since `lh7.2.12`); a new variant needs an IR lowering or an explicit
   `ResolveError`.
+- `src/sema/typer.rs` — `TypeResolver::type_expression` is exhaustive;
+  a new variant needs a typing rule factored out of its lowering (the
+  lowering cross-check returns `Internal` if they disagree), or an explicit
+  `Err(UNTYPED)` that falls back to speculative lowering.
 - `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
   identifiers and embedded type names so referenced header declarations
   survive filtering.

@@ -60,15 +60,27 @@ speculatively evaluated expression (`sizeof`, `_Generic`, an unevaluated
 `TypeResolver::typed` (`sema/typer.rs`) types an expression without lowering
 it and memoizes `Typed { c, lvalue, bits }` per `NodeId` in
 `expression_types`, and the speculative callers ask it first. It answers only
-when it has a rule for the expression and every subexpression; anything else
-(calls and builtins, statement expressions, pointer `?:`, `sizeof`, ...) is
-`Unimplemented`, which means "no answer" and falls back to speculative
-lowering. `Lowerer::expr` and `Lowerer::place` compare every answer with the
-type they lowered and return `Internal` on disagreement, so the rules cannot
-drift: typing rules shared with lowering (`binary_types`, `arithmetic_type`,
-`literal_type`) are factored out of the IR-building code rather than copied.
-A `sizeof` operand the typer answers is not lowered at all unless its type is
-a VLA, which C evaluates.
+when it has a rule for the expression and every subexpression it needs;
+anything else is `Unimplemented`, which means "no answer" and falls back to
+speculative lowering. Only answers are memoized: the checker types an enum
+body before its enumerators are declared, and a remembered failure would hide
+the later answer. `Lowerer::expr` and `Lowerer::place` compare every answer
+with the type they lowered and return `Internal` on disagreement, so the rules
+cannot drift: typing rules shared with lowering (`binary_types`,
+`arithmetic_type`, `literal_type`, `derived_signature`, `builtin_callee`,
+`chosen_expr`, `real_floating_component`, `statement_expression_parts`,
+`AtomicBuiltin::result`) are factored out of the IR-building code rather than
+copied. A `sizeof` operand the typer answers is not lowered at all unless its
+type is a VLA, which C evaluates.
+
+The static-assertion checker and `typeof` resolution type expressions through
+the same typer (`TypeResolver::expression_type`), so a constant expression
+like `sizeof(f())` is accepted wherever lowering would type `f()`.
+
+A null pointer in a pointer `?:` is decided by what lowering folds to
+`ValueKind::Null`, not by C's definition: a cast of literal `0` or of a
+zero enumerator is null, and a cast of anything the typer cannot prove zero
+(`(void *)(0, 0)`, `(void *)(1 - 1)`) leaves the conditional untyped.
 
 `names.rs::redeclares` decides whether a second declaration shares the first
 one's entity, and it treats `Object` and `Function` as one kind. A declarator

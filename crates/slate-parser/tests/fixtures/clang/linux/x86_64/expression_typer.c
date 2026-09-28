@@ -22,6 +22,24 @@ int f(int n) {
     return (int)(sizeof(n + 1L) + sizeof(s.a) + sizeof(sum) + sizeof(mixed)) + promoted + (int)fixed + cast.i + *element + bits;
 }
 
+struct P { double x, y; };
+struct P make(void);
+_Atomic _Bool flag;
+int counter;
+
+long g(int c, int *p) {
+    __typeof__(make()) made = make();
+    _Static_assert(sizeof(make()) == 16, "");
+    __typeof__(c ? p : 0) chosen = p;
+    __typeof__(c ? p : (void *)0) nulled = p;
+    __auto_type loaded = __atomic_load_n(&counter, 5);
+    __typeof__(__c11_atomic_fetch_add(&flag, 1, 5)) fetched = 1;
+    _Static_assert(sizeof(__builtin_complex(1.0f, 2.0f)) == 8, "");
+    __typeof__(__builtin_choose_expr(1, 1L, 1.0)) wide = 3;
+    __typeof__(__builtin_popcount(c)) bits = 0;
+    return (long)made.x + *chosen + *nulled + loaded + fetched + wide + bits + (long)sizeof(__builtin_LINE());
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -54,8 +72,14 @@ int f(int n) {
 // IR-NEXT:         field1 a: array<i32, 2>;
 // IR-NEXT:         field2 c: const i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 4, 16], bit_offsets=[Some(0), None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None]];
+// IR-NEXT:     type @type2 P = struct {
+// IR-NEXT:         field0 x: f64;
+// IR-NEXT:         field1 y: f64;
+// IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // IR-NEXT:     global %2 s: @type1 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 text: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
+// IR-NEXT:     global %16 flag: atomic bool [storage=static] [linkage=external];
+// IR-NEXT:     global %17 counter: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %4 @f(%5 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %6 array: array<i32, 2> [storage=automatic];
 // IR-NEXT:         let %7 promoted: i32 [storage=automatic] = const<i32>(1);
@@ -67,6 +91,17 @@ int f(int n) {
 // IR-NEXT:         let %12 mixed: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
 // IR-NEXT:         let %13 bits: i32 [storage=automatic] = const<i32>(1);
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), const<u64>(8)), const<u64>(4)), const<u64>(4)))), read<i32>(%7)), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%9))), read<i32>(field0(%10))), read<i32>(deref(read<ptr<i32>>(%11)))), read<i32>(%13));
+// IR-NEXT:     }
+// IR-NEXT:     fn %15 @make() -> @type2 [linkage=external] [abi=sysv64() -> native_c];
+// IR-NEXT:     fn %18 @g(%19 c: i32, %20 p: ptr<i32>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %21 made: @type2 [storage=automatic] = copy<@type2, reason=assign>(call<@type2, signature=fn() -> @type2, abi=sysv64() -> native_c>(%15));
+// IR-NEXT:         let %22 chosen: ptr<i32> [storage=automatic] = read<ptr<i32>>(%20);
+// IR-NEXT:         let %23 nulled: ptr<i32> [storage=automatic] = read<ptr<i32>>(%20);
+// IR-NEXT:         let %24 loaded: i32 [storage=automatic] = read<i32, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%17)));
+// IR-NEXT:         let %25 fetched: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0));
+// IR-NEXT:         let %26 wide: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(3));
+// IR-NEXT:         let %27 bits: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:         return add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(field0(%21))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%22))))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%23))))), widen<i64, reason=usual_arith>(read<i32>(%24))), widen<i64, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%25)))), read<i64>(%26)), widen<i64, reason=usual_arith>(read<i32>(%27))), reinterpret<i64, reason=explicit, fits=always>(const<u64>(4)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

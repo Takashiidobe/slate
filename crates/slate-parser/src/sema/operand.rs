@@ -120,6 +120,24 @@ impl TypeResolver {
         })
     }
 
+    pub(super) fn real_floating_component(
+        &mut self,
+        c: QualType,
+    ) -> Result<QualType, ResolveError> {
+        let c = self.ctypes.arithmetic_component(c);
+        if !self.ctypes.is_floating(c) {
+            return Err(ResolveError::Rejected(
+                "floating classification builtin operand",
+            ));
+        }
+        Ok(c)
+    }
+
+    pub(super) fn complex_of(&mut self, real: QualType) -> QualType {
+        let component = self.ctypes.unqualified(real).ty;
+        self.ctypes.qual(CTypeKind::Complex(component))
+    }
+
     pub(super) fn literal_type(
         &mut self,
         target: &TargetInfo,
