@@ -25,6 +25,6 @@ void arr(int a[static 10], int b[const], int c[static restrict 3], int d[*]);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @arr(%1 a: ptr<i32> [array=static 10], %2 b: ptr<i32> [const], %3 c: ptr<i32> [restrict] [array=static 3], %4 d: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @arr(%5 a: ptr<i32> [array=static 10], %6 b: ptr<i32> [const], %7 c: ptr<i32> [restrict] [array=static 3], %8 d: ptr<i32> [array=*]) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

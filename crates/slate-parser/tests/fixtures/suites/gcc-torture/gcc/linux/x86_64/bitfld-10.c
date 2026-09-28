@@ -54,21 +54,21 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 f = struct {
 // DEFAULT-NEXT:         field0 t: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %1 @g(%2 a: ptr<@type0>, %3 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%2))), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %3 @g(%4 a: ptr<@type0>, %5 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%4))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%2))), const<i32>(0));
-// DEFAULT-NEXT:         let %4 t1: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%2))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%4))), const<i32>(0));
+// DEFAULT-NEXT:         let %6 t1: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type0>>(%4))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:         return read<i32>(%6);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%1, addr_of<ptr<@type0>>(%6), const<i32>(1)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 a: @type0 [storage=automatic];
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%3, addr_of<ptr<@type0>>(%8), const<i32>(1)), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

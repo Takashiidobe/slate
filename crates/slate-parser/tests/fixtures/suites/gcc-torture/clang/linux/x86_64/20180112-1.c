@@ -58,21 +58,21 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 u32 = u32;
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bug(%3 result: ptr<u32>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 ss: volatile u32 [storage=automatic] = const<u32>(4294967295);
-// DEFAULT-NEXT:         let %5 d: volatile u32 [storage=automatic] = const<u32>(4008636142);
-// DEFAULT-NEXT:         let %6 tt: u32 [storage=automatic] = and<u32>(read<u32, volatile>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8388608)));
-// DEFAULT-NEXT:         let %7 r: u32 [storage=automatic] = shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%6), const<i32>(8));
-// DEFAULT-NEXT:         write<u32>(%7, or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%7), const<i32>(31)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%7), const<i32>(1))));
-// DEFAULT-NEXT:         let %8 u: u32 [storage=automatic] = xor<u32>(read<u32>(%7), read<u32, volatile>(%4));
-// DEFAULT-NEXT:         let %9 off: u32 [storage=automatic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%8), const<i32>(1));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%3)), read<u32>(%6));
-// DEFAULT-NEXT:         return read<u32>(%9);
+// DEFAULT-NEXT:     fn %3 @bug(%4 result: ptr<u32>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 ss: volatile u32 [storage=automatic] = const<u32>(4294967295);
+// DEFAULT-NEXT:         let %6 d: volatile u32 [storage=automatic] = const<u32>(4008636142);
+// DEFAULT-NEXT:         let %7 tt: u32 [storage=automatic] = and<u32>(read<u32, volatile>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8388608)));
+// DEFAULT-NEXT:         let %8 r: u32 [storage=automatic] = shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%7), const<i32>(8));
+// DEFAULT-NEXT:         write<u32>(%8, or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%8), const<i32>(31)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%8), const<i32>(1))));
+// DEFAULT-NEXT:         let %9 u: u32 [storage=automatic] = xor<u32>(read<u32>(%8), read<u32, volatile>(%5));
+// DEFAULT-NEXT:         let %10 off: u32 [storage=automatic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%9), const<i32>(1));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%4)), read<u32>(%7));
+// DEFAULT-NEXT:         return read<u32>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 l: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %12 off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%2, addr_of<ptr<u32>>(%11));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
+// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %12 l: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %13 off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%3, addr_of<ptr<u32>>(%12));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

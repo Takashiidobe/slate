@@ -37,14 +37,14 @@ done:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 x: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         goto %2;
-// DEFAULT-NEXT:         write<i32>(%3, const<i32>(99));
-// DEFAULT-NEXT:         label %2 done:
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%5)), read<i32>(%3));
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 x: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         goto %3;
+// DEFAULT-NEXT:         write<i32>(%4, const<i32>(99));
+// DEFAULT-NEXT:         label %3 done:
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), read<i32>(%4));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

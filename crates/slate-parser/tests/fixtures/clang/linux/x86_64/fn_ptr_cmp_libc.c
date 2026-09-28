@@ -46,12 +46,12 @@ int main(void) {
 // DEFAULT-NEXT:     type @type2 hooks = struct {
 // DEFAULT-NEXT:         field0 malloc_fn: ptr<fn(u64) -> ptr<void>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @malloc(%7 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 h: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(u64) -> ptr<void>>>(field0(%5), function_decay<ptr<fn(u64) -> ptr<void>>>(%1));
-// DEFAULT-NEXT:         let %6 matches: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<fn(u64) -> ptr<void>>>(read<ptr<fn(u64) -> ptr<void>>>(field0(%5)), function_decay<ptr<fn(u64) -> ptr<void>>>(%1)));
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%6), const<i32>(0)), const<i32>(0), const<i32>(1));
+// DEFAULT-NEXT:     fn %2 @malloc(%8 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 h: @type2 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(u64) -> ptr<void>>>(field0(%6), function_decay<ptr<fn(u64) -> ptr<void>>>(%2));
+// DEFAULT-NEXT:         let %7 matches: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<fn(u64) -> ptr<void>>>(read<ptr<fn(u64) -> ptr<void>>>(field0(%6)), function_decay<ptr<fn(u64) -> ptr<void>>>(%2)));
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%7), const<i32>(0)), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

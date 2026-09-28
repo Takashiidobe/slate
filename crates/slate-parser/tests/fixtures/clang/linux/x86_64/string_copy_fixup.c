@@ -46,27 +46,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %26 .str26: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([115, 117, 102, 102, 105, 120, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([37, 115, 32, 37, 115, 32, 37, 115, 32, 37, 115, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @strcpy(%13 __dest: ptr<i8> [restrict], %14 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @strncpy(%15 __dest: ptr<i8> [restrict], %16 __src: ptr<const i8> [restrict], %17 __n: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strcat(%18 __dest: ptr<i8> [restrict], %19 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strncat(%20 __dest: ptr<i8> [restrict], %21 __src: ptr<const i8> [restrict], %22 __n: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strlen(%23 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 copy: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %9 append: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// DEFAULT-NEXT:         let %10 trunc_copy: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %11 trunc_append: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%2, array_decay<ptr<i8>, length=Some(16)>(%8), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%24)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%4, array_decay<ptr<i8>, length=Some(16)>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%25)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%3, array_decay<ptr<i8>, length=Some(16)>(%10), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%26)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%5, array_decay<ptr<i8>, length=Some(16)>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%27)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%28)), array_decay<ptr<i8>, length=Some(16)>(%8), array_decay<ptr<i8>, length=Some(16)>(%9), array_decay<ptr<i8>, length=Some(16)>(%10), array_decay<ptr<i8>, length=Some(16)>(%11), call<u64, signature=fn(ptr<const i8>) -> u64>(%6, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%11))));
+// DEFAULT-NEXT:     global %36 .str36: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([97, 98, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %37 .str37: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %38 .str38: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %39 .str39: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([115, 117, 102, 102, 105, 120, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %40 .str40: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([37, 115, 32, 37, 115, 32, 37, 115, 32, 37, 115, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%24 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @strcpy(%25 __dest: ptr<i8> [restrict], %26 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %9 @strncpy(%27 __dest: ptr<i8> [restrict], %28 __src: ptr<const i8> [restrict], %29 __n: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %12 @strcat(%30 __dest: ptr<i8> [restrict], %31 __src: ptr<const i8> [restrict]) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %16 @strncat(%32 __dest: ptr<i8> [restrict], %33 __src: ptr<const i8> [restrict], %34 __n: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %18 @strlen(%35 __s: ptr<const i8>) -> u64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %20 copy: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %21 append: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// DEFAULT-NEXT:         let %22 trunc_copy: array<i8, 16> [storage=automatic] [align=16] = aggregate<array<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %23 trunc_append: array<i8, 16> [storage=automatic] [align=16] = code_units<array<i8, 16>>([112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%5, array_decay<ptr<i8>, length=Some(16)>(%20), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%36)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%12, array_decay<ptr<i8>, length=Some(16)>(%21), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%37)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%9, array_decay<ptr<i8>, length=Some(16)>(%22), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%38)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%16, array_decay<ptr<i8>, length=Some(16)>(%23), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%39)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%40)), array_decay<ptr<i8>, length=Some(16)>(%20), array_decay<ptr<i8>, length=Some(16)>(%21), array_decay<ptr<i8>, length=Some(16)>(%22), array_decay<ptr<i8>, length=Some(16)>(%23), call<u64, signature=fn(ptr<const i8>) -> u64>(%18, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%23))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -41,14 +41,14 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 size_t = u64;
 // DEFAULT-NEXT:     type @type1 GNUEmpty = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @empty_size(%4 value: @type1) -> u64 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @empty_size(%5 value: @type1) -> u64 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<u64>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 value: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>();
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%8)), const<u64>(0), call<u64, signature=fn(@type1) -> u64, abi=sysv64(native_c) -> scalar>(%3, copy<@type1, reason=arg>(read<@type1>(%6))));
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 value: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>();
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%9)), const<u64>(0), call<u64, signature=fn(@type1) -> u64, abi=sysv64(native_c) -> scalar>(%4, copy<@type1, reason=arg>(read<@type1>(%7))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

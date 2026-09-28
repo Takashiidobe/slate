@@ -57,47 +57,47 @@ int main(void) {
 // DEFAULT-NEXT:         field0 t: i32 : 1;
 // DEFAULT-NEXT:         field1 t1: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(1)], bit_units=[(0, 1)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %1 @f(%2 t: @type0) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 c: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2));
-// DEFAULT-NEXT:         let %4 d: i32 [storage=automatic] = read<i32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%2));
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%3), read<i32>(%4))
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), read<i32>(%4));
+// DEFAULT-NEXT:     fn %2 @f(%3 t: @type0) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %4 c: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%3));
+// DEFAULT-NEXT:         let %5 d: i32 [storage=automatic] = read<i32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%3));
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%4), read<i32>(%5))
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%3), read<i32>(%5));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), read<i32>(%3));
-// DEFAULT-NEXT:         return read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2));
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%3), read<i32>(%4));
+// DEFAULT-NEXT:         return read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 t: @type0 [storage=automatic];
-// DEFAULT-NEXT:         for %13
+// DEFAULT-NEXT:     fn %16 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 t: @type0 [storage=automatic];
+// DEFAULT-NEXT:         for %14
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %7 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%7), const<i32>(0))
+// DEFAULT-NEXT:                 let %8 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%8), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%17));
+// DEFAULT-NEXT:                 let %17: i32 [synthetic] = read<i32>(%8);
+// DEFAULT-NEXT:                 let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%18));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     for %14
+// DEFAULT-NEXT:                     for %15
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             let %8 j: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:                         condition: le<i32>(read<i32>(%8), const<i32>(0))
+// DEFAULT-NEXT:                             let %9 j: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:                         condition: le<i32>(read<i32>(%9), const<i32>(0))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %18: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:                             let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%8, read<i32>(%19));
+// DEFAULT-NEXT:                             let %19: i32 [synthetic] = read<i32>(%9);
+// DEFAULT-NEXT:                             let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%9, read<i32>(%20));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 let %9 t: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%7), field1 = read<i32>(%8));
-// DEFAULT-NEXT:                                 let %10 r: i32 [storage=automatic] = call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%1, copy<@type0, reason=arg>(read<@type0>(%9)));
-// DEFAULT-NEXT:                                 let %11 exp: i32 [storage=automatic] = conditional<i32>(lt<i32>(read<i32>(%7), read<i32>(%8)), read<i32>(%7), read<i32>(%8));
-// DEFAULT-NEXT:                                 if ne<i32>(read<i32>(%11), read<i32>(%10))
-// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:                                 let %10 t: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%8), field1 = read<i32>(%9));
+// DEFAULT-NEXT:                                 let %11 r: i32 [storage=automatic] = call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%10)));
+// DEFAULT-NEXT:                                 let %12 exp: i32 [storage=automatic] = conditional<i32>(lt<i32>(read<i32>(%8), read<i32>(%9)), read<i32>(%8), read<i32>(%9));
+// DEFAULT-NEXT:                                 if ne<i32>(read<i32>(%12), read<i32>(%11))
+// DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%16);
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }

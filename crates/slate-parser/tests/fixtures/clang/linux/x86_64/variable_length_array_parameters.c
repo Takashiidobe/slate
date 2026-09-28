@@ -41,29 +41,29 @@ int local(int n) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @first(%1 n: i32, %2 a: ptr<i32> [array=%17]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %17: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%1)));
+// IR-NEXT:     fn %0 @first(%1 n: i32, %2 a: ptr<i32> [array=%20]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %20: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%1)));
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @grid(%4 n: i32, %5 m: i32, %6 a: ptr<vla<i32, %19>> [array=%18]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %18: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%4)));
-// IR-NEXT:         let %19: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%5)));
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %19>>, subtract=false, element=vla<i32, %19>, overflow=ub>(read<ptr<vla<i32, %19>>>(%6), const<i32>(1)))), const<i32>(2)))))), mul<u64, overflow=wrap>(read<u64>(%19), const<u64>(4)))));
+// IR-NEXT:     fn %3 @grid(%4 n: i32, %5 m: i32, %6 a: ptr<vla<i32, %22>> [array=%21]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %21: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%4)));
+// IR-NEXT:         let %22: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%5)));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %22>>, subtract=false, element=vla<i32, %22>, overflow=ub>(read<ptr<vla<i32, %22>>>(%6), const<i32>(1)))), const<i32>(2)))))), mul<u64, overflow=wrap>(read<u64>(%22), const<u64>(4)))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @row(%8 n: i32, %9 a: ptr<vla<i32, %20>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %20: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%8)));
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%20), const<u64>(4))));
+// IR-NEXT:     fn %7 @row(%8 n: i32, %9 a: ptr<vla<i32, %23>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %23: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%8)));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%23), const<u64>(4))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @unnamed(%21 <unnamed>: i32, %22 a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// IR-NEXT:     fn %11 @later(%23 n: i32, %24 a: ptr<vla<i32, *>> [array=*]) -> i32 [linkage=external];
-// IR-NEXT:     fn %12 @local(%13 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %25: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%13)));
-// IR-NEXT:         let %26: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%13)));
-// IR-NEXT:         let %14 a: vla<vla<i32, %26>, %25> [storage=automatic];
-// IR-NEXT:         let %27: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%13)));
-// IR-NEXT:         let %15 p: ptr<vla<i32, %27>> [storage=automatic] = pointer_cast<ptr<vla<i32, %27>>, reason=assign>(array_decay<ptr<vla<i32, %26>>, length=None>(%14));
-// IR-NEXT:         let %16 g: ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%3);
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %26>>, subtract=false, element=vla<i32, %26>, overflow=ub>(array_decay<ptr<vla<i32, %26>>, length=None>(%14), const<i32>(1)))), const<i32>(2)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %27>>, subtract=false, element=vla<i32, %27>, overflow=ub>(read<ptr<vla<i32, %27>>>(%15), const<i32>(1)))), const<i32>(2))))), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=vla<i32, %27>, same_array=required, overflow=ub>(ptr_offset<ptr<vla<i32, %27>>, subtract=false, element=vla<i32, %27>, overflow=ub>(read<ptr<vla<i32, %27>>>(%15), const<i32>(1)), read<ptr<vla<i32, %27>>>(%15)))), call<i32, signature=fn(i32, i32, ptr<vla<i32, *>>) -> i32>(read<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%16), read<i32>(%13), read<i32>(%13), pointer_cast<ptr<vla<i32, *>>, reason=arg>(array_decay<ptr<vla<i32, %26>>, length=None>(%14))));
+// IR-NEXT:     fn %11 @unnamed(%24 <unnamed>: i32, %25 a: ptr<i32> [array=*]) -> i32 [linkage=external];
+// IR-NEXT:     fn %14 @later(%26 n: i32, %27 a: ptr<vla<i32, *>> [array=*]) -> i32 [linkage=external];
+// IR-NEXT:     fn %15 @local(%16 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %28: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%16)));
+// IR-NEXT:         let %29: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%16)));
+// IR-NEXT:         let %17 a: vla<vla<i32, %29>, %28> [storage=automatic];
+// IR-NEXT:         let %30: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%16)));
+// IR-NEXT:         let %18 p: ptr<vla<i32, %30>> [storage=automatic] = pointer_cast<ptr<vla<i32, %30>>, reason=assign>(array_decay<ptr<vla<i32, %29>>, length=None>(%17));
+// IR-NEXT:         let %19 g: ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%3);
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %29>>, subtract=false, element=vla<i32, %29>, overflow=ub>(array_decay<ptr<vla<i32, %29>>, length=None>(%17), const<i32>(1)))), const<i32>(2)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %30>>, subtract=false, element=vla<i32, %30>, overflow=ub>(read<ptr<vla<i32, %30>>>(%18), const<i32>(1)))), const<i32>(2))))), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=vla<i32, %30>, same_array=required, overflow=ub>(ptr_offset<ptr<vla<i32, %30>>, subtract=false, element=vla<i32, %30>, overflow=ub>(read<ptr<vla<i32, %30>>>(%18), const<i32>(1)), read<ptr<vla<i32, %30>>>(%18)))), call<i32, signature=fn(i32, i32, ptr<vla<i32, *>>) -> i32>(read<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%19), read<i32>(%16), read<i32>(%16), pointer_cast<ptr<vla<i32, *>>, reason=arg>(array_decay<ptr<vla<i32, %29>>, length=None>(%17))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

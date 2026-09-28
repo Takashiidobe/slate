@@ -30,10 +30,10 @@ char *copy(char *destination, const char *source) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @strcpy(%5 _Destination: ptr<i8>, %6 _Source: ptr<const i8>) -> ptr<i8> [linkage=external];
-// IR-NEXT:     fn %1 @old_api() -> i32 [linkage=external];
-// IR-NEXT:     fn %2 @copy(%3 destination: ptr<i8>, %4 source: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%0, read<ptr<i8>>(%3), read<ptr<const i8>>(%4)), call<i32, signature=fn() -> i32>(%1));
+// IR-NEXT:     fn %2 @strcpy(%7 _Destination: ptr<i8>, %8 _Source: ptr<const i8>) -> ptr<i8> [linkage=external];
+// IR-NEXT:     fn %3 @old_api() -> i32 [linkage=external];
+// IR-NEXT:     fn %4 @copy(%5 destination: ptr<i8>, %6 source: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%2, read<ptr<i8>>(%5), read<ptr<const i8>>(%6)), call<i32, signature=fn() -> i32>(%3));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

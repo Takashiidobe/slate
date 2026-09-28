@@ -36,10 +36,10 @@ void bar (char *s)
 // DEFAULT-NEXT:         field1 a: u32;
 // DEFAULT-NEXT:         field2 b: u32;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %0 @atof(%5 __nptr: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %1 @bar(%2 s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 u: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(field0(%4), call<f64, signature=fn(ptr<const i8>) -> f64>(%0, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%2))));
+// DEFAULT-NEXT:     fn %1 @atof(%6 __nptr: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %2 @bar(%3 s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %5 u: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(field0(%5), call<f64, signature=fn(ptr<const i8>) -> f64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%3))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

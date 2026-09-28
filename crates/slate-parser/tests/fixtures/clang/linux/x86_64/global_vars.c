@@ -57,29 +57,29 @@ int main(void) {
 // DEFAULT-NEXT:         field0 left: i32;
 // DEFAULT-NEXT:         field1 right: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %1 counter: i32 [storage=static] = const<i32>(4) [linkage=external];
-// DEFAULT-NEXT:     global %2 zeroed: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 numbers: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %5 pair: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(5)) [linkage=external];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @adjust(%7 by: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), read<i32>(%7));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%13));
-// DEFAULT-NEXT:         let %14: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), read<i32>(%1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%15));
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%3), const<i32>(2))), sub<i32, overflow=ub>(read<i32>(%2), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%3), const<i32>(0))))));
-// DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32>(field1(%5));
-// DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%3), const<i32>(1)))));
-// DEFAULT-NEXT:         write<i32>(field1(%5), read<i32>(%17));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%5)), read<i32>(field1(%5)));
+// DEFAULT-NEXT:     global %2 counter: i32 [storage=static] = const<i32>(4) [linkage=external];
+// DEFAULT-NEXT:     global %3 zeroed: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %4 numbers: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %6 pair: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(5)) [linkage=external];
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %12 .str12: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @adjust(%8 by: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %13: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:         let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), read<i32>(%8));
+// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%14));
+// DEFAULT-NEXT:         let %15: i32 [synthetic] = read<i32>(%3);
+// DEFAULT-NEXT:         let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), read<i32>(%2));
+// DEFAULT-NEXT:         write<i32>(%3, read<i32>(%16));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(2))), sub<i32, overflow=ub>(read<i32>(%3), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(0))))));
+// DEFAULT-NEXT:         let %17: i32 [synthetic] = read<i32>(field1(%6));
+// DEFAULT-NEXT:         let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(1)))));
+// DEFAULT-NEXT:         write<i32>(field1(%6), read<i32>(%18));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%6)), read<i32>(field1(%6)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn(i32) -> i32>(%6, const<i32>(6)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%11)), read<i32>(%1), read<i32>(%2), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%3), const<i32>(2)))));
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), call<i32, signature=fn(i32) -> i32>(%7, const<i32>(6)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%12)), read<i32>(%2), read<i32>(%3), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%4), const<i32>(2)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -31,11 +31,11 @@ int proto_definition(void) { return 0; }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @unproto() -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %1 @proto() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @variadic(%5 n: i32, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @unproto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @variadic(%6 n: i32, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @unproto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @proto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %5 @proto_definition() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

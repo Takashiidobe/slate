@@ -65,32 +65,32 @@ int main(int argc)
 // DEFAULT-NEXT:         field1 __align: i64;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 0]];
 // DEFAULT-NEXT:     type @type2 pthread_attr_t = @type1;
-// DEFAULT-NEXT:     global %6 sem1: atomic i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %11 sem1: atomic i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @sched_yield() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @pthread_create(%15 __newthread: ptr<u64> [restrict], %16 __attr: ptr<const @type1> [restrict], %17 __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %18 __arg: ptr<void> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @exit(%19 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @f(%8 va: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 p: ptr<ptr<void>> [storage=automatic] = pointer_cast<ptr<ptr<void>>, reason=assign>(read<ptr<void>>(%8));
-// DEFAULT-NEXT:         while %20 not<bool>(ne<i32>(read<i32, atomic=acquire>(deref(addr_of<ptr<atomic i32>>(%6))), const<i32>(0)))
+// DEFAULT-NEXT:     fn %8 @pthread_create(%20 __newthread: ptr<u64> [restrict], %21 __attr: ptr<const @type1> [restrict], %22 __start_routine: ptr<fn(ptr<void>) -> ptr<void>>, %23 __arg: ptr<void> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @exit(%24 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @f(%13 va: ptr<void>) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %14 p: ptr<ptr<void>> [storage=automatic] = pointer_cast<ptr<ptr<void>>, reason=assign>(read<ptr<void>>(%13));
+// DEFAULT-NEXT:         while %25 not<bool>(ne<i32>(read<i32, atomic=acquire>(deref(addr_of<ptr<atomic i32>>(%11))), const<i32>(0)))
 // DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%5, from_bool<i32, reason=arg>(not<bool>(ne<ptr<void>>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%9))), null<ptr<void>>))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%10, from_bool<i32, reason=arg>(not<bool>(ne<ptr<void>>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%14))), null<ptr<void>>))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main(%11 argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 p: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %13 thr: u64 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u64>, ptr<const @type1>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%4, addr_of<ptr<u64>>(%13), null<ptr<const @type1>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%7), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%12))), const<i32>(0))
+// DEFAULT-NEXT:     fn %15 @main(%16 argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %17 p: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         let %18 thr: u64 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<u64>, ptr<const @type1>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%8, addr_of<ptr<u64>>(%18), null<ptr<const @type1>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%12), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<void>>>(%17))), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(2);
-// DEFAULT-NEXT:         write<ptr<void>>(%12, pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<ptr<void>>>(%12)));
-// DEFAULT-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%6)), const<i32>(1));
-// DEFAULT-NEXT:         let %14 r: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         while %21 lt<i32>(read<i32>(%14), const<i32>(0))
+// DEFAULT-NEXT:         write<ptr<void>>(%17, pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<ptr<void>>>(%17)));
+// DEFAULT-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%11)), const<i32>(1));
+// DEFAULT-NEXT:         let %19 r: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:         while %26 lt<i32>(read<i32>(%19), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<i32, signature=fn() -> i32>(%0);
 // DEFAULT-NEXT:                 asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:                     inlateout 0 "r" [reg] width 32 place<i32>(%14);
+// DEFAULT-NEXT:                     inlateout 0 "r" [reg] width 32 place<i32>(%19);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%14);
+// DEFAULT-NEXT:         return read<i32>(%19);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

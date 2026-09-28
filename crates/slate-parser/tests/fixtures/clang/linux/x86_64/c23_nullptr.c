@@ -38,12 +38,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 nullptr_t = ptr<void>;
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 null_value: volatile ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %4 null_pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%6)), from_bool<i32, reason=vararg>(eq<ptr<void>>(read<ptr<void>, volatile>(%3), null<ptr<void>>)), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%4), null<ptr<i32>>)));
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 null_value: volatile ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         let %5 null_pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%7)), from_bool<i32, reason=vararg>(eq<ptr<void>>(read<ptr<void>, volatile>(%4), null<ptr<void>>)), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%5), null<ptr<i32>>)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

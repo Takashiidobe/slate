@@ -71,36 +71,36 @@ void weak_function(void) __attribute__((weak));
 // DEFAULT-NEXT:     global %0 tls: i32 [storage=thread] [linkage=external];
 // DEFAULT-NEXT:     global %1 tls_counter: i32 [storage=thread] = const<i32>(1) [linkage=internal];
 // DEFAULT-NEXT:     extern %2 tls_extern: i32 [storage=thread] [linkage=external] [tls_model=initial-exec];
-// DEFAULT-NEXT:     global %5 before_block: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 after_block: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %9 per_thread: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     global %11 shadowed: i32 [storage=static] = const<i32>(3) [linkage=external];
-// DEFAULT-NEXT:     global %14 private_object: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %16 hidden_object: i32 [storage=static] = const<i32>(5) [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     global %17 weak_object: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %18 placed: i32 [storage=static] = const<i32>(6) [linkage=external] [section=".data.placed"] [used] [retain];
-// DEFAULT-NEXT:     global %19 aliased: i32 [storage=static] [linkage=external] [alias="placed"];
-// DEFAULT-NEXT:     extern %20 renamed: i32 [storage=static] [linkage=external] [asm_name="renamed_symbol"];
+// DEFAULT-NEXT:     global %7 before_block: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %9 after_block: i32 [storage=static] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %11 per_thread: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     global %13 shadowed: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     global %16 private_object: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %18 hidden_object: i32 [storage=static] = const<i32>(5) [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     global %19 weak_object: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %20 placed: i32 [storage=static] = const<i32>(6) [linkage=external] [section=".data.placed"] [used] [retain];
+// DEFAULT-NEXT:     global %21 aliased: i32 [storage=static] [linkage=external] [alias="placed"];
+// DEFAULT-NEXT:     extern %22 renamed: i32 [storage=static] [linkage=external] [asm_name="renamed_symbol"];
 // DEFAULT-NEXT:     fn %3 @helper() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @proto(%23 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @later_function(%10 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%10);
+// DEFAULT-NEXT:     fn %5 @proto(%25 value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @later_function(%12 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%12);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @reads_block_externs() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%5), read<i32>(%7)), call<i32, signature=fn(i32) -> i32>(%8, read<i32>(%9)));
+// DEFAULT-NEXT:     fn %8 @reads_block_externs() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%7), read<i32>(%9)), call<i32, signature=fn(i32) -> i32>(%10, read<i32>(%11)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @reads_through_shadow() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 shadowed: i32 [storage=automatic] = const<i32>(4);
+// DEFAULT-NEXT:     fn %14 @reads_through_shadow() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %15 shadowed: i32 [storage=automatic] = const<i32>(4);
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             return read<i32>(%11);
+// DEFAULT-NEXT:             return read<i32>(%13);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @links_private() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%14);
+// DEFAULT-NEXT:     fn %17 @links_private() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%16);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @exported() -> void [linkage=external] [visibility=protected];
-// DEFAULT-NEXT:     fn %22 @weak_function() -> void [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %23 @exported() -> void [linkage=external] [visibility=protected];
+// DEFAULT-NEXT:     fn %24 @weak_function() -> void [linkage=external] [weak];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -138,35 +138,35 @@ RW (2, 3) void g1 (int n, int[n], int);     // { dg-warning "16: attribute 'acce
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 G1 = fn(i32, ptr<i32>, i32) -> void;
-// DEFAULT-NEXT:     fn %0 @f1(%27 n: i32, %28 <unnamed>: ptr<i32> [array=*], %29 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2(%36 <unnamed>: i32, %37 <unnamed>: ptr<i32> [array=*], %38 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f3(%45 <unnamed>: i32, %46 <unnamed>: ptr<i32> [array=*], %47 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f4(%51 <unnamed>: i32, %52 <unnamed>: ptr<i32> [array=*], %53 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f5(%57 <unnamed>: ptr<i32> [array=*], %58 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @f7(%63 n: i32, %64 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @f8(%67 n: i32, %68 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f9(%8 n: i32, %9 a: ptr<i8> [array=%73]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %73: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%8)));
-// DEFAULT-NEXT:         addr_of<ptr<i32>>(%8);
-// DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%9);
+// DEFAULT-NEXT:     fn %1 @f1(%42 n: i32, %43 <unnamed>: ptr<i32> [array=*], %44 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @f2(%51 <unnamed>: i32, %52 <unnamed>: ptr<i32> [array=*], %53 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @f3(%60 <unnamed>: i32, %61 <unnamed>: ptr<i32> [array=*], %62 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %6 @f4(%66 <unnamed>: i32, %67 <unnamed>: ptr<i32> [array=*], %68 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @f5(%72 <unnamed>: ptr<i32> [array=*], %73 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %9 @f7(%78 n: i32, %79 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %12 @f8(%82 n: i32, %83 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %14 @f9(%15 n: i32, %16 a: ptr<i8> [array=%88]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %88: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%15)));
+// DEFAULT-NEXT:         addr_of<ptr<i32>>(%15);
+// DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%16);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f10(%11 n: i32, %12 a: ptr<i8> [array=%76]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %76: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%11)));
-// DEFAULT-NEXT:         addr_of<ptr<i32>>(%11);
-// DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%12);
+// DEFAULT-NEXT:     fn %17 @f10(%18 n: i32, %19 a: ptr<i8> [array=%91]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %91: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%18)));
+// DEFAULT-NEXT:         addr_of<ptr<i32>>(%18);
+// DEFAULT-NEXT:         addr_of<ptr<ptr<i8>>>(%19);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f12__(%77 <unnamed>: i32, %78 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @f12_3(%81 <unnamed>: i32, %82 <unnamed>: ptr<i32> [array=3]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %15 @f12_n(%85 n: i32, %86 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %16 @f12_x(%89 <unnamed>: i32, %90 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %17 @f13__(%93 <unnamed>: i32, %94 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %18 @f13_5(%97 <unnamed>: i32, %98 <unnamed>: ptr<i32> [array=5]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %19 @f13_n(%101 n: i32, %102 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %20 @f13_x(%105 <unnamed>: i32, %106 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %21 @f14__(%109 <unnamed>: i32, %110 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %22 @f14_7(%113 <unnamed>: i32, %114 <unnamed>: ptr<i32> [array=7]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %23 @f14_n(%117 n: i32, %118 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %24 @f14_x(%121 <unnamed>: i32, %122 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %26 @g1(%125 <unnamed>: i32, %126 <unnamed>: ptr<i32>, %127 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %20 @f12__(%92 <unnamed>: i32, %93 <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %21 @f12_3(%96 <unnamed>: i32, %97 <unnamed>: ptr<i32> [array=3]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %23 @f12_n(%100 n: i32, %101 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %25 @f12_x(%104 <unnamed>: i32, %105 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %26 @f13__(%108 <unnamed>: i32, %109 <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %27 @f13_5(%112 <unnamed>: i32, %113 <unnamed>: ptr<i32> [array=5]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %29 @f13_n(%116 n: i32, %117 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %31 @f13_x(%120 <unnamed>: i32, %121 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %32 @f14__(%124 <unnamed>: i32, %125 <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %33 @f14_7(%128 <unnamed>: i32, %129 <unnamed>: ptr<i32> [array=7]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %35 @f14_n(%132 n: i32, %133 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %37 @f14_x(%136 <unnamed>: i32, %137 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %40 @g1(%140 <unnamed>: i32, %141 <unnamed>: ptr<i32>, %142 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

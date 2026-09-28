@@ -121,7 +121,7 @@ void passed_cast_argument(int *value) { take_unsigned((int *)value); }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %0 @take(%26 <unnamed>: ptr<i32>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %0 @take(%27 <unnamed>: ptr<i32>) -> void [linkage=external];
 // IR-WARN-NEXT:     fn %1 @returned(%2 value: ptr<i32>) -> ptr<u32> [linkage=external] [fallthrough=ub_if_used] {
 // IR-WARN-NEXT:         return pointer_cast<ptr<u32>, reason=return>(read<ptr<i32>>(%2));
 // IR-WARN-NEXT:     }
@@ -150,9 +150,9 @@ void passed_cast_argument(int *value) { take_unsigned((int *)value); }
 // IR-WARN-NEXT:         let %22 result: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%21));
 // IR-WARN-NEXT:         return read<ptr<i32>>(%22);
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %23 @take_unsigned(%27 value: ptr<u32>) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %24 @passed_cast_argument(%25 value: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-WARN-NEXT:         call<void, signature=fn(ptr<u32>) -> void>(%23, pointer_cast<ptr<u32>, reason=arg>(read<ptr<i32>>(%25)));
+// IR-WARN-NEXT:     fn %24 @take_unsigned(%28 value: ptr<u32>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %25 @passed_cast_argument(%26 value: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:         call<void, signature=fn(ptr<u32>) -> void>(%24, pointer_cast<ptr<u32>, reason=arg>(read<ptr<i32>>(%26)));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

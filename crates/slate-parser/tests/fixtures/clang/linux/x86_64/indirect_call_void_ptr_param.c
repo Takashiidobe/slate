@@ -62,32 +62,32 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 Data = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %6 c: i8 [storage=static] [const] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([122, 101, 114, 111, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @process(%3 flag: i32, %4 handler: ptr<fn(ptr<const void>, i32) -> void>, %5 d: ptr<@type0>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:     global %7 c: i8 [storage=static] [const] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %16 .str16: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([122, 101, 114, 111, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %17 .str17: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @process(%4 flag: i32, %5 handler: ptr<fn(ptr<const void>, i32) -> void>, %6 d: ptr<@type0>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const void>, i32) -> void>(read<ptr<fn(ptr<const void>, i32) -> void>>(%4), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const i8>>(%6)), const<i32>(0));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const void>, i32) -> void>(read<ptr<fn(ptr<const void>, i32) -> void>>(%5), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const i8>>(%7)), const<i32>(0));
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, i32) -> void>(read<ptr<fn(ptr<const void>, i32) -> void>>(%4), pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%5)), const<i32>(42));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const void>, i32) -> void>(read<ptr<fn(ptr<const void>, i32) -> void>>(%5), pointer_cast<ptr<const void>, reason=arg>(read<ptr<@type0>>(%6)), const<i32>(42));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @print_handler(%8 p: ptr<const void>, %9 extra: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%9), const<i32>(0))
+// DEFAULT-NEXT:     fn %8 @print_handler(%9 p: ptr<const void>, %10 extra: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%10), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %10 c: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%8));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%15)), widen<i32, reason=vararg>(read<i8>(deref(read<ptr<const i8>>(%10)))));
+// DEFAULT-NEXT:                 let %11 c: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%9));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%16)), widen<i32, reason=vararg>(read<i8>(deref(read<ptr<const i8>>(%11)))));
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %11 d: ptr<const @type0> [storage=automatic] = pointer_cast<ptr<const @type0>, reason=explicit>(read<ptr<const void>>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(field0(deref(read<ptr<const @type0>>(%11)))), read<i32>(%9));
+// DEFAULT-NEXT:         let %12 d: ptr<const @type0> [storage=automatic] = pointer_cast<ptr<const @type0>, reason=explicit>(read<ptr<const void>>(%9));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%17)), read<i32>(field0(deref(read<ptr<const @type0>>(%12)))), read<i32>(%10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 d: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<fn(ptr<const void>, i32) -> void>, ptr<@type0>) -> void>(%2, const<i32>(1), function_decay<ptr<fn(ptr<const void>, i32) -> void>>(%7), addr_of<ptr<@type0>>(%13));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<fn(ptr<const void>, i32) -> void>, ptr<@type0>) -> void>(%2, const<i32>(0), function_decay<ptr<fn(ptr<const void>, i32) -> void>>(%7), addr_of<ptr<@type0>>(%13));
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %14 d: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<fn(ptr<const void>, i32) -> void>, ptr<@type0>) -> void>(%3, const<i32>(1), function_decay<ptr<fn(ptr<const void>, i32) -> void>>(%8), addr_of<ptr<@type0>>(%14));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<fn(ptr<const void>, i32) -> void>, ptr<@type0>) -> void>(%3, const<i32>(0), function_decay<ptr<fn(ptr<const void>, i32) -> void>>(%8), addr_of<ptr<@type0>>(%14));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

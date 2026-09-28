@@ -37,7 +37,7 @@ void foo11e(int x[1 ? 0 : sizeof(int *[*])]); /* { dg-warning "not in a declarat
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo11d(%2 x: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo11e(%3 x: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @foo11d(%4 x: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @foo11e(%5 x: ptr<i32> [array=*]) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -80,9 +80,9 @@ int32x4x4_t test_vld1q_s32_x4(int32_t const *a) {
 // DEFAULT-NEXT:     } [size=64, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type11 __n128x4 = @type10;
 // DEFAULT-NEXT:     type @type12 int32x4x4_t = @type10;
-// DEFAULT-NEXT:     fn %13 @neon_ld1m4_q32(%16 ptr: ptr<const i32>) -> @type10 [linkage=external] [abi=win_arm64(scalar) -> native_c];
-// DEFAULT-NEXT:     fn %14 @test_vld1q_s32_x4(%15 a: ptr<const i32>) -> @type10 [linkage=external] [abi=win_arm64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type10, reason=return>(call<@type10, signature=fn(ptr<const i32>) -> @type10, abi=win_arm64(scalar) -> native_c>(%13, pointer_cast<ptr<const i32>, reason=arg>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%15)))));
+// DEFAULT-NEXT:     fn %14 @neon_ld1m4_q32(%17 ptr: ptr<const i32>) -> @type10 [linkage=external] [abi=win_arm64(scalar) -> native_c];
+// DEFAULT-NEXT:     fn %15 @test_vld1q_s32_x4(%16 a: ptr<const i32>) -> @type10 [linkage=external] [abi=win_arm64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type10, reason=return>(call<@type10, signature=fn(ptr<const i32>) -> @type10, abi=win_arm64(scalar) -> native_c>(%14, pointer_cast<ptr<const i32>, reason=arg>(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%16)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

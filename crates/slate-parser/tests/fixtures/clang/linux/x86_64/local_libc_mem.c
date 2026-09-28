@@ -42,20 +42,20 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memcpy(%10 __dest: ptr<void> [restrict], %11 __src: ptr<const void> [restrict], %12 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @memmove(%13 __dest: ptr<void>, %14 __src: ptr<const void>, %15 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @memset(%16 __s: ptr<void>, %17 __c: i32, %18 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 dst: array<i8, 16> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %7 src: array<i8, 8> [storage=automatic] = code_units<array<i8, 8>>([104, 101, 108, 108, 111, 0, 0, 0]);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%6)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%7)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%6), const<i32>(5))), const<i32>(65), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%6), const<i32>(8))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %8 moved: array<i8, 16> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%8)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), array_decay<ptr<i8>, length=Some(16)>(%8));
+// DEFAULT-NEXT:     global %29 .str29: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @memcpy(%20 __dest: ptr<void> [restrict], %21 __src: ptr<const void> [restrict], %22 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %10 @memmove(%23 __dest: ptr<void>, %24 __src: ptr<const void>, %25 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %14 @memset(%26 __s: ptr<void>, %27 __c: i32, %28 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %16 dst: array<i8, 16> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %17 src: array<i8, 8> [storage=automatic] = code_units<array<i8, 8>>([104, 101, 108, 108, 111, 0, 0, 0]);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%6, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%16)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%17)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%14, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%16), const<i32>(5))), const<i32>(65), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(%16), const<i32>(8))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %18 moved: array<i8, 16> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%10, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%18)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%16)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%29)), array_decay<ptr<i8>, length=Some(16)>(%18));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

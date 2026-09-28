@@ -34,12 +34,12 @@ int use(void) { return vc(1, 2.0) + vg(2) + sc(3) + pointer(4, 5.0); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %3 pointer: ptr<fn vectorcall(i32, f64) -> i32> [storage=static] = function_decay<ptr<fn vectorcall(i32, f64) -> i32>>(%0) [linkage=external];
-// IR-NEXT:     fn %0 @vc(%5 a: i32, %6 b: f64) -> i32 [linkage=external] [abi=win64 vectorcall(scalar, scalar) -> scalar];
-// IR-NEXT:     fn %1 @vg(%7 a: i32) -> i32 [linkage=external] [abi=win64 vectorcall(scalar) -> scalar];
-// IR-NEXT:     fn %2 @sc(%8 a: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %4 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=win64 vectorcall(scalar, scalar) -> scalar>(%0, const<i32>(1), const<f64>(2.0)), call<i32, abi=win64 vectorcall(scalar) -> scalar>(%1, const<i32>(2))), call<i32>(%2, const<i32>(3))), call<i32, abi=win64 vectorcall(scalar, scalar) -> scalar>(read<ptr<fn vectorcall(i32, f64) -> i32>>(%3), const<i32>(4), const<f64>(5.0)));
+// IR-NEXT:     global %8 pointer: ptr<fn vectorcall(i32, f64) -> i32> [storage=static] = function_decay<ptr<fn vectorcall(i32, f64) -> i32>>(%2) [linkage=external];
+// IR-NEXT:     fn %2 @vc(%10 a: i32, %11 b: f64) -> i32 [linkage=external] [abi=win64 vectorcall(scalar, scalar) -> scalar];
+// IR-NEXT:     fn %4 @vg(%12 a: i32) -> i32 [linkage=external] [abi=win64 vectorcall(scalar) -> scalar];
+// IR-NEXT:     fn %6 @sc(%13 a: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %9 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=win64 vectorcall(scalar, scalar) -> scalar>(%2, const<i32>(1), const<f64>(2.0)), call<i32, abi=win64 vectorcall(scalar) -> scalar>(%4, const<i32>(2))), call<i32>(%6, const<i32>(3))), call<i32, abi=win64 vectorcall(scalar, scalar) -> scalar>(read<ptr<fn vectorcall(i32, f64) -> i32>>(%8), const<i32>(4), const<f64>(5.0)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

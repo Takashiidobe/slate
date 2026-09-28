@@ -122,146 +122,146 @@ int main(void) {
 // DEFAULT-NEXT:         %10 _ISpunct = const<i32>(4);
 // DEFAULT-NEXT:         %11 _ISalnum = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([97, 108, 112, 104, 97, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([97, 108, 112, 104, 97, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([110, 111, 116, 45, 97, 108, 112, 104, 97, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([110, 111, 116, 45, 97, 108, 112, 104, 97, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %26 .str26: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 105, 103, 105, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([100, 105, 103, 105, 116, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([117, 112, 112, 101, 114, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %29 .str29: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([117, 112, 112, 101, 114, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 111, 119, 101, 114, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 111, 119, 101, 114, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([97, 108, 110, 117, 109, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %33 .str33: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([97, 108, 110, 117, 109, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %34 .str34: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([120, 100, 105, 103, 105, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %35 .str35: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([120, 100, 105, 103, 105, 116, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %36 .str36: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([112, 117, 110, 99, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %37 .str37: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 117, 110, 99, 116, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %38 .str38: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([99, 110, 116, 114, 108, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %39 .str39: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([99, 110, 116, 114, 108, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %40 .str40: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 114, 97, 112, 104, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %41 .str41: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 114, 97, 112, 104, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %42 .str42: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([112, 114, 105, 110, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %43 .str43: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 114, 105, 110, 116, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %44 .str44: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([115, 112, 97, 99, 101, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %45 .str45: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %46 .str46: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %47 .str47: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %48 .str48: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %23 .str23: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([97, 108, 112, 104, 97, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([97, 108, 112, 104, 97, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %25 .str25: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([110, 111, 116, 45, 97, 108, 112, 104, 97, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %26 .str26: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([110, 111, 116, 45, 97, 108, 112, 104, 97, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %27 .str27: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 105, 103, 105, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %28 .str28: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([100, 105, 103, 105, 116, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %29 .str29: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([117, 112, 112, 101, 114, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %30 .str30: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([117, 112, 112, 101, 114, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %31 .str31: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 111, 119, 101, 114, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %32 .str32: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 111, 119, 101, 114, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %33 .str33: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([97, 108, 110, 117, 109, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %34 .str34: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([97, 108, 110, 117, 109, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %35 .str35: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([120, 100, 105, 103, 105, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %36 .str36: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([120, 100, 105, 103, 105, 116, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %37 .str37: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([112, 117, 110, 99, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %38 .str38: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 117, 110, 99, 116, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %39 .str39: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([99, 110, 116, 114, 108, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %40 .str40: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([99, 110, 116, 114, 108, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %41 .str41: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 114, 97, 112, 104, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %42 .str42: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 114, 97, 112, 104, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %43 .str43: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([112, 114, 105, 110, 116, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %44 .str44: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([112, 114, 105, 110, 116, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %45 .str45: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([115, 112, 97, 99, 101, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %46 .str46: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %47 .str47: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %48 .str48: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([118, 116, 97, 98, 45, 115, 112, 97, 99, 101, 45, 110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %49 .str49: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %14 @printf(%21 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 alpha: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));
-// DEFAULT-NEXT:         let %17 digit: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(53));
-// DEFAULT-NEXT:         let %18 space: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(32));
-// DEFAULT-NEXT:         let %19 vtab: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(11));
-// DEFAULT-NEXT:         let %20 punct: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(33));
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0))
+// DEFAULT-NEXT:     fn %15 @printf(%22 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %17 alpha: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));
+// DEFAULT-NEXT:         let %18 digit: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(53));
+// DEFAULT-NEXT:         let %19 space: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(32));
+// DEFAULT-NEXT:         let %20 vtab: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(11));
+// DEFAULT-NEXT:         let %21 punct: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(33));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%22)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%23)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%23)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%24)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%18))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%24)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%25)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(2048)))))), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%26)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%25)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%27)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%26)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(256)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%18))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(2048)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%28)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%29)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(512)))))), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%30)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%27)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%31)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%28)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(8)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(256)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%32)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%33)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(4096)))))), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%34)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%29)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%35)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%30)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(4)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(512)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%36)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%37)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%19))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(2)))))), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%38)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%31)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%39)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%32)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(32768)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%21))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(8)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%40)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%41)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%18))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(16384)))))), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%42)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%33)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%43)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%34)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%18))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(8192)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(4096)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%44)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%35)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%45)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%36)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%21))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(4)))))), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%37)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%38)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(2)))))), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%39)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%40)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%21))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(32768)))))), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%41)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%42)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%19))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(16384)))))), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%43)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%44)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%19))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(8192)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%46)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%45)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%47)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%46)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%48)), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%16))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(8192)))))), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%47)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%48)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%49)), and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

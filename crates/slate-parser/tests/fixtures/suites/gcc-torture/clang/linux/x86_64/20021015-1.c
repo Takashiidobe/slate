@@ -37,13 +37,13 @@ void f ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @g(%5 x: ptr<i32>, %6 y: ptr<i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 y: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 a: array<i8, 4000> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>, ptr<i32>) -> i32>(%0, addr_of<ptr<i32>>(%2), addr_of<ptr<i32>>(%3));
-// DEFAULT-NEXT:         write<i32>(%2, add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%2), read<i32>(%3)), read<i32>(%2)));
+// DEFAULT-NEXT:     fn %2 @g(%7 x: ptr<i32>, %8 y: ptr<i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %4 x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %5 y: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %6 a: array<i8, 4000> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>, ptr<i32>) -> i32>(%2, addr_of<ptr<i32>>(%4), addr_of<ptr<i32>>(%5));
+// DEFAULT-NEXT:         write<i32>(%4, add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%4), read<i32>(%5)), read<i32>(%4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

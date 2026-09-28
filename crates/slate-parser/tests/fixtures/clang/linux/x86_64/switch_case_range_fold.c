@@ -64,40 +64,40 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @classify(%2 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %5 read<i32>(%2)
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @classify(%3 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %6 read<i32>(%3)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %5 const<i32>(48):
-// DEFAULT-NEXT:                     case %5 const<i32>(49):
-// DEFAULT-NEXT:                         case %5 const<i32>(50):
-// DEFAULT-NEXT:                             case %5 const<i32>(51):
-// DEFAULT-NEXT:                                 case %5 const<i32>(52):
-// DEFAULT-NEXT:                                     case %5 const<i32>(53):
-// DEFAULT-NEXT:                                         case %5 const<i32>(54):
-// DEFAULT-NEXT:                                             case %5 const<i32>(55):
-// DEFAULT-NEXT:                                                 case %5 const<i32>(56):
-// DEFAULT-NEXT:                                                     case %5 const<i32>(57):
+// DEFAULT-NEXT:                 case %6 const<i32>(48):
+// DEFAULT-NEXT:                     case %6 const<i32>(49):
+// DEFAULT-NEXT:                         case %6 const<i32>(50):
+// DEFAULT-NEXT:                             case %6 const<i32>(51):
+// DEFAULT-NEXT:                                 case %6 const<i32>(52):
+// DEFAULT-NEXT:                                     case %6 const<i32>(53):
+// DEFAULT-NEXT:                                         case %6 const<i32>(54):
+// DEFAULT-NEXT:                                             case %6 const<i32>(55):
+// DEFAULT-NEXT:                                                 case %6 const<i32>(56):
+// DEFAULT-NEXT:                                                     case %6 const<i32>(57):
 // DEFAULT-NEXT:                                                         return const<i32>(1);
-// DEFAULT-NEXT:                 case %5 const<i32>(97):
-// DEFAULT-NEXT:                     case %5 const<i32>(98):
-// DEFAULT-NEXT:                         case %5 const<i32>(99):
+// DEFAULT-NEXT:                 case %6 const<i32>(97):
+// DEFAULT-NEXT:                     case %6 const<i32>(98):
+// DEFAULT-NEXT:                         case %6 const<i32>(99):
 // DEFAULT-NEXT:                             return const<i32>(2);
-// DEFAULT-NEXT:                 case %5 const<i32>(100):
-// DEFAULT-NEXT:                     case %5 const<i32>(200):
+// DEFAULT-NEXT:                 case %6 const<i32>(100):
+// DEFAULT-NEXT:                     case %6 const<i32>(200):
 // DEFAULT-NEXT:                         return const<i32>(3);
-// DEFAULT-NEXT:                 case %5 const<i32>(-3):
-// DEFAULT-NEXT:                     case %5 const<i32>(-2):
-// DEFAULT-NEXT:                         case %5 const<i32>(-1):
-// DEFAULT-NEXT:                             case %5 const<i32>(7):
+// DEFAULT-NEXT:                 case %6 const<i32>(-3):
+// DEFAULT-NEXT:                     case %6 const<i32>(-2):
+// DEFAULT-NEXT:                         case %6 const<i32>(-1):
+// DEFAULT-NEXT:                             case %6 const<i32>(7):
 // DEFAULT-NEXT:                                 return const<i32>(4);
-// DEFAULT-NEXT:                 default %5:
+// DEFAULT-NEXT:                 default %6:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%6)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(53)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(98)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(100)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(200)), call<i32, signature=fn(i32) -> i32>(%1, neg<i32, overflow=ub>(const<i32>(2))), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(7)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(9)));
+// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%7)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(53)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(98)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(100)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(200)), call<i32, signature=fn(i32) -> i32>(%2, neg<i32, overflow=ub>(const<i32>(2))), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(7)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

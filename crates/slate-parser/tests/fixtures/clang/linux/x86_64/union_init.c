@@ -45,14 +45,14 @@ int main(void) {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 46, 49, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 v: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(258));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%5)), read<i32>(field0(%3)));
-// DEFAULT-NEXT:         write<f32>(field1(%3), const<f32>(1.5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%6)), float_widen<f64, reason=vararg>(read<f32>(field1(%3))));
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 46, 49, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 v: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(258));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), read<i32>(field0(%4)));
+// DEFAULT-NEXT:         write<f32>(field1(%4), const<f32>(1.5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%7)), float_widen<f64, reason=vararg>(read<f32>(field1(%4))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

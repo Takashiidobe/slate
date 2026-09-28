@@ -256,315 +256,315 @@ int main() {
 // DEFAULT-NEXT:         field1 align_int: i64;
 // DEFAULT-NEXT:         field2 align_fp: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     global %5 u: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %6 A: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(65)) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @memset(%18 __s: ptr<void>, %19 __c: i32, %20 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @exit(%21 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @reset() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %22
-// DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%8, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%8))), add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15)))), const<u64>(8)))
-// DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %34: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:                 let %35: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%34), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%35));
-// DEFAULT-NEXT:                 yield void;
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), read<i32>(%8))), truncate<i8, reason=assign, fits=always>(const<i32>(97)));
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @check(%10 off: i32, %11 len: i32, %12 ch: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %13 q: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %14 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i8>>(%13, array_decay<ptr<i8>, length=Some(31)>(field0(%5)));
-// DEFAULT-NEXT:         for %23
-// DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%14, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%14), read<i32>(%10))
-// DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %36: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                 let %37: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%36), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%14, read<i32>(%37));
-// DEFAULT-NEXT:                 let %38: ptr<i8> [synthetic] = read<ptr<i8>>(%13);
-// DEFAULT-NEXT:                 let %39: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%38), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%13, read<ptr<i8>>(%39));
-// DEFAULT-NEXT:                 yield void;
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), const<i32>(97))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         for %24
-// DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%14, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%14), read<i32>(%11))
-// DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %40: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                 let %41: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%40), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%14, read<i32>(%41));
-// DEFAULT-NEXT:                 let %42: ptr<i8> [synthetic] = read<ptr<i8>>(%13);
-// DEFAULT-NEXT:                 let %43: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%42), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%13, read<ptr<i8>>(%43));
-// DEFAULT-NEXT:                 yield void;
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), read<i32>(%12))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     global %8 u: @type1 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %9 A: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(65)) [linkage=external];
+// DEFAULT-NEXT:     fn %4 @memset(%21 __s: ptr<void>, %22 __c: i32, %23 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %6 @exit(%24 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %10 @reset() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %11 i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %25
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%14, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%14))), const<u64>(8))
+// DEFAULT-NEXT:                 write<i32>(%11, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%11))), add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15)))), const<u64>(8)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %44: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                 let %45: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%44), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%14, read<i32>(%45));
-// DEFAULT-NEXT:                 let %46: ptr<i8> [synthetic] = read<ptr<i8>>(%13);
-// DEFAULT-NEXT:                 let %47: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%46), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%13, read<ptr<i8>>(%47));
+// DEFAULT-NEXT:                 let %37: i32 [synthetic] = read<i32>(%11);
+// DEFAULT-NEXT:                 let %38: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%37), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%11, read<i32>(%38));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%13)))), const<i32>(97))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), read<i32>(%11))), truncate<i8, reason=assign, fits=always>(const<i32>(97)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 len: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %17 p: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:     fn %12 @check(%13 off: i32, %14 len: i32, %15 ch: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %16 q: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %17 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i8>>(%16, array_decay<ptr<i8>, length=Some(31)>(field0(%8)));
 // DEFAULT-NEXT:         for %26
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%17, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%17), read<i32>(%13))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %48: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %49: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%48), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%49));
+// DEFAULT-NEXT:                 let %39: i32 [synthetic] = read<i32>(%17);
+// DEFAULT-NEXT:                 let %40: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%39), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%17, read<i32>(%40));
+// DEFAULT-NEXT:                 let %41: ptr<i8> [synthetic] = read<ptr<i8>>(%16);
+// DEFAULT-NEXT:                 let %42: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%41), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%16, read<ptr<i8>>(%42));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), array_decay<ptr<i8>, length=Some(31)>(field0(%5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(0), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), array_decay<ptr<i8>, length=Some(31)>(field0(%5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(0), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), array_decay<ptr<i8>, length=Some(31)>(field0(%5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(0), read<i32>(%16), const<i32>(66));
-// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%16)))), const<i32>(97))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         for %27
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%17, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%17), read<i32>(%14))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %50: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %51: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%50), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%51));
+// DEFAULT-NEXT:                 let %43: i32 [synthetic] = read<i32>(%17);
+// DEFAULT-NEXT:                 let %44: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%43), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%17, read<i32>(%44));
+// DEFAULT-NEXT:                 let %45: ptr<i8> [synthetic] = read<ptr<i8>>(%16);
+// DEFAULT-NEXT:                 let %46: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%45), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%16, read<ptr<i8>>(%46));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(1), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(1), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(1)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(1), read<i32>(%16), const<i32>(66));
-// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%16)))), read<i32>(%15))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         for %28
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%17, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%17))), const<u64>(8))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %52: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %53: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%52), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%53));
+// DEFAULT-NEXT:                 let %47: i32 [synthetic] = read<i32>(%17);
+// DEFAULT-NEXT:                 let %48: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%47), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%17, read<i32>(%48));
+// DEFAULT-NEXT:                 let %49: ptr<i8> [synthetic] = read<ptr<i8>>(%16);
+// DEFAULT-NEXT:                 let %50: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%49), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%16, read<ptr<i8>>(%50));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(2), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(2), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(2)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(2), read<i32>(%16), const<i32>(66));
-// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%16)))), const<i32>(97))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %19 len: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %20 p: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         for %29
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %54: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %55: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%54), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%55));
+// DEFAULT-NEXT:                 let %51: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %52: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%51), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%52));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(3), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(3), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(3)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(3), read<i32>(%16), const<i32>(66));
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), array_decay<ptr<i8>, length=Some(31)>(field0(%8)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(0), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), array_decay<ptr<i8>, length=Some(31)>(field0(%8)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(0), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(field0(%8))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), array_decay<ptr<i8>, length=Some(31)>(field0(%8)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(0), read<i32>(%19), const<i32>(66));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %30
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %56: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %57: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%56), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%57));
+// DEFAULT-NEXT:                 let %53: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %54: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%53), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%54));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(4), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(4), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(4)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(4), read<i32>(%16), const<i32>(66));
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(1), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(1), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(1)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(1), read<i32>(%19), const<i32>(66));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %31
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %58: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %59: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%58), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%59));
+// DEFAULT-NEXT:                 let %55: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %56: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%55), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%56));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(5), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(5), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(5)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(5), read<i32>(%16), const<i32>(66));
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(2), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(2), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(2)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(2), read<i32>(%19), const<i32>(66));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %32
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %60: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %61: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%60), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%61));
+// DEFAULT-NEXT:                 let %57: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %58: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%57), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%58));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(6), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(6), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(6)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(6), read<i32>(%16), const<i32>(66));
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(3), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(3), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(3)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(3), read<i32>(%19), const<i32>(66));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         for %33
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(15))
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %62: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                 let %63: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%62), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%63));
+// DEFAULT-NEXT:                 let %59: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %60: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%59), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%60));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(7), read<i32>(%16), const<i32>(0));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), widen<i32, reason=arg>(read<i8>(%6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(7), read<i32>(%16), const<i32>(65));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%17, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16))))));
-// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%16)))));
-// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%17), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%5)), const<i32>(7)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%9, const<i32>(7), read<i32>(%16), const<i32>(66));
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(4), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(4), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(4)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(4), read<i32>(%19), const<i32>(66));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:         for %34
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 let %61: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %62: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%61), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%62));
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 {
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(5), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(5), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(5)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(5), read<i32>(%19), const<i32>(66));
+// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:         for %35
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 let %63: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %64: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%63), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%64));
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 {
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(6), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(6), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(6)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(6), read<i32>(%19), const<i32>(66));
+// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:         for %36
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%19), const<i32>(15))
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 let %65: i32 [synthetic] = read<i32>(%19);
+// DEFAULT-NEXT:                 let %66: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%65), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%19, read<i32>(%66));
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 {
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(7), read<i32>(%19), const<i32>(0));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), widen<i32, reason=arg>(read<i8>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(7), read<i32>(%19), const<i32>(65));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%20, pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19))))));
+// DEFAULT-NEXT:                     pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7))), const<i32>(66), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%19)))));
+// DEFAULT-NEXT:                     if ne<ptr<i8>>(read<ptr<i8>>(%20), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%8)), const<i32>(7)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32, i32) -> void>(%12, const<i32>(7), read<i32>(%19), const<i32>(66));
+// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

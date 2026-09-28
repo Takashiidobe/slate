@@ -39,16 +39,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @malloc(%7 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @free(%8 __ptr: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 p: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4)));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%5)), const<i32>(41));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%5)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%5))), const<i32>(1)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), read<i32>(deref(read<ptr<i32>>(%5))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%5)));
+// DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @malloc(%10 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %6 @free(%11 __ptr: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 p: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(4)));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%8)), const<i32>(41));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%8)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%8))), const<i32>(1)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), read<i32>(deref(read<ptr<i32>>(%8))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%6, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%8)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

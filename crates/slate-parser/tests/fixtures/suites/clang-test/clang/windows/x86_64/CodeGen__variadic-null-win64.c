@@ -39,11 +39,11 @@ void f(const char *f) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @v(%4 f: ptr<const i8>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @kr(unprototyped) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f(%3 f: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%0, read<ptr<const i8>>(%3), const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%1, read<ptr<const i8>>(%3), const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(0));
+// DEFAULT-NEXT:     fn %1 @v(%5 f: ptr<const i8>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @kr(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @f(%4 f: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%1, read<ptr<const i8>>(%4), const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%2, read<ptr<const i8>>(%4), const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

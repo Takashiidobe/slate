@@ -137,11 +137,11 @@ int members(void) {
 // DEFAULT-NEXT:         field0 T: i32;
 // DEFAULT-NEXT:         field1 a: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %14 after_prototype: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 after_nested: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %34 after_parameter_enum: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %38 after_prototype_enum: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %48 after_return_callback: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %16 after_prototype: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %27 after_nested: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %44 after_parameter_enum: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %50 after_prototype_enum: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %61 after_return_callback: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @own_initializer() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 T: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:         return read<i32>(%3);
@@ -159,74 +159,74 @@ int members(void) {
 // DEFAULT-NEXT:     fn %10 @parameters(%11 T: i32, %12 a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @prototype(%61 T: i32, %62 a: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @nested(%63 callback: ptr<fn(i32, ptr<i32>) -> i32>, %64 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @nested_shadow(%65 T: i32, %66 callback: ptr<fn(ptr<i32>) -> i32>, %67 b: ptr<i32> [array=*]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %18 @parameter_bound(%19 T: ptr<i32> [array=4], %20 a: ptr<i32> [array=8]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %15 @prototype(%74 T: i32, %75 a: ptr<i32> [array=*]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %21 @nested(%76 callback: ptr<fn(i32, ptr<i32>) -> i32>, %77 value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %26 @nested_shadow(%78 T: i32, %79 callback: ptr<fn(ptr<i32>) -> i32>, %80 b: ptr<i32> [array=*]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %28 @parameter_bound(%29 T: ptr<i32> [array=4], %30 a: ptr<i32> [array=8]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %31 @enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @multiline_enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %35 @multiline_enumeration() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @parameter_enum(%32 value: @type4, %33 a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %39 @parameter_enum(%42 value: @type4, %43 a: ptr<i32> [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @prototype_enum(%68 value: @type5, %69 a: ptr<i32> [array=4]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %39 @nested_enum(%42 callback: ptr<fn(@type6) -> i32>, %43 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %49 @prototype_enum(%81 value: @type5, %82 a: ptr<i32> [array=4]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %51 @nested_enum(%55 callback: ptr<fn(@type6) -> i32>, %56 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @return_callback(%47 value: @type7) -> ptr<fn(i32) -> i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %57 @return_callback(%60 value: @type7) -> ptr<fn(i32) -> i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(4), const<u64>(0))
 // DEFAULT-NEXT:             return null<ptr<fn(i32) -> i32>>;
 // DEFAULT-NEXT:         return null<ptr<fn(i32) -> i32>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @field_enum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %53 object: @type8 [storage=automatic];
+// DEFAULT-NEXT:     fn %62 @field_enum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %66 object: @type8 [storage=automatic];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), const<u64>(20))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @loops() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         for %70
+// DEFAULT-NEXT:     fn %67 @loops() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         for %83
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %55 T: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4)));
+// DEFAULT-NEXT:                 let %68 T: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:             condition: ne<u64>(const<u64>(4), const<u64>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %73: i32 [synthetic] = read<i32>(%55);
-// DEFAULT-NEXT:                 let %74: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%73))), const<u64>(4))));
-// DEFAULT-NEXT:                 write<i32>(%55, read<i32>(%74));
+// DEFAULT-NEXT:                 let %86: i32 [synthetic] = read<i32>(%68);
+// DEFAULT-NEXT:                 let %87: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%86))), const<u64>(4))));
+// DEFAULT-NEXT:                 write<i32>(%68, read<i32>(%87));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     for %71
+// DEFAULT-NEXT:                     for %84
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             let %56 T: array<i32, 4> [storage=automatic] [align=16];
+// DEFAULT-NEXT:                             let %69 T: array<i32, 4> [storage=automatic] [align=16];
 // DEFAULT-NEXT:                         condition: ne<u64>(const<u64>(16), const<u64>(0))
 // DEFAULT-NEXT:                         increment: omitted
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(16)));
 // DEFAULT-NEXT:                     return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         for %72
+// DEFAULT-NEXT:         for %85
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %57 T: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %70 T: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: ne<u64>(const<u64>(4), const<u64>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %75: i32 [synthetic] = read<i32>(%57);
-// DEFAULT-NEXT:                 let %76: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%75), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%57, read<i32>(%76));
+// DEFAULT-NEXT:                 let %88: i32 [synthetic] = read<i32>(%70);
+// DEFAULT-NEXT:                 let %89: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%88), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%70, read<i32>(%89));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %77: i32 [synthetic] = read<i32>(%57);
-// DEFAULT-NEXT:                 let %78: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%77))), const<u64>(4))));
-// DEFAULT-NEXT:                 write<i32>(%57, read<i32>(%78));
+// DEFAULT-NEXT:                 let %90: i32 [synthetic] = read<i32>(%70);
+// DEFAULT-NEXT:                 let %91: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%90))), const<u64>(4))));
+// DEFAULT-NEXT:                 write<i32>(%70, read<i32>(%91));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @members() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %60 object: @type10 [storage=automatic];
+// DEFAULT-NEXT:     fn %71 @members() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %73 object: @type10 [storage=automatic];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(4), const<u64>(20))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

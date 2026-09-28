@@ -56,12 +56,12 @@ int main ()
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 x = i32;
 // DEFAULT-NEXT:     type @type1 y = i32;
-// DEFAULT-NEXT:     fn %2 @proc(%6 <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @proc2(%7 x: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @proc3(%8 <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%2, function_decay<ptr<fn(i32) -> i32>>(%3));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%4, function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%2));
+// DEFAULT-NEXT:     fn %2 @proc(%7 <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @proc2(%8 x: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @proc3(%9 <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%2, function_decay<ptr<fn(i32) -> i32>>(%4));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%5, function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

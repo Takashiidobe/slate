@@ -68,37 +68,37 @@ int main(void) {
 // DEFAULT-NEXT:         %3 thrd_nomem = const<i32>(3);
 // DEFAULT-NEXT:         %4 thrd_timedout = const<i32>(4);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %12 file_value: i32 [storage=thread] = const<i32>(5) [linkage=internal];
-// DEFAULT-NEXT:     global %16 block_value: i32 [storage=thread] = const<i32>(7) [linkage=internal];
-// DEFAULT-NEXT:     global %35 .str35: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%29 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @thrd_create(%30 __thr: ptr<u64>, %31 __func: ptr<fn(ptr<void>) -> i32>, %32 __arg: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @thrd_join(%33 __thr: u64, %34 __res: ptr<i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @update_values(%14 file_next: i32, %15 block_next: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17 result: i32 [storage=automatic] = add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%12), const<i32>(100)), read<i32>(%16));
-// DEFAULT-NEXT:         write<i32>(%12, read<i32>(%14));
-// DEFAULT-NEXT:         write<i32>(%16, read<i32>(%15));
-// DEFAULT-NEXT:         return read<i32>(%17);
+// DEFAULT-NEXT:     global %18 file_value: i32 [storage=thread] = const<i32>(5) [linkage=internal];
+// DEFAULT-NEXT:     global %22 block_value: i32 [storage=thread] = const<i32>(7) [linkage=internal];
+// DEFAULT-NEXT:     global %41 .str41: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%35 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %14 @thrd_create(%36 __thr: ptr<u64>, %37 __func: ptr<fn(ptr<void>) -> i32>, %38 __arg: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %17 @thrd_join(%39 __thr: u64, %40 __res: ptr<i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %19 @update_values(%20 file_next: i32, %21 block_next: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %23 result: i32 [storage=automatic] = add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%18), const<i32>(100)), read<i32>(%22));
+// DEFAULT-NEXT:         write<i32>(%18, read<i32>(%20));
+// DEFAULT-NEXT:         write<i32>(%22, read<i32>(%21));
+// DEFAULT-NEXT:         return read<i32>(%23);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @worker(%19 argument: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20 values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<void>>(%19));
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(%13, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%20), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%20), const<i32>(1)))));
+// DEFAULT-NEXT:     fn %24 @worker(%25 argument: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %26 values: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<void>>(%25));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(%19, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%26), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%26), const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %22 thread: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %23 values: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(13));
-// DEFAULT-NEXT:         let %24 main_before: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%13, const<i32>(17), const<i32>(19));
-// DEFAULT-NEXT:         let %25 worker_result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %26 created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u64>, ptr<fn(ptr<void>) -> i32>, ptr<void>) -> i32>(%10, addr_of<ptr<u64>>(%22), function_decay<ptr<fn(ptr<void>) -> i32>>(%18), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(2)>(%23)));
-// DEFAULT-NEXT:         let %27 joined: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %36: i32 [synthetic];
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%26), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%36, call<i32, signature=fn(u64, ptr<i32>) -> i32>(%11, read<u64>(%22), addr_of<ptr<i32>>(%25)));
+// DEFAULT-NEXT:     fn %27 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %28 thread: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %29 values: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(13));
+// DEFAULT-NEXT:         let %30 main_before: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%19, const<i32>(17), const<i32>(19));
+// DEFAULT-NEXT:         let %31 worker_result: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %32 created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u64>, ptr<fn(ptr<void>) -> i32>, ptr<void>) -> i32>(%14, addr_of<ptr<u64>>(%28), function_decay<ptr<fn(ptr<void>) -> i32>>(%24), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(2)>(%29)));
+// DEFAULT-NEXT:         let %33 joined: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %42: i32 [synthetic];
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%32), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%42, call<i32, signature=fn(u64, ptr<i32>) -> i32>(%17, read<u64>(%28), addr_of<ptr<i32>>(%31)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%36, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i32>(%27, read<i32>(%36));
-// DEFAULT-NEXT:         let %28 main_after: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%13, const<i32>(23), const<i32>(29));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%35)), read<i32>(%24), read<i32>(%25), read<i32>(%28), read<i32>(%26), read<i32>(%27));
+// DEFAULT-NEXT:             write<i32>(%42, neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i32>(%33, read<i32>(%42));
+// DEFAULT-NEXT:         let %34 main_after: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%19, const<i32>(23), const<i32>(29));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%41)), read<i32>(%30), read<i32>(%31), read<i32>(%34), read<i32>(%32), read<i32>(%33));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

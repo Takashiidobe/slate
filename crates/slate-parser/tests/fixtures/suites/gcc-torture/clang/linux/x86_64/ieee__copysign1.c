@@ -113,105 +113,105 @@ int main() {
 // DEFAULT-NEXT:         field1 y: f80;
 // DEFAULT-NEXT:         field2 z: f80;
 // DEFAULT-NEXT:     } [size=48, align=16, offsets=[0, 16, 32]];
-// DEFAULT-NEXT:     global %40 .str40: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %41 .str41: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %7 Tf: array<@type1, 8> [storage=static] [const] [align=16] = aggregate<array<@type1, 8>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0))), index1 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0)))), index2 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0)))), index3 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0)))), index4 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0)))), index5 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index6 = aggregate<@type1, zero_fill=false>(field0 = call<f32, signature=fn() -> f32>(%37), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field2 = neg<f32>(call<f32, signature=fn() -> f32>(%37))), index7 = aggregate<@type1, zero_fill=false>(field0 = neg<f32>(call<f32, signature=fn(ptr<const i8>) -> f32>(%39, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%40)))), field1 = call<f32, signature=fn() -> f32>(%37), field2 = call<f32, signature=fn(ptr<const i8>) -> f32>(%39, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%41))))) [linkage=internal];
-// DEFAULT-NEXT:     global %49 .str49: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %50 .str50: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %16 T: array<@type2, 8> [storage=static] [const] [align=16] = aggregate<array<@type2, 8>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(1.0), field1 = const<f64>(2.0), field2 = const<f64>(1.0)), index1 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(1.0), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(1.0))), index2 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(1.0)), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(1.0))), index3 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(0.0), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(0.0))), index4 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(0.0)), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(0.0))), index5 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(0.0)), field1 = const<f64>(2.0), field2 = const<f64>(0.0)), index6 = aggregate<@type2, zero_fill=false>(field0 = call<f64, signature=fn() -> f64>(%46), field1 = neg<f64>(const<f64>(0.0)), field2 = neg<f64>(call<f64, signature=fn() -> f64>(%46))), index7 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(call<f64, signature=fn(ptr<const i8>) -> f64>(%48, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%49)))), field1 = call<f64, signature=fn() -> f64>(%46), field2 = call<f64, signature=fn(ptr<const i8>) -> f64>(%48, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%50))))) [linkage=internal];
-// DEFAULT-NEXT:     global %58 .str58: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %59 .str59: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 Tl: array<@type3, 8> [storage=static] [const] = aggregate<array<@type3, 8>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(1.0))), index1 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index2 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index3 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(0.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index4 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index5 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(0.0))), index6 = aggregate<@type3, zero_fill=false>(field0 = call<f80, signature=fn() -> f80>(%55), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field2 = neg<f80>(call<f80, signature=fn() -> f80>(%55))), index7 = aggregate<@type3, zero_fill=false>(field0 = neg<f80>(call<f80, signature=fn(ptr<const i8>) -> f80>(%57, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%58)))), field1 = call<f80, signature=fn() -> f80>(%55), field2 = call<f80, signature=fn(ptr<const i8>) -> f80>(%57, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%59))))) [linkage=internal];
+// DEFAULT-NEXT:     global %43 .str43: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %44 .str44: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %10 Tf: array<@type1, 8> [storage=static] [const] [align=16] = aggregate<array<@type1, 8>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0))), index1 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0)))), index2 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.0)))), index3 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0)))), index4 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(2.0))), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0)))), index5 = aggregate<@type1, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), field2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))), index6 = aggregate<@type1, zero_fill=false>(field0 = call<f32, signature=fn() -> f32>(%40), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))), field2 = neg<f32>(call<f32, signature=fn() -> f32>(%40))), index7 = aggregate<@type1, zero_fill=false>(field0 = neg<f32>(call<f32, signature=fn(ptr<const i8>) -> f32>(%42, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%43)))), field1 = call<f32, signature=fn() -> f32>(%40), field2 = call<f32, signature=fn(ptr<const i8>) -> f32>(%42, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%44))))) [linkage=internal];
+// DEFAULT-NEXT:     global %52 .str52: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %53 .str53: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %19 T: array<@type2, 8> [storage=static] [const] [align=16] = aggregate<array<@type2, 8>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(1.0), field1 = const<f64>(2.0), field2 = const<f64>(1.0)), index1 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(1.0), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(1.0))), index2 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(1.0)), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(1.0))), index3 = aggregate<@type2, zero_fill=false>(field0 = const<f64>(0.0), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(0.0))), index4 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(0.0)), field1 = neg<f64>(const<f64>(2.0)), field2 = neg<f64>(const<f64>(0.0))), index5 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(const<f64>(0.0)), field1 = const<f64>(2.0), field2 = const<f64>(0.0)), index6 = aggregate<@type2, zero_fill=false>(field0 = call<f64, signature=fn() -> f64>(%49), field1 = neg<f64>(const<f64>(0.0)), field2 = neg<f64>(call<f64, signature=fn() -> f64>(%49))), index7 = aggregate<@type2, zero_fill=false>(field0 = neg<f64>(call<f64, signature=fn(ptr<const i8>) -> f64>(%51, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%52)))), field1 = call<f64, signature=fn() -> f64>(%49), field2 = call<f64, signature=fn(ptr<const i8>) -> f64>(%51, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%53))))) [linkage=internal];
+// DEFAULT-NEXT:     global %61 .str61: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %62 .str62: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %28 Tl: array<@type3, 8> [storage=static] [const] = aggregate<array<@type3, 8>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(1.0))), index1 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(1.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index2 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(1.0)))), index3 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(const<f64>(0.0)), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index4 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(2.0))), field2 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0)))), index5 = aggregate<@type3, zero_fill=false>(field0 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field1 = float_widen<f80, reason=assign>(const<f64>(2.0)), field2 = float_widen<f80, reason=assign>(const<f64>(0.0))), index6 = aggregate<@type3, zero_fill=false>(field0 = call<f80, signature=fn() -> f80>(%58), field1 = float_widen<f80, reason=assign>(neg<f64>(const<f64>(0.0))), field2 = neg<f80>(call<f80, signature=fn() -> f80>(%58))), index7 = aggregate<@type3, zero_fill=false>(field0 = neg<f80>(call<f80, signature=fn(ptr<const i8>) -> f80>(%60, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%61)))), field1 = call<f80, signature=fn() -> f80>(%58), field2 = call<f80, signature=fn(ptr<const i8>) -> f80>(%60, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%62))))) [linkage=internal];
 // DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @memcmp(%31 __s1: ptr<const void>, %32 __s2: ptr<const void>, %33 __n: u64) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %36 @__builtin_copysignf(%34 <unnamed>: f32, %35 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %3 @cf(%4 x: f32, %5 y: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32, f32) -> f32>(%36, read<f32>(%4), read<f32>(%5));
+// DEFAULT-NEXT:     fn %5 @memcmp(%34 __s1: ptr<const void>, %35 __s2: ptr<const void>, %36 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %39 @__builtin_copysignf(%37 <unnamed>: f32, %38 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %6 @cf(%7 x: f32, %8 y: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32, f32) -> f32>(%39, read<f32>(%7), read<f32>(%8));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %39 @__builtin_nanf(%38 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %8 @testf() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(96), const<u64>(12))));
-// DEFAULT-NEXT:         let %11 r: f32 [storage=automatic];
-// DEFAULT-NEXT:         for %42
+// DEFAULT-NEXT:     fn %40 @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %42 @__builtin_nanf(%41 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %11 @testf() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %12 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %13 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(96), const<u64>(12))));
+// DEFAULT-NEXT:         let %14 r: f32 [storage=automatic];
+// DEFAULT-NEXT:         for %45
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%9, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), read<i32>(%10))
+// DEFAULT-NEXT:                 write<i32>(%12, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%12), read<i32>(%13))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %61: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                 let %62: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%61), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%62));
+// DEFAULT-NEXT:                 let %64: i32 [synthetic] = read<i32>(%12);
+// DEFAULT-NEXT:                 let %65: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%64), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%12, read<i32>(%65));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f32>(%11, call<f32, signature=fn(f32, f32) -> f32>(%3, read<f32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%7), read<i32>(%9))))), read<f32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%7), read<i32>(%9)))))));
-// DEFAULT-NEXT:                     call<f32, signature=fn(f32, f32) -> f32>(%3, read<f32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%7), read<i32>(%9))))), read<f32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%7), read<i32>(%9))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f32>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f32>>(field2(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%7), read<i32>(%9)))))), const<u64>(4)), const<i32>(0))
+// DEFAULT-NEXT:                     write<f32>(%14, call<f32, signature=fn(f32, f32) -> f32>(%6, read<f32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%10), read<i32>(%12))))), read<f32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%10), read<i32>(%12)))))));
+// DEFAULT-NEXT:                     call<f32, signature=fn(f32, f32) -> f32>(%6, read<f32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%10), read<i32>(%12))))), read<f32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%10), read<i32>(%12))))));
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%5, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f32>>(%14)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f32>>(field2(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(8)>(%10), read<i32>(%12)))))), const<u64>(4)), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @__builtin_copysign(%43 <unnamed>: f64, %44 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %12 @c(%13 x: f64, %14 y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64, f64) -> f64>(%45, read<f64>(%13), read<f64>(%14));
+// DEFAULT-NEXT:     fn %48 @__builtin_copysign(%46 <unnamed>: f64, %47 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %15 @c(%16 x: f64, %17 y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64, f64) -> f64>(%48, read<f64>(%16), read<f64>(%17));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %48 @__builtin_nan(%47 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %17 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %18 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %19 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(192), const<u64>(24))));
-// DEFAULT-NEXT:         let %20 r: f64 [storage=automatic];
-// DEFAULT-NEXT:         for %51
+// DEFAULT-NEXT:     fn %49 @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %51 @__builtin_nan(%50 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %20 @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %21 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %22 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(192), const<u64>(24))));
+// DEFAULT-NEXT:         let %23 r: f64 [storage=automatic];
+// DEFAULT-NEXT:         for %54
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%18, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%18), read<i32>(%19))
+// DEFAULT-NEXT:                 write<i32>(%21, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%21), read<i32>(%22))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %63: i32 [synthetic] = read<i32>(%18);
-// DEFAULT-NEXT:                 let %64: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%63), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%18, read<i32>(%64));
+// DEFAULT-NEXT:                 let %66: i32 [synthetic] = read<i32>(%21);
+// DEFAULT-NEXT:                 let %67: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%66), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%21, read<i32>(%67));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f64>(%20, call<f64, signature=fn(f64, f64) -> f64>(%12, read<f64>(field0(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%16), read<i32>(%18))))), read<f64>(field1(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%16), read<i32>(%18)))))));
-// DEFAULT-NEXT:                     call<f64, signature=fn(f64, f64) -> f64>(%12, read<f64>(field0(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%16), read<i32>(%18))))), read<f64>(field1(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%16), read<i32>(%18))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%20)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f64>>(field2(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%16), read<i32>(%18)))))), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:                     write<f64>(%23, call<f64, signature=fn(f64, f64) -> f64>(%15, read<f64>(field0(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%19), read<i32>(%21))))), read<f64>(field1(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%19), read<i32>(%21)))))));
+// DEFAULT-NEXT:                     call<f64, signature=fn(f64, f64) -> f64>(%15, read<f64>(field0(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%19), read<i32>(%21))))), read<f64>(field1(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%19), read<i32>(%21))))));
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%5, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f64>>(%23)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f64>>(field2(deref(ptr_offset<ptr<const @type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<const @type2>, length=Some(8)>(%19), read<i32>(%21)))))), const<u64>(8)), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @__builtin_copysignl(%52 <unnamed>: f80, %53 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %21 @cl(%22 x: f80, %23 y: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80, f80) -> f80>(%54, read<f80>(%22), read<f80>(%23));
+// DEFAULT-NEXT:     fn %57 @__builtin_copysignl(%55 <unnamed>: f80, %56 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %24 @cl(%25 x: f80, %26 y: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80, f80) -> f80>(%57, read<f80>(%25), read<f80>(%26));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @__builtin_infl() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %57 @__builtin_nanl(%56 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %26 @testl() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %27 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %28 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(384), const<u64>(48))));
-// DEFAULT-NEXT:         let %29 r: f80 [storage=automatic];
-// DEFAULT-NEXT:         for %60
+// DEFAULT-NEXT:     fn %58 @__builtin_infl() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %60 @__builtin_nanl(%59 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %29 @testl() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %30 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %31 n: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(div<u64, by_zero=ub>(const<u64>(384), const<u64>(48))));
+// DEFAULT-NEXT:         let %32 r: f80 [storage=automatic];
+// DEFAULT-NEXT:         for %63
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%27, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%27), read<i32>(%28))
+// DEFAULT-NEXT:                 write<i32>(%30, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%30), read<i32>(%31))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %65: i32 [synthetic] = read<i32>(%27);
-// DEFAULT-NEXT:                 let %66: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%65), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%27, read<i32>(%66));
+// DEFAULT-NEXT:                 let %68: i32 [synthetic] = read<i32>(%30);
+// DEFAULT-NEXT:                 let %69: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%68), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%30, read<i32>(%69));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(%29, call<f80, signature=fn(f80, f80) -> f80>(%21, read<f80>(field0(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%25), read<i32>(%27))))), read<f80>(field1(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%25), read<i32>(%27)))))));
-// DEFAULT-NEXT:                     call<f80, signature=fn(f80, f80) -> f80>(%21, read<f80>(field0(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%25), read<i32>(%27))))), read<f80>(field1(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%25), read<i32>(%27))))));
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f80>>(%29)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f80>>(field2(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%25), read<i32>(%27)))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
+// DEFAULT-NEXT:                     write<f80>(%32, call<f80, signature=fn(f80, f80) -> f80>(%24, read<f80>(field0(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%28), read<i32>(%30))))), read<f80>(field1(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%28), read<i32>(%30)))))));
+// DEFAULT-NEXT:                     call<f80, signature=fn(f80, f80) -> f80>(%24, read<f80>(field0(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%28), read<i32>(%30))))), read<f80>(field1(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%28), read<i32>(%30))))));
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%5, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<f80>>(%32)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const f80>>(field2(deref(ptr_offset<ptr<const @type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<const @type3>, length=Some(8)>(%28), read<i32>(%30)))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10)))), const<i32>(0))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%1);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%17);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:     fn %33 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%20);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%29);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

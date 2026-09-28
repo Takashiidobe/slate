@@ -67,32 +67,32 @@ int main(void) {
 // DEFAULT-NEXT:         field2 c3: i8;
 // DEFAULT-NEXT:         field3 c4: i8;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 1, 2, 3]];
-// DEFAULT-NEXT:     global %3 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar(%4 p: ptr<ptr<i8>>) -> i8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%3, const<i32>(1));
+// DEFAULT-NEXT:     global %4 i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %2 @bar(%5 p: ptr<ptr<i8>>) -> i8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(%4, const<i32>(1));
 // DEFAULT-NEXT:         return truncate<i8, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo() -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 ret: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %6 r: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %7 s: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %8 c1: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %9 c2: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %10 p: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%6);
-// DEFAULT-NEXT:         write<i8>(%7, call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%1, addr_of<ptr<ptr<i8>>>(%10)));
-// DEFAULT-NEXT:         call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%1, addr_of<ptr<ptr<i8>>>(%10));
-// DEFAULT-NEXT:         if ne<i8>(read<i8>(%7), const<i8>(0))
-// DEFAULT-NEXT:             write<i8>(%9, read<i8>(deref(read<ptr<i8>>(%10))));
-// DEFAULT-NEXT:         write<i8>(%8, truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i8>(field0(%5), read<i8>(%8));
-// DEFAULT-NEXT:         write<i8>(field1(%5), read<i8>(%9));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%5));
+// DEFAULT-NEXT:     fn %3 @foo() -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %6 ret: @type0 [storage=automatic];
+// DEFAULT-NEXT:         let %7 r: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %8 s: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %9 c1: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %10 c2: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %11 p: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%7);
+// DEFAULT-NEXT:         write<i8>(%8, call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%2, addr_of<ptr<ptr<i8>>>(%11)));
+// DEFAULT-NEXT:         call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%2, addr_of<ptr<ptr<i8>>>(%11));
+// DEFAULT-NEXT:         if ne<i8>(read<i8>(%8), const<i8>(0))
+// DEFAULT-NEXT:             write<i8>(%10, read<i8>(deref(read<ptr<i8>>(%11))));
+// DEFAULT-NEXT:         write<i8>(%9, truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i8>(field0(%6), read<i8>(%9));
+// DEFAULT-NEXT:         write<i8>(field1(%6), read<i8>(%10));
+// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%6));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%2));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%12))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %13 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%3));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%13))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

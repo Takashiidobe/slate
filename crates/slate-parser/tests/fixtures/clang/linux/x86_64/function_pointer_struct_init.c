@@ -42,14 +42,14 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 Callback = struct {
 // DEFAULT-NEXT:         field0 handler: ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @add_one(%3 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @add_one(%4 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%4), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 callback: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = function_decay<ptr<fn(i32) -> i32>>(%2));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field0(%5)), const<i32>(41)));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 callback: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = function_decay<ptr<fn(i32) -> i32>>(%3));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field0(%6)), const<i32>(41)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

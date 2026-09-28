@@ -54,31 +54,31 @@ int main(void) {
 // DEFAULT-NEXT:         field0 input: i32;
 // DEFAULT-NEXT:         field1 expected: @type0;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([109, 105, 115, 109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 cases: array<@type2, 2> [storage=automatic] [align=16] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)))));
-// DEFAULT-NEXT:         let %8 actual: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     global %13 .str13: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([109, 105, 115, 109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 97, 116, 99, 104, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 cases: array<@type2, 2> [storage=automatic] [align=16] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)))));
+// DEFAULT-NEXT:         let %9 actual: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         for %12
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %9 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), const<i32>(2))
+// DEFAULT-NEXT:                 let %10 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%15));
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%16));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(%8)), enum_to_int<u32, reason=promotion>(read<@type0>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%7), read<i32>(%9)))))))
+// DEFAULT-NEXT:                     if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(%9)), enum_to_int<u32, reason=promotion>(read<@type0>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%8), read<i32>(%10)))))))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%12)), read<i32>(%9));
+// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%13)), read<i32>(%10));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), read<i32>(%9));
+// DEFAULT-NEXT:                             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%14)), read<i32>(%10));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

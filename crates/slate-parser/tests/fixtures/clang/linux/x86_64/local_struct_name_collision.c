@@ -105,88 +105,88 @@ int main(void) {
 // DEFAULT-NEXT:         field0 expectedMovementInChars: i32;
 // DEFAULT-NEXT:         field1 input: ptr<const i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([98, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([99, 99, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([120, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([121, 121, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([122, 122, 122, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @sum_docs() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 cases: array<@type0, 3> [storage=automatic] [const] [align=16] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%18)), field1 = const<i32>(1)), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%19)), field1 = const<i32>(2)), index2 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%20)), field1 = const<i32>(3)));
-// DEFAULT-NEXT:         let %4 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %21
-// DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %5 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(3))
-// DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%29));
-// DEFAULT-NEXT:                 yield void;
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %30: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                     let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), mul<i32, overflow=ub>(widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(field0(deref(ptr_offset<ptr<const @type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<const @type0>, length=Some(3)>(%3), read<i32>(%5))))), const<i32>(0))))), read<i32>(field1(deref(ptr_offset<ptr<const @type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<const @type0>, length=Some(3)>(%3), read<i32>(%5)))))));
-// DEFAULT-NEXT:                     write<i32>(%4, read<i32>(%31));
-// DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<i32>(%4);
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @sum_flags() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 cases: array<@type1, 2> [storage=automatic] [const] [align=16] = aggregate<array<@type1, 2>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(10)), index1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(20)));
-// DEFAULT-NEXT:         let %9 total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:     global %19 .str19: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %20 .str20: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([98, 98, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([99, 99, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([120, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %25 .str25: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([121, 121, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %26 .str26: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([122, 122, 122, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %28 .str28: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @sum_docs() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %4 cases: array<@type0, 3> [storage=automatic] [const] [align=16] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%19)), field1 = const<i32>(1)), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%20)), field1 = const<i32>(2)), index2 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%21)), field1 = const<i32>(3)));
+// DEFAULT-NEXT:         let %5 total: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         for %22
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %10 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(2))
+// DEFAULT-NEXT:                 let %6 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%6), const<i32>(3))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %32: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %33: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%32), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%33));
+// DEFAULT-NEXT:                 let %29: i32 [synthetic] = read<i32>(%6);
+// DEFAULT-NEXT:                 let %30: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%29), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%30));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%8), read<i32>(%10))))), const<i32>(0))
+// DEFAULT-NEXT:                     let %31: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                     let %32: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%31), mul<i32, overflow=ub>(widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(field0(deref(ptr_offset<ptr<const @type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<const @type0>, length=Some(3)>(%4), read<i32>(%6))))), const<i32>(0))))), read<i32>(field1(deref(ptr_offset<ptr<const @type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<const @type0>, length=Some(3)>(%4), read<i32>(%6)))))));
+// DEFAULT-NEXT:                     write<i32>(%5, read<i32>(%32));
+// DEFAULT-NEXT:                 }
+// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %7 @sum_flags() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %9 cases: array<@type1, 2> [storage=automatic] [const] [align=16] = aggregate<array<@type1, 2>, zero_fill=false>(index0 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(10)), index1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(20)));
+// DEFAULT-NEXT:         let %10 total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %23
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:                 let %11 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%11), const<i32>(2))
+// DEFAULT-NEXT:             increment: {
+// DEFAULT-NEXT:                 let %33: i32 [synthetic] = read<i32>(%11);
+// DEFAULT-NEXT:                 let %34: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%33), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%11, read<i32>(%34));
+// DEFAULT-NEXT:                 yield void;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 {
+// DEFAULT-NEXT:                     if ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%9), read<i32>(%11))))), const<i32>(0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             let %34: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                             let %35: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%34), read<i32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%8), read<i32>(%10))))));
-// DEFAULT-NEXT:                             write<i32>(%9, read<i32>(%35));
+// DEFAULT-NEXT:                             let %35: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                             let %36: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%35), read<i32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%9), read<i32>(%11))))));
+// DEFAULT-NEXT:                             write<i32>(%10, read<i32>(%36));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             let %36: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                             let %37: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%36), read<i32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%8), read<i32>(%10))))));
-// DEFAULT-NEXT:                             write<i32>(%9, read<i32>(%37));
+// DEFAULT-NEXT:                             let %37: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                             let %38: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%37), read<i32>(field1(deref(ptr_offset<ptr<const @type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<const @type1>, length=Some(2)>(%9), read<i32>(%11))))));
+// DEFAULT-NEXT:                             write<i32>(%10, read<i32>(%38));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<i32>(%9);
+// DEFAULT-NEXT:         return read<i32>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @sum_movements() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 cases: array<@type2, 3> [storage=automatic] [align=16] = aggregate<array<@type2, 3>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%23))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%24))), index2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%25))));
-// DEFAULT-NEXT:         let %14 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %26
+// DEFAULT-NEXT:     fn %12 @sum_movements() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %14 cases: array<@type2, 3> [storage=automatic] [align=16] = aggregate<array<@type2, 3>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%24))), index1 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(2), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%25))), index2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%26))));
+// DEFAULT-NEXT:         let %15 total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %27
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %15 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%15), const<i32>(3))
+// DEFAULT-NEXT:                 let %16 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%16), const<i32>(3))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %38: i32 [synthetic] = read<i32>(%15);
-// DEFAULT-NEXT:                 let %39: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%38), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%15, read<i32>(%39));
+// DEFAULT-NEXT:                 let %39: i32 [synthetic] = read<i32>(%16);
+// DEFAULT-NEXT:                 let %40: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%39), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%16, read<i32>(%40));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %40: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                     let %41: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%40), add<i32, overflow=ub>(read<i32>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(3)>(%13), read<i32>(%15))))), widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(3)>(%13), read<i32>(%15))))), const<i32>(0)))))));
-// DEFAULT-NEXT:                     write<i32>(%14, read<i32>(%41));
+// DEFAULT-NEXT:                     let %41: i32 [synthetic] = read<i32>(%15);
+// DEFAULT-NEXT:                     let %42: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%41), add<i32, overflow=ub>(read<i32>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(3)>(%14), read<i32>(%16))))), widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(3)>(%14), read<i32>(%16))))), const<i32>(0)))))));
+// DEFAULT-NEXT:                     write<i32>(%15, read<i32>(%42));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<i32>(%14);
+// DEFAULT-NEXT:         return read<i32>(%15);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%27)), call<i32, signature=fn() -> i32>(%1), call<i32, signature=fn() -> i32>(%6), call<i32, signature=fn() -> i32>(%11));
+// DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%28)), call<i32, signature=fn() -> i32>(%2), call<i32, signature=fn() -> i32>(%7), call<i32, signature=fn() -> i32>(%12));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

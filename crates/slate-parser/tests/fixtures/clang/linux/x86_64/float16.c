@@ -57,44 +57,44 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type1 va_list = va_list;
 // DEFAULT-NEXT:     type @type2 va_list = va_list;
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @add16(%4 a: f16, %5 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%4), read<f16>(%5));
+// DEFAULT-NEXT:     global %22 .str22: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @add16(%5 a: f16, %6 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%5), read<f16>(%6));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @mul16(%7 a: f16, %8 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%7), read<f16>(%8));
+// DEFAULT-NEXT:     fn %7 @mul16(%8 a: f16, %9 b: f16) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%8), read<f16>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @sum_variadic(%10 n: i32, ...) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%11);
-// DEFAULT-NEXT:         let %12 total: f16 [storage=automatic] = int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
-// DEFAULT-NEXT:         for %18
+// DEFAULT-NEXT:     fn %10 @sum_variadic(%11 n: i32, ...) -> f16 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %12 ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%12);
+// DEFAULT-NEXT:         let %13 total: f16 [storage=automatic] = int_to_float<f16, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0));
+// DEFAULT-NEXT:         for %19
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %13 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%13), read<i32>(%10))
+// DEFAULT-NEXT:                 let %14 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%14), read<i32>(%11))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %22: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:                 let %23: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%13, read<i32>(%23));
+// DEFAULT-NEXT:                 let %23: i32 [synthetic] = read<i32>(%14);
+// DEFAULT-NEXT:                 let %24: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%23), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%14, read<i32>(%24));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f16>(%12, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%12), va_arg<f16>(%11)));
-// DEFAULT-NEXT:                     add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%12), va_arg<f16>(%11));
+// DEFAULT-NEXT:                     write<f16>(%13, add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%13), va_arg<f16>(%12)));
+// DEFAULT-NEXT:                     add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%13), va_arg<f16>(%12));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         va_end(%11);
-// DEFAULT-NEXT:         return read<f16>(%12);
+// DEFAULT-NEXT:         va_end(%12);
+// DEFAULT-NEXT:         return read<f16>(%13);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: f16 [storage=automatic] = const<f16>(3);
-// DEFAULT-NEXT:         let %16 b: f16 [storage=automatic] = const<f16>(4);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%3, read<f16>(%15), read<f16>(%16))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%6, read<f16>(%15), read<f16>(%16))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(i32, ...) -> f16>(%9, const<i32>(3), const<f16>(1), const<f16>(2), const<f16>(3))));
+// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %16 a: f16 [storage=automatic] = const<f16>(3);
+// DEFAULT-NEXT:         let %17 b: f16 [storage=automatic] = const<f16>(4);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%4, read<f16>(%16), read<f16>(%17))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(f16, f16) -> f16>(%7, read<f16>(%16), read<f16>(%17))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%22)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f16, signature=fn(i32, ...) -> f16>(%10, const<i32>(3), const<f16>(1), const<f16>(2), const<f16>(3))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

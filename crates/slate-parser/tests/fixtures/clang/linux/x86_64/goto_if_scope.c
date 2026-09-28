@@ -47,27 +47,27 @@ print:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 n: i32 [storage=automatic] = const<i32>(7);
-// DEFAULT-NEXT:         let %6 cls: i32 [storage=automatic];
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 goto %2;
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 n: i32 [storage=automatic] = const<i32>(7);
+// DEFAULT-NEXT:         let %7 cls: i32 [storage=automatic];
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 goto %3;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         label %2 neg:
-// DEFAULT-NEXT:             write<i32>(%6, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         goto %4;
-// DEFAULT-NEXT:         label %3 nonneg:
-// DEFAULT-NEXT:             write<i32>(%6, const<i32>(1));
-// DEFAULT-NEXT:         goto %4;
-// DEFAULT-NEXT:         label %4 print:
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), read<i32>(%6));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 goto %4;
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         label %3 neg:
+// DEFAULT-NEXT:             write<i32>(%7, neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         goto %5;
+// DEFAULT-NEXT:         label %4 nonneg:
+// DEFAULT-NEXT:             write<i32>(%7, const<i32>(1));
+// DEFAULT-NEXT:         goto %5;
+// DEFAULT-NEXT:         label %5 print:
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), read<i32>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

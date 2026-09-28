@@ -44,14 +44,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [alias="bar"];
-// DEFAULT-NEXT:     fn %3 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @exit(%6 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @foo() -> i32 [linkage=external] [alias="bar"];
+// DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }

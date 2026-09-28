@@ -45,12 +45,12 @@ int g(void) {
 // DEFAULT-NEXT:         field0 field: const i32;
 // DEFAULT-NEXT:         field1 pointer: const ptr<volatile i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 b: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %4 c: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f(%7 a: i32 [const], %8 b: ptr<const i8> [restrict]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 local: i32 [storage=automatic] [const] = const<i32>(1);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%6))), const<u64>(8))));
+// DEFAULT-NEXT:     global %5 b: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %6 c: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %4 @f(%9 a: i32 [const], %10 b: ptr<const i8> [restrict]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %8 local: i32 [storage=automatic] [const] = const<i32>(1);
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%8))), const<u64>(8))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

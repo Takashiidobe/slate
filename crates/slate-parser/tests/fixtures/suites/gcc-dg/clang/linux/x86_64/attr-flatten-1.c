@@ -54,20 +54,20 @@ test ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fn2(%11 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fn3(%12 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %0 @fn2(%13 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %1 @fn3(%14 <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %2 @fn1(%3 p1: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%3));
 // DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @fn4(%13 p1: i32) -> i32 [linkage=external] [alias="fn1"];
-// DEFAULT-NEXT:     fn %6 @fn1a(%7 p1: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%7));
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%8));
+// DEFAULT-NEXT:     fn %6 @fn4(%15 p1: i32) -> i32 [linkage=external] [alias="fn1"];
+// DEFAULT-NEXT:     fn %7 @fn1a(%8 p1: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %9 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%8));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @fn4a(%14 p1: i32) -> i32 [linkage=external] [alias="fn1a"];
-// DEFAULT-NEXT:     fn %10 @test(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%5, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%9, const<i32>(1)));
+// DEFAULT-NEXT:     fn %11 @fn4a(%16 p1: i32) -> i32 [linkage=external] [alias="fn1a"];
+// DEFAULT-NEXT:     fn %12 @test(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%6, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%11, const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

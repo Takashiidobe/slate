@@ -56,30 +56,30 @@ int main(void) {
 // DEFAULT-NEXT:         field1 value: i128;
 // DEFAULT-NEXT:         field2 uvalue: u128;
 // DEFAULT-NEXT:     } [size=48, align=16, offsets=[0, 16, 32]];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %7 .str7: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 w: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%3), const<i32>(7));
-// DEFAULT-NEXT:         write<i128>(field1(%3), widen<i128, reason=assign>(neg<i64, overflow=ub>(const<i64>(1234567890123456789))));
-// DEFAULT-NEXT:         write<u128>(field2(%3), widen<u128, reason=assign>(const<u64>(12345678901234567890)));
-// DEFAULT-NEXT:         let %11: i128 [synthetic] = read<i128>(field1(%3));
-// DEFAULT-NEXT:         let %12: i128 [synthetic] = add<i128, overflow=ub>(read<i128>(%11), widen<i128, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128>(field1(%3), read<i128>(%12));
-// DEFAULT-NEXT:         let %13: u128 [synthetic] = read<u128>(field2(%3));
-// DEFAULT-NEXT:         let %14: u128 [synthetic] = mul<u128, overflow=wrap>(read<u128>(%13), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(2))));
-// DEFAULT-NEXT:         write<u128>(field2(%3), read<u128>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%5)), read<i32>(field0(%3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%6)), reinterpret<u64, reason=explicit, fits=unknown>(truncate<i64, reason=explicit, fits=unknown>(shr<i128, amount_out_of_range=ub, fill=sign_extend>(read<i128>(field1(%3)), const<i32>(64)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%7)), reinterpret<u64, reason=explicit, fits=unknown>(truncate<i64, reason=explicit, fits=unknown>(read<i128>(field1(%3)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%8)), truncate<u64, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(field2(%3)), const<i32>(64))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%9)), truncate<u64, reason=explicit, fits=unknown>(read<u128>(field2(%3))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%10)), const<u64>(48));
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 w: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%4), const<i32>(7));
+// DEFAULT-NEXT:         write<i128>(field1(%4), widen<i128, reason=assign>(neg<i64, overflow=ub>(const<i64>(1234567890123456789))));
+// DEFAULT-NEXT:         write<u128>(field2(%4), widen<u128, reason=assign>(const<u64>(12345678901234567890)));
+// DEFAULT-NEXT:         let %12: i128 [synthetic] = read<i128>(field1(%4));
+// DEFAULT-NEXT:         let %13: i128 [synthetic] = add<i128, overflow=ub>(read<i128>(%12), widen<i128, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128>(field1(%4), read<i128>(%13));
+// DEFAULT-NEXT:         let %14: u128 [synthetic] = read<u128>(field2(%4));
+// DEFAULT-NEXT:         let %15: u128 [synthetic] = mul<u128, overflow=wrap>(read<u128>(%14), reinterpret<u128, reason=usual_arith, fits=unknown>(widen<i128, reason=usual_arith>(const<i32>(2))));
+// DEFAULT-NEXT:         write<u128>(field2(%4), read<u128>(%15));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6)), read<i32>(field0(%4)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%7)), reinterpret<u64, reason=explicit, fits=unknown>(truncate<i64, reason=explicit, fits=unknown>(shr<i128, amount_out_of_range=ub, fill=sign_extend>(read<i128>(field1(%4)), const<i32>(64)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%8)), reinterpret<u64, reason=explicit, fits=unknown>(truncate<i64, reason=explicit, fits=unknown>(read<i128>(field1(%4)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%9)), truncate<u64, reason=explicit, fits=unknown>(shr<u128, amount_out_of_range=ub, fill=zero_extend>(read<u128>(field2(%4)), const<i32>(64))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%10)), truncate<u64, reason=explicit, fits=unknown>(read<u128>(field2(%4))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%11)), const<u64>(48));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

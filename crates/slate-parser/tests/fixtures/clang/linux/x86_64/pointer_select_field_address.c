@@ -55,21 +55,21 @@ int main(void) {
 // DEFAULT-NEXT:         field0 direct: u64;
 // DEFAULT-NEXT:         field1 indirect: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 acc: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([37, 108, 108, 117, 32, 37, 108, 108, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @add(%5 isDirect: i32, %6 amount: u64) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 target: ptr<u64> [storage=automatic] [const] = conditional<ptr<u64>>(ne<i32>(read<i32>(%5), const<i32>(0)), addr_of<ptr<u64>>(field0(%3)), addr_of<ptr<u64>>(field1(%3)));
-// DEFAULT-NEXT:         let %11: ptr<u64> [synthetic] = read<ptr<u64>>(%7);
-// DEFAULT-NEXT:         let %12: u64 [synthetic] = read<u64>(deref(read<ptr<u64>>(%11)));
-// DEFAULT-NEXT:         let %13: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%12), read<u64>(%6));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%11)), read<u64>(%13));
+// DEFAULT-NEXT:     global %4 acc: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([37, 108, 108, 117, 32, 37, 108, 108, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @add(%6 isDirect: i32, %7 amount: u64) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %8 target: ptr<u64> [storage=automatic] [const] = conditional<ptr<u64>>(ne<i32>(read<i32>(%6), const<i32>(0)), addr_of<ptr<u64>>(field0(%4)), addr_of<ptr<u64>>(field1(%4)));
+// DEFAULT-NEXT:         let %12: ptr<u64> [synthetic] = read<ptr<u64>>(%8);
+// DEFAULT-NEXT:         let %13: u64 [synthetic] = read<u64>(deref(read<ptr<u64>>(%12)));
+// DEFAULT-NEXT:         let %14: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%13), read<u64>(%7));
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%12)), read<u64>(%14));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%4, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%10)), read<u64>(field0(%3)), read<u64>(field1(%3)));
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%5, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%5, const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, u64) -> void>(%5, const<i32>(1), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%11)), read<u64>(field0(%4)), read<u64>(field1(%4)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

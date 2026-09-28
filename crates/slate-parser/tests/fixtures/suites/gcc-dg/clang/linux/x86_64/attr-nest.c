@@ -42,11 +42,11 @@ void proto2 (int (*ATTR_USED bar) (void)); /* { dg-warning "attribute ignored" }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar(%4 <unnamed>: i32, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %0 @bar(%5 <unnamed>: i32, ...) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%0, const<i32>(0), null<ptr<fn(ptr<const i8>, ...) -> void>>);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @proto1(%5 <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @proto2(%6 bar: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @proto1(%6 <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @proto2(%7 bar: ptr<fn() -> i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

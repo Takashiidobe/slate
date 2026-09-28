@@ -93,20 +93,20 @@ int main() {
 // DEFAULT-NEXT:         field1 length: i32;
 // DEFAULT-NEXT:         field2 a: array<ptr<@type1>, 1>;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 40, 48]];
-// DEFAULT-NEXT:     global %7 global: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @malloc(%14 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @foo(%9 p: ptr<@type1>, %10 i: i32) -> ptr<@type1> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 q: ptr<ptr<@type1>> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type1>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%9))))), read<i32>(%10))), null<ptr<@type1>>);
-// DEFAULT-NEXT:         write<ptr<ptr<@type1>>>(%11, addr_of<ptr<ptr<@type1>>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%9))))), const<i32>(1)))));
-// DEFAULT-NEXT:         write<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%11)), addr_of<ptr<@type1>>(%7));
-// DEFAULT-NEXT:         return read<ptr<@type1>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%9))))), read<i32>(%10))));
+// DEFAULT-NEXT:     global %8 global: @type1 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %2 @malloc(%15 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %9 @foo(%10 p: ptr<@type1>, %11 i: i32) -> ptr<@type1> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %12 q: ptr<ptr<@type1>> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type1>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%10))))), read<i32>(%11))), null<ptr<@type1>>);
+// DEFAULT-NEXT:         write<ptr<ptr<@type1>>>(%12, addr_of<ptr<ptr<@type1>>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%10))))), const<i32>(1)))));
+// DEFAULT-NEXT:         write<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%12)), addr_of<ptr<@type1>>(%8));
+// DEFAULT-NEXT:         return read<ptr<@type1>>(deref(ptr_offset<ptr<ptr<@type1>>, subtract=false, element=ptr<@type1>, overflow=ub>(array_decay<ptr<ptr<@type1>>, length=Some(1)>(field2(field1(deref(read<ptr<@type1>>(%10))))), read<i32>(%11))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, const<u64>(96)));
-// DEFAULT-NEXT:         if ne<ptr<@type1>>(call<ptr<@type1>, signature=fn(ptr<@type1>, i32) -> ptr<@type1>>(%8, read<ptr<@type1>>(%13), const<i32>(1)), addr_of<ptr<@type1>>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %14 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(96)));
+// DEFAULT-NEXT:         if ne<ptr<@type1>>(call<ptr<@type1>, signature=fn(ptr<@type1>, i32) -> ptr<@type1>>(%9, read<ptr<@type1>>(%14), const<i32>(1)), addr_of<ptr<@type1>>(%8))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

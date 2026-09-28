@@ -41,18 +41,18 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 qualified: volatile i32 [storage=automatic] [const] = const<i32>(9);
-// DEFAULT-NEXT:         let %3 copy: i32 [storage=automatic] = read<i32, volatile>(%2);
-// DEFAULT-NEXT:         let %4 preserved: volatile i32 [storage=automatic] [const] = const<i32>(12);
-// DEFAULT-NEXT:         let %5 pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:         let %6 width: i32 [storage=automatic] [const] [constexpr] = const<i32>(7);
-// DEFAULT-NEXT:         let %7 narrow: u7b [storage=automatic] = reinterpret<u7b, reason=assign, fits=unknown>(truncate<i7b, reason=assign, fits=unknown>(const<i32>(100)));
-// DEFAULT-NEXT:         let %8 unqualified: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %9 still_qualified: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%11)), read<i32>(%3), read<i32, volatile>(%4), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%5), null<ptr<i32>>)), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u7b>(%7))), add<i32, overflow=ub>(read<i32>(%8), read<i32>(%9)));
+// DEFAULT-NEXT:     global %12 .str12: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 qualified: volatile i32 [storage=automatic] [const] = const<i32>(9);
+// DEFAULT-NEXT:         let %4 copy: i32 [storage=automatic] = read<i32, volatile>(%3);
+// DEFAULT-NEXT:         let %5 preserved: volatile i32 [storage=automatic] [const] = const<i32>(12);
+// DEFAULT-NEXT:         let %6 pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// DEFAULT-NEXT:         let %7 width: i32 [storage=automatic] [const] [constexpr] = const<i32>(7);
+// DEFAULT-NEXT:         let %8 narrow: u7b [storage=automatic] = reinterpret<u7b, reason=assign, fits=unknown>(truncate<i7b, reason=assign, fits=unknown>(const<i32>(100)));
+// DEFAULT-NEXT:         let %9 unqualified: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %10 still_qualified: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%12)), read<i32>(%4), read<i32, volatile>(%5), from_bool<i32, reason=vararg>(eq<ptr<i32>>(read<ptr<i32>>(%6), null<ptr<i32>>)), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u7b>(%8))), add<i32, overflow=ub>(read<i32>(%9), read<i32>(%10)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -52,18 +52,18 @@ int main(void) {
 // DEFAULT-NEXT:         field0 fn: ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:         field1 ptr: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @add_one(%3 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
+// DEFAULT-NEXT:     global %12 .str12: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @add_one(%4 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%4), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 box: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(field0(%6), function_decay<ptr<fn(i32) -> i32>>(%2));
-// DEFAULT-NEXT:         let %7 slot: ptr<void> [storage=automatic] = read<ptr<void>>(field1(%6));
-// DEFAULT-NEXT:         let %8 cb: ptr<fn(i32) -> i32> [storage=automatic] = pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(read<ptr<void>>(%7));
-// DEFAULT-NEXT:         let %9 none: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%11)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%8), const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%9), null<ptr<fn(i32) -> i32>>)));
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 box: @type1 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(field0(%7), function_decay<ptr<fn(i32) -> i32>>(%3));
+// DEFAULT-NEXT:         let %8 slot: ptr<void> [storage=automatic] = read<ptr<void>>(field1(%7));
+// DEFAULT-NEXT:         let %9 cb: ptr<fn(i32) -> i32> [storage=automatic] = pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(read<ptr<void>>(%8));
+// DEFAULT-NEXT:         let %10 none: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%9), const<i32>(41)), from_bool<i32, reason=vararg>(ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%10), null<ptr<fn(i32) -> i32>>)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

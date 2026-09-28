@@ -81,10 +81,10 @@ int proto_later(int x);
 // IR-DEFAULT-NEXT:     type @type0 C = i8;
 // IR-DEFAULT-NEXT:     global %6 fp: ptr<fn(unprototyped) -> i32> [storage=static] [linkage=external];
 // IR-DEFAULT-NEXT:     fn %1 @unproto(unprototyped) -> i32 [linkage=external];
-// IR-DEFAULT-NEXT:     fn %2 @knr(%9 a: i32, %10 b: f64, %11 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         let %3 a: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%9));
-// IR-DEFAULT-NEXT:         let %4 b: f32 [storage=automatic] = float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(read<f64>(%10));
-// IR-DEFAULT-NEXT:         let %5 t: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%11));
+// IR-DEFAULT-NEXT:     fn %2 @knr(%10 a: i32, %11 b: f64, %12 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         let %3 a: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%10));
+// IR-DEFAULT-NEXT:         let %4 b: f32 [storage=automatic] = float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(read<f64>(%11));
+// IR-DEFAULT-NEXT:         let %5 t: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%12));
 // IR-DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(add<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%3)))))), read<f32>(%4)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(widen<i32, reason=promotion>(read<i8>(%5)))));
 // IR-DEFAULT-NEXT:     }
 // IR-DEFAULT-NEXT:     fn %7 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
@@ -94,6 +94,6 @@ int proto_later(int x);
 // IR-DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%2, const<i32>(1), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), const<i32>(3), const<i32>(4));
 // IR-DEFAULT-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(read<ptr<fn(unprototyped) -> i32>>(%6), const<i32>(1));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %8 @proto_later(%12 x: i32) -> i32 [linkage=external];
+// IR-DEFAULT-NEXT:     fn %8 @proto_later(%13 x: i32) -> i32 [linkage=external];
 // IR-DEFAULT-NEXT: }
 // SLATE-FILECHECK-END IR-DEFAULT

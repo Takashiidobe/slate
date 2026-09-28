@@ -81,17 +81,17 @@ int bar3 (int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo1(%9 x: i32) -> i32 [linkage=external] [asm_name="baz1"] [weak] [alias="bar1"];
-// DEFAULT-NEXT:     fn %1 @bar1(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %1 @foo1(%12 x: i32) -> i32 [linkage=external] [asm_name="baz1"] [weak] [alias="bar1"];
+// DEFAULT-NEXT:     fn %2 @bar1(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo2(%11 x: i32) -> i32 [linkage=external] [asm_name="baz2"] [memory=none];
-// DEFAULT-NEXT:     fn %4 @bar2(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5)), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5))), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5))), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5))), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5))), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5)));
+// DEFAULT-NEXT:     fn %5 @foo2(%14 x: i32) -> i32 [linkage=external] [asm_name="baz2"] [memory=none];
+// DEFAULT-NEXT:     fn %6 @bar2(%7 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7)), call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7))), call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7))), call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7))), call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7))), call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%7)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo3(%13 x: i32) -> i32 [linkage=external] [asm_name="baz3"];
-// DEFAULT-NEXT:     fn %7 @bar3(%8 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8)), call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8))), call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8))), call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8))), call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8))), call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%8)));
+// DEFAULT-NEXT:     fn %9 @foo3(%16 x: i32) -> i32 [linkage=external] [asm_name="baz3"];
+// DEFAULT-NEXT:     fn %10 @bar3(%11 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11)), call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11))), call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11))), call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11))), call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11))), call<i32, signature=fn(i32) -> i32>(%9, read<i32>(%11)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

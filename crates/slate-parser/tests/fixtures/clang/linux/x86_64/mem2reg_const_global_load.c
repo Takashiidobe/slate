@@ -49,19 +49,19 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 Byte = struct {
 // DEFAULT-NEXT:         field0 value: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @make_byte() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 result: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(7)));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @make_byte() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %4 result: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(7)));
+// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @initialize_chars() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 text: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 99, 0]);
+// DEFAULT-NEXT:     fn %5 @initialize_chars() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %6 text: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([97, 98, 99, 0]);
 // DEFAULT-NEXT:         return const<i32>(5);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 byte: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%2));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%7))), call<i32, signature=fn() -> i32>(%4)));
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 byte: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%3));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%8))), call<i32, signature=fn() -> i32>(%5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

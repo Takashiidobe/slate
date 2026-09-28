@@ -128,9 +128,9 @@ int vector_variadic(v4si narrow, v8si wide) {
 // IR-NEXT:     fn %30 @forward(%31 callback: ptr<fn(vector<i32, 4>) -> vector<i32, 4>>, %32 value: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(scalar, direct) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<vector<i32, 4>, signature=fn(vector<i32, 4>) -> vector<i32, 4>, abi=sysv64(direct) -> direct>(read<ptr<fn(vector<i32, 4>) -> vector<i32, 4>>>(%31), read<vector<i32, 4>>(%32));
 // IR-NEXT:     }
-// IR-NEXT:     fn %33 @vector_sink(%37 tag: i32, ...) -> i32 [linkage=external];
-// IR-NEXT:     fn %34 @vector_variadic(%35 narrow: vector<i32, 4>, %36 wide: vector<i32, 8>) -> i32 [linkage=external] [abi=sysv64(direct, byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, direct, byval<align=32>) -> scalar>(%33, const<i32>(1), read<vector<i32, 4>>(%35), read<vector<i32, 8>>(%36));
+// IR-NEXT:     fn %34 @vector_sink(%38 tag: i32, ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %35 @vector_variadic(%36 narrow: vector<i32, 4>, %37 wide: vector<i32, 8>) -> i32 [linkage=external] [abi=sysv64(direct, byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, direct, byval<align=32>) -> scalar>(%34, const<i32>(1), read<vector<i32, 4>>(%36), read<vector<i32, 8>>(%37));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

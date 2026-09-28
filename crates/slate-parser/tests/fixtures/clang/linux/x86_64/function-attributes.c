@@ -35,9 +35,9 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 hidden_data: i32 [storage=static] [linkage=external] [visibility=hidden];
 // DEFAULT-NEXT:     extern %1 weak_data: i32 [storage=static] [linkage=external] [weak] [section=".data"] [used];
-// DEFAULT-NEXT:     fn %2 @declared(%5 p: ptr<i32>) -> i32 [linkage=external] [inline=never];
-// DEFAULT-NEXT:     fn %3 @parameterized(%6 p: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @definition() -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %3 @declared(%7 p: ptr<i32>) -> i32 [linkage=external] [inline=never];
+// DEFAULT-NEXT:     fn %5 @parameterized(%8 p: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @definition() -> i32 [linkage=external] [inline=never] [definition=emitted] [memory=read] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

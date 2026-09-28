@@ -124,48 +124,48 @@ main (void)
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type5 __rlimit_resource_t = i32;
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %26 @setrlimit(%39 __resource: i32, %40 __rlimits: ptr<const @type4>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %27 @use_buffer(%28 buf: ptr<i8>, %29 c: u64) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %30 i: u64 [storage=automatic];
-// DEFAULT-NEXT:         for %43
+// DEFAULT-NEXT:     fn %28 @setrlimit(%42 __resource: i32, %43 __rlimits: ptr<const @type4>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %30 @use_buffer(%31 buf: ptr<i8>, %32 c: u64) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %33 i: u64 [storage=automatic];
+// DEFAULT-NEXT:         for %46
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u64>(%30, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%30), read<u64>(%29))
+// DEFAULT-NEXT:                 write<u64>(%33, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%33), read<u64>(%32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %47: u64 [synthetic] = read<u64>(%30);
-// DEFAULT-NEXT:                 let %48: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%47), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%30, read<u64>(%48));
+// DEFAULT-NEXT:                 let %50: u64 [synthetic] = read<u64>(%33);
+// DEFAULT-NEXT:                 let %51: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%50), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<u64>(%33, read<u64>(%51));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%28), read<u64>(%30))), reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%30))));
+// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%31), read<u64>(%33))), reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%33))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @down1(%32 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %44: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%32))));
-// DEFAULT-NEXT:         let %33 buf: vla<i8, %44> [storage=automatic];
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%32), const<i32>(0))
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%27, array_decay<ptr<i8>, length=None>(%33), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%32)))));
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%31, sub<i32, overflow=ub>(read<i32>(%32), const<i32>(1)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @__builtin_alloca(%45 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %34 @down2(%35 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %36 buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%46, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35))))));
+// DEFAULT-NEXT:     fn %34 @down1(%35 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %47: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35))));
+// DEFAULT-NEXT:         let %36 buf: vla<i8, %47> [storage=automatic];
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%35), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%27, read<ptr<i8>>(%36), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35)))));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%30, array_decay<ptr<i8>, length=None>(%36), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35)))));
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%34, sub<i32, overflow=ub>(read<i32>(%35), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %38 r: @type4 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(field0(%38), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
-// DEFAULT-NEXT:         write<u64>(field1(%38), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type4>) -> i32>(%26, const<i32>(3), pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%38))), const<i32>(0))
+// DEFAULT-NEXT:     fn %49 @__builtin_alloca(%48 <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %37 @down2(%38 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %39 buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%49, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%38))))));
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%38), const<i32>(0))
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%30, read<ptr<i8>>(%39), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%38)))));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%37, sub<i32, overflow=ub>(read<i32>(%38), const<i32>(1)));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %40 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %41 r: @type4 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(field0(%41), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
+// DEFAULT-NEXT:         write<u64>(field1(%41), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type4>) -> i32>(%28, const<i32>(3), pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%41))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%31, const<i32>(1000));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%34, const<i32>(1000));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%37, const<i32>(1000));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -38,7 +38,7 @@ noreturn (int x)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @noreturn(%2 x: i32) -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:     fn %2 @noreturn(%3 x: i32) -> void [linkage=external] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

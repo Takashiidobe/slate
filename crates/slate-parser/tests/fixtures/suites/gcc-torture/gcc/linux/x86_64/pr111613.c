@@ -59,22 +59,22 @@ int main(void) {
 // DEFAULT-NEXT:         field1 field2: u32 : 1;
 // DEFAULT-NEXT:         field2 field3: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %1 @malloc(%9 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @set_field1_and_field2(%4 b: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type1>>(%4))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type1>>(%4))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %2 @malloc(%10 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %4 @set_field1_and_field2(%5 b: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(deref(read<ptr<@type1>>(%5))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type1>>(%5))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @new_bitfield() -> ptr<@type1> [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 b: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%1, const<u64>(4)));
-// DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type1>>(%6))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%3, read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         return read<ptr<@type1>>(%6);
+// DEFAULT-NEXT:     fn %6 @new_bitfield() -> ptr<@type1> [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %7 b: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4)));
+// DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type1>>(%7))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%4, read<ptr<@type1>>(%7));
+// DEFAULT-NEXT:         return read<ptr<@type1>>(%7);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 b: ptr<@type1> [storage=automatic] = call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%5);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type1>>(%8))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %9 b: ptr<@type1> [storage=automatic] = call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%6);
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..1, bits=2..3>(deref(read<ptr<@type1>>(%9))))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

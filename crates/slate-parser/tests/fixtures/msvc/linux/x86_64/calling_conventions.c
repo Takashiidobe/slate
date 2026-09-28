@@ -48,18 +48,18 @@ void __cdecl definition(void) { __declspec(align(16)) int local; }
 // DEFAULT-NEXT:     global %7 fast_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %8 vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 method_pointer: ptr<fn(ptr<void>) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 imported: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %13 aligned: i32 [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %14 combined: i32 [storage=static] [align=32] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %12 imported: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %14 aligned: i32 [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %15 combined: i32 [storage=static] [align=32] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     fn %0 @caller() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @callee() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @fast() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
-// DEFAULT-NEXT:     fn %4 @method(%18 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %10 @accepts(%19 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %12 @exported() -> void [linkage=external] [dllexport];
-// DEFAULT-NEXT:     fn %16 @definition() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 local: i32 [storage=automatic] [align=16];
+// DEFAULT-NEXT:     fn %4 @method(%19 <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %11 @accepts(%20 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %13 @exported() -> void [linkage=external] [dllexport];
+// DEFAULT-NEXT:     fn %17 @definition() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %18 local: i32 [storage=automatic] [align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

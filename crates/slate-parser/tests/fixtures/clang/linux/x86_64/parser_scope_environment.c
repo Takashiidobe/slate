@@ -76,44 +76,44 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %9 after_function: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %13 after_tags_and_members: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 after_prototype: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 bits: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 aligned_type: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 aligned_expression: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %18 after_prototype: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %19 bits: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %20 aligned_type: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %21 aligned_expression: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %1 @nested_scopes(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %3 outer: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %4 T: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:             let %26: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:             let %27: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%26))), const<u64>(4))));
-// DEFAULT-NEXT:             write<i32>(%2, read<i32>(%27));
+// DEFAULT-NEXT:             let %29: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:             let %30: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%29))), const<u64>(4))));
+// DEFAULT-NEXT:             write<i32>(%2, read<i32>(%30));
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %29: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%28))), const<u64>(8))));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%29));
+// DEFAULT-NEXT:                 let %31: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                 let %32: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%31))), const<u64>(8))));
+// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%32));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             let %30: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:             let %31: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%30))), const<u64>(4))));
-// DEFAULT-NEXT:             write<i32>(%2, read<i32>(%31));
+// DEFAULT-NEXT:             let %33: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:             let %34: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%33))), const<u64>(4))));
+// DEFAULT-NEXT:             write<i32>(%2, read<i32>(%34));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %32: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %33: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%32))), const<u64>(4))));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%33));
-// DEFAULT-NEXT:         for %23
+// DEFAULT-NEXT:         let %35: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:         let %36: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%35))), const<u64>(4))));
+// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%36));
+// DEFAULT-NEXT:         for %26
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %6 T: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%6))), const<u64>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %34: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %35: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%34), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%35));
+// DEFAULT-NEXT:                 let %37: i32 [synthetic] = read<i32>(%6);
+// DEFAULT-NEXT:                 let %38: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%37), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%38));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %36: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                     let %37: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%36))), const<u64>(4))));
-// DEFAULT-NEXT:                     write<i32>(%2, read<i32>(%37));
+// DEFAULT-NEXT:                     let %39: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:                     let %40: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%39))), const<u64>(4))));
+// DEFAULT-NEXT:                     write<i32>(%2, read<i32>(%40));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%2))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%3))))));
 // DEFAULT-NEXT:     }
@@ -121,18 +121,18 @@ void attribute_scope(void) {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %10 @statement_expression() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %38: u64 [synthetic];
+// DEFAULT-NEXT:         let %41: u64 [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %11 T: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:             write<u64>(%38, const<u64>(4));
+// DEFAULT-NEXT:             write<u64>(%41, const<u64>(4));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(%38), const<u64>(4))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(%41), const<u64>(4))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @prototype(%24 callback: ptr<fn(i32) -> i32>, %25 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @attribute_scope() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 T: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %21 aligned_object: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %22 local_bits: i32b [storage=automatic];
+// DEFAULT-NEXT:     fn %17 @prototype(%27 callback: ptr<fn(i32) -> i32>, %28 value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %22 @attribute_scope() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %23 T: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %24 aligned_object: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %25 local_bits: i32b [storage=automatic];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

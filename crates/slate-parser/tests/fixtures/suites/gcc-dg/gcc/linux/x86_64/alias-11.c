@@ -147,89 +147,89 @@ main ()
 // DEFAULT-NEXT:         field1 dw_fde_cfi: ptr<@type1>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type4 dw_fde_node = @type3;
-// DEFAULT-NEXT:     global %12 cie_cfi_head: ptr<@type1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 fde_table_in_use: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 fde_table: ptr<@type3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %22 label: array<i8, 20> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %23 label_num: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=internal];
-// DEFAULT-NEXT:     global %44 .str44: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([42, 46, 37, 115, 37, 117, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %45 .str45: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([76, 67, 70, 73, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %46 .str46: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %47 .str47: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([42, 46, 76, 67, 70, 73, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @sprintf(%32 __s: ptr<i8> [restrict], %33 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @malloc(%34 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @realloc(%35 __ptr: ptr<void>, %36 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @memset(%37 __s: ptr<void>, %38 __c: i32, %39 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strcmp(%40 __s1: ptr<const i8>, %41 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %7 @strdup(%42 __s: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @add_cfi(%16 list_head: ptr<ptr<@type1>>, %17 cfi: ptr<@type1>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %18 p: ptr<ptr<@type1>> [storage=automatic];
-// DEFAULT-NEXT:         for %43
+// DEFAULT-NEXT:     global %23 cie_cfi_head: ptr<@type1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %24 fde_table_in_use: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %25 fde_table: ptr<@type3> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %33 label: array<i8, 20> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %34 label_num: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=internal];
+// DEFAULT-NEXT:     global %55 .str55: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([42, 46, 37, 115, 37, 117, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %56 .str56: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([76, 67, 70, 73, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %57 .str57: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %58 .str58: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([42, 46, 76, 67, 70, 73, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @sprintf(%43 __s: ptr<i8> [restrict], %44 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @malloc(%45 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %8 @realloc(%46 __ptr: ptr<void>, %47 __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %9 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %13 @memset(%48 __s: ptr<void>, %49 __c: i32, %50 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %16 @strcmp(%51 __s1: ptr<const i8>, %52 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %18 @strdup(%53 __s: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %26 @add_cfi(%27 list_head: ptr<ptr<@type1>>, %28 cfi: ptr<@type1>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %29 p: ptr<ptr<@type1>> [storage=automatic];
+// DEFAULT-NEXT:         for %54
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%18, read<ptr<ptr<@type1>>>(%16));
-// DEFAULT-NEXT:             condition: ne<ptr<@type1>>(read<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%18))), null<ptr<@type1>>)
+// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%29, read<ptr<ptr<@type1>>>(%27));
+// DEFAULT-NEXT:             condition: ne<ptr<@type1>>(read<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%29))), null<ptr<@type1>>)
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%18, addr_of<ptr<ptr<@type1>>>(field0(deref(read<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%18)))))));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%29, addr_of<ptr<ptr<@type1>>>(field0(deref(read<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%29)))))));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:         write<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%18)), read<ptr<@type1>>(%17));
+// DEFAULT-NEXT:         write<ptr<@type1>>(deref(read<ptr<ptr<@type1>>>(%29)), read<ptr<@type1>>(%28));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @new_cfi() -> ptr<@type1> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20 cfi: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(16)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%5, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%20)), const<i32>(0), const<u64>(16));
-// DEFAULT-NEXT:         return read<ptr<@type1>>(%20);
+// DEFAULT-NEXT:     fn %30 @new_cfi() -> ptr<@type1> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %31 cfi: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%5, const<u64>(16)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%13, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%31)), const<i32>(0), const<u64>(16));
+// DEFAULT-NEXT:         return read<ptr<@type1>>(%31);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @dwarf2out_cfi_label() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %48: u64 [synthetic] = read<u64>(%23);
-// DEFAULT-NEXT:         let %49: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%48), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64>(%23, read<u64>(%49));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%1, array_decay<ptr<i8>, length=Some(20)>(%22), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%44)), array_decay<ptr<i8>, length=Some(5)>(%45), truncate<u32, reason=explicit, fits=unknown>(read<u64>(%48)));
-// DEFAULT-NEXT:         return array_decay<ptr<i8>, length=Some(20)>(%22);
+// DEFAULT-NEXT:     fn %32 @dwarf2out_cfi_label() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %59: u64 [synthetic] = read<u64>(%34);
+// DEFAULT-NEXT:         let %60: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%59), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64>(%34, read<u64>(%60));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%3, array_decay<ptr<i8>, length=Some(20)>(%33), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%55)), array_decay<ptr<i8>, length=Some(5)>(%56), truncate<u32, reason=explicit, fits=unknown>(read<u64>(%59)));
+// DEFAULT-NEXT:         return array_decay<ptr<i8>, length=Some(20)>(%33);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @add_fde_cfi(%25 label: ptr<const i8>, %26 cfi: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<const i8>>(read<ptr<const i8>>(%25), null<ptr<const i8>>)
+// DEFAULT-NEXT:     fn %35 @add_fde_cfi(%36 label: ptr<const i8>, %37 cfi: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<ptr<const i8>>(read<ptr<const i8>>(%36), null<ptr<const i8>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %27 fde: ptr<@type3> [storage=automatic] = ptr_offset<ptr<@type3>, subtract=true, element=@type3, overflow=ub>(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%14), read<u32>(%13)), const<i32>(1));
-// DEFAULT-NEXT:                 if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%25)))), const<i32>(0))
-// DEFAULT-NEXT:                     write<ptr<const i8>>(%25, pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%21)));
-// DEFAULT-NEXT:                     pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%21));
-// DEFAULT-NEXT:                 if logical_or<bool>(eq<ptr<const i8>>(read<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%27)))), null<ptr<const i8>>), ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%6, read<ptr<const i8>>(%25), read<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%27))))), const<i32>(0)))
+// DEFAULT-NEXT:                 let %38 fde: ptr<@type3> [storage=automatic] = ptr_offset<ptr<@type3>, subtract=true, element=@type3, overflow=ub>(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%25), read<u32>(%24)), const<i32>(1));
+// DEFAULT-NEXT:                 if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<const i8>>(%36)))), const<i32>(0))
+// DEFAULT-NEXT:                     write<ptr<const i8>>(%36, pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%32)));
+// DEFAULT-NEXT:                     pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn() -> ptr<i8>>(%32));
+// DEFAULT-NEXT:                 if logical_or<bool>(eq<ptr<const i8>>(read<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%38)))), null<ptr<const i8>>), ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%16, read<ptr<const i8>>(%36), read<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%38))))), const<i32>(0)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %28 xcfi: ptr<@type1> [storage=automatic];
-// DEFAULT-NEXT:                         write<ptr<const i8>>(%25, pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%7, read<ptr<const i8>>(%25))));
-// DEFAULT-NEXT:                         write<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%27))), pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%7, read<ptr<const i8>>(%25))));
-// DEFAULT-NEXT:                         pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%7, read<ptr<const i8>>(%25)));
-// DEFAULT-NEXT:                         write<ptr<@type1>>(%28, call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%19));
-// DEFAULT-NEXT:                         call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%19);
-// DEFAULT-NEXT:                         write<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%28))), read<ptr<const i8>>(%25));
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%15, addr_of<ptr<ptr<@type1>>>(field1(deref(read<ptr<@type3>>(%27)))), read<ptr<@type1>>(%28));
+// DEFAULT-NEXT:                         let %39 xcfi: ptr<@type1> [storage=automatic];
+// DEFAULT-NEXT:                         write<ptr<const i8>>(%36, pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%18, read<ptr<const i8>>(%36))));
+// DEFAULT-NEXT:                         write<ptr<const i8>>(field0(deref(read<ptr<@type3>>(%38))), pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%18, read<ptr<const i8>>(%36))));
+// DEFAULT-NEXT:                         pointer_cast<ptr<const i8>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%18, read<ptr<const i8>>(%36)));
+// DEFAULT-NEXT:                         write<ptr<@type1>>(%39, call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%30));
+// DEFAULT-NEXT:                         call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%30);
+// DEFAULT-NEXT:                         write<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%39))), read<ptr<const i8>>(%36));
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%26, addr_of<ptr<ptr<@type1>>>(field1(deref(read<ptr<@type3>>(%38)))), read<ptr<@type1>>(%39));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%15, addr_of<ptr<ptr<@type1>>>(field1(deref(read<ptr<@type3>>(%27)))), read<ptr<@type1>>(%26));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%26, addr_of<ptr<ptr<@type1>>>(field1(deref(read<ptr<@type3>>(%38)))), read<ptr<@type1>>(%37));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%15, addr_of<ptr<ptr<@type1>>>(%12), read<ptr<@type1>>(%26));
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<@type1>>, ptr<@type1>) -> void>(%26, addr_of<ptr<ptr<@type1>>>(%23), read<ptr<@type1>>(%37));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %30 cfi: ptr<@type1> [storage=automatic];
-// DEFAULT-NEXT:         let %31 fde: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%13, reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type3>>(%14, pointer_cast<ptr<@type3>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%14)), const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type3>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%14)), const<u64>(16)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%5, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%14)), const<i32>(0), const<u64>(16));
-// DEFAULT-NEXT:         write<ptr<@type1>>(%30, call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%19));
-// DEFAULT-NEXT:         call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%19);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<@type1>) -> void>(%24, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%46)), read<ptr<@type1>>(%30));
-// DEFAULT-NEXT:         write<ptr<@type3>>(%31, addr_of<ptr<@type3>>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%14), const<i32>(0)))));
-// DEFAULT-NEXT:         write<ptr<@type1>>(%30, read<ptr<@type1>>(field1(deref(read<ptr<@type3>>(%31)))));
-// DEFAULT-NEXT:         if eq<ptr<@type1>>(read<ptr<@type1>>(%30), null<ptr<@type1>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if eq<ptr<const i8>>(read<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%30)))), null<ptr<const i8>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%6, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%47)), read<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%30))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %40 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %41 cfi: ptr<@type1> [storage=automatic];
+// DEFAULT-NEXT:         let %42 fde: ptr<@type3> [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%24, reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<@type3>>(%25, pointer_cast<ptr<@type3>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%8, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%25)), const<u64>(16))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type3>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%8, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%25)), const<u64>(16)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%13, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type3>>(%25)), const<i32>(0), const<u64>(16));
+// DEFAULT-NEXT:         write<ptr<@type1>>(%41, call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%30));
+// DEFAULT-NEXT:         call<ptr<@type1>, signature=fn() -> ptr<@type1>>(%30);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<@type1>) -> void>(%35, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%57)), read<ptr<@type1>>(%41));
+// DEFAULT-NEXT:         write<ptr<@type3>>(%42, addr_of<ptr<@type3>>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%25), const<i32>(0)))));
+// DEFAULT-NEXT:         write<ptr<@type1>>(%41, read<ptr<@type1>>(field1(deref(read<ptr<@type3>>(%42)))));
+// DEFAULT-NEXT:         if eq<ptr<@type1>>(read<ptr<@type1>>(%41), null<ptr<@type1>>)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:         if eq<ptr<const i8>>(read<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%41)))), null<ptr<const i8>>)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%16, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%58)), read<ptr<const i8>>(field1(deref(read<ptr<@type1>>(%41))))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

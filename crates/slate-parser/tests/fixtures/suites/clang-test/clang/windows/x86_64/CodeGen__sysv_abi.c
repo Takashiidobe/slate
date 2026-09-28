@@ -76,27 +76,27 @@ void use_target_attr_vectors(void) {
 // DEFAULT-NEXT:     type @type1 my_m256 = vector<f32, 8>;
 // DEFAULT-NEXT:     type @type2 my_m512 = vector<f32, 16>;
 // DEFAULT-NEXT:     extern %1 gc: volatile i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 115, 100, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @take_stringref(%18 s: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
-// DEFAULT-NEXT:     fn %3 @callit() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = array_decay<ptr<i8>, length=Some(5)>(%19), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=win64(native_c) -> void>(%2, copy<@type0, reason=arg>(read<@type0>(%4)));
+// DEFAULT-NEXT:     global %20 .str20: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 115, 100, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @take_stringref(%19 s: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
+// DEFAULT-NEXT:     fn %4 @callit() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %5 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = array_decay<ptr<i8>, length=Some(5)>(%20), field1 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(4))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=win64(native_c) -> void>(%3, copy<@type0, reason=arg>(read<@type0>(%5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @get_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
-// DEFAULT-NEXT:     fn %8 @take_m256(%20 <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];
-// DEFAULT-NEXT:     fn %9 @get_m512() -> vector<f32, 16> [linkage=external] [abi=win64() -> direct];
-// DEFAULT-NEXT:     fn %10 @take_m512(%21 <unnamed>: vector<f32, 16>) -> void [linkage=external] [abi=win64(direct) -> void];
-// DEFAULT-NEXT:     fn %11 @use_vectors() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 v1: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn() -> vector<f32, 8>, abi=win64() -> direct>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 8>) -> void, abi=win64(direct) -> void>(%8, read<vector<f32, 8>>(%12));
-// DEFAULT-NEXT:         let %13 v2: vector<f32, 16> [storage=automatic] = call<vector<f32, 16>, signature=fn() -> vector<f32, 16>, abi=win64() -> direct>(%9);
-// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 16>) -> void, abi=win64(direct) -> void>(%10, read<vector<f32, 16>>(%13));
+// DEFAULT-NEXT:     fn %8 @get_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
+// DEFAULT-NEXT:     fn %9 @take_m256(%21 <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];
+// DEFAULT-NEXT:     fn %10 @get_m512() -> vector<f32, 16> [linkage=external] [abi=win64() -> direct];
+// DEFAULT-NEXT:     fn %11 @take_m512(%22 <unnamed>: vector<f32, 16>) -> void [linkage=external] [abi=win64(direct) -> void];
+// DEFAULT-NEXT:     fn %12 @use_vectors() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %13 v1: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn() -> vector<f32, 8>, abi=win64() -> direct>(%8);
+// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 8>) -> void, abi=win64(direct) -> void>(%9, read<vector<f32, 8>>(%13));
+// DEFAULT-NEXT:         let %14 v2: vector<f32, 16> [storage=automatic] = call<vector<f32, 16>, signature=fn() -> vector<f32, 16>, abi=win64() -> direct>(%10);
+// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 16>) -> void, abi=win64(direct) -> void>(%11, read<vector<f32, 16>>(%14));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @get_avx_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
-// DEFAULT-NEXT:     fn %15 @take_avx_m256(%22 <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];
-// DEFAULT-NEXT:     fn %16 @use_target_attr_vectors() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn() -> vector<f32, 8>, abi=win64() -> direct>(%14);
-// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 8>) -> void, abi=win64(direct) -> void>(%15, read<vector<f32, 8>>(%17));
+// DEFAULT-NEXT:     fn %15 @get_avx_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
+// DEFAULT-NEXT:     fn %16 @take_avx_m256(%23 <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];
+// DEFAULT-NEXT:     fn %17 @use_target_attr_vectors() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %18 v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn() -> vector<f32, 8>, abi=win64() -> direct>(%15);
+// DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 8>) -> void, abi=win64(direct) -> void>(%16, read<vector<f32, 8>>(%18));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

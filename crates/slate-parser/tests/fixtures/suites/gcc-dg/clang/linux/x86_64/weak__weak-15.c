@@ -71,18 +71,18 @@ char *user_d = &d[1];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     extern %0 a: array<i8, incomplete> [storage=static] [linkage=external] [weak];
 // DEFAULT-NEXT:     global %2 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %7 c: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %8 user_c: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%7) [linkage=external];
-// DEFAULT-NEXT:     extern %9 d: array<i8, incomplete> [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %10 user_d: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%9), const<i32>(1)))) [linkage=external];
+// DEFAULT-NEXT:     extern %8 c: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %9 user_c: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%8) [linkage=external];
+// DEFAULT-NEXT:     extern %10 d: array<i8, incomplete> [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %11 user_d: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%10), const<i32>(1)))) [linkage=external];
 // DEFAULT-NEXT:     fn %1 @user_a() -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %3 @b(%4 y: i32) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%2), read<i32>(%4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @user_b(%6 z: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%6));
+// DEFAULT-NEXT:     fn %6 @user_b(%7 z: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%7));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

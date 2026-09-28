@@ -55,28 +55,28 @@ int main() {
 // DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%3), read<complex<f64>>(%1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 z: complex<f64>) -> complex<f64> [linkage=external] [memory=read] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %6 @bar(%7 z: complex<f64>) -> complex<f64> [linkage=external] [memory=read] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<complex<f64>>(%1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 a: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %8 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %9 a: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %13
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%9, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), const<i32>(6))
+// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(6))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%14));
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%15));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>, ptr<i32>) -> void, abi=sysv64(native_c, scalar) -> void>(%2, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%5, complex_convert<complex<f64>, reason=arg>(mul<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%9))))), addr_of<ptr<i32>>(%8));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>, ptr<i32>) -> void, abi=sysv64(native_c, scalar) -> void>(%2, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%6, complex_convert<complex<f64>, reason=arg>(mul<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%10))))), addr_of<ptr<i32>>(%9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%7);
+// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%8);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -47,24 +47,24 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 __uint32_t = u32;
 // DEFAULT-NEXT:     type @type1 uint32_t = u32;
-// DEFAULT-NEXT:     global %3 values: array<u32, 3> [storage=static] = aggregate<array<u32, 3>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3))) [linkage=internal];
-// DEFAULT-NEXT:     global %4 aligned_values: array<u32, 3> [storage=static] [align=32] = aggregate<array<u32, 3>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(4)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(5)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6))) [linkage=internal];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 117, 32, 37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @update(%6 items: ptr<u32>) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%6), const<i32>(0));
-// DEFAULT-NEXT:         let %15: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%14)));
-// DEFAULT-NEXT:         let %16: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%15), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%14)), read<u32>(%16));
-// DEFAULT-NEXT:         return add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%6), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%6), const<i32>(2)))));
+// DEFAULT-NEXT:     global %4 values: array<u32, 3> [storage=static] = aggregate<array<u32, 3>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3))) [linkage=internal];
+// DEFAULT-NEXT:     global %5 aligned_values: array<u32, 3> [storage=static] [align=32] = aggregate<array<u32, 3>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(4)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(5)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6))) [linkage=internal];
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 117, 32, 37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @update(%7 items: ptr<u32>) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %15: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%7), const<i32>(0));
+// DEFAULT-NEXT:         let %16: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%15)));
+// DEFAULT-NEXT:         let %17: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%16), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%15)), read<u32>(%17));
+// DEFAULT-NEXT:         return add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%7), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%7), const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @middle(%8 items: ptr<array<u32, 3>>) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(3)>(deref(read<ptr<array<u32, 3>>>(%8))), const<i32>(1))));
+// DEFAULT-NEXT:     fn %8 @middle(%9 items: ptr<array<u32, 3>>) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(3)>(deref(read<ptr<array<u32, 3>>>(%9))), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 first: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%5, array_decay<ptr<u32>, length=Some(3)>(%3));
-// DEFAULT-NEXT:         let %11 second: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%5, array_decay<ptr<u32>, length=Some(3)>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), read<u32>(%10), read<u32>(%11), call<u32, signature=fn(ptr<array<u32, 3>>) -> u32>(%7, addr_of<ptr<array<u32, 3>>>(%3)));
+// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %11 first: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%6, array_decay<ptr<u32>, length=Some(3)>(%4));
+// DEFAULT-NEXT:         let %12 second: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%6, array_decay<ptr<u32>, length=Some(3)>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%14)), read<u32>(%11), read<u32>(%12), call<u32, signature=fn(ptr<array<u32, 3>>) -> u32>(%8, addr_of<ptr<array<u32, 3>>>(%4)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

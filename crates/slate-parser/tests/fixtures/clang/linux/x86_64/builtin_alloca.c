@@ -52,28 +52,28 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memset(%13 __s: ptr<void>, %14 __c: i32, %15 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %17 @__builtin_alloca(%16 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @const_alloca() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%17, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%4)), const<i32>(3), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%4), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%4), const<i32>(15)))))));
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @memset(%17 __s: ptr<void>, %18 __c: i32, %19 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %21 @__builtin_alloca(%20 <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %7 @const_alloca() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %8 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%6, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%8)), const<i32>(3), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%8), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%8), const<i32>(15)))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @dyn_alloca(%6 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%17, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%6)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%7)), const<i32>(7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%6))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%7), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%7), sub<i32, overflow=ub>(read<i32>(%6), const<i32>(1))))))));
+// DEFAULT-NEXT:     fn %9 @dyn_alloca(%10 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %11 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%6, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%11)), const<i32>(7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%10))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%11), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%11), sub<i32, overflow=ub>(read<i32>(%10), const<i32>(1))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @__builtin_alloca_uninitialized(%18 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %8 @uninitialized_alloca(%9 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%9)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%10)), const<i32>(9), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%9))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%10), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%10), sub<i32, overflow=ub>(read<i32>(%9), const<i32>(1))))))));
+// DEFAULT-NEXT:     fn %23 @__builtin_alloca_uninitialized(%22 <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %12 @uninitialized_alloca(%13 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %14 buf: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%23, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%13)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%6, pointer_cast<ptr<void>, reason=arg>(read<ptr<u8>>(%14)), const<i32>(9), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%13))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%14), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%14), sub<i32, overflow=ub>(read<i32>(%13), const<i32>(1))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%20)), call<i32, signature=fn() -> i32>(%3), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(10)), call<i32, signature=fn(i32) -> i32>(%8, const<i32>(12)));
+// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%24)), call<i32, signature=fn() -> i32>(%7), call<i32, signature=fn(i32) -> i32>(%9, const<i32>(10)), call<i32, signature=fn(i32) -> i32>(%12, const<i32>(12)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

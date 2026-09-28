@@ -92,29 +92,29 @@ int truth(void) { return !sign_extended; }
 // DEFAULT-NEXT:     fn %17 @narrow(%18 p: ptr<i32>) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return address_space_cast<ptr<i32, ptr32_sptr>, reason=return>(read<ptr<i32>>(%18));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @take(%31 p: ptr<i32, ptr32_sptr>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %20 @pass(%21 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32, ptr32_sptr>) -> void>(%19, address_space_cast<ptr<i32, ptr32_sptr>, reason=arg>(read<ptr<i32>>(%21)));
+// DEFAULT-NEXT:     fn %20 @take(%32 p: ptr<i32, ptr32_sptr>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %21 @pass(%22 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32, ptr32_sptr>) -> void>(%20, address_space_cast<ptr<i32, ptr32_sptr>, reason=arg>(read<ptr<i32>>(%22)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @swap_extension() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %23 @swap_extension() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<i32, ptr32_sptr>>(%1, address_space_cast<ptr<i32, ptr32_sptr>, reason=assign>(read<ptr<i32, ptr32_uptr>>(%3)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @deref() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %24 @deref() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32, ptr32_sptr>>(%1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @offset() -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %25 @offset() -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_offset<ptr<i32, ptr32_sptr>, subtract=false, element=i32, overflow=ub>(read<ptr<i32, ptr32_sptr>>(%1), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @to_integer() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %26 @to_integer() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_to_int<i64, reason=explicit>(read<ptr<i32, ptr32_uptr>>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @from_integer(%27 v: i64) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_ptr<ptr<i32, ptr32_sptr>, reason=explicit>(read<i64>(%27));
+// DEFAULT-NEXT:     fn %27 @from_integer(%28 v: i64) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_ptr<ptr<i32, ptr32_sptr>, reason=explicit>(read<i64>(%28));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @compare(%29 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<ptr<i32>>(read<ptr<i32>>(%29), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr32_sptr>>(%1))), eq<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%1), address_space_cast<ptr<i32, ptr32_sptr>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%3)))));
+// DEFAULT-NEXT:     fn %29 @compare(%30 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<ptr<i32>>(read<ptr<i32>>(%30), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr32_sptr>>(%1))), eq<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%1), address_space_cast<ptr<i32, ptr32_sptr>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%3)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @truth() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %31 @truth() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%1), null<ptr<i32, ptr32_sptr>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

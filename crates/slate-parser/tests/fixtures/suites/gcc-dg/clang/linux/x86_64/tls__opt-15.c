@@ -56,10 +56,10 @@ void init(void)
 // DEFAULT-NEXT:         field0 ver: i32;
 // DEFAULT-NEXT:         field1 s: @type0;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %3 m: @type1 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @memset(%5 s: ptr<void>, %6 c: i32, %7 n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @init() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(field1(%3))), const<i32>(0), const<u64>(4));
+// DEFAULT-NEXT:     global %6 m: @type1 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @memset(%8 s: ptr<void>, %9 c: i32, %10 n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %7 @init() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(field1(%6))), const<i32>(0), const<u64>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -68,26 +68,26 @@ int main(void) {
 // DEFAULT-NEXT:     type @type2 Dispatcher = struct {
 // DEFAULT-NEXT:         field0 run: ptr<fn(i32) -> @type0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %6 lastCode: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=internal];
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @succeed(%8 x: i32) -> @type0 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%6, add<i32, overflow=ub>(read<i32>(%8), const<i32>(100)));
+// DEFAULT-NEXT:     global %8 lastCode: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=internal];
+// DEFAULT-NEXT:     global %18 .str18: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @succeed(%10 x: i32) -> @type0 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(%8, add<i32, overflow=ub>(read<i32>(%10), const<i32>(100)));
 // DEFAULT-NEXT:         return int_to_enum<@type0, reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @fail(%10 x: i32) -> @type0 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%6, add<i32, overflow=ub>(read<i32>(%10), const<i32>(200)));
+// DEFAULT-NEXT:     fn %11 @fail(%12 x: i32) -> @type0 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(%8, add<i32, overflow=ub>(read<i32>(%12), const<i32>(200)));
 // DEFAULT-NEXT:         return int_to_enum<@type0, reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 d: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> @type0>>(field0(%12), function_decay<ptr<fn(i32) -> @type0>>(%7));
-// DEFAULT-NEXT:         call<@type0, signature=fn(i32) -> @type0>(read<ptr<fn(i32) -> @type0>>(field0(%12)), const<i32>(1));
-// DEFAULT-NEXT:         let %13 a: i32 [storage=automatic] = read<i32>(%6);
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> @type0>>(field0(%12), function_decay<ptr<fn(i32) -> @type0>>(%9));
-// DEFAULT-NEXT:         call<@type0, signature=fn(i32) -> @type0>(read<ptr<fn(i32) -> @type0>>(field0(%12)), const<i32>(2));
-// DEFAULT-NEXT:         let %14 b: i32 [storage=automatic] = read<i32>(%6);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%16)), read<i32>(%13), read<i32>(%14));
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %14 d: @type2 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> @type0>>(field0(%14), function_decay<ptr<fn(i32) -> @type0>>(%9));
+// DEFAULT-NEXT:         call<@type0, signature=fn(i32) -> @type0>(read<ptr<fn(i32) -> @type0>>(field0(%14)), const<i32>(1));
+// DEFAULT-NEXT:         let %15 a: i32 [storage=automatic] = read<i32>(%8);
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> @type0>>(field0(%14), function_decay<ptr<fn(i32) -> @type0>>(%11));
+// DEFAULT-NEXT:         call<@type0, signature=fn(i32) -> @type0>(read<ptr<fn(i32) -> @type0>>(field0(%14)), const<i32>(2));
+// DEFAULT-NEXT:         let %16 b: i32 [storage=automatic] = read<i32>(%8);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)), read<i32>(%15), read<i32>(%16));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

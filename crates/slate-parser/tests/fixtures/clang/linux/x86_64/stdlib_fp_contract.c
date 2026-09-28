@@ -49,21 +49,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 x: volatile f64 [storage=automatic] = const<f64>(1.9999999999999998);
-// DEFAULT-NEXT:         let %3 y: f64 [storage=automatic] = read<f64, volatile>(%2);
-// DEFAULT-NEXT:         let %4 z: f64 [storage=automatic] = neg<f64>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%2), read<f64, volatile>(%2)));
-// DEFAULT-NEXT:         let %5 contracted: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %6 uncontracted: f64 [storage=automatic];
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 x: volatile f64 [storage=automatic] = const<f64>(1.9999999999999998);
+// DEFAULT-NEXT:         let %4 y: f64 [storage=automatic] = read<f64, volatile>(%3);
+// DEFAULT-NEXT:         let %5 z: f64 [storage=automatic] = neg<f64>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%3), read<f64, volatile>(%3)));
+// DEFAULT-NEXT:         let %6 contracted: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %7 uncontracted: f64 [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<f64>(%5, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
+// DEFAULT-NEXT:             write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%3), read<f64>(%4)), read<f64>(%5)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore, contract=off>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=off>(read<f64, volatile>(%2), read<f64>(%3)), read<f64>(%4)));
+// DEFAULT-NEXT:             write<f64>(%7, add<f64, rounding=nearest_even, exceptions=ignore, contract=off>(mul<f64, rounding=nearest_even, exceptions=ignore, contract=off>(read<f64, volatile>(%3), read<f64>(%4)), read<f64>(%5)));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%8)), read<f64>(%5), read<f64>(%6));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)), read<f64>(%6), read<f64>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

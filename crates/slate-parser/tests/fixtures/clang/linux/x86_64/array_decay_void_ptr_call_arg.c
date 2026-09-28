@@ -37,15 +37,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @set_data(%2 ptr: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%2));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), read<ptr<i8>>(%3));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @set_data(%3 ptr: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %4 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%3));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), read<ptr<i8>>(%4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 text: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 6>>>(%5)));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 text: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%2, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<array<i8, 6>>>(%6)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

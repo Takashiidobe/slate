@@ -145,22 +145,22 @@ __statfs64 (const char *file, struct statfs64 *buf)
 // DEFAULT-NEXT:         field8 f_namelen: i32;
 // DEFAULT-NEXT:         field9 f_spare: array<i32, 6>;
 // DEFAULT-NEXT:     } [size=88, align=8, offsets=[0, 4, 8, 16, 24, 32, 40, 48, 56, 60]];
-// DEFAULT-NEXT:     fn %15 @memcpy(%23 __dest: ptr<void> [restrict], %24 __src: ptr<const void> [restrict], %25 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %18 @__statfs(%26 __file: ptr<const i8>, %27 __buf: ptr<@type15>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__statfs64(%20 file: ptr<const i8>, %21 buf: ptr<@type16>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %22 buf32: @type15 [storage=automatic];
-// DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<const i8>, ptr<@type15>) -> i32>(%18, read<ptr<const i8>>(%20), addr_of<ptr<@type15>>(%22)), const<i32>(0))
+// DEFAULT-NEXT:     fn %18 @memcpy(%30 __dest: ptr<void> [restrict], %31 __src: ptr<const void> [restrict], %32 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %23 @__statfs(%33 __file: ptr<const i8>, %34 __buf: ptr<@type15>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %26 @__statfs64(%27 file: ptr<const i8>, %28 buf: ptr<@type16>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %29 buf32: @type15 [storage=automatic];
+// DEFAULT-NEXT:         if lt<i32>(call<i32, signature=fn(ptr<const i8>, ptr<@type15>) -> i32>(%23, read<ptr<const i8>>(%27), addr_of<ptr<@type15>>(%29)), const<i32>(0))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type16>>(%21))), read<i32>(field0(%22)));
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type16>>(%21))), read<i32>(field1(%22)));
-// DEFAULT-NEXT:         write<u64>(field2(deref(read<ptr<@type16>>(%21))), read<u64>(field2(%22)));
-// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type16>>(%21))), read<u64>(field3(%22)));
-// DEFAULT-NEXT:         write<u64>(field4(deref(read<ptr<@type16>>(%21))), read<u64>(field4(%22)));
-// DEFAULT-NEXT:         write<u64>(field5(deref(read<ptr<@type16>>(%21))), read<u64>(field5(%22)));
-// DEFAULT-NEXT:         write<u64>(field6(deref(read<ptr<@type16>>(%21))), read<u64>(field6(%22)));
-// DEFAULT-NEXT:         write<@type5>(field7(deref(read<ptr<@type16>>(%21))), copy<@type5, reason=assign>(read<@type5>(field7(%22))));
-// DEFAULT-NEXT:         write<i32>(field8(deref(read<ptr<@type16>>(%21))), read<i32>(field8(%22)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%15, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(deref(read<ptr<@type16>>(%21))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(%22))), const<u64>(24));
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type16>>(%28))), read<i32>(field0(%29)));
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type16>>(%28))), read<i32>(field1(%29)));
+// DEFAULT-NEXT:         write<u64>(field2(deref(read<ptr<@type16>>(%28))), read<u64>(field2(%29)));
+// DEFAULT-NEXT:         write<u64>(field3(deref(read<ptr<@type16>>(%28))), read<u64>(field3(%29)));
+// DEFAULT-NEXT:         write<u64>(field4(deref(read<ptr<@type16>>(%28))), read<u64>(field4(%29)));
+// DEFAULT-NEXT:         write<u64>(field5(deref(read<ptr<@type16>>(%28))), read<u64>(field5(%29)));
+// DEFAULT-NEXT:         write<u64>(field6(deref(read<ptr<@type16>>(%28))), read<u64>(field6(%29)));
+// DEFAULT-NEXT:         write<@type5>(field7(deref(read<ptr<@type16>>(%28))), copy<@type5, reason=assign>(read<@type5>(field7(%29))));
+// DEFAULT-NEXT:         write<i32>(field8(deref(read<ptr<@type16>>(%28))), read<i32>(field8(%29)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%18, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(deref(read<ptr<@type16>>(%28))))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i32>, length=Some(6)>(field9(%29))), const<u64>(24));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

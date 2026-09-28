@@ -40,6 +40,6 @@ void f(int *restrict a[2], restrict ipa b, int *restrict c[restrict]);
 // DEFAULT-NEXT:     type @type0 ipa = array<ptr<i32>, 2>;
 // DEFAULT-NEXT:     global %1 x: array<ptr<i32>, 2> [storage=static] [restrict] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %2 y: array<ptr<i32>, 2> [storage=static] [restrict] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f(%4 a: ptr<ptr<i32>> [array=2], %5 b: ptr<ptr<i32>> [array=2], %6 c: ptr<ptr<i32>> [restrict]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %6 @f(%7 a: ptr<ptr<i32>> [array=2], %8 b: ptr<ptr<i32>> [array=2], %9 c: ptr<ptr<i32>> [restrict]) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

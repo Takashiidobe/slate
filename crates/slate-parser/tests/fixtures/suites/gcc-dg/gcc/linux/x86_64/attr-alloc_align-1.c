@@ -64,54 +64,54 @@ test2 (int len, int align)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @my_alloc1(%20 len: i32, %21 align: i32) -> ptr<f64> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @my_alloc2(%22 align: i32, %23 len: i32) -> ptr<f64> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test1(%3 len: i32, %4 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 o1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%0, read<i32>(%3), const<i32>(32));
-// DEFAULT-NEXT:         let %7 o2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%0, read<i32>(%3), const<i32>(32));
-// DEFAULT-NEXT:         let %8 o3: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%0, read<i32>(%3), const<i32>(32));
-// DEFAULT-NEXT:         let %9 i1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%0, read<i32>(%3), const<i32>(32));
-// DEFAULT-NEXT:         let %10 i2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%0, read<i32>(%3), read<i32>(%4));
-// DEFAULT-NEXT:         for %24
+// DEFAULT-NEXT:     fn %2 @my_alloc1(%24 len: i32, %25 align: i32) -> ptr<f64> [linkage=external];
+// DEFAULT-NEXT:     fn %5 @my_alloc2(%26 align: i32, %27 len: i32) -> ptr<f64> [linkage=external];
+// DEFAULT-NEXT:     fn %6 @test1(%7 len: i32, %8 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %10 o1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%2, read<i32>(%7), const<i32>(32));
+// DEFAULT-NEXT:         let %11 o2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%2, read<i32>(%7), const<i32>(32));
+// DEFAULT-NEXT:         let %12 o3: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%2, read<i32>(%7), const<i32>(32));
+// DEFAULT-NEXT:         let %13 i1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%2, read<i32>(%7), const<i32>(32));
+// DEFAULT-NEXT:         let %14 i2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%2, read<i32>(%7), read<i32>(%8));
+// DEFAULT-NEXT:         for %28
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), read<i32>(%3))
+// DEFAULT-NEXT:                 write<i32>(%9, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), read<i32>(%7))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %26: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %27: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%26), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%27));
+// DEFAULT-NEXT:                 let %30: i32 [synthetic] = read<i32>(%9);
+// DEFAULT-NEXT:                 let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%31));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%6), read<i32>(%5))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%9), read<i32>(%5)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%10), read<i32>(%5))))));
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%7), read<i32>(%5))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%9), read<i32>(%5)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%10), read<i32>(%5))))));
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%8), read<i32>(%5))), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%9), read<i32>(%5)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%10), read<i32>(%5))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%10), read<i32>(%9))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%13), read<i32>(%9)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%14), read<i32>(%9))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), read<i32>(%9))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%13), read<i32>(%9)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%14), read<i32>(%9))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%12), read<i32>(%9))), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%13), read<i32>(%9)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%14), read<i32>(%9))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test2(%12 len: i32, %13 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %14 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 o1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%1, const<i32>(32), read<i32>(%12));
-// DEFAULT-NEXT:         let %16 o2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%1, const<i32>(32), read<i32>(%12));
-// DEFAULT-NEXT:         let %17 o3: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%1, const<i32>(32), read<i32>(%12));
-// DEFAULT-NEXT:         let %18 i1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%1, const<i32>(32), read<i32>(%12));
-// DEFAULT-NEXT:         let %19 i2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%1, read<i32>(%13), read<i32>(%12));
-// DEFAULT-NEXT:         for %25
+// DEFAULT-NEXT:     fn %15 @test2(%16 len: i32, %17 align: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %18 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %19 o1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%5, const<i32>(32), read<i32>(%16));
+// DEFAULT-NEXT:         let %20 o2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%5, const<i32>(32), read<i32>(%16));
+// DEFAULT-NEXT:         let %21 o3: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%5, const<i32>(32), read<i32>(%16));
+// DEFAULT-NEXT:         let %22 i1: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%5, const<i32>(32), read<i32>(%16));
+// DEFAULT-NEXT:         let %23 i2: ptr<f64> [storage=automatic] [restrict] = call<ptr<f64>, signature=fn(i32, i32) -> ptr<f64>>(%5, read<i32>(%17), read<i32>(%16));
+// DEFAULT-NEXT:         for %29
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%14, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%14), read<i32>(%12))
+// DEFAULT-NEXT:                 write<i32>(%18, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%18), read<i32>(%16))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                 let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%14, read<i32>(%29));
+// DEFAULT-NEXT:                 let %32: i32 [synthetic] = read<i32>(%18);
+// DEFAULT-NEXT:                 let %33: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%32), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%18, read<i32>(%33));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%15), read<i32>(%14))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%18), read<i32>(%14)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%19), read<i32>(%14))))));
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), read<i32>(%14))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%18), read<i32>(%14)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%19), read<i32>(%14))))));
-// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%17), read<i32>(%14))), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%18), read<i32>(%14)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%19), read<i32>(%14))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%19), read<i32>(%18))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%22), read<i32>(%18)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%23), read<i32>(%18))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%20), read<i32>(%18))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%22), read<i32>(%18)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%23), read<i32>(%18))))));
+// DEFAULT-NEXT:                     write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%21), read<i32>(%18))), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%22), read<i32>(%18)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%23), read<i32>(%18))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

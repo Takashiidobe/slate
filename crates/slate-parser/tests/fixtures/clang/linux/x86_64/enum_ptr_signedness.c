@@ -56,17 +56,17 @@ int main(void) {
 // DEFAULT-NEXT:         field0 start: ptr<@type0>;
 // DEFAULT-NEXT:         field1 top: ptr<@type0>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %13 .str13: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 data: array<@type0, 3> [storage=automatic] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))), index1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))), index2 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         let %9 p: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%9), array_decay<ptr<@type0>, length=Some(3)>(%8));
-// DEFAULT-NEXT:         write<ptr<@type0>>(field1(%9), ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(3)>(%8), const<i32>(3)));
-// DEFAULT-NEXT:         let %10 c: @type0 [storage=automatic] = read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(field0(%9)), const<i32>(1))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(%10))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(field1(%9)), read<ptr<@type0>>(field0(%9)))));
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %9 data: array<@type0, 3> [storage=automatic] = aggregate<array<@type0, 3>, zero_fill=false>(index0 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))), index1 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))), index2 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         let %10 p: @type2 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%10), array_decay<ptr<@type0>, length=Some(3)>(%9));
+// DEFAULT-NEXT:         write<ptr<@type0>>(field1(%10), ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(3)>(%9), const<i32>(3)));
+// DEFAULT-NEXT:         let %11 c: @type0 [storage=automatic] = read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(field0(%10)), const<i32>(1))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(%11))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(field1(%10)), read<ptr<@type0>>(field0(%10)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -58,17 +58,17 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: @type0;
 // DEFAULT-NEXT:         field1 z: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 o: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(field0(%4)), const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(field1(field0(%4)), const<i32>(4));
-// DEFAULT-NEXT:         write<i32>(field1(%4), const<i32>(5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(%4))), read<i32>(field1(field0(%4)))), read<i32>(field1(%4))));
-// DEFAULT-NEXT:         let %5 init: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), field1 = const<i32>(3));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(%5))), read<i32>(field1(field0(%5)))), read<i32>(field1(%5))));
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %5 o: @type1 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(field0(%5)), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(field1(field0(%5)), const<i32>(4));
+// DEFAULT-NEXT:         write<i32>(field1(%5), const<i32>(5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(%5))), read<i32>(field1(field0(%5)))), read<i32>(field1(%5))));
+// DEFAULT-NEXT:         let %6 init: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), field1 = const<i32>(3));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(%6))), read<i32>(field1(field0(%6)))), read<i32>(field1(%6))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

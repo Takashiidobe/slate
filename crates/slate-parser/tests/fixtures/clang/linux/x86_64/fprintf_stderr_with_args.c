@@ -42,10 +42,10 @@ int main(void) {
 // DEFAULT-NEXT:     type @type7 _IO_codecvt = struct incomplete;
 // DEFAULT-NEXT:     type @type8 _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     extern %9 stderr: ptr<@type3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 114, 114, 111, 114, 58, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %10 @fprintf(%12 __stream: ptr<@type3> [restrict], %13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>, ptr<const i8>, ...) -> i32>(%10, read<ptr<@type3>>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%14)), const<i32>(42));
+// DEFAULT-NEXT:     global %16 .str16: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 114, 114, 111, 114, 58, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @fprintf(%14 __stream: ptr<@type3> [restrict], %15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>, ptr<const i8>, ...) -> i32>(%12, read<ptr<@type3>>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%16)), const<i32>(42));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

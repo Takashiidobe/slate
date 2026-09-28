@@ -65,18 +65,18 @@ int main(void) {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 value: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field0(%5), const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(field0(field1(%5)), const<i32>(31));
-// DEFAULT-NEXT:         write<i32>(field0(field2(%5)), const<i32>(37));
-// DEFAULT-NEXT:         write<i32>(field1(field2(%5)), const<i32>(41));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%7)), read<i32>(field0(%5)), read<i32>(field0(field1(%5))), read<i32>(field0(field2(%5))), read<i32>(field1(field2(%5))), const<u64>(16));
-// DEFAULT-NEXT:         write<f32>(field1(field1(%5)), const<f32>(2.5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(field1(field1(%5)))));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 value: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(field0(field1(%6)), const<i32>(31));
+// DEFAULT-NEXT:         write<i32>(field0(field2(%6)), const<i32>(37));
+// DEFAULT-NEXT:         write<i32>(field1(field2(%6)), const<i32>(41));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%8)), read<i32>(field0(%6)), read<i32>(field0(field1(%6))), read<i32>(field0(field2(%6))), read<i32>(field1(field2(%6))), const<u64>(16));
+// DEFAULT-NEXT:         write<f32>(field1(field1(%6)), const<f32>(2.5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(field1(field1(%6)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

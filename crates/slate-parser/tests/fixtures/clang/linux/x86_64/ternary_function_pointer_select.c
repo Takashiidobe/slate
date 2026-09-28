@@ -46,21 +46,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 BinaryOp = ptr<fn(i32, i32) -> i32>;
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @add(%3 a: i32, %4 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), read<i32>(%4));
+// DEFAULT-NEXT:     global %17 .str17: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @add(%4 a: i32, %5 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%4), read<i32>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @sub(%6 a: i32, %7 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%6), read<i32>(%7));
+// DEFAULT-NEXT:     fn %6 @sub(%7 a: i32, %8 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%7), read<i32>(%8));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @apply(%9 useAdd: i32, %10 a: i32, %11 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%9), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%2), function_decay<ptr<fn(i32, i32) -> i32>>(%5)), read<i32>(%10), read<i32>(%11));
+// DEFAULT-NEXT:     fn %9 @apply(%10 useAdd: i32, %11 a: i32, %12 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%10), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%3), function_decay<ptr<fn(i32, i32) -> i32>>(%6)), read<i32>(%11), read<i32>(%12));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 useAdd: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %14 op: ptr<fn(i32, i32) -> i32> [storage=automatic] = conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%13), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%2), function_decay<ptr<fn(i32, i32) -> i32>>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%16)), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%14), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%8, const<i32>(0), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%8, const<i32>(1), const<i32>(4), const<i32>(4)), call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%13), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%5), function_decay<ptr<fn(i32, i32) -> i32>>(%2)), const<i32>(9), const<i32>(2)));
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %14 useAdd: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %15 op: ptr<fn(i32, i32) -> i32> [storage=automatic] = conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%14), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%3), function_decay<ptr<fn(i32, i32) -> i32>>(%6));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%17)), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%15), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%9, const<i32>(0), const<i32>(10), const<i32>(3)), call<i32, signature=fn(i32, i32, i32) -> i32>(%9, const<i32>(1), const<i32>(4), const<i32>(4)), call<i32, signature=fn(i32, i32) -> i32>(conditional<ptr<fn(i32, i32) -> i32>>(ne<i32>(read<i32>(%14), const<i32>(0)), function_decay<ptr<fn(i32, i32) -> i32>>(%6), function_decay<ptr<fn(i32, i32) -> i32>>(%3)), const<i32>(9), const<i32>(2)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

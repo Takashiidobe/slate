@@ -51,9 +51,9 @@ void c_foo(int n, double *y);
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 omp_interop_t = ptr<void>;
-// DEFAULT-NEXT:     fn %1 @win_foov(%5 n: i32, %6 y: ptr<f64>, %7 interop_obj: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @win_foo(%8 n: i32, %9 y: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @c_foov(%10 n: i32, %11 y: ptr<f64>, %12 interop_obj: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @c_foo(%13 n: i32, %14 y: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @win_foov(%15 n: i32, %16 y: ptr<f64>, %17 interop_obj: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @win_foo(%18 n: i32, %19 y: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %11 @c_foov(%20 n: i32, %21 y: ptr<f64>, %22 interop_obj: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %14 @c_foo(%23 n: i32, %24 y: ptr<f64>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

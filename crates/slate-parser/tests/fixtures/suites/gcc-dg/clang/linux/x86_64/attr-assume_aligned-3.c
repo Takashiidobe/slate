@@ -48,17 +48,17 @@ test2 (int len)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @my_alloc1(%10 len: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @my_alloc2(%11 len: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test1(%3 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%0, read<i32>(%3));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%5)), widen<i64, reason=usual_arith>(const<i32>(31))));
+// DEFAULT-NEXT:     fn %1 @my_alloc1(%12 len: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %3 @my_alloc2(%13 len: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %4 @test1(%5 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %7 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%1, read<i32>(%5));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%7)), widen<i64, reason=usual_arith>(const<i32>(31))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test2(%7 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%1, read<i32>(%7));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i64>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%9)), widen<i64, reason=usual_arith>(const<i32>(31))), widen<i64, reason=usual_arith>(const<i32>(4))));
+// DEFAULT-NEXT:     fn %8 @test2(%9 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %11 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%3, read<i32>(%9));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i64>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%11)), widen<i64, reason=usual_arith>(const<i32>(31))), widen<i64, reason=usual_arith>(const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

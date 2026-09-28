@@ -51,12 +51,12 @@ void untouched(void) {
 // IR-NEXT:     global %4 both: volatile atomic i32 [storage=static] [linkage=external];
 // IR-NEXT:     global %5 read_only: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
 // IR-NEXT:     global %6 restricted: ptr<i32> [storage=static] [restrict] [linkage=external];
-// IR-NEXT:     fn %7 @parameters(%13 a: atomic i32, %14 v: volatile i32, %15 c: i32 [const], %16 r: ptr<i32> [restrict]) -> void [linkage=external];
-// IR-NEXT:     fn %8 @untouched() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %9 local_record: atomic @type0 [storage=automatic];
-// IR-NEXT:         let %10 local_scalar: atomic i32 [storage=automatic];
-// IR-NEXT:         let %11 local_volatile: volatile i32 [storage=automatic];
-// IR-NEXT:         let %12 plain: i32 [storage=automatic];
+// IR-NEXT:     fn %11 @parameters(%17 a: atomic i32, %18 v: volatile i32, %19 c: i32 [const], %20 r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %12 @untouched() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %13 local_record: atomic @type0 [storage=automatic];
+// IR-NEXT:         let %14 local_scalar: atomic i32 [storage=automatic];
+// IR-NEXT:         let %15 local_volatile: volatile i32 [storage=automatic];
+// IR-NEXT:         let %16 plain: i32 [storage=automatic];
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

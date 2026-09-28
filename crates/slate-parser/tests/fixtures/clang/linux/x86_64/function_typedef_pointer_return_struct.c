@@ -50,20 +50,20 @@ int main(void) {
 // DEFAULT-NEXT:     type @type1 Callback = struct {
 // DEFAULT-NEXT:         field0 handler: ptr<fn(ptr<i32>) -> ptr<i32>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @add_one(%4 value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10: ptr<i32> [synthetic] = read<ptr<i32>>(%4);
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%10)));
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%10)), read<i32>(%12));
-// DEFAULT-NEXT:         return read<ptr<i32>>(%4);
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @add_one(%5 value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %11: ptr<i32> [synthetic] = read<ptr<i32>>(%5);
+// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%11)));
+// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%11)), read<i32>(%13));
+// DEFAULT-NEXT:         return read<ptr<i32>>(%5);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 value: i32 [storage=automatic] = const<i32>(41);
-// DEFAULT-NEXT:         let %7 callback: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<fn(ptr<i32>) -> ptr<i32>>>);
-// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%7), function_decay<ptr<fn(ptr<i32>) -> ptr<i32>>>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%7)), addr_of<ptr<i32>>(%6)))));
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 value: i32 [storage=automatic] = const<i32>(41);
+// DEFAULT-NEXT:         let %8 callback: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<fn(ptr<i32>) -> ptr<i32>>>);
+// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%8), function_decay<ptr<fn(ptr<i32>) -> ptr<i32>>>(%4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%8)), addr_of<ptr<i32>>(%7)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

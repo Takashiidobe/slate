@@ -45,10 +45,10 @@ int main (int argc, const char * argv[])
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 wchar_t = u16;
-// DEFAULT-NEXT:     global %6 .str6: array<u16, 18> [storage=static] = code_units<array<u16, 18>>([84, 104, 105, 115, 32, 105, 115, 32, 115, 111, 109, 101, 32, 116, 101, 120, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @foo(%5 p: ptr<const u16>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main(%3 argc: i32, %4 argv: ptr<ptr<const i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const u16>) -> void>(%1, pointer_cast<ptr<const u16>, reason=arg>(array_decay<ptr<u16>, length=Some(18)>(%6)));
+// DEFAULT-NEXT:     global %7 .str7: array<u16, 18> [storage=static] = code_units<array<u16, 18>>([84, 104, 105, 115, 32, 105, 115, 32, 115, 111, 109, 101, 32, 116, 101, 120, 116, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @foo(%6 p: ptr<const u16>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main(%4 argc: i32, %5 argv: ptr<ptr<const i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const u16>) -> void>(%2, pointer_cast<ptr<const u16>, reason=arg>(array_decay<ptr<u16>, length=Some(18)>(%7)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

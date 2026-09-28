@@ -44,13 +44,13 @@ int main(void) {
 // DEFAULT-NEXT:     type @type7 _IO_codecvt = struct incomplete;
 // DEFAULT-NEXT:     type @type8 _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     extern %9 stdout: ptr<@type3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 .str17: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([118, 97, 108, 117, 101, 58, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([100, 111, 110, 101, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %10 @fprintf(%13 __stream: ptr<@type3> [restrict], %14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @fputs(%15 __s: ptr<const i8> [restrict], %16 __stream: ptr<@type3> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>, ptr<const i8>, ...) -> i32>(%10, read<ptr<@type3>>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%17)), const<i32>(7));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%18)), read<ptr<@type3>>(%9));
+// DEFAULT-NEXT:     global %21 .str21: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([118, 97, 108, 117, 101, 58, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %22 .str22: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([100, 111, 110, 101, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @fprintf(%17 __stream: ptr<@type3> [restrict], %18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %15 @fputs(%19 __s: ptr<const i8> [restrict], %20 __stream: ptr<@type3> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>, ptr<const i8>, ...) -> i32>(%12, read<ptr<@type3>>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%21)), const<i32>(7));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%22)), read<ptr<@type3>>(%9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

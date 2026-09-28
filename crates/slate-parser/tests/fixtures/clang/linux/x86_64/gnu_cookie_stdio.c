@@ -100,62 +100,62 @@ int main(void) {
 // DEFAULT-NEXT:         field1 length: u64;
 // DEFAULT-NEXT:         field2 closed: i32;
 // DEFAULT-NEXT:     } [size=48, align=8, offsets=[0, 32, 40]];
-// DEFAULT-NEXT:     global %52 .str52: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([119, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %53 .str53: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 115, 58, 37, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %54 .str54: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([99, 111, 111, 107, 105, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %55 .str55: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([99, 111, 111, 107, 105, 101, 58, 55, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %56 .str56: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %18 @fclose(%39 __stream: ptr<@type5>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @fopencookie(%40 __magic_cookie: ptr<void> [restrict], %41 __modes: ptr<const i8> [restrict], %42 __io_funcs: @type15) -> ptr<@type5> [linkage=external] [abi=sysv64(scalar, scalar, native_c) -> scalar];
-// DEFAULT-NEXT:     fn %20 @fprintf(%43 __stream: ptr<@type5> [restrict], %44 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %21 @printf(%45 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @memcpy(%46 __dest: ptr<void> [restrict], %47 __src: ptr<const void> [restrict], %48 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %23 @memcmp(%49 __s1: ptr<const void>, %50 __s2: ptr<const void>, %51 __n: u64) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %25 @gnu_cookie_write(%26 state: ptr<void>, %27 buffer: ptr<const i8>, %28 size: u64) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %29 cookie: ptr<@type18> [storage=automatic] = pointer_cast<ptr<@type18>, reason=assign>(read<ptr<void>>(%26));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%22, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(deref(read<ptr<@type18>>(%29)))), read<u64>(field1(deref(read<ptr<@type18>>(%29)))))), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%27)), read<u64>(%28));
-// DEFAULT-NEXT:         let %57: ptr<@type18> [synthetic] = read<ptr<@type18>>(%29);
-// DEFAULT-NEXT:         let %58: u64 [synthetic] = read<u64>(field1(deref(read<ptr<@type18>>(%57))));
-// DEFAULT-NEXT:         let %59: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%58), read<u64>(%28));
-// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type18>>(%57))), read<u64>(%59));
-// DEFAULT-NEXT:         return reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%28));
+// DEFAULT-NEXT:     global %75 .str75: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([119, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %76 .str76: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 115, 58, 37, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %77 .str77: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([99, 111, 111, 107, 105, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %78 .str78: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([99, 111, 111, 107, 105, 101, 58, 55, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %79 .str79: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %29 @fclose(%62 __stream: ptr<@type5>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %33 @fopencookie(%63 __magic_cookie: ptr<void> [restrict], %64 __modes: ptr<const i8> [restrict], %65 __io_funcs: @type15) -> ptr<@type5> [linkage=external] [abi=sysv64(scalar, scalar, native_c) -> scalar];
+// DEFAULT-NEXT:     fn %36 @fprintf(%66 __stream: ptr<@type5> [restrict], %67 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %38 @printf(%68 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %42 @memcpy(%69 __dest: ptr<void> [restrict], %70 __src: ptr<const void> [restrict], %71 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %46 @memcmp(%72 __s1: ptr<const void>, %73 __s2: ptr<const void>, %74 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %48 @gnu_cookie_write(%49 state: ptr<void>, %50 buffer: ptr<const i8>, %51 size: u64) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %52 cookie: ptr<@type18> [storage=automatic] = pointer_cast<ptr<@type18>, reason=assign>(read<ptr<void>>(%49));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%42, pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(deref(read<ptr<@type18>>(%52)))), read<u64>(field1(deref(read<ptr<@type18>>(%52)))))), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%50)), read<u64>(%51));
+// DEFAULT-NEXT:         let %80: ptr<@type18> [synthetic] = read<ptr<@type18>>(%52);
+// DEFAULT-NEXT:         let %81: u64 [synthetic] = read<u64>(field1(deref(read<ptr<@type18>>(%80))));
+// DEFAULT-NEXT:         let %82: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%81), read<u64>(%51));
+// DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type18>>(%80))), read<u64>(%82));
+// DEFAULT-NEXT:         return reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%51));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @gnu_cookie_close(%31 state: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %32 cookie: ptr<@type18> [storage=automatic] = pointer_cast<ptr<@type18>, reason=assign>(read<ptr<void>>(%31));
-// DEFAULT-NEXT:         write<i32>(field2(deref(read<ptr<@type18>>(%32))), const<i32>(1));
+// DEFAULT-NEXT:     fn %53 @gnu_cookie_close(%54 state: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %55 cookie: ptr<@type18> [storage=automatic] = pointer_cast<ptr<@type18>, reason=assign>(read<ptr<void>>(%54));
+// DEFAULT-NEXT:         write<i32>(field2(deref(read<ptr<@type18>>(%55))), const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @gnu_cookie_stdio() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %34 cookie: @type18 [storage=automatic] = aggregate<@type18, zero_fill=true>();
-// DEFAULT-NEXT:         let %35 functions: @type15 [storage=automatic] = aggregate<@type15, zero_fill=true>();
-// DEFAULT-NEXT:         let %36 stream: ptr<@type5> [storage=automatic];
-// DEFAULT-NEXT:         let %37 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(field1(%35), function_decay<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(%25));
-// DEFAULT-NEXT:         write<ptr<fn(ptr<void>) -> i32>>(field3(%35), function_decay<ptr<fn(ptr<void>) -> i32>>(%30));
-// DEFAULT-NEXT:         write<ptr<@type5>>(%36, call<ptr<@type5>, signature=fn(ptr<void>, ptr<const i8>, @type15) -> ptr<@type5>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%19, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type18>>(%34)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%52)), copy<@type15, reason=arg>(read<@type15>(%35))));
-// DEFAULT-NEXT:         call<ptr<@type5>, signature=fn(ptr<void>, ptr<const i8>, @type15) -> ptr<@type5>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%19, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type18>>(%34)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%52)), copy<@type15, reason=arg>(read<@type15>(%35)));
-// DEFAULT-NEXT:         let %60: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %61: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%60), from_bool<i32, reason=promotion>(ne<ptr<@type5>>(read<ptr<@type5>>(%36), null<ptr<@type5>>)));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%61));
-// DEFAULT-NEXT:         let %62: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %63: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%62), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, ...) -> i32>(%20, read<ptr<@type5>>(%36), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%53)), array_decay<ptr<i8>, length=Some(7)>(%54), const<i32>(7)), const<i32>(8))));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%63));
-// DEFAULT-NEXT:         let %64: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %65: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%64), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type5>) -> i32>(%18, read<ptr<@type5>>(%36)), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%65));
-// DEFAULT-NEXT:         let %66: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %67: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%66), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(field2(%34)), const<i32>(1))));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%67));
-// DEFAULT-NEXT:         let %68: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %69: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%68), from_bool<i32, reason=promotion>(eq<u64>(read<u64>(field1(%34)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%69));
-// DEFAULT-NEXT:         let %70: i32 [synthetic] = read<i32>(%37);
-// DEFAULT-NEXT:         let %71: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%70), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%23, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(32)>(field0(%34))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%55)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%37, read<i32>(%71));
-// DEFAULT-NEXT:         return read<i32>(%37);
+// DEFAULT-NEXT:     fn %56 @gnu_cookie_stdio() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %57 cookie: @type18 [storage=automatic] = aggregate<@type18, zero_fill=true>();
+// DEFAULT-NEXT:         let %58 functions: @type15 [storage=automatic] = aggregate<@type15, zero_fill=true>();
+// DEFAULT-NEXT:         let %59 stream: ptr<@type5> [storage=automatic];
+// DEFAULT-NEXT:         let %60 total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         write<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(field1(%58), function_decay<ptr<fn(ptr<void>, ptr<const i8>, u64) -> i64>>(%48));
+// DEFAULT-NEXT:         write<ptr<fn(ptr<void>) -> i32>>(field3(%58), function_decay<ptr<fn(ptr<void>) -> i32>>(%53));
+// DEFAULT-NEXT:         write<ptr<@type5>>(%59, call<ptr<@type5>, signature=fn(ptr<void>, ptr<const i8>, @type15) -> ptr<@type5>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%33, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type18>>(%57)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%75)), copy<@type15, reason=arg>(read<@type15>(%58))));
+// DEFAULT-NEXT:         call<ptr<@type5>, signature=fn(ptr<void>, ptr<const i8>, @type15) -> ptr<@type5>, abi=sysv64(scalar, scalar, native_c) -> scalar>(%33, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type18>>(%57)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%75)), copy<@type15, reason=arg>(read<@type15>(%58)));
+// DEFAULT-NEXT:         let %83: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %84: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%83), from_bool<i32, reason=promotion>(ne<ptr<@type5>>(read<ptr<@type5>>(%59), null<ptr<@type5>>)));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%84));
+// DEFAULT-NEXT:         let %85: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %86: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%85), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, ...) -> i32>(%36, read<ptr<@type5>>(%59), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%76)), array_decay<ptr<i8>, length=Some(7)>(%77), const<i32>(7)), const<i32>(8))));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%86));
+// DEFAULT-NEXT:         let %87: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %88: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%87), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<@type5>) -> i32>(%29, read<ptr<@type5>>(%59)), const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%88));
+// DEFAULT-NEXT:         let %89: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %90: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%89), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(field2(%57)), const<i32>(1))));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%90));
+// DEFAULT-NEXT:         let %91: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %92: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%91), from_bool<i32, reason=promotion>(eq<u64>(read<u64>(field1(%57)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%92));
+// DEFAULT-NEXT:         let %93: i32 [synthetic] = read<i32>(%60);
+// DEFAULT-NEXT:         let %94: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%93), from_bool<i32, reason=promotion>(eq<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%46, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(32)>(field0(%57))), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%78)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8)))), const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(%60, read<i32>(%94));
+// DEFAULT-NEXT:         return read<i32>(%60);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%21, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%56)), call<i32, signature=fn() -> i32>(%33));
+// DEFAULT-NEXT:     fn %61 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%38, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%79)), call<i32, signature=fn() -> i32>(%56));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -66,16 +66,16 @@ int plain(int a[]) {
 // IR-NEXT:     fn %6 @guaranteed_const(%7 a: ptr<i32> [const] [array=static 5]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @unspecified_extent(%16 n: i32, %17 a: ptr<i32> [array=*]) -> void [linkage=external];
-// IR-NEXT:     fn %9 @guaranteed_variable(%10 n: i32, %11 a: ptr<i32> [array=static %18]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %18: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%10)));
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%11), const<i32>(0))));
+// IR-NEXT:     fn %10 @unspecified_extent(%18 n: i32, %19 a: ptr<i32> [array=*]) -> void [linkage=external];
+// IR-NEXT:     fn %11 @guaranteed_variable(%12 n: i32, %13 a: ptr<i32> [array=static %20]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %20: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%12)));
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%13), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @const_element(%13 a: ptr<const i32> [array=3]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%13), const<i32>(0))));
+// IR-NEXT:     fn %14 @const_element(%15 a: ptr<const i32> [array=3]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%15), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @plain(%15 a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%15), const<i32>(0))));
+// IR-NEXT:     fn %16 @plain(%17 a: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%17), const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

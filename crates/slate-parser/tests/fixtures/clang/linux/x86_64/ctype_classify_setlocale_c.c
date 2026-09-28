@@ -55,22 +55,22 @@ int main(void) {
 // DEFAULT-NEXT:         %10 _ISpunct = const<i32>(4);
 // DEFAULT-NEXT:         %11 _ISalnum = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([67, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([67, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %25 .str25: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %26 .str26: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %14 @setlocale(%18 __category: i32, %19 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @printf(%20 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%14, const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%21)));
-// DEFAULT-NEXT:         let %17 c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0))
+// DEFAULT-NEXT:     fn %16 @setlocale(%21 __category: i32, %22 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %18 @printf(%23 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%16, const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%24)));
+// DEFAULT-NEXT:         let %20 c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(65));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%20))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024)))))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%22)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%18, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%25)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%23)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%18, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%26)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

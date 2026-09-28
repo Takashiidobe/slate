@@ -38,13 +38,13 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 99, 37, 99, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @toupper(%6 c: i32) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %2 @tolower(%7 c: i32) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %3 @abs(%8 n: i32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%9)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(90)), call<i32, signature=fn(i32) -> i32>(%3, neg<i32, overflow=ub>(const<i32>(42))));
+// DEFAULT-NEXT:     global %13 .str13: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 99, 37, 99, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @toupper(%10 c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %5 @tolower(%11 c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %7 @abs(%12 n: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%13)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(90)), call<i32, signature=fn(i32) -> i32>(%7, neg<i32, overflow=ub>(const<i32>(42))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

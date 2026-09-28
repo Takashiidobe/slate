@@ -40,9 +40,9 @@ int call_main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 B: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @A(%3 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @call_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%0));
+// DEFAULT-NEXT:     fn %2 @A(%4 value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @call_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

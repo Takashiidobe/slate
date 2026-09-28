@@ -47,22 +47,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([105, 110, 116, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 115, 32, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 a: i32 [storage=automatic] = const<i32>(3);
-// DEFAULT-NEXT:         let %3 b: i32 [storage=automatic] = const<i32>(4);
-// DEFAULT-NEXT:         let %4 chosen_true: i32 [storage=automatic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %5 chosen_false: i32 [storage=automatic] = read<i32>(%3);
-// DEFAULT-NEXT:         let %6 same_type: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %7 diff_type: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic] = const<i32>(7);
-// DEFAULT-NEXT:         let %9 d: f64 [storage=automatic] = const<f64>(2.5);
-// DEFAULT-NEXT:         let %10 i_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%13));
-// DEFAULT-NEXT:         let %11 d_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(7)>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%15)), read<i32>(%4), read<i32>(%5), read<i32>(%6), read<i32>(%7), read<ptr<const i8>>(%10), read<ptr<const i8>>(%11));
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([105, 110, 116, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %15 .str15: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %16 .str16: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 115, 32, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 a: i32 [storage=automatic] = const<i32>(3);
+// DEFAULT-NEXT:         let %4 b: i32 [storage=automatic] = const<i32>(4);
+// DEFAULT-NEXT:         let %5 chosen_true: i32 [storage=automatic] = read<i32>(%3);
+// DEFAULT-NEXT:         let %6 chosen_false: i32 [storage=automatic] = read<i32>(%4);
+// DEFAULT-NEXT:         let %7 same_type: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %8 diff_type: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic] = const<i32>(7);
+// DEFAULT-NEXT:         let %10 d: f64 [storage=automatic] = const<f64>(2.5);
+// DEFAULT-NEXT:         let %11 i_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%14));
+// DEFAULT-NEXT:         let %12 d_name: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(7)>(%15));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%16)), read<i32>(%5), read<i32>(%6), read<i32>(%7), read<i32>(%8), read<ptr<const i8>>(%11), read<ptr<const i8>>(%12));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

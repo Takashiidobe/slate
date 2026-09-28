@@ -57,16 +57,16 @@ int main(void) {
 // DEFAULT-NEXT:         field4 wide: u64 : 35;
 // DEFAULT-NEXT:         field5 tail: u32 : 17;
 // DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 1, 1, 4, 4, 8], bit_offsets=[None, Some(8), Some(11), Some(32), Some(32), Some(67)], bit_units=[(1, 2), (4, 7)], field_units=[None, Some(0), Some(0), None, Some(1), Some(1)]];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 108, 108, 117, 32, 37, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(field0(%3), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(165))));
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%3), reinterpret<u32, reason=assign, fits=always>(const<i32>(7)));
-// DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%3), neg<i32, overflow=ub>(const<i32>(17)));
-// DEFAULT-NEXT:         write<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%3), const<u64>(30370190968));
-// DEFAULT-NEXT:         write<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%3), reinterpret<u32, reason=assign, fits=always>(const<i32>(109517)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%5)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field0(%3)))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%3))), read<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%3)), read<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%3)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%3))), const<u64>(11));
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 108, 108, 117, 32, 37, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(field0(%4), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(165))));
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%4), reinterpret<u32, reason=assign, fits=always>(const<i32>(7)));
+// DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%4), neg<i32, overflow=ub>(const<i32>(17)));
+// DEFAULT-NEXT:         write<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%4), const<u64>(30370190968));
+// DEFAULT-NEXT:         write<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%4), reinterpret<u32, reason=assign, fits=always>(const<i32>(109517)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%6)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field0(%4)))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=1..3, bits=0..3>(%4))), read<i32>(bitfield2<unit=0, bytes=1..3, bits=3..9>(%4)), read<u64>(bitfield4<unit=1, bytes=4..11, bits=0..35>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield5<unit=1, bytes=4..11, bits=35..52>(%4))), const<u64>(11));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

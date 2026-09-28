@@ -55,19 +55,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 unusedint: i32 [storage=static] = const<i32>(5) [linkage=internal];
-// DEFAULT-NEXT:     global %3 usedint: i32 [storage=static] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     global %3 unusedint: i32 [storage=static] = const<i32>(5) [linkage=internal];
+// DEFAULT-NEXT:     global %4 usedint: i32 [storage=static] = const<i32>(1) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @unused() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @exit(%8 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %5 @unused() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:     fn %6 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%6), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }

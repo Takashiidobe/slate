@@ -53,25 +53,25 @@ int square(int x) { return x * x; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @is_even(%4 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:     global %14 .str14: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @is_even(%6 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%6), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%2, sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%4, sub<i32, overflow=ub>(read<i32>(%6), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @is_odd(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:     fn %4 @is_odd(%5 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%5), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%1, sub<i32, overflow=ub>(read<i32>(%3), const<i32>(1)));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, sub<i32, overflow=ub>(read<i32>(%5), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @square(%7 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%7), read<i32>(%7));
+// DEFAULT-NEXT:     fn %8 @square(%10 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%10), read<i32>(%10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%11)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(7)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(10)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(5)));
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%14)), call<i32, signature=fn(i32) -> i32>(%4, const<i32>(7)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(10)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%15)), call<i32, signature=fn(i32) -> i32>(%8, const<i32>(5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

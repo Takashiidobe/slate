@@ -64,37 +64,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 u128 = u128b;
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @classify(%3 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%3))));
-// DEFAULT-NEXT:         switch %10 read<u128b>(%4)
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %10 const<u128b>(340282366920938463463374607431768211441):
-// DEFAULT-NEXT:                     case %10 const<u128b>(340282366920938463463374607431768211443):
-// DEFAULT-NEXT:                         return const<i32>(1);
-// DEFAULT-NEXT:                 case %10 const<u128b>(340282366920938463463374607431768211450) ... const<u128b>(340282366920938463463374607431768211453):
-// DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 default %10:
-// DEFAULT-NEXT:                     return const<i32>(0);
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @classify_run(%6 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%6))));
-// DEFAULT-NEXT:         switch %11 read<u128b>(%7)
+// DEFAULT-NEXT:     global %13 .str13: array<i8, 22> [storage=static] = code_units<array<i8, 22>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @classify(%4 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%4))));
+// DEFAULT-NEXT:         switch %11 read<u128b>(%5)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %11 const<u128b>(340282366920938463463374607431768211441):
-// DEFAULT-NEXT:                     case %11 const<u128b>(340282366920938463463374607431768211442):
-// DEFAULT-NEXT:                         case %11 const<u128b>(340282366920938463463374607431768211443):
-// DEFAULT-NEXT:                             return const<i32>(1);
-// DEFAULT-NEXT:                 case %11 const<u128b>(340282366920938463463374607431768211450):
+// DEFAULT-NEXT:                     case %11 const<u128b>(340282366920938463463374607431768211443):
+// DEFAULT-NEXT:                         return const<i32>(1);
+// DEFAULT-NEXT:                 case %11 const<u128b>(340282366920938463463374607431768211450) ... const<u128b>(340282366920938463463374607431768211453):
 // DEFAULT-NEXT:                     return const<i32>(2);
 // DEFAULT-NEXT:                 default %11:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%12)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(3)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(11)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(5)), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(10)), call<i32, signature=fn(i32) -> i32>(%5, const<i32>(5)));
+// DEFAULT-NEXT:     fn %6 @classify_run(%7 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %8 v: u128b [storage=automatic] = add<u128b, overflow=wrap>(const<u128b>(340282366920938463463374607431768211440), reinterpret<u128b, reason=explicit, fits=unknown>(widen<i128b, reason=explicit>(read<i32>(%7))));
+// DEFAULT-NEXT:         switch %12 read<u128b>(%8)
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 case %12 const<u128b>(340282366920938463463374607431768211441):
+// DEFAULT-NEXT:                     case %12 const<u128b>(340282366920938463463374607431768211442):
+// DEFAULT-NEXT:                         case %12 const<u128b>(340282366920938463463374607431768211443):
+// DEFAULT-NEXT:                             return const<i32>(1);
+// DEFAULT-NEXT:                 case %12 const<u128b>(340282366920938463463374607431768211450):
+// DEFAULT-NEXT:                     return const<i32>(2);
+// DEFAULT-NEXT:                 default %12:
+// DEFAULT-NEXT:                     return const<i32>(0);
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(22)>(%13)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(3)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(11)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(5)), call<i32, signature=fn(i32) -> i32>(%6, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%6, const<i32>(10)), call<i32, signature=fn(i32) -> i32>(%6, const<i32>(5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

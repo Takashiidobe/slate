@@ -168,180 +168,180 @@ int main() {
 // DEFAULT-NEXT:         field0 v: @type3;
 // DEFAULT-NEXT:         field1 i: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %5 @helper_neon_rshl_s8(%6 arg1: u32, %7 arg2: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 res: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 vsrc1: @type3 [storage=automatic];
-// DEFAULT-NEXT:         let %10 vsrc2: @type3 [storage=automatic];
-// DEFAULT-NEXT:         let %11 vdest: @type3 [storage=automatic];
-// DEFAULT-NEXT:         do %27
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %13 conv_u: @type5 [storage=automatic];
-// DEFAULT-NEXT:                 write<u32>(field1(%13), read<u32>(%6));
-// DEFAULT-NEXT:                 write<@type3>(%9, copy<@type3, reason=assign>(read<@type3>(field0(%13))));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %28
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %15 conv_u: @type6 [storage=automatic];
-// DEFAULT-NEXT:                 write<u32>(field1(%15), read<u32>(%7));
-// DEFAULT-NEXT:                 write<@type3>(%10, copy<@type3, reason=assign>(read<@type3>(field0(%15))));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:     fn %7 @helper_neon_rshl_s8(%8 arg1: u32, %9 arg2: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %10 res: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %11 vsrc1: @type3 [storage=automatic];
+// DEFAULT-NEXT:         let %12 vsrc2: @type3 [storage=automatic];
+// DEFAULT-NEXT:         let %13 vdest: @type3 [storage=automatic];
 // DEFAULT-NEXT:         do %29
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %16 tmp: i8 [storage=automatic];
-// DEFAULT-NEXT:                 write<i8>(%16, read<i8>(field0(%10)));
-// DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%16)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
-// DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i8>(field0(%11), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%16)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
-// DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i8>(field0(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field0(%9))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
-// DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%16)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
-// DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<i8>(field0(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field0(%9))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%16)), const<i32>(1)))));
-// DEFAULT-NEXT:                                 let %34: i8 [synthetic] = read<i8>(field0(%11));
-// DEFAULT-NEXT:                                 let %35: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%34)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field0(%11), read<i8>(%35));
-// DEFAULT-NEXT:                                 let %36: i8 [synthetic] = read<i8>(field0(%11));
-// DEFAULT-NEXT:                                 let %37: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%36)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field0(%11), read<i8>(%37));
-// DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%16)), const<i32>(0))
-// DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field0(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%9))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%16))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%16))))));
-// DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field0(%11), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field0(%9))), widen<i32, reason=promotion>(read<i8>(%16)))));
-// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                 let %15 conv_u: @type5 [storage=automatic];
+// DEFAULT-NEXT:                 write<u32>(field1(%15), read<u32>(%8));
+// DEFAULT-NEXT:                 write<@type3>(%11, copy<@type3, reason=assign>(read<@type3>(field0(%15))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %30
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %17 tmp: i8 [storage=automatic];
-// DEFAULT-NEXT:                 write<i8>(%17, read<i8>(field1(%10)));
-// DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%17)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
-// DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i8>(field1(%11), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%17)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
-// DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i8>(field1(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field1(%9))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
-// DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%17)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
-// DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<i8>(field1(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field1(%9))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%17)), const<i32>(1)))));
-// DEFAULT-NEXT:                                 let %38: i8 [synthetic] = read<i8>(field1(%11));
-// DEFAULT-NEXT:                                 let %39: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%38)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field1(%11), read<i8>(%39));
-// DEFAULT-NEXT:                                 let %40: i8 [synthetic] = read<i8>(field1(%11));
-// DEFAULT-NEXT:                                 let %41: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%40)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field1(%11), read<i8>(%41));
-// DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%17)), const<i32>(0))
-// DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field1(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field1(%9))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%17))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%17))))));
-// DEFAULT-NEXT:                                 }
-// DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field1(%11), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field1(%9))), widen<i32, reason=promotion>(read<i8>(%17)))));
-// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                 let %17 conv_u: @type6 [storage=automatic];
+// DEFAULT-NEXT:                 write<u32>(field1(%17), read<u32>(%9));
+// DEFAULT-NEXT:                 write<@type3>(%12, copy<@type3, reason=assign>(read<@type3>(field0(%17))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %31
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %18 tmp: i8 [storage=automatic];
-// DEFAULT-NEXT:                 write<i8>(%18, read<i8>(field2(%10)));
+// DEFAULT-NEXT:                 write<i8>(%18, read<i8>(field0(%12)));
 // DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%18)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i8>(field2(%11), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                         write<i8>(field0(%13), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%18)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i8>(field2(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field2(%9))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:                             write<i8>(field0(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field0(%11))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%18)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<i8>(field2(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field2(%9))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%18)), const<i32>(1)))));
-// DEFAULT-NEXT:                                 let %42: i8 [synthetic] = read<i8>(field2(%11));
-// DEFAULT-NEXT:                                 let %43: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%42)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field2(%11), read<i8>(%43));
-// DEFAULT-NEXT:                                 let %44: i8 [synthetic] = read<i8>(field2(%11));
-// DEFAULT-NEXT:                                 let %45: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%44)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field2(%11), read<i8>(%45));
+// DEFAULT-NEXT:                                 write<i8>(field0(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field0(%11))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%18)), const<i32>(1)))));
+// DEFAULT-NEXT:                                 let %36: i8 [synthetic] = read<i8>(field0(%13));
+// DEFAULT-NEXT:                                 let %37: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%36)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field0(%13), read<i8>(%37));
+// DEFAULT-NEXT:                                 let %38: i8 [synthetic] = read<i8>(field0(%13));
+// DEFAULT-NEXT:                                 let %39: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%38)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field0(%13), read<i8>(%39));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%18)), const<i32>(0))
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field2(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field2(%9))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%18))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%18))))));
+// DEFAULT-NEXT:                                     write<i8>(field0(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%11))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%18))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%18))))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field2(%11), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field2(%9))), widen<i32, reason=promotion>(read<i8>(%18)))));
+// DEFAULT-NEXT:                                     write<i8>(field0(%13), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field0(%11))), widen<i32, reason=promotion>(read<i8>(%18)))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %32
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %19 tmp: i8 [storage=automatic];
-// DEFAULT-NEXT:                 write<i8>(%19, read<i8>(field3(%10)));
+// DEFAULT-NEXT:                 write<i8>(%19, read<i8>(field1(%12)));
 // DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%19)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i8>(field3(%11), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                         write<i8>(field1(%13), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%19)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i8>(field3(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field3(%9))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:                             write<i8>(field1(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field1(%11))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%19)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<i8>(field3(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field3(%9))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%19)), const<i32>(1)))));
-// DEFAULT-NEXT:                                 let %46: i8 [synthetic] = read<i8>(field3(%11));
-// DEFAULT-NEXT:                                 let %47: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%46)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field3(%11), read<i8>(%47));
-// DEFAULT-NEXT:                                 let %48: i8 [synthetic] = read<i8>(field3(%11));
-// DEFAULT-NEXT:                                 let %49: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%48)), const<i32>(1)));
-// DEFAULT-NEXT:                                 write<i8>(field3(%11), read<i8>(%49));
+// DEFAULT-NEXT:                                 write<i8>(field1(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field1(%11))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%19)), const<i32>(1)))));
+// DEFAULT-NEXT:                                 let %40: i8 [synthetic] = read<i8>(field1(%13));
+// DEFAULT-NEXT:                                 let %41: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%40)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field1(%13), read<i8>(%41));
+// DEFAULT-NEXT:                                 let %42: i8 [synthetic] = read<i8>(field1(%13));
+// DEFAULT-NEXT:                                 let %43: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%42)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field1(%13), read<i8>(%43));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%19)), const<i32>(0))
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field3(%11), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field3(%9))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%19))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%19))))));
+// DEFAULT-NEXT:                                     write<i8>(field1(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field1(%11))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%19))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%19))))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<i8>(field3(%11), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field3(%9))), widen<i32, reason=promotion>(read<i8>(%19)))));
+// DEFAULT-NEXT:                                     write<i8>(field1(%13), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field1(%11))), widen<i32, reason=promotion>(read<i8>(%19)))));
+// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %33
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 let %20 tmp: i8 [storage=automatic];
+// DEFAULT-NEXT:                 write<i8>(%20, read<i8>(field2(%12)));
+// DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%20)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
+// DEFAULT-NEXT:                     {
+// DEFAULT-NEXT:                         write<i8>(field2(%13), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                 else
+// DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%20)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
+// DEFAULT-NEXT:                         {
+// DEFAULT-NEXT:                             write<i8>(field2(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field2(%11))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                     else
+// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%20)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
+// DEFAULT-NEXT:                             {
+// DEFAULT-NEXT:                                 write<i8>(field2(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field2(%11))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%20)), const<i32>(1)))));
+// DEFAULT-NEXT:                                 let %44: i8 [synthetic] = read<i8>(field2(%13));
+// DEFAULT-NEXT:                                 let %45: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%44)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field2(%13), read<i8>(%45));
+// DEFAULT-NEXT:                                 let %46: i8 [synthetic] = read<i8>(field2(%13));
+// DEFAULT-NEXT:                                 let %47: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%46)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field2(%13), read<i8>(%47));
+// DEFAULT-NEXT:                             }
+// DEFAULT-NEXT:                         else
+// DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%20)), const<i32>(0))
+// DEFAULT-NEXT:                                 {
+// DEFAULT-NEXT:                                     write<i8>(field2(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field2(%11))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%20))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%20))))));
+// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                             else
+// DEFAULT-NEXT:                                 {
+// DEFAULT-NEXT:                                     write<i8>(field2(%13), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field2(%11))), widen<i32, reason=promotion>(read<i8>(%20)))));
+// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %34
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 let %21 tmp: i8 [storage=automatic];
+// DEFAULT-NEXT:                 write<i8>(%21, read<i8>(field3(%12)));
+// DEFAULT-NEXT:                 if ge<i32>(widen<i32, reason=promotion>(read<i8>(%21)), mul<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), const<i32>(8)))
+// DEFAULT-NEXT:                     {
+// DEFAULT-NEXT:                         write<i8>(field3(%13), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     }
+// DEFAULT-NEXT:                 else
+// DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%21)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
+// DEFAULT-NEXT:                         {
+// DEFAULT-NEXT:                             write<i8>(field3(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field3(%11))), sub<u64, overflow=wrap>(mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:                         }
+// DEFAULT-NEXT:                     else
+// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%21)), mul<i32, overflow=ub>(neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1)))), const<i32>(8)))
+// DEFAULT-NEXT:                             {
+// DEFAULT-NEXT:                                 write<i8>(field3(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(field3(%11))), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%21)), const<i32>(1)))));
+// DEFAULT-NEXT:                                 let %48: i8 [synthetic] = read<i8>(field3(%13));
+// DEFAULT-NEXT:                                 let %49: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%48)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field3(%13), read<i8>(%49));
+// DEFAULT-NEXT:                                 let %50: i8 [synthetic] = read<i8>(field3(%13));
+// DEFAULT-NEXT:                                 let %51: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%50)), const<i32>(1)));
+// DEFAULT-NEXT:                                 write<i8>(field3(%13), read<i8>(%51));
+// DEFAULT-NEXT:                             }
+// DEFAULT-NEXT:                         else
+// DEFAULT-NEXT:                             if lt<i32>(widen<i32, reason=promotion>(read<i8>(%21)), const<i32>(0))
+// DEFAULT-NEXT:                                 {
+// DEFAULT-NEXT:                                     write<i8>(field3(%13), truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field3(%11))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), widen<i32, reason=promotion>(read<i8>(%21))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%21))))));
+// DEFAULT-NEXT:                                 }
+// DEFAULT-NEXT:                             else
+// DEFAULT-NEXT:                                 {
+// DEFAULT-NEXT:                                     write<i8>(field3(%13), truncate<i8, reason=assign, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(field3(%11))), widen<i32, reason=promotion>(read<i8>(%21)))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         do %33
+// DEFAULT-NEXT:         do %35
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %21 conv_u: @type7 [storage=automatic];
-// DEFAULT-NEXT:                 write<@type3>(field0(%21), copy<@type3, reason=assign>(read<@type3>(%11)));
-// DEFAULT-NEXT:                 write<u32>(%8, read<u32>(field1(%21)));
+// DEFAULT-NEXT:                 let %23 conv_u: @type7 [storage=automatic];
+// DEFAULT-NEXT:                 write<@type3>(field0(%23), copy<@type3, reason=assign>(read<@type3>(%13)));
+// DEFAULT-NEXT:                 write<u32>(%10, read<u32>(field1(%23)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         return read<u32>(%8);
+// DEFAULT-NEXT:         return read<u32>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %24 r: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%5, reinterpret<u32, reason=arg, fits=always>(const<i32>(84215045)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16843009)));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%24), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(168430090)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:     fn %24 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %25 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %26 r: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%7, reinterpret<u32, reason=arg, fits=always>(const<i32>(84215045)), reinterpret<u32, reason=arg, fits=always>(const<i32>(16843009)));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%26), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(168430090)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%24);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

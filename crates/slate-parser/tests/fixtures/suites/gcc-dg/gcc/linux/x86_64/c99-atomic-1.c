@@ -36,6 +36,6 @@ void f (int a[_Atomic]); /* { dg-error "_Atomic" } */
 // DEFAULT-NEXT:     global %0 i: atomic i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 j: atomic i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %2 p: atomic ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f(%4 a: atomic ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @f(%5 a: atomic ptr<i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

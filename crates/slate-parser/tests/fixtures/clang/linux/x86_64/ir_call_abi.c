@@ -113,9 +113,9 @@ double _Complex variadic_forward(double _Complex value) {
 // IR-NEXT:     fn %28 @forward(%29 callback: ptr<fn(complex<f64>) -> complex<f64>>, %30 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, native_c) -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%29), read<complex<f64>>(%30));
 // IR-NEXT:     }
-// IR-NEXT:     fn %31 @variadic_sink(%34 tag: i32, ...) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> native_c];
-// IR-NEXT:     fn %32 @variadic_forward(%33 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=sysv64(scalar, native_c) -> native_c>(%31, const<i32>(1), read<complex<f64>>(%33));
+// IR-NEXT:     fn %32 @variadic_sink(%35 tag: i32, ...) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> native_c];
+// IR-NEXT:     fn %33 @variadic_forward(%34 value: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=sysv64(scalar, native_c) -> native_c>(%32, const<i32>(1), read<complex<f64>>(%34));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

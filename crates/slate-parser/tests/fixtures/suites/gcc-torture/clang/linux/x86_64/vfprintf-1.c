@@ -86,136 +86,136 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:     type @type10 _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     type @type11 va_list = va_list;
 // DEFAULT-NEXT:     extern %11 stdout: ptr<@type5> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %26 .str26: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %29 .str29: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %33 .str33: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %26 .str26: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %27 .str27: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %28 .str28: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %29 .str29: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %30 .str30: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %31 .str31: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %32 .str32: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %33 .str33: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
 // DEFAULT-NEXT:     global %34 .str34: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %35 .str35: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %36 .str36: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %37 .str37: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %38 .str38: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %39 .str39: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %40 .str40: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %41 .str41: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %42 .str42: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %43 .str43: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %44 .str44: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %45 .str45: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %46 .str46: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %47 .str47: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %48 .str48: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %39 .str39: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %40 .str40: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %41 .str41: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %42 .str42: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %43 .str43: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %44 .str44: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %45 .str45: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %46 .str46: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %47 .str47: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %48 .str48: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %49 .str49: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %12 @vfprintf(%19 __s: ptr<@type5> [restrict], %20 __format: ptr<const i8> [restrict], %21 __arg: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %14 @inner(%15 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %16 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %17 ap2: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%16);
-// DEFAULT-NEXT:         va_start(%17);
-// DEFAULT-NEXT:         switch %22 read<i32>(%15)
+// DEFAULT-NEXT:     global %50 .str50: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %51 .str51: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %52 .str52: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %15 @vfprintf(%22 __s: ptr<@type5> [restrict], %23 __format: ptr<const i8> [restrict], %24 __arg: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %16 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %17 @inner(%18 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %19 ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %20 ap2: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%19);
+// DEFAULT-NEXT:         va_start(%20);
+// DEFAULT-NEXT:         switch %25 read<i32>(%18)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %22 const<i32>(0):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%23)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%24)), read<va_list>(%17)), const<i32>(5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(0):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%26)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%27)), read<va_list>(%20)), const<i32>(5))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(1):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%25)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%26)), read<va_list>(%17)), const<i32>(6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(1):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%28)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%29)), read<va_list>(%20)), const<i32>(6))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(2):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%27)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%28)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(2):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%30)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%31)), read<va_list>(%20)), const<i32>(1))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(3):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%29)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%30)), read<va_list>(%17)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(3):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%32)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%33)), read<va_list>(%20)), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(4):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%31)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%32)), read<va_list>(%17)), const<i32>(5))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(4):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%34)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%35)), read<va_list>(%20)), const<i32>(5))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(5):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%33)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%34)), read<va_list>(%17)), const<i32>(6))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(5):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%36)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%37)), read<va_list>(%20)), const<i32>(6))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(6):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%35)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%36)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(6):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%38)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%39)), read<va_list>(%20)), const<i32>(1))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(7):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%37)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%38)), read<va_list>(%17)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(7):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%40)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%41)), read<va_list>(%20)), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(8):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%39)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%40)), read<va_list>(%17)), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(8):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%42)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%43)), read<va_list>(%20)), const<i32>(1))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(9):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%41)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%42)), read<va_list>(%17)), const<i32>(7))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(9):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%44)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%45)), read<va_list>(%20)), const<i32>(7))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %22 const<i32>(10):
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%43)), read<va_list>(%16));
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%44)), read<va_list>(%17)), const<i32>(2))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:                 break %22;
+// DEFAULT-NEXT:                 case %25 const<i32>(10):
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%46)), read<va_list>(%19));
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%47)), read<va_list>(%20)), const<i32>(2))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:                 break %25;
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 default %22:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:                 default %25:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%16);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         va_end(%16);
-// DEFAULT-NEXT:         va_end(%17);
+// DEFAULT-NEXT:         va_end(%19);
+// DEFAULT-NEXT:         va_end(%20);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(0));
+// DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(0));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(1));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(2));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(2));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(3));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(3));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(4), array_decay<ptr<i8>, length=Some(6)>(%45));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(4), array_decay<ptr<i8>, length=Some(6)>(%48));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(5), array_decay<ptr<i8>, length=Some(7)>(%46));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(5), array_decay<ptr<i8>, length=Some(7)>(%49));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(6), array_decay<ptr<i8>, length=Some(2)>(%47));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(6), array_decay<ptr<i8>, length=Some(2)>(%50));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(7), array_decay<ptr<i8>, length=Some(1)>(%48));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(7), array_decay<ptr<i8>, length=Some(1)>(%51));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(8), const<i32>(120));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(8), const<i32>(120));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(9), array_decay<ptr<i8>, length=Some(7)>(%49));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(9), array_decay<ptr<i8>, length=Some(7)>(%52));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%14, const<i32>(10), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%17, const<i32>(10), const<i32>(0));
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -37,9 +37,9 @@ double foo(double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @exp(%3 x: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%0, call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%2)));
+// DEFAULT-NEXT:     fn %1 @exp(%4 x: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @foo(%3 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%1, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

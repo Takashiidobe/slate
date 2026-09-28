@@ -37,14 +37,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 32, 114, 97, 110, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 97, 105, 110, 32, 114, 97, 110, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%3 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @greet() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%4)));
+// DEFAULT-NEXT:     global %5 .str5: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 32, 114, 97, 110, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 97, 105, 110, 32, 114, 97, 110, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @greet() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%5)));
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

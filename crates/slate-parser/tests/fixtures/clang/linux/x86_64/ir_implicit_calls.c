@@ -37,10 +37,10 @@ int calls(short small, float real) {
 // C17-NEXT:     }
 // C17-NEXT:     fn %0 @old(unprototyped) -> i32 [linkage=external] [c="int()"];
 // C17-NEXT:     fn %1 @exact() -> i32 [linkage=external] [c="int(void)"];
-// C17-NEXT:     fn %2 @variadic(%6 first: i32 [c="int"], ...) -> i32 [linkage=external] [c="int(int, ...)"];
-// C17-NEXT:     fn %3 @calls(%4 small: i16 [c="short"], %5 real: f32 [c="float"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(short, float)"] {
-// C17-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%0, widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%5)));
-// C17-NEXT:         call<i32, signature=fn(i32, ...) -> i32>(%2, const<i32>(1), widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%5)));
+// C17-NEXT:     fn %3 @variadic(%7 first: i32 [c="int"], ...) -> i32 [linkage=external] [c="int(int, ...)"];
+// C17-NEXT:     fn %4 @calls(%5 small: i16 [c="short"], %6 real: f32 [c="float"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(short, float)"] {
+// C17-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%0, widen<i32, reason=vararg>(read<i16>(%5)), float_widen<f64, reason=vararg>(read<f32>(%6)));
+// C17-NEXT:         call<i32, signature=fn(i32, ...) -> i32>(%3, const<i32>(1), widen<i32, reason=vararg>(read<i16>(%5)), float_widen<f64, reason=vararg>(read<f32>(%6)));
 // C17-NEXT:         return call<i32, signature=fn() -> i32>(%1);
 // C17-NEXT:     }
 // C17-NEXT: }

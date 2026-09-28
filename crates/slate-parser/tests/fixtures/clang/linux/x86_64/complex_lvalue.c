@@ -44,25 +44,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @pick(%2 p: ptr<f64>) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%2)), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(read<ptr<f64>>(%2))), const<f64>(5.0)));
-// DEFAULT-NEXT:         return read<f64>(deref(read<ptr<f64>>(%2)));
+// DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @pick(%3 p: ptr<f64>) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<f64>(deref(read<ptr<f64>>(%3)), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(read<ptr<f64>>(%3))), const<f64>(5.0)));
+// DEFAULT-NEXT:         return read<f64>(deref(read<ptr<f64>>(%3)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 z: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0));
-// DEFAULT-NEXT:         write<f64>(real(%4), const<f64>(7.0));
-// DEFAULT-NEXT:         write<f64>(imag(%4), const<f64>(11.0));
-// DEFAULT-NEXT:         let %5 r: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%1, addr_of<ptr<f64>>(real(%4)));
-// DEFAULT-NEXT:         let %6 i: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%1, addr_of<ptr<f64>>(imag(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(real(%4))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(imag(%4))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%5)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%6)));
+// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %5 z: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0));
+// DEFAULT-NEXT:         write<f64>(real(%5), const<f64>(7.0));
+// DEFAULT-NEXT:         write<f64>(imag(%5), const<f64>(11.0));
+// DEFAULT-NEXT:         let %6 r: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%2, addr_of<ptr<f64>>(real(%5)));
+// DEFAULT-NEXT:         let %7 i: f64 [storage=automatic] = call<f64, signature=fn(ptr<f64>) -> f64>(%2, addr_of<ptr<f64>>(imag(%5)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(real(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(imag(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%6)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%7)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

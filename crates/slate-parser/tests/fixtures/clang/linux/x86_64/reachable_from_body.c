@@ -42,15 +42,15 @@ int main(void) {
 // DEFAULT-NEXT:         %0 REACH_RED = const<i32>(0);
 // DEFAULT-NEXT:         %1 REACH_GREEN = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     extern %7 reach_counter: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @reach_called(%11 point: ptr<@type2>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 point: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
-// DEFAULT-NEXT:         let %10 size: u64 [storage=automatic] = const<u64>(8);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%7, read<i32>(%13));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type2>) -> i32>(%6, addr_of<ptr<@type2>>(%9)), truncate<i32, reason=explicit, fits=unknown>(reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%10))));
+// DEFAULT-NEXT:     extern %8 reach_counter: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %7 @reach_called(%12 point: ptr<@type2>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %10 point: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
+// DEFAULT-NEXT:         let %11 size: u64 [storage=automatic] = const<u64>(8);
+// DEFAULT-NEXT:         let %13: i32 [synthetic] = read<i32>(%8);
+// DEFAULT-NEXT:         let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%8, read<i32>(%14));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(ptr<@type2>) -> i32>(%7, addr_of<ptr<@type2>>(%10)), truncate<i32, reason=explicit, fits=unknown>(reinterpret<i64, reason=explicit, fits=unknown>(read<u64>(%11))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

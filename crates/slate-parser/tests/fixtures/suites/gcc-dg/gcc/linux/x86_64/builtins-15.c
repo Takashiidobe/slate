@@ -42,14 +42,14 @@ double ndtri(double y0)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @log(%4 x: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @ndtri(%2 y0: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 x: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%3, call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%2)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%2));
-// DEFAULT-NEXT:         write<f64>(%3, call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%3)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%3));
-// DEFAULT-NEXT:         return read<f64>(%3);
+// DEFAULT-NEXT:     fn %1 @log(%5 x: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @ndtri(%3 y0: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %4 x: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%4, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%3)));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%3));
+// DEFAULT-NEXT:         write<f64>(%4, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4)));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4));
+// DEFAULT-NEXT:         return read<f64>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

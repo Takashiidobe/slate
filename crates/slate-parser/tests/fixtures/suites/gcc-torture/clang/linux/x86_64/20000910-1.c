@@ -53,28 +53,28 @@ void baz(int i, int j) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 a: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2)) [linkage=internal];
+// DEFAULT-NEXT:     global %6 a: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2)) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%12 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bar(%8 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%7, read<i32>(%8), read<i32>(%8));
+// DEFAULT-NEXT:     fn %2 @exit(%13 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @bar(%9 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%8, read<i32>(%9), read<i32>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo(%9 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, read<i32>(deref(read<ptr<i32>>(%9))));
+// DEFAULT-NEXT:     fn %4 @foo(%10 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, read<i32>(deref(read<ptr<i32>>(%10))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 i: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%5), div<u64, by_zero=ub>(const<u64>(12), const<u64>(4)))));
-// DEFAULT-NEXT:         while %15 {
-// DEFAULT-NEXT:             let %18: ptr<i32> [synthetic] = read<ptr<i32>>(%6);
-// DEFAULT-NEXT:             let %19: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%18), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<i32>>(%6, read<ptr<i32>>(%19));
-// DEFAULT-NEXT:             yield gt<ptr<i32>>(read<ptr<i32>>(%18), array_decay<ptr<i32>, length=Some(3)>(%5));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 i: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%6), div<u64, by_zero=ub>(const<u64>(12), const<u64>(4)))));
+// DEFAULT-NEXT:         while %16 {
+// DEFAULT-NEXT:             let %19: ptr<i32> [synthetic] = read<ptr<i32>>(%7);
+// DEFAULT-NEXT:             let %20: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%19), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<i32>>(%7, read<ptr<i32>>(%20));
+// DEFAULT-NEXT:             yield gt<ptr<i32>>(read<ptr<i32>>(%19), array_decay<ptr<i32>, length=Some(3)>(%6));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>) -> void>(%3, read<ptr<i32>>(%6));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>) -> void>(%4, read<ptr<i32>>(%7));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @baz(%10 i: i32, %11 j: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%10), read<i32>(%11))
+// DEFAULT-NEXT:     fn %8 @baz(%11 i: i32, %12 j: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%11), read<i32>(%12))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

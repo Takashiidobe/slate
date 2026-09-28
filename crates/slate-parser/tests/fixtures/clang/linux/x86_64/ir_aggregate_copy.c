@@ -56,21 +56,21 @@ union Item copy_item(union Item source) {
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 0]];
 // IR-NEXT:     type @type2 Pair = @type0;
 // IR-NEXT:     type @type3 Item = @type1;
-// IR-NEXT:     fn %4 @take_pair(%14 value: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %5 @take_item(%15 value: @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %6 @copy_pair(%7 source: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %8 initialized: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%7));
-// IR-NEXT:         let %9 assigned: @type0 [storage=automatic];
-// IR-NEXT:         write<@type0>(%9, copy<@type0, reason=assign>(read<@type0>(%8)));
-// IR-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%4, copy<@type0, reason=arg>(read<@type0>(%9)));
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%9));
+// IR-NEXT:     fn %5 @take_pair(%16 value: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %7 @take_item(%17 value: @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %8 @copy_pair(%9 source: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %10 initialized: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%9));
+// IR-NEXT:         let %11 assigned: @type0 [storage=automatic];
+// IR-NEXT:         write<@type0>(%11, copy<@type0, reason=assign>(read<@type0>(%10)));
+// IR-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%5, copy<@type0, reason=arg>(read<@type0>(%11)));
+// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%11));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @copy_item(%11 source: @type1) -> @type1 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %12 initialized: @type1 [storage=automatic] = copy<@type1, reason=assign>(read<@type1>(%11));
-// IR-NEXT:         let %13 assigned: @type1 [storage=automatic];
-// IR-NEXT:         write<@type1>(%13, copy<@type1, reason=assign>(read<@type1>(%12)));
-// IR-NEXT:         call<void, signature=fn(@type1) -> void, abi=sysv64(native_c) -> void>(%5, copy<@type1, reason=arg>(read<@type1>(%13)));
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%13));
+// IR-NEXT:     fn %12 @copy_item(%13 source: @type1) -> @type1 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %14 initialized: @type1 [storage=automatic] = copy<@type1, reason=assign>(read<@type1>(%13));
+// IR-NEXT:         let %15 assigned: @type1 [storage=automatic];
+// IR-NEXT:         write<@type1>(%15, copy<@type1, reason=assign>(read<@type1>(%14)));
+// IR-NEXT:         call<void, signature=fn(@type1) -> void, abi=sysv64(native_c) -> void>(%7, copy<@type1, reason=arg>(read<@type1>(%15)));
+// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%15));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

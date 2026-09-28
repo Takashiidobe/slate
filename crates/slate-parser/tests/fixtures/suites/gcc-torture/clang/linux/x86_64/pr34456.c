@@ -62,41 +62,41 @@ int main(void) {
 // DEFAULT-NEXT:         field0 elt: i32;
 // DEFAULT-NEXT:         field1 compare: ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %4 errors: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 array: array<@type2, 2> [storage=static] [align=16] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = function_decay<ptr<fn(i32) -> i32>>(%13)), index1 = aggregate<@type2, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = function_decay<ptr<fn(i32) -> i32>>(%13))) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @qsort(%17 __base: ptr<void>, %18 __nmemb: u64, %19 __size: u64, %20 __compar: ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @debug() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %8 errors: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %19 array: array<@type2, 2> [storage=static] [align=16] = aggregate<array<@type2, 2>, zero_fill=false>(index0 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(1), field1 = function_decay<ptr<fn(i32) -> i32>>(%17)), index1 = aggregate<@type2, zero_fill=false>(field0 = neg<i32, overflow=ub>(const<i32>(1)), field1 = function_decay<ptr<fn(i32) -> i32>>(%17))) [linkage=external];
+// DEFAULT-NEXT:     fn %6 @qsort(%21 __base: ptr<void>, %22 __nmemb: u64, %23 __size: u64, %24 __compar: ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @debug() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @compare(%7 x: ptr<const void>, %8 y: ptr<const void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 s1: ptr<const @type2> [storage=automatic] = pointer_cast<ptr<const @type2>, reason=assign>(read<ptr<const void>>(%7));
-// DEFAULT-NEXT:         let %10 s2: ptr<const @type2> [storage=automatic] = pointer_cast<ptr<const @type2>, reason=assign>(read<ptr<const void>>(%8));
-// DEFAULT-NEXT:         let %11 compare1: ptr<fn(i32) -> i32> [storage=automatic];
-// DEFAULT-NEXT:         let %12 elt2: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%11, read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<const @type2>>(%9)))));
-// DEFAULT-NEXT:         write<i32>(%12, read<i32>(field0(deref(read<ptr<const @type2>>(%10)))));
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(0))
-// DEFAULT-NEXT:             write<bool>(%21, ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(0)));
+// DEFAULT-NEXT:     fn %10 @compare(%11 x: ptr<const void>, %12 y: ptr<const void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %13 s1: ptr<const @type2> [storage=automatic] = pointer_cast<ptr<const @type2>, reason=assign>(read<ptr<const void>>(%11));
+// DEFAULT-NEXT:         let %14 s2: ptr<const @type2> [storage=automatic] = pointer_cast<ptr<const @type2>, reason=assign>(read<ptr<const void>>(%12));
+// DEFAULT-NEXT:         let %15 compare1: ptr<fn(i32) -> i32> [storage=automatic];
+// DEFAULT-NEXT:         let %16 elt2: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%15, read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<const @type2>>(%13)))));
+// DEFAULT-NEXT:         write<i32>(%16, read<i32>(field0(deref(read<ptr<const @type2>>(%14)))));
+// DEFAULT-NEXT:         let %25: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%16), const<i32>(0))
+// DEFAULT-NEXT:             write<bool>(%25, ne<i32>(call<i32, signature=fn() -> i32>(%7), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(false));
-// DEFAULT-NEXT:         let %22: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%21)
-// DEFAULT-NEXT:             write<bool>(%22, ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%11), read<i32>(field0(deref(read<ptr<const @type2>>(%9))))), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%25, const<bool>(false));
+// DEFAULT-NEXT:         let %26: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%25)
+// DEFAULT-NEXT:             write<bool>(%26, ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%15), read<i32>(field0(deref(read<ptr<const @type2>>(%13))))), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%22, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%22)
-// DEFAULT-NEXT:             let %23: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:             let %24: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%23), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%4, read<i32>(%24));
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%11), read<i32>(%12));
+// DEFAULT-NEXT:             write<bool>(%26, const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%26)
+// DEFAULT-NEXT:             let %27: i32 [synthetic] = read<i32>(%8);
+// DEFAULT-NEXT:             let %28: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%8, read<i32>(%28));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%15), read<i32>(%16));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bad_compare(%14 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return neg<i32, overflow=ub>(read<i32>(%14));
+// DEFAULT-NEXT:     fn %17 @bad_compare(%18 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return neg<i32, overflow=ub>(read<i32>(%18));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%2, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type2>, length=Some(2)>(%15)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), const<u64>(16), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%6));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%4), const<i32>(0)));
+// DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, u64, u64, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> void>(%6, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type2>, length=Some(2)>(%19)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), const<u64>(16), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%10));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%8), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

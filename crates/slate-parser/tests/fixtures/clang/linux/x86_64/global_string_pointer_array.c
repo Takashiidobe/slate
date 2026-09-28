@@ -33,13 +33,13 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([97, 108, 112, 104, 97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([98, 101, 116, 97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %1 names: array<ptr<i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(6)>(%4), index1 = array_decay<ptr<i8>, length=Some(5)>(%5)) [linkage=internal];
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 115, 32, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%3 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%6)), read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(2)>(%1), const<i32>(0)))), read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(2)>(%1), const<i32>(1)))));
+// DEFAULT-NEXT:     global %5 .str5: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([97, 108, 112, 104, 97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([98, 101, 116, 97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %2 names: array<ptr<i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<i8>, 2>, zero_fill=false>(index0 = array_decay<ptr<i8>, length=Some(6)>(%5), index1 = array_decay<ptr<i8>, length=Some(5)>(%6)) [linkage=internal];
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 115, 32, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%7)), read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(2)>(%2), const<i32>(0)))), read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(array_decay<ptr<ptr<i8>>, length=Some(2)>(%2), const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

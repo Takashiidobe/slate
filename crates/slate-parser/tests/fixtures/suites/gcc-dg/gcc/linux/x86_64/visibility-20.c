@@ -46,8 +46,8 @@ bar (int x)
 // DEFAULT-NEXT:     fn %0 @foo(%1 x: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<i32>(%1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%3));
+// DEFAULT-NEXT:     fn %3 @bar(%4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -57,14 +57,14 @@ int block(void) {
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 4, 8, 12, 16]];
 // IR-NEXT:     global %1 file_scope: volatile i32 [storage=static] [align=32] [linkage=external];
 // IR-NEXT:     global %2 file_restrict: ptr<const i32> [storage=static] [restrict] [linkage=external];
-// IR-NEXT:     global %4 file_literal: ptr<const @type0> [storage=static] = addr_of<ptr<const @type0>>(compound_literal %14 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
-// IR-NEXT:     global %7 static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
-// IR-NEXT:     fn %3 @parameters(%10 a: atomic i32, %11 v: volatile i32, %12 c: i32 [const], %13 r: ptr<i32> [restrict]) -> void [linkage=external];
-// IR-NEXT:     fn %5 @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %6 block_scope: volatile i32 [storage=automatic] [align=32];
-// IR-NEXT:         let %8 const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %15 [storage=automatic] = const<i32>(7));
-// IR-NEXT:         let %9 volatile_literal: ptr<volatile i32> [storage=automatic] = addr_of<ptr<volatile i32>>(compound_literal %16 [storage=automatic] = const<i32>(8));
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(32)), const<u64>(64)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<const i32>>(%8)))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32, volatile>(deref(read<ptr<volatile i32>>(%9))))))));
+// IR-NEXT:     global %8 file_literal: ptr<const @type0> [storage=static] = addr_of<ptr<const @type0>>(compound_literal %18 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %11 static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
+// IR-NEXT:     fn %7 @parameters(%14 a: atomic i32, %15 v: volatile i32, %16 c: i32 [const], %17 r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %9 @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %10 block_scope: volatile i32 [storage=automatic] [align=32];
+// IR-NEXT:         let %12 const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %19 [storage=automatic] = const<i32>(7));
+// IR-NEXT:         let %13 volatile_literal: ptr<volatile i32> [storage=automatic] = addr_of<ptr<volatile i32>>(compound_literal %20 [storage=automatic] = const<i32>(8));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(32)), const<u64>(64)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<const i32>>(%12)))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32, volatile>(deref(read<ptr<volatile i32>>(%13))))))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -68,14 +68,14 @@ int main(void) {
 // DEFAULT-NEXT:         field13 st_ctim: @type11;
 // DEFAULT-NEXT:         field14 __glibc_reserved: array<i64, 3>;
 // DEFAULT-NEXT:     } [size=144, align=8, offsets=[0, 8, 16, 24, 28, 32, 36, 40, 48, 56, 64, 72, 88, 104, 120]];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([47, 100, 101, 118, 47, 110, 117, 108, 108, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 100, 32, 37, 108, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %11 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %14 @stat(%19 __file: ptr<const i8> [restrict], %20 __buf: ptr<@type12> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 info: @type12 [storage=automatic] = aggregate<@type12, zero_fill=true>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         let %17 result: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<@type12>) -> i32>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%21)), addr_of<ptr<@type12>>(%16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%22)), read<i32>(%17), read<i64>(field8(%16)));
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([47, 100, 101, 118, 47, 110, 117, 108, 108, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %25 .str25: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 100, 32, 37, 108, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @printf(%21 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %17 @stat(%22 __file: ptr<const i8> [restrict], %23 __buf: ptr<@type12> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %19 info: @type12 [storage=automatic] = aggregate<@type12, zero_fill=true>(field0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         let %20 result: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<@type12>) -> i32>(%17, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%24)), addr_of<ptr<@type12>>(%19));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%12, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%25)), read<i32>(%20), read<i64>(field8(%19)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

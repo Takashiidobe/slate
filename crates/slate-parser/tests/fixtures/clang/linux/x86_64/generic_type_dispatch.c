@@ -48,24 +48,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%13 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @int_score(%2 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%2), const<i32>(10));
+// DEFAULT-NEXT:     global %15 .str15: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @int_score(%3 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @long_score(%4 value: i64) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%4)), const<i32>(20));
+// DEFAULT-NEXT:     fn %4 @long_score(%5 value: i64) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%5)), const<i32>(20));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @pointer_score(%6 value: ptr<const i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<const i32>>(%6))), const<i32>(30));
+// DEFAULT-NEXT:     fn %6 @pointer_score(%7 value: ptr<const i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<const i32>>(%7))), const<i32>(30));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 value: i32 [storage=automatic] [const] = const<i32>(7);
-// DEFAULT-NEXT:         let %9 array: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6));
-// DEFAULT-NEXT:         let %10 first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%8));
-// DEFAULT-NEXT:         let %11 second: i32 [storage=automatic] = call<i32, signature=fn(i64) -> i32>(%3, const<i64>(8));
-// DEFAULT-NEXT:         let %12 third: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i32>) -> i32>(%5, pointer_cast<ptr<const i32>, reason=explicit>(array_decay<ptr<i32>, length=Some(2)>(%9)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%14)), read<i32>(%10), read<i32>(%11), read<i32>(%12));
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %9 value: i32 [storage=automatic] [const] = const<i32>(7);
+// DEFAULT-NEXT:         let %10 array: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6));
+// DEFAULT-NEXT:         let %11 first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9));
+// DEFAULT-NEXT:         let %12 second: i32 [storage=automatic] = call<i32, signature=fn(i64) -> i32>(%4, const<i64>(8));
+// DEFAULT-NEXT:         let %13 third: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i32>) -> i32>(%6, pointer_cast<ptr<const i32>, reason=explicit>(array_decay<ptr<i32>, length=Some(2)>(%10)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%15)), read<i32>(%11), read<i32>(%12), read<i32>(%13));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

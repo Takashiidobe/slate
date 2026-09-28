@@ -46,25 +46,25 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @classify(%2 a: i32, %3 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %9 lt<i32>(read<i32>(%2), read<i32>(%3))
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @classify(%3 a: i32, %4 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 r: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         while %10 lt<i32>(read<i32>(%3), read<i32>(%4))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%2, add<i32, overflow=ub>(read<i32>(%2), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i32>(%4, add<i32, overflow=ub>(read<i32>(%4), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i32>(%3, add<i32, overflow=ub>(read<i32>(%3), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i32>(%5, add<i32, overflow=ub>(read<i32>(%5), const<i32>(1)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%2), read<i32>(%3))
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), read<i32>(%4))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%4, add<i32, overflow=ub>(read<i32>(%4), const<i32>(10)));
+// DEFAULT-NEXT:                 write<i32>(%5, add<i32, overflow=ub>(read<i32>(%5), const<i32>(10)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %5 t: i32 [storage=automatic] = conditional<i32>(gt<i32>(read<i32>(%2), read<i32>(%3)), sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%3)), sub<i32, overflow=ub>(read<i32>(%3), read<i32>(%2)));
-// DEFAULT-NEXT:         let %6 m: i32 [storage=automatic] = add<i32, overflow=ub>(and<i32>(read<i32>(%2), read<i32>(%3)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%2), const<i32>(1)));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%4), read<i32>(%5)), read<i32>(%6));
+// DEFAULT-NEXT:         let %6 t: i32 [storage=automatic] = conditional<i32>(gt<i32>(read<i32>(%3), read<i32>(%4)), sub<i32, overflow=ub>(read<i32>(%3), read<i32>(%4)), sub<i32, overflow=ub>(read<i32>(%4), read<i32>(%3)));
+// DEFAULT-NEXT:         let %7 m: i32 [storage=automatic] = add<i32, overflow=ub>(and<i32>(read<i32>(%3), read<i32>(%4)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%3), const<i32>(1)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%5), read<i32>(%6)), read<i32>(%7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(2), const<i32>(5)));
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), call<i32, signature=fn(i32, i32) -> i32>(%2, const<i32>(2), const<i32>(5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -65,31 +65,31 @@ int main() {
 // DEFAULT-NEXT:         if gt<i32>(read<i32>(%3), read<i32>(%1))
 // DEFAULT-NEXT:             write<i32>(%1, read<i32>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @CallFunctionRec(%5 fun: ptr<fn(i32) -> i32>, %6 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%5), read<i32>(%6)), const<i32>(0)))
+// DEFAULT-NEXT:     fn %4 @CallFunctionRec(%6 fun: ptr<fn(i32) -> i32>, %7 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%6), read<i32>(%7)), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%6), const<i32>(10))
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%7), const<i32>(10))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%5), add<i32, overflow=ub>(read<i32>(%6), const<i32>(1)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%6), add<i32, overflow=ub>(read<i32>(%7), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @CallFunction(%8 fun: ptr<fn(i32) -> i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%8), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             write<bool>(%12, not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%8), const<i32>(0)), const<i32>(0))));
+// DEFAULT-NEXT:     fn %8 @CallFunction(%10 fun: ptr<fn(i32) -> i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %14: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%10), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             write<bool>(%14, not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%10), const<i32>(0)), const<i32>(0))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%12, const<bool>(false));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%12));
+// DEFAULT-NEXT:             write<bool>(%14, const<bool>(false));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%14));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @callback(%10 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, read<i32>(%10));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%10), const<i32>(0)));
+// DEFAULT-NEXT:     fn %11 @callback(%12 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, read<i32>(%12));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%12), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%7, function_decay<ptr<fn(i32) -> i32>>(%9));
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%8, function_decay<ptr<fn(i32) -> i32>>(%11));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);

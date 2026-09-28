@@ -38,14 +38,14 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %0 a: u32 [storage=static] = const<u32>(1387579096) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @sinkandcheck(%2 b: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%0), read<u32>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     fn %2 @sinkandcheck(%3 b: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%0), read<u32>(%3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u32>(%0, conditional<u32>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%0))));
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

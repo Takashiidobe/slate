@@ -46,24 +46,24 @@ void (__attribute__((pcs("aapcs-vfp"))) *arm_vfp_pointer)(void);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 callback = ptr<fn() -> void>;
 // DEFAULT-NEXT:     global %11 pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 register_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 cdecl_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 stdcall_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 thiscall_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 arm_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %20 arm_vfp_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %15 register_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %16 vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %17 cdecl_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %18 stdcall_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %19 thiscall_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %20 arm_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %21 arm_vfp_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @ms() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @sysv() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @registers(%21 <unnamed>: i32, %22 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @registers(%22 <unnamed>: i32, %23 <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %3 @fast() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %4 @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
 // DEFAULT-NEXT:     fn %5 @caller() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %6 @callee() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @method(%23 <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @method(%24 <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %8 @arm() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %9 @arm_vfp() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %12 @trailing() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %13 @accepts(%24 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %14 @accepts(%25 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -37,15 +37,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 120, 32, 37, 88, 32, 37, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 48, 56, 120, 124, 37, 45, 52, 88, 124, 37, 53, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 value: u32 [storage=automatic] = const<u32>(48879);
-// DEFAULT-NEXT:         let %3 mask: u32 [storage=automatic] = const<u32>(255);
-// DEFAULT-NEXT:         let %4 wide: u64 [storage=automatic] = const<u64>(511);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), read<u32>(%2), read<u32>(%3), read<u64>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%7)), read<u32>(%3), read<u32>(%3), read<u32>(%3));
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 120, 32, 37, 88, 32, 37, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([37, 48, 56, 120, 124, 37, 45, 52, 88, 124, 37, 53, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 value: u32 [storage=automatic] = const<u32>(48879);
+// DEFAULT-NEXT:         let %4 mask: u32 [storage=automatic] = const<u32>(255);
+// DEFAULT-NEXT:         let %5 wide: u64 [storage=automatic] = const<u64>(511);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), read<u32>(%3), read<u32>(%4), read<u64>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%8)), read<u32>(%4), read<u32>(%4), read<u32>(%4));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

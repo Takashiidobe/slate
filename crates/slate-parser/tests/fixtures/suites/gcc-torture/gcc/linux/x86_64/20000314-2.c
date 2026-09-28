@@ -31,9 +31,9 @@ toto(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @malloc(%2 size: u64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @toto() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%0, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100))));
+// DEFAULT-NEXT:     fn %1 @malloc(%3 size: u64) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @toto() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%1, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

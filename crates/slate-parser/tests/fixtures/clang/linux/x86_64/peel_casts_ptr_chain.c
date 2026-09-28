@@ -36,12 +36,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %1 @memset(%5 __s: ptr<void>, %6 __c: i32, %7 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 buf: array<i8, 8> [storage=automatic];
-// DEFAULT-NEXT:         let %4 p: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(8)>(%3);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(%4)), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
-// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(0)))));
+// DEFAULT-NEXT:     fn %4 @memset(%8 __s: ptr<void>, %9 __c: i32, %10 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 buf: array<i8, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %7 p: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(8)>(%6);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(%7)), const<i32>(0), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
+// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%7), const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

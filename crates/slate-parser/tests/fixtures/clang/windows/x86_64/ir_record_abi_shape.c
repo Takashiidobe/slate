@@ -93,18 +93,18 @@ struct arr20 returns_indirect_wide(void);
 // IR-NEXT:     type @type10 arr20 = struct {
 // IR-NEXT:         field0 a: array<i8, 20>;
 // IR-NEXT:     } [size=20, align=1, offsets=[0]];
-// IR-NEXT:     fn %11 @by_reference_three(%24 v: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %12 @by_reference_arr3(%25 v: @type1) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %13 @by_reference_nest(%26 v: @type2) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %14 @by_reference_two_doubles(%27 v: @type9) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %15 @by_reference_arr20(%28 v: @type10) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %16 @in_register_arr8(%29 v: @type3) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %17 @in_register_arr2f(%30 v: @type4) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %18 @in_register_wrapped_union(%31 v: @type5) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %19 @in_register_float_pair(%32 v: @type7) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %20 @in_register_one_double(%33 v: @type8) -> void [linkage=external] [abi=win64(native_c) -> void];
-// IR-NEXT:     fn %21 @returns_in_register() -> @type3 [linkage=external] [abi=win64() -> native_c];
-// IR-NEXT:     fn %22 @returns_indirect() -> @type1 [linkage=external] [abi=win64() -> native_c];
-// IR-NEXT:     fn %23 @returns_indirect_wide() -> @type10 [linkage=external] [abi=win64() -> native_c];
+// IR-NEXT:     fn %12 @by_reference_three(%34 v: @type0) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %14 @by_reference_arr3(%35 v: @type1) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %16 @by_reference_nest(%36 v: @type2) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %18 @by_reference_two_doubles(%37 v: @type9) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %20 @by_reference_arr20(%38 v: @type10) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %22 @in_register_arr8(%39 v: @type3) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %24 @in_register_arr2f(%40 v: @type4) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %26 @in_register_wrapped_union(%41 v: @type5) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %28 @in_register_float_pair(%42 v: @type7) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %30 @in_register_one_double(%43 v: @type8) -> void [linkage=external] [abi=win64(native_c) -> void];
+// IR-NEXT:     fn %31 @returns_in_register() -> @type3 [linkage=external] [abi=win64() -> native_c];
+// IR-NEXT:     fn %32 @returns_indirect() -> @type1 [linkage=external] [abi=win64() -> native_c];
+// IR-NEXT:     fn %33 @returns_indirect_wide() -> @type10 [linkage=external] [abi=win64() -> native_c];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

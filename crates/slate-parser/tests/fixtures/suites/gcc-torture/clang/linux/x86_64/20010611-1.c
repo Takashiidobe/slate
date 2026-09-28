@@ -55,7 +55,7 @@ fgetws (buf, n, fp)
 // DEFAULT-NEXT:     type @type1 __FILE = @type0;
 // DEFAULT-NEXT:     type @type2 _IO_FILE = @type0;
 // DEFAULT-NEXT:     type @type3 wchar_t = i64;
-// DEFAULT-NEXT:     fn %4 @fgetws(%5 buf: ptr<i64>, %6 n: i32, %7 fp: ptr<@type0>) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %7 @fgetws(%8 buf: ptr<i64>, %9 n: i32, %10 fp: ptr<@type0>) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<i64>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

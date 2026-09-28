@@ -53,32 +53,32 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:     type @type8 FILE = @type7;
 // IR-NEXT:     type @type9 size_t = u32;
 // IR-NEXT:     global %8 _OptionsStorage: u64 [storage=static] [linkage=internal];
-// IR-NEXT:     global %26 windows_version: i32 [storage=static] = const<i32>(2560) [linkage=external];
-// IR-NEXT:     global %41 .str41: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
+// IR-NEXT:     global %34 windows_version: i32 [storage=static] = const<i32>(2560) [linkage=external];
+// IR-NEXT:     global %49 .str49: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
 // IR-NEXT:     fn %7 @__local_stdio_printf_options() -> ptr<u64> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // IR-NEXT:         return addr_of<ptr<u64>>(%8);
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @__stdio_common_vsprintf(%33 _Options: u64, %34 _Buffer: ptr<i8>, %35 _BufferCount: u32, %36 _Format: ptr<const i8>, %37 _Locale: ptr<@type2>, %38 _ArgList: ptr<i8>) -> i32 [linkage=external];
-// IR-NEXT:     fn %12 @vsnprintf(%13 _Buffer: ptr<i8> [const], %14 _BufferCount: u32 [const], %15 _Format: ptr<const i8> [const], %16 _ArgList: ptr<i8>) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %17 _Result: i32 [storage=automatic] [const] = call<i32, signature=fn(u64, ptr<i8>, u32, ptr<const i8>, ptr<@type2>, ptr<i8>) -> i32>(%11, or<u64>(read<u64>(deref(call<ptr<u64>, signature=fn() -> ptr<u64>>(%7))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(1))), read<ptr<i8>>(%13), read<u32>(%14), read<ptr<const i8>>(%15), null<ptr<@type2>>, read<ptr<i8>>(%16));
-// IR-NEXT:         return conditional<i32>(lt<i32>(read<i32>(%17), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)), read<i32>(%17));
+// IR-NEXT:     fn %17 @__stdio_common_vsprintf(%41 _Options: u64, %42 _Buffer: ptr<i8>, %43 _BufferCount: u32, %44 _Format: ptr<const i8>, %45 _Locale: ptr<@type2>, %46 _ArgList: ptr<i8>) -> i32 [linkage=external];
+// IR-NEXT:     fn %18 @vsnprintf(%19 _Buffer: ptr<i8> [const], %20 _BufferCount: u32 [const], %21 _Format: ptr<const i8> [const], %22 _ArgList: ptr<i8>) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %23 _Result: i32 [storage=automatic] [const] = call<i32, signature=fn(u64, ptr<i8>, u32, ptr<const i8>, ptr<@type2>, ptr<i8>) -> i32>(%17, or<u64>(read<u64>(deref(call<ptr<u64>, signature=fn() -> ptr<u64>>(%7))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), const<i32>(1))), read<ptr<i8>>(%19), read<u32>(%20), read<ptr<const i8>>(%21), null<ptr<@type2>>, read<ptr<i8>>(%22));
+// IR-NEXT:         return conditional<i32>(lt<i32>(read<i32>(%23), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(1)), read<i32>(%23));
 // IR-NEXT:     }
-// IR-NEXT:     fn %18 @snprintf(%19 _Buffer: ptr<i8> [const], %20 _BufferCount: u32 [const], %21 _Format: ptr<const i8> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %22 _Result: i32 [storage=automatic];
-// IR-NEXT:         let %23 _ArgList: ptr<i8> [storage=automatic];
-// IR-NEXT:         va_start(%23);
-// IR-NEXT:         write<i32>(%22, call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%12, read<ptr<i8>>(%19), read<u32>(%20), read<ptr<const i8>>(%21), read<ptr<i8>>(%23)));
-// IR-NEXT:         call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%12, read<ptr<i8>>(%19), read<u32>(%20), read<ptr<const i8>>(%21), read<ptr<i8>>(%23));
-// IR-NEXT:         va_end(%23);
-// IR-NEXT:         return read<i32>(%22);
+// IR-NEXT:     fn %24 @snprintf(%25 _Buffer: ptr<i8> [const], %26 _BufferCount: u32 [const], %27 _Format: ptr<const i8> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %28 _Result: i32 [storage=automatic];
+// IR-NEXT:         let %29 _ArgList: ptr<i8> [storage=automatic];
+// IR-NEXT:         va_start(%29);
+// IR-NEXT:         write<i32>(%28, call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%18, read<ptr<i8>>(%25), read<u32>(%26), read<ptr<const i8>>(%27), read<ptr<i8>>(%29)));
+// IR-NEXT:         call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%18, read<ptr<i8>>(%25), read<u32>(%26), read<ptr<const i8>>(%27), read<ptr<i8>>(%29));
+// IR-NEXT:         va_end(%29);
+// IR-NEXT:         return read<i32>(%28);
 // IR-NEXT:     }
-// IR-NEXT:     fn %24 @abs(%39 _Number: i32) -> i32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %25 @strlen(%40 _Str: ptr<const i8>) -> u32 [linkage=external];
-// IR-NEXT:     fn %27 @magnitude_digits(%28 digits: ptr<const i8>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<u32, overflow=wrap>(call<u32, signature=fn(ptr<const i8>) -> u32>(%25, read<ptr<const i8>>(%28)), reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn(i32) -> i32>(%24, neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=always>(const<u32>(4))))));
+// IR-NEXT:     fn %31 @abs(%47 _Number: i32) -> i32 [linkage=external] [memory=none];
+// IR-NEXT:     fn %33 @strlen(%48 _Str: ptr<const i8>) -> u32 [linkage=external];
+// IR-NEXT:     fn %35 @magnitude_digits(%36 digits: ptr<const i8>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<u32, overflow=wrap>(call<u32, signature=fn(ptr<const i8>) -> u32>(%33, read<ptr<const i8>>(%36)), reinterpret<u32, reason=explicit, fits=unknown>(call<i32, signature=fn(i32) -> i32>(%31, neg<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=always>(const<u32>(4))))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %29 @format_number(%30 buffer: ptr<i8>, %31 size: u32, %32 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ...) -> i32>(%18, read<ptr<i8>>(%30), read<u32>(%31), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%41)), read<i32>(%32));
+// IR-NEXT:     fn %37 @format_number(%38 buffer: ptr<i8>, %39 size: u32, %40 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ...) -> i32>(%24, read<ptr<i8>>(%38), read<u32>(%39), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%49)), read<i32>(%40));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

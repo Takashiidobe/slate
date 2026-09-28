@@ -43,10 +43,10 @@ int main(void) {
 // DEFAULT-NEXT:     type @type7 _IO_codecvt = struct incomplete;
 // DEFAULT-NEXT:     type @type8 _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     extern %9 stderr: ptr<@type3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([98, 121, 101, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %10 @fputs(%12 __s: ptr<const i8> [restrict], %13 __stream: ptr<@type3> [restrict]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%14)), read<ptr<@type3>>(%9));
+// DEFAULT-NEXT:     global %16 .str16: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([98, 121, 101, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %12 @fputs(%14 __s: ptr<const i8> [restrict], %15 __stream: ptr<@type3> [restrict]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<@type3>) -> i32>(%12, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%16)), read<ptr<@type3>>(%9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

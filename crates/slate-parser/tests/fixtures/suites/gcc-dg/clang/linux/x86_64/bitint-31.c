@@ -507,3198 +507,3198 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fesetround(%38 __rounding_direction: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @testflt_135(%2 b: i135b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%2));
+// DEFAULT-NEXT:     fn %1 @fesetround(%39 __rounding_direction: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @testflt_135(%3 b: i135b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @testfltu_135(%4 b: u135b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%4));
+// DEFAULT-NEXT:     fn %4 @testfltu_135(%5 b: u135b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @testflt_192(%6 b: i192b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%6));
+// DEFAULT-NEXT:     fn %6 @testflt_192(%7 b: i192b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @testfltu_192(%8 b: u192b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%8));
+// DEFAULT-NEXT:     fn %8 @testfltu_192(%9 b: u192b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @testflt_575(%10 b: i575b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%10));
+// DEFAULT-NEXT:     fn %10 @testflt_575(%11 b: i575b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%11));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @testfltu_575(%12 b: u575b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%12));
+// DEFAULT-NEXT:     fn %12 @testfltu_575(%13 b: u575b) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @testdbl_135(%14 b: i135b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%14));
+// DEFAULT-NEXT:     fn %14 @testdbl_135(%15 b: i135b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%15));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @testdblu_135(%16 b: u135b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%16));
+// DEFAULT-NEXT:     fn %16 @testdblu_135(%17 b: u135b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%17));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @testdbl_192(%18 b: i192b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%18));
+// DEFAULT-NEXT:     fn %18 @testdbl_192(%19 b: i192b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%19));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @testdblu_192(%20 b: u192b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%20));
+// DEFAULT-NEXT:     fn %20 @testdblu_192(%21 b: u192b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%21));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @testdbl_575(%22 b: i575b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%22));
+// DEFAULT-NEXT:     fn %22 @testdbl_575(%23 b: i575b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%23));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @testdblu_575(%24 b: u575b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%24));
+// DEFAULT-NEXT:     fn %24 @testdblu_575(%25 b: u575b) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%25));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @testldbl_135(%26 b: i135b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%26));
+// DEFAULT-NEXT:     fn %26 @testldbl_135(%27 b: i135b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i135b>(%27));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @testldblu_135(%28 b: u135b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%28));
+// DEFAULT-NEXT:     fn %28 @testldblu_135(%29 b: u135b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u135b>(%29));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @testldbl_192(%30 b: i192b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%30));
+// DEFAULT-NEXT:     fn %30 @testldbl_192(%31 b: i192b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i192b>(%31));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @testldblu_192(%32 b: u192b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%32));
+// DEFAULT-NEXT:     fn %32 @testldblu_192(%33 b: u192b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u192b>(%33));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @testldbl_575(%34 b: i575b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%34));
+// DEFAULT-NEXT:     fn %34 @testldbl_575(%35 b: i575b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<i575b>(%35));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @testldblu_575(%36 b: u575b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%36));
+// DEFAULT-NEXT:     fn %36 @testldblu_575(%37 b: u575b) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=false, rounding=environment, exceptions=ignore>(read<u575b>(%37));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %49 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %37 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         do %39
+// DEFAULT-NEXT:     fn %41 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %50 @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %38 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         do %40
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %41
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %42
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %43
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115713941029764726785))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %44
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %45
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %46
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467776))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %47
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(const<i78b>(151115722948229019467777))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %48
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %50
+// DEFAULT-NEXT:         do %49
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %51
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%1, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, widen<i135b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %52
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i135b) -> f32>(%2, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %53
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726783))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %54
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111571e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726784))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %55
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115713941029764726785))), const<f32>(1.5111571e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %56
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115718444629392097280))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %57
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467775))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %58
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111573e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111572e23))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467776))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %59
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111573e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u77b>(151115722948229019467777))), const<f32>(1.5111572e23))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %60
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %61
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %62
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%3, const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, widen<u135b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %63
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, const<u135b>(43556142965880123323311949751266331066367)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u135b) -> f32>(%4, const<u135b>(43556142965880123323311949751266331066367)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %64
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613375)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %65
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.01412036e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613376)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %66
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141203895131470501001744613377)))), neg<f32>(const<f32>(1.01412036e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %67
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141205e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204197362925404659038289920)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %68
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141205e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141205e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141205e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966463)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %69
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141205e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141205e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141204e31)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141205e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141205e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966464)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %70
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141205e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141205e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(neg<i104b, overflow=ub>(const<i104b>(10141204499594380308316331966465)))), neg<f32>(const<f32>(1.0141204e31)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %71
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %72
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %73
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%5, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, widen<i192b, reason=arg>(const<i129b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %74
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i192b) -> f32>(%6, const<i192b>(3138550867693340381917894711603833208051177722232017256447)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %75
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613375))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %76
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.01412036e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613376))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %77
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141203895131470501001744613377))), const<f32>(1.01412036e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %78
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141205e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204197362925404659038289920))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %79
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141205e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141205e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141205e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966463))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %80
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141205e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141205e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141204e31))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141205e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141205e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966464))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %81
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141205e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141205e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u103b>(10141204499594380308316331966465))), const<f32>(1.0141204e31))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %82
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %83
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %84
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%7, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, widen<u192b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %85
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u192b) -> f32>(%8, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %86
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %87
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %88
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %89
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %90
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %91
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %92
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(const<i124b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %93
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282346638528859811704183484516925440)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %94
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568447)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %95
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%49)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%9, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, widen<i575b, reason=arg>(neg<i129b, overflow=ub>(const<i129b>(340282356779733661637539395458142568448)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %96
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(call<f32, signature=fn() -> f32>(%50)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(i575b) -> f32>(%10, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f32>(const<f32>(3.4028235e38)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %97
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352575))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %98
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352576))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %99
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823015541376812058405359715352577))), const<f32>(1.0633823e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %100
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823332454026869115755733891153920))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %101
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955263))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %102
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955264))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %103
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.0633824e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u123b>(10633823649366676926173106108066955265))), const<f32>(1.06338233e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %104
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282346638528859811704183484516925440))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %105
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568447))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %106
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%11, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, widen<u575b, reason=arg>(const<u128b>(340282356779733661637539395458142568448))), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %107
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), call<f32, signature=fn() -> f32>(%50))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f32, exceptions=ignore>(call<f32, signature=fn(u575b) -> f32>(%12, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f32>(3.4028235e38))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %108
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602943)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %109
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.126764793255865e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602944)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %110
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558650424686050812251602945)))), neg<f64>(const<f64>(2.126764793255865e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %111
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558654e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558651605277671529662906368)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %112
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558654e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558654e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558654e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209791)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %113
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558654e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558654e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558652e37)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558654e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558654e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209792)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %114
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558654e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558654e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, widen<i135b, reason=arg>(neg<i125b, overflow=ub>(const<i125b>(21267647932558652785869292247074209793)))), neg<f64>(const<f64>(2.1267647932558652e37)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %115
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940059243804335646374816120832)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %116
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827007)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %117
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827008)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %118
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.1778071482940062e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%13, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.177807148294006e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940060452730155261003990827009)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %119
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.1778071482940062e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i135b) -> f64>(%14, const<i135b>(21778071482940061661655974875633165533183)), const<f64>(2.177807148294006e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %120
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602943))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %121
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.126764793255865e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602944))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %122
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558650424686050812251602945))), const<f64>(2.126764793255865e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %123
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558654e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558651605277671529662906368))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %124
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558654e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558654e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558654e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209791))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %125
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558654e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558654e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558652e37))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558654e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558654e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209792))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %126
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558654e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558654e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, widen<u135b, reason=arg>(const<u124b>(21267647932558652785869292247074209793))), const<f64>(2.1267647932558652e37))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %127
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880118487608671292749632241664)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %128
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654015)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %129
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654016)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %130
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.3556142965880123e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%15, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.355614296588012e40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880120905460310522007981654017)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %131
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.3556142965880123e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u135b) -> f64>(%16, const<u135b>(43556142965880123323311949751266331066367)), const<f64>(4.355614296588012e40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %132
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %133
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %134
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %135
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %136
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %137
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %138
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, widen<i192b, reason=arg>(const<i147b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %139
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340033468750984562846621555579712101368725504))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %140
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990975))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %141
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.13855086769334e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990976))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %142
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%17, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, neg<i192b, overflow=ub>(const<i192b>(3138550867693340207693322848083339914803378717166692990977))), neg<f64>(const<f64>(3.13855086769334e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %143
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i192b) -> f64>(%18, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i32>(1)))), neg<f64>(const<f64>(3.1385508676933404e57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %144
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430975))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %145
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430976))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %146
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122477710862401666030147234430977))), const<f64>(8.920298079412247e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %147
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122482662622558807551246830927872))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %148
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424767))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %149
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424768))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %150
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.92029807941225e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, widen<u192b, reason=arg>(const<u146b>(89202980794122487614382715949072346427424769))), const<f64>(8.920298079412248e43))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %151
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680066937501969125693243111159424202737451008)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %152
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981951)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %153
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981952)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %154
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.277101735386681e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%19, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.27710173538668e57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680415386645696166679829606757434333385981953)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %155
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.277101735386681e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u192b) -> f64>(%20, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f64>(6.27710173538668e57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %156
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %157
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186636e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %158
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897)))), neg<f64>(const<f64>(6.156563468186636e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %159
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186638e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %160
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186638e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186638e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186638e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %161
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186638e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186638e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186637e113)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186638e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186638e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %162
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186638e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186638e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, widen<i575b, reason=arg>(neg<i379b, overflow=ub>(const<i379b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329)))), neg<f64>(const<f64>(6.156563468186637e113)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %163
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276126650327970124302082526882038193909742709080463879918896882169507607035916867654709124839777195049479857541529867095829765369898539058829479405123401922117632)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %164
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646207)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %165
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646208)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %166
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827614e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%21, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827613e172))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276130082726800189606940017832437734606351343798113951571601579401237199807508566482735186119597525776757346189685562836258783930892538917151385692137547479646209)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %167
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827614e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(i575b) -> f64>(%22, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), const<f64>(6.183260036827613e172))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %168
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392895))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %169
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186636e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392896))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %170
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663635164482277361060010743329029962521103256875011322006445221646740336801072761830405785423389392897))), const<f64>(6.156563468186636e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %171
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186638e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663669340274852095621329063676328675354936900147369028450764374312465492316685252079206152816780378112))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %172
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186638e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186638e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186638e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363327))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %173
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186638e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186638e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186637e113))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186638e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186638e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363328))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %174
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186638e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186638e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, widen<u575b, reason=arg>(const<u378b>(615656346818663703516067426830182647384023627388188770543419726734895083526978190647832297742328006520210171363329))), const<f64>(6.156563468186637e113))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %175
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552253300655940248604165053764076387819485418160927759837793764339015214071833735309418249679554390098959715083059734191659530739797078117658958810246803844235264)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %176
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292415)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %177
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292416)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %178
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655227e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%23, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655225e173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552260165453600379213880035664875469212702687596227903143203158802474399615017132965470372239195051553514692379371125672517567861785077834302771384275094959292417)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %179
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655227e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=ignore>(call<f64, signature=fn(u575b) -> f64>(%24, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f64>(1.2366520073655225e173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %180
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994111)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %181
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994112)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %182
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071616947187835994113)))), neg<f80>(const<f80>(2.75776627212370716158E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %183
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071618073087742836736)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %184
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679359)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %185
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679360)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %186
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716203E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, widen<i135b, reason=arg>(neg<i116b, overflow=ub>(const<i116b>(27577662721237071619198987649679361)))), neg<f80>(const<f80>(2.75776627212370716181E+34)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %187
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061660475383254915754229760))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %188
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881471))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %189
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881472))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %190
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%25, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, neg<i135b, overflow=ub>(const<i135b>(21778071482940061661065679065274459881473))), neg<f80>(const<f80>(2.17780714829400616605E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %191
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i135b) -> f80>(%26, sub<i135b, overflow=ub>(neg<i135b, overflow=ub>(const<i135b>(21778071482940061661655974875633165533183)), widen<i135b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(2.17780714829400616617E+40)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %192
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994111))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %193
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716158E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994112))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %194
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071616947187835994113))), const<f80>(2.75776627212370716158E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %195
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716203E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071618073087742836736))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %196
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716203E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716203E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716203E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679359))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %197
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716203E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716203E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716181E+34))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716203E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716203E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679360))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %198
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716203E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716203E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, widen<u135b, reason=arg>(const<u115b>(27577662721237071619198987649679361))), const<f80>(2.75776627212370716181E+34))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %199
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123320950766509831508459520)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %200
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762943)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %201
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762944)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %202
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.35561429658801233233E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%27, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.3556142965880123321E+40))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123322131358130548919762945)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %203
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.35561429658801233233E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u135b) -> f80>(%28, const<u135b>(43556142965880123323311949751266331066367)), const<f80>(4.3556142965880123321E+40))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %204
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %205
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %206
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %207
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %208
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %209
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %210
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, widen<i192b, reason=arg>(const<i168b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %211
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381747753528143363976319490418516133150720))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %212
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203583))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %213
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203584))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %214
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%29, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, neg<i192b, overflow=ub>(const<i192b>(3138550867693340381832824119873598592185334070374075203585))), neg<f80>(const<f80>(3.13855086769334038175E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %215
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i192b) -> f80>(%30, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))), neg<f80>(const<f80>(3.13855086769334038192E+57)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %216
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596351))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %217
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596352))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %218
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743653878219701497927252918090596353))), const<f80>(9.63888021587697436488E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %219
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743658948822102410844858904903417856))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %220
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239359))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %221
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239360))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %222
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.6388802158769743669E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, widen<u192b, reason=arg>(const<u167b>(96388802158769743664019424503323762464891716239361))), const<f80>(9.63888021587697436589E+49))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %223
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763495507056286727952638980837032266301440)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %224
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407167)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %225
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407168)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %226
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.27710173538668076383E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%31, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.2771017353866807635E+57))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763665648239747197184370668140748150407169)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %227
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.27710173538668076383E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u192b) -> f80>(%32, const<u192b>(6277101735386680763835789423207666416102355444464034512895)), const<f80>(6.2771017353866807635E+57))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %228
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133511773678272426148233889331025751498446645922568076207932202076431648659257792374503198949281962308977915333294030066289778448068072486649492543280785653760))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %229
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414271))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %230
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414272))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %231
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%33, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, neg<i575b, overflow=ub>(const<i575b>(61832600368276133513449654263668972871336084150527229212580843295650257104417521612113879761551567875299183569233171906376587276303377046135167303423979970735847486911414273))), neg<f80>(const<f80>(6.18326003682761335118E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %232
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(i575b) -> f80>(%34, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i32>(1)))), neg<f80>(const<f80>(6.18326003682761335151E+172)))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %233
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267023547356544852296467778662051502996893291845136152415864404152863297318515584749006397898563924617955830666588060132579556896136144973298985086561571307520)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %234
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828543)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %235
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828544)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         do %236
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1024));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(2048));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.2366520073655226703E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3072));
-// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%35, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.23665200736552267024E+173))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%40);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267026899308527337945742672168301054458425161686591300514208835043224227759523103135750598367138466343812753174552606754092270334606847959941471694973822828545)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %237
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(2048));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.2366520073655226703E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, const<i32>(3072));
+// DEFAULT-NEXT:                 if ne<f80, exceptions=ignore>(call<f80, signature=fn(u575b) -> f80>(%36, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)), const<f80>(1.23665200736552267024E+173))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%41);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -53,29 +53,29 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 cached_value: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %2 computed: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %2 cached_value: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %3 computed: i32 [storage=static] = const<i32>(0) [linkage=internal];
 // DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @compute() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @compute() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(42);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @get_value() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%2), const<i32>(0)))
+// DEFAULT-NEXT:     fn %5 @get_value() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%3), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%1, call<i32, signature=fn() -> i32>(%3));
-// DEFAULT-NEXT:                 call<i32, signature=fn() -> i32>(%3);
-// DEFAULT-NEXT:                 write<i32>(%2, const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%2, call<i32, signature=fn() -> i32>(%4));
+// DEFAULT-NEXT:                 call<i32, signature=fn() -> i32>(%4);
+// DEFAULT-NEXT:                 write<i32>(%3, const<i32>(1));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:         return read<i32>(%2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @peek_value() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %6 @peek_value() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn() -> i32>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), call<i32, signature=fn() -> i32>(%5));
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), call<i32, signature=fn() -> i32>(%5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), call<i32, signature=fn() -> i32>(%6));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

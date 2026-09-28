@@ -27,17 +27,17 @@ int exercise_add(void) { return main(); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// IR-NEXT:     fn %0 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// IR-NEXT:     fn %1 @add(%2 a: i32, %3 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %4 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3));
-// IR-NEXT:         return read<i32>(%4);
+// IR-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// IR-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %2 @add(%3 a: i32, %4 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %5 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%3), read<i32>(%4));
+// IR-NEXT:         return read<i32>(%5);
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(2), const<i32>(3)));
+// IR-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// IR-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), call<i32, signature=fn(i32, i32) -> i32>(%2, const<i32>(2), const<i32>(3)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @exercise_add() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn() -> i32>(%5);
+// IR-NEXT:     fn %7 @exercise_add() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<i32, signature=fn() -> i32>(%6);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

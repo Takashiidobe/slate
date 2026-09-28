@@ -45,19 +45,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 usVlanID: u16) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 uiVlanID: u32 [storage=automatic] = const<u32>(4294967295);
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65535))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%1))))
-// DEFAULT-NEXT:             write<u32>(%2, widen<u32, reason=explicit>(read<u16>(%1)));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(read<u32>(%2));
+// DEFAULT-NEXT:     fn %1 @f(%2 usVlanID: u16) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %3 uiVlanID: u32 [storage=automatic] = const<u32>(4294967295);
+// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65535))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%2))))
+// DEFAULT-NEXT:             write<u32>(%3, widen<u32, reason=explicit>(read<u16>(%2)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(read<u32>(%3));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u16) -> i32>(%0, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u16) -> i32>(%0, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(const<i32>(65535)))), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u16) -> i32>(%1, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1)))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u16) -> i32>(%1, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(const<i32>(65535)))), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

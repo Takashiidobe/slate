@@ -60,43 +60,43 @@ int main(void) {
 // DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
 // DEFAULT-NEXT:     type @type1 va_list = va_list;
 // DEFAULT-NEXT:     type @type2 va_list = va_list;
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %17 .str17: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @sum(%4 n: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%5);
-// DEFAULT-NEXT:         let %6 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %15
+// DEFAULT-NEXT:     global %18 .str18: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %3 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @sum(%5 n: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %6 ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%6);
+// DEFAULT-NEXT:         let %7 total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %16
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %7 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%7), read<i32>(%4))
+// DEFAULT-NEXT:                 let %8 i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%8), read<i32>(%5))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %18: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%19));
+// DEFAULT-NEXT:                 let %19: i32 [synthetic] = read<i32>(%8);
+// DEFAULT-NEXT:                 let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%20));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %20: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                     let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), va_arg<i32>(%5));
-// DEFAULT-NEXT:                     write<i32>(%6, read<i32>(%21));
+// DEFAULT-NEXT:                     let %21: i32 [synthetic] = read<i32>(%7);
+// DEFAULT-NEXT:                     let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), va_arg<i32>(%6));
+// DEFAULT-NEXT:                     write<i32>(%7, read<i32>(%22));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         va_end(%5);
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:         va_end(%6);
+// DEFAULT-NEXT:         return read<i32>(%7);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @pick_second(%9 marker: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%10);
-// DEFAULT-NEXT:         let %11 first: i32 [storage=automatic] = va_arg<i32>(%10);
-// DEFAULT-NEXT:         let %12 second: i32 [storage=automatic] = va_arg<i32>(%10);
-// DEFAULT-NEXT:         va_end(%10);
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%9), mul<i32, overflow=ub>(read<i32>(%11), const<i32>(10))), read<i32>(%12));
+// DEFAULT-NEXT:     fn %9 @pick_second(%10 marker: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %11 ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%11);
+// DEFAULT-NEXT:         let %12 first: i32 [storage=automatic] = va_arg<i32>(%11);
+// DEFAULT-NEXT:         let %13 second: i32 [storage=automatic] = va_arg<i32>(%11);
+// DEFAULT-NEXT:         va_end(%11);
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%10), mul<i32, overflow=ub>(read<i32>(%12), const<i32>(10))), read<i32>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%16)), call<i32, signature=fn(i32, ...) -> i32>(%3, const<i32>(4), const<i32>(10), const<i32>(20), const<i32>(30), const<i32>(40)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%17)), call<i32, signature=fn(i32, ...) -> i32>(%8, const<i32>(5), const<i32>(7), const<i32>(9)));
+// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%17)), call<i32, signature=fn(i32, ...) -> i32>(%4, const<i32>(4), const<i32>(10), const<i32>(20), const<i32>(30), const<i32>(40)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%18)), call<i32, signature=fn(i32, ...) -> i32>(%9, const<i32>(5), const<i32>(7), const<i32>(9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

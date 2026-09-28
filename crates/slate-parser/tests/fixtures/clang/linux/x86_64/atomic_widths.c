@@ -59,26 +59,26 @@ int main(void) {
 // DEFAULT-NEXT:     type @type3 atomic_uchar = u8;
 // DEFAULT-NEXT:     type @type4 atomic_uint = u32;
 // DEFAULT-NEXT:     type @type5 atomic_llong = i64;
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 32, 37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %12 @printf(%22 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 u8: atomic u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(250)));
-// DEFAULT-NEXT:         let %15 i8: atomic i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(5)));
-// DEFAULT-NEXT:         let %16 u32: atomic u32 [storage=automatic] = const<u32>(1000);
-// DEFAULT-NEXT:         let %17 i64: atomic i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(10000000000));
-// DEFAULT-NEXT:         let %18 old_u8: u8 [storage=automatic];
-// DEFAULT-NEXT:         let %24: u8 [synthetic] = update<u8, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic u8>>(%14)), add<u8, overflow=wrap>(old<u8>, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(3)))));
-// DEFAULT-NEXT:         write<u8>(%18, read<u8>(%24));
-// DEFAULT-NEXT:         let %19 old_i8: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %25: i8 [synthetic] = update<i8, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i8>>(%15)), sub<i8, overflow=wrap>(old<i8>, truncate<i8, reason=arg, fits=always>(const<i32>(7))));
-// DEFAULT-NEXT:         write<i8>(%19, read<i8>(%25));
-// DEFAULT-NEXT:         let %20 old_u32: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %26: u32 [synthetic] = update<u32, result=old, atomic=release>(deref(addr_of<ptr<atomic u32>>(%16)), xor<u32>(old<u32>, const<u32>(255)));
-// DEFAULT-NEXT:         write<u32>(%20, read<u32>(%26));
-// DEFAULT-NEXT:         let %21 old_i64: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %27: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i64>>(%17)), const<i64>(1234567890123));
-// DEFAULT-NEXT:         write<i64>(%21, read<i64>(%27));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%12, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%23)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%18))), widen<i32, reason=vararg>(read<i8>(%19)), read<u32>(%20), read<i64>(%21), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8, atomic=seq_cst>(%14))), widen<i32, reason=vararg>(read<i8, atomic=seq_cst>(%15)), read<u32, atomic=seq_cst>(%16), read<i64, atomic=seq_cst>(%17));
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 32, 37, 117, 32, 37, 100, 32, 37, 117, 32, 37, 108, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %13 @printf(%23 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %15 u8: atomic u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(250)));
+// DEFAULT-NEXT:         let %16 i8: atomic i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(5)));
+// DEFAULT-NEXT:         let %17 u32: atomic u32 [storage=automatic] = const<u32>(1000);
+// DEFAULT-NEXT:         let %18 i64: atomic i64 [storage=automatic] = neg<i64, overflow=ub>(const<i64>(10000000000));
+// DEFAULT-NEXT:         let %19 old_u8: u8 [storage=automatic];
+// DEFAULT-NEXT:         let %25: u8 [synthetic] = update<u8, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic u8>>(%15)), add<u8, overflow=wrap>(old<u8>, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(3)))));
+// DEFAULT-NEXT:         write<u8>(%19, read<u8>(%25));
+// DEFAULT-NEXT:         let %20 old_i8: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %26: i8 [synthetic] = update<i8, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i8>>(%16)), sub<i8, overflow=wrap>(old<i8>, truncate<i8, reason=arg, fits=always>(const<i32>(7))));
+// DEFAULT-NEXT:         write<i8>(%20, read<i8>(%26));
+// DEFAULT-NEXT:         let %21 old_u32: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %27: u32 [synthetic] = update<u32, result=old, atomic=release>(deref(addr_of<ptr<atomic u32>>(%17)), xor<u32>(old<u32>, const<u32>(255)));
+// DEFAULT-NEXT:         write<u32>(%21, read<u32>(%27));
+// DEFAULT-NEXT:         let %22 old_i64: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %28: i64 [synthetic] = update<i64, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i64>>(%18)), const<i64>(1234567890123));
+// DEFAULT-NEXT:         write<i64>(%22, read<i64>(%28));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%24)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%19))), widen<i32, reason=vararg>(read<i8>(%20)), read<u32>(%21), read<i64>(%22), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8, atomic=seq_cst>(%15))), widen<i32, reason=vararg>(read<i8, atomic=seq_cst>(%16)), read<u32, atomic=seq_cst>(%17), read<i64, atomic=seq_cst>(%18));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

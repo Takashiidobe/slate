@@ -81,57 +81,57 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%21 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @shift_by_promoted_types(%3 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic] = const<i32>(4);
-// DEFAULT-NEXT:         let %5 u: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(3));
-// DEFAULT-NEXT:         let %6 l: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(5));
-// DEFAULT-NEXT:         let %7 ull: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(6)));
-// DEFAULT-NEXT:         let %8 s: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(2));
-// DEFAULT-NEXT:         let %9 a: u129b [storage=automatic] = reinterpret<u129b, reason=assign, fits=unknown>(widen<i129b, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u129b>(%9, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%9), read<i32>(%4)));
-// DEFAULT-NEXT:         write<u129b>(%9, shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%9), read<u32>(%5)));
-// DEFAULT-NEXT:         let %23: u129b [synthetic] = read<u129b>(%9);
-// DEFAULT-NEXT:         let %24: u129b [synthetic] = shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%23), read<i64>(%6));
-// DEFAULT-NEXT:         write<u129b>(%9, read<u129b>(%24));
-// DEFAULT-NEXT:         let %25: u129b [synthetic] = read<u129b>(%9);
-// DEFAULT-NEXT:         let %26: u129b [synthetic] = shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%25), widen<i32, reason=promotion>(read<i16>(%8)));
-// DEFAULT-NEXT:         write<u129b>(%9, read<u129b>(%26));
-// DEFAULT-NEXT:         write<u129b>(%9, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%9), read<u64>(%7)));
-// DEFAULT-NEXT:         write<u129b>(%9, add<u129b, overflow=wrap>(read<u129b>(%9), reinterpret<u129b, reason=explicit, fits=unknown>(widen<i129b, reason=explicit>(read<i32>(%3)))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u129b>(%9)));
+// DEFAULT-NEXT:     global %23 .str23: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%22 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @shift_by_promoted_types(%4 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = const<i32>(4);
+// DEFAULT-NEXT:         let %6 u: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(3));
+// DEFAULT-NEXT:         let %7 l: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(5));
+// DEFAULT-NEXT:         let %8 ull: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(6)));
+// DEFAULT-NEXT:         let %9 s: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(2));
+// DEFAULT-NEXT:         let %10 a: u129b [storage=automatic] = reinterpret<u129b, reason=assign, fits=unknown>(widen<i129b, reason=assign>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u129b>(%10, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%10), read<i32>(%5)));
+// DEFAULT-NEXT:         write<u129b>(%10, shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%10), read<u32>(%6)));
+// DEFAULT-NEXT:         let %24: u129b [synthetic] = read<u129b>(%10);
+// DEFAULT-NEXT:         let %25: u129b [synthetic] = shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%24), read<i64>(%7));
+// DEFAULT-NEXT:         write<u129b>(%10, read<u129b>(%25));
+// DEFAULT-NEXT:         let %26: u129b [synthetic] = read<u129b>(%10);
+// DEFAULT-NEXT:         let %27: u129b [synthetic] = shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%26), widen<i32, reason=promotion>(read<i16>(%9)));
+// DEFAULT-NEXT:         write<u129b>(%10, read<u129b>(%27));
+// DEFAULT-NEXT:         write<u129b>(%10, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%10), read<u64>(%8)));
+// DEFAULT-NEXT:         write<u129b>(%10, add<u129b, overflow=wrap>(read<u129b>(%10), reinterpret<u129b, reason=explicit, fits=unknown>(widen<i129b, reason=explicit>(read<i32>(%4)))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u129b>(%10)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @shift_across_limbs(%11 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 wide: u129b [storage=automatic] = reinterpret<u129b, reason=assign, fits=unknown>(widen<i129b, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u129b>(%12, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%12), const<i32>(128)));
-// DEFAULT-NEXT:         write<u129b>(%12, shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%12), const<i32>(127)));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u129b>(%12))), read<i32>(%11));
+// DEFAULT-NEXT:     fn %11 @shift_across_limbs(%12 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %13 wide: u129b [storage=automatic] = reinterpret<u129b, reason=assign, fits=unknown>(widen<i129b, reason=assign>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u129b>(%13, shl<u129b, overflow=wrap, amount_out_of_range=ub>(read<u129b>(%13), const<i32>(128)));
+// DEFAULT-NEXT:         write<u129b>(%13, shr<u129b, amount_out_of_range=ub, fill=zero_extend>(read<u129b>(%13), const<i32>(127)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u129b>(%13))), read<i32>(%12));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @shift_signed_arithmetic(%14 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15 n: i256b [storage=automatic] = widen<i256b, reason=assign>(neg<i32, overflow=ub>(const<i32>(1024)));
-// DEFAULT-NEXT:         write<i256b>(%15, shr<i256b, amount_out_of_range=ub, fill=sign_extend>(read<i256b>(%15), const<i32>(3)));
-// DEFAULT-NEXT:         write<i256b>(%15, shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i256b>(%15), const<i32>(2)));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i256b>(%15)), read<i32>(%14));
+// DEFAULT-NEXT:     fn %14 @shift_signed_arithmetic(%15 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %16 n: i256b [storage=automatic] = widen<i256b, reason=assign>(neg<i32, overflow=ub>(const<i32>(1024)));
+// DEFAULT-NEXT:         write<i256b>(%16, shr<i256b, amount_out_of_range=ub, fill=sign_extend>(read<i256b>(%16), const<i32>(3)));
+// DEFAULT-NEXT:         write<i256b>(%16, shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i256b>(%16), const<i32>(2)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i256b>(%16)), read<i32>(%15));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @shift_by_bitint(%17 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %18 amount: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i32>(4));
-// DEFAULT-NEXT:         let %19 v: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i32>(3));
-// DEFAULT-NEXT:         write<i256b>(%19, shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i256b>(%19), read<i256b>(%18)));
-// DEFAULT-NEXT:         write<i256b>(%19, shr<i256b, amount_out_of_range=ub, fill=sign_extend>(read<i256b>(%19), read<i256b>(%18)));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i256b>(%19)), read<i32>(%17));
+// DEFAULT-NEXT:     fn %17 @shift_by_bitint(%18 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %19 amount: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i32>(4));
+// DEFAULT-NEXT:         let %20 v: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i32>(3));
+// DEFAULT-NEXT:         write<i256b>(%20, shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i256b>(%20), read<i256b>(%19)));
+// DEFAULT-NEXT:         write<i256b>(%20, shr<i256b, amount_out_of_range=ub, fill=sign_extend>(read<i256b>(%20), read<i256b>(%19)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i256b>(%20)), read<i32>(%18));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)), const<i32>(1024))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%10, const<i32>(0)), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%13, const<i32>(0)), neg<i32, overflow=ub>(const<i32>(512)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%16, const<i32>(0)), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%22)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%10, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%13, const<i32>(3)), call<i32, signature=fn(i32) -> i32>(%16, const<i32>(4)));
+// DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%3, const<i32>(0)), const<i32>(1024))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%11, const<i32>(0)), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%14, const<i32>(0)), neg<i32, overflow=ub>(const<i32>(512)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%17, const<i32>(0)), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%23)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%11, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%14, const<i32>(3)), call<i32, signature=fn(i32) -> i32>(%17, const<i32>(4)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

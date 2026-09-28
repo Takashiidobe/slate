@@ -95,25 +95,25 @@ int forwarded_truth(int a, int b) { return (a, a < b) && (b, a > b); }
 // DEFAULT-NEXT:     fn %22 @truth_size(%23 a: i32 [c="int"], %24 b: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int)"] {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(4) [size_of="i32"]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @variadic(%38 tag: i32 [c="int"], ...) -> i32 [linkage=external] [c="int(int, ...)"];
-// DEFAULT-NEXT:     fn %26 @half_argument(%27 value: f16 [c="_Float16"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Float16)"] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, ...) -> i32>(%25, const<i32>(0), read<f16>(%27));
+// DEFAULT-NEXT:     fn %26 @variadic(%39 tag: i32 [c="int"], ...) -> i32 [linkage=external] [c="int(int, ...)"];
+// DEFAULT-NEXT:     fn %27 @half_argument(%28 value: f16 [c="_Float16"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Float16)"] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, ...) -> i32>(%26, const<i32>(0), read<f16>(%28));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @vector_mask(%31 a: vector<f32, 4> [c="float4"] [c_canon="float __attribute__((vector_size(16)))"] [typedef_chain="float4"], %32 b: vector<f32, 4> [c="float4"] [c_canon="float __attribute__((vector_size(16)))"] [typedef_chain="float4"]) -> i32 [linkage=external] [abi=sysv64(direct, direct) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(float4, float4)"] [c_canon="int(float __attribute__((vector_size(16))), float __attribute__((vector_size(16))))"] {
+// DEFAULT-NEXT:     fn %31 @vector_mask(%32 a: vector<f32, 4> [c="float4"] [c_canon="float __attribute__((vector_size(16)))"] [typedef_chain="float4"], %33 b: vector<f32, 4> [c="float4"] [c_canon="float __attribute__((vector_size(16)))"] [typedef_chain="float4"]) -> i32 [linkage=external] [abi=sysv64(direct, direct) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(float4, float4)"] [c_canon="int(float __attribute__((vector_size(16))), float __attribute__((vector_size(16))))"] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @array_compatibility(%34 p: ptr<array<i32, 3>> [c="int (*)[3]"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int (*)[3])"] {
+// DEFAULT-NEXT:     fn %34 @array_compatibility(%35 p: ptr<array<i32, 3>> [c="int (*)[3]"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int (*)[3])"] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @forwarded_truth(%36 a: i32 [c="int"], %37 b: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int)"] {
-// DEFAULT-NEXT:         read<i32>(%36);
-// DEFAULT-NEXT:         let %39: bool [synthetic];
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%36), read<i32>(%37))
-// DEFAULT-NEXT:             read<i32>(%37);
-// DEFAULT-NEXT:             write<bool>(%39, gt<i32>(read<i32>(%36), read<i32>(%37)));
+// DEFAULT-NEXT:     fn %36 @forwarded_truth(%37 a: i32 [c="int"], %38 b: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int)"] {
+// DEFAULT-NEXT:         read<i32>(%37);
+// DEFAULT-NEXT:         let %40: bool [synthetic];
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%37), read<i32>(%38))
+// DEFAULT-NEXT:             read<i32>(%38);
+// DEFAULT-NEXT:             write<bool>(%40, gt<i32>(read<i32>(%37), read<i32>(%38)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%39, const<bool>(false));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%39));
+// DEFAULT-NEXT:             write<bool>(%40, const<bool>(false));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%40));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

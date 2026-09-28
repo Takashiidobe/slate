@@ -40,8 +40,8 @@ void foo11c(struct s { int (*x)[*]; } *y);	/* { dg-error "a member of a structur
 // DEFAULT-NEXT:     type @type0 s = struct {
 // DEFAULT-NEXT:         field0 x: ptr<vla<i32, *>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @foo11a(%4 x: ptr<i32> [array=8]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo11b(%5 x: u64, %6 y: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo11c(%7 y: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @foo11a(%8 x: ptr<i32> [array=8]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @foo11b(%9 x: u64, %10 y: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @foo11c(%11 y: ptr<@type0>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

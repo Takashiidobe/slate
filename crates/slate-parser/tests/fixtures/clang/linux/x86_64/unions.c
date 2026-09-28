@@ -57,23 +57,23 @@ int main(void) {
 // DEFAULT-NEXT:         field0 left: i32;
 // DEFAULT-NEXT:         field1 right: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @pick_left(%3 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%4), read<i32>(%3));
-// DEFAULT-NEXT:         return read<i32>(field0(%4));
+// DEFAULT-NEXT:     global %13 .str13: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @pick_left(%4 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 p: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%5), read<i32>(%4));
+// DEFAULT-NEXT:         return read<i32>(field0(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @overwrite(%6 a: i32, %7 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%8), read<i32>(%6));
-// DEFAULT-NEXT:         write<i32>(field1(%8), read<i32>(%7));
-// DEFAULT-NEXT:         return read<i32>(field0(%8));
+// DEFAULT-NEXT:     fn %6 @overwrite(%7 a: i32, %8 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %9 p: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%9), read<i32>(%7));
+// DEFAULT-NEXT:         write<i32>(field1(%9), read<i32>(%8));
+// DEFAULT-NEXT:         return read<i32>(field0(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(7)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), call<i32, signature=fn(i32, i32) -> i32>(%5, const<i32>(3), const<i32>(9)));
+// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%12)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(7)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), call<i32, signature=fn(i32, i32) -> i32>(%6, const<i32>(3), const<i32>(9)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -34,9 +34,9 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 fp: ptr<fn(i32) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(%0), const<i32>(0));
+// DEFAULT-NEXT:     global %1 fp: ptr<fn(i32) -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %3 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(%1), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

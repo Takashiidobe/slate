@@ -85,55 +85,55 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %9 counter: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %10 counter: i32 [storage=static] [linkage=internal];
 // DEFAULT-NEXT:     global %17 .str17: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 120, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @next_value() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %18 .str18: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %19 .str19: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 120, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %20 .str20: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @next_value() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(9);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @effectful_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 effectful: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i8>(field0(%4), truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%2)));
-// DEFAULT-NEXT:         truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%2));
-// DEFAULT-NEXT:         write<i32>(field1(%4), const<i32>(7));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%4))), read<i32>(field1(%4)));
+// DEFAULT-NEXT:     fn %4 @effectful_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 effectful: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i8>(field0(%5), truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%3)));
+// DEFAULT-NEXT:         truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%3));
+// DEFAULT-NEXT:         write<i32>(field1(%5), const<i32>(7));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%5))), read<i32>(field1(%5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @repeated_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 repeated: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i8>(field0(%6), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(field0(%6), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i32>(field1(%6), const<i32>(3));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%6))), read<i32>(field1(%6)));
+// DEFAULT-NEXT:     fn %6 @repeated_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %7 repeated: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i8>(field0(%7), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(field0(%7), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i32>(field1(%7), const<i32>(3));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%7))), read<i32>(field1(%7)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @dependent_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 dependent: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field1(%8), const<i32>(8));
-// DEFAULT-NEXT:         write<i8>(field0(%8), truncate<i8, reason=assign, fits=unknown>(read<i32>(field1(%8))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%8))), read<i32>(field1(%8)));
+// DEFAULT-NEXT:     fn %8 @dependent_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %9 dependent: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field1(%9), const<i32>(8));
+// DEFAULT-NEXT:         write<i8>(field0(%9), truncate<i8, reason=assign, fits=unknown>(read<i32>(field1(%9))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%9))), read<i32>(field1(%9)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @touch() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:         let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%9, read<i32>(%21));
+// DEFAULT-NEXT:     fn %11 @touch() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %21: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:         let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%10, read<i32>(%22));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @interrupted_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 interrupted: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i8>(field0(%12), truncate<i8, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         write<i32>(field1(%12), const<i32>(6));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%12))), read<i32>(field1(%12))), read<i32>(%9));
+// DEFAULT-NEXT:     fn %12 @interrupted_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %13 interrupted: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i8>(field0(%13), truncate<i8, reason=assign, fits=always>(const<i32>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:         write<i32>(field1(%13), const<i32>(6));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%13))), read<i32>(field1(%13))), read<i32>(%10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i8>(field0(%14), truncate<i8, reason=assign, fits=always>(const<i32>(5)));
-// DEFAULT-NEXT:         write<i32>(field1(%14), const<i32>(4660));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%16)), const<u64>(16), const<u64>(16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%17)), const<u64>(0), const<u64>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)), widen<i32, reason=vararg>(read<i8>(field0(%14))), read<i32>(field1(%14)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%19)), call<i32, signature=fn() -> i32>(%3), call<i32, signature=fn() -> i32>(%5), call<i32, signature=fn() -> i32>(%7), call<i32, signature=fn() -> i32>(%11));
+// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %15 s: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i8>(field0(%15), truncate<i8, reason=assign, fits=always>(const<i32>(5)));
+// DEFAULT-NEXT:         write<i32>(field1(%15), const<i32>(4660));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%17)), const<u64>(16), const<u64>(16));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%18)), const<u64>(0), const<u64>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%19)), widen<i32, reason=vararg>(read<i8>(field0(%15))), read<i32>(field1(%15)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%20)), call<i32, signature=fn() -> i32>(%4), call<i32, signature=fn() -> i32>(%6), call<i32, signature=fn() -> i32>(%8), call<i32, signature=fn() -> i32>(%12));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

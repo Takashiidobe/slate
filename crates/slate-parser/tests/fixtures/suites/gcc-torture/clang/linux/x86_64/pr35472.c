@@ -52,26 +52,26 @@ int main() {
 // DEFAULT-NEXT:     type @type0 S = struct {
 // DEFAULT-NEXT:         field0 i: array<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %3 p: ptr<@type0> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %6 p: ptr<@type0> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @memset(%11 s: ptr<void>, %12 c: i32, %13 n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(%5 a: ptr<@type0>, %6 b: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(deref(read<ptr<@type0>>(%5)))), const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%3, read<ptr<@type0>>(%6));
+// DEFAULT-NEXT:     fn %4 @memset(%14 s: ptr<void>, %15 c: i32, %16 n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %7 @foo(%8 a: ptr<@type0>, %9 b: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(deref(read<ptr<@type0>>(%8)))), const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<@type0>>(%6, read<ptr<@type0>>(%9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %9 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%8)), const<i32>(0))))), const<i32>(0), const<u64>(64));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), const<i32>(0))))), const<i32>(0), const<u64>(64));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>) -> void>(%4, addr_of<ptr<@type0>>(%8), addr_of<ptr<@type0>>(%9));
-// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%3)), copy<@type0, reason=assign>(read<@type0>(%8)));
-// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%3)), copy<@type0, reason=assign>(read<@type0>(%9)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%9)), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:     fn %10 @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %11 a: @type0 [storage=automatic];
+// DEFAULT-NEXT:         let %12 b: @type0 [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%11)), const<i32>(0))))), const<i32>(0), const<u64>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%4, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%12)), const<i32>(0))))), const<i32>(0), const<u64>(64));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, ptr<@type0>) -> void>(%7, addr_of<ptr<@type0>>(%11), addr_of<ptr<@type0>>(%12));
+// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%6)), copy<@type0, reason=assign>(read<@type0>(%11)));
+// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%6)), copy<@type0, reason=assign>(read<@type0>(%12)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16)>(field0(%12)), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

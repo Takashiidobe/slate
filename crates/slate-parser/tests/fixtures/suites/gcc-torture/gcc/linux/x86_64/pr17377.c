@@ -81,48 +81,48 @@ int main(void) {
 // DEFAULT-NEXT:     global %2 calls: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT:     global %5 x: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @f(%4 i: i32) -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %16: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%17));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%16), const<i32>(0))
-// DEFAULT-NEXT:             return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%13, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         switch %14 read<i32>(%4)
+// DEFAULT-NEXT:         let %17: i32 [synthetic] = read<i32>(%2);
+// DEFAULT-NEXT:         let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%18));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%17), const<i32>(0))
+// DEFAULT-NEXT:             return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%14, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         switch %15 read<i32>(%4)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %14 const<i32>(1):
+// DEFAULT-NEXT:                 case %15 const<i32>(1):
 // DEFAULT-NEXT:                     return pointer_cast<ptr<void>, reason=return>(function_decay<ptr<fn(i32) -> ptr<void>>>(%3));
-// DEFAULT-NEXT:                 case %14 const<i32>(0):
-// DEFAULT-NEXT:                     return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%13, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                 case %15 const<i32>(0):
+// DEFAULT-NEXT:                     return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%14, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_return_address(%12 <unnamed>: u32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @y(%7 i: i32) -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @__builtin_return_address(%13 <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %7 @y(%8 i: i32) -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32, volatile>(%5, const<i32>(0));
-// DEFAULT-NEXT:         let %18: i32 [synthetic] = read<i32, volatile>(%5);
-// DEFAULT-NEXT:         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, volatile>(%5, read<i32>(%19));
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%3, read<i32>(%7))), read<i32>(%18)));
+// DEFAULT-NEXT:         let %19: i32 [synthetic] = read<i32, volatile>(%5);
+// DEFAULT-NEXT:         let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, volatile>(%5, read<i32>(%20));
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%3, read<i32>(%8))), read<i32>(%19)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 v: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(i32) -> ptr<void>>(%6, const<i32>(4));
-// DEFAULT-NEXT:         let %20: bool [synthetic];
-// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%6, const<i32>(1)), pointer_cast<ptr<void>, reason=usual_arith>(function_decay<ptr<fn(i32) -> ptr<void>>>(%3)))
-// DEFAULT-NEXT:             write<bool>(%20, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%20, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%6, const<i32>(0)), read<ptr<void>>(%9)));
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %10 v: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(i32) -> ptr<void>>(%7, const<i32>(4));
 // DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%20)
+// DEFAULT-NEXT:         if ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%7, const<i32>(1)), pointer_cast<ptr<void>, reason=usual_arith>(function_decay<ptr<fn(i32) -> ptr<void>>>(%3)))
 // DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%6, const<i32>(3)), null<ptr<void>>));
+// DEFAULT-NEXT:             write<bool>(%21, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%7, const<i32>(0)), read<ptr<void>>(%10)));
 // DEFAULT-NEXT:         let %22: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%21)
 // DEFAULT-NEXT:             write<bool>(%22, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%22, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%6, neg<i32, overflow=ub>(const<i32>(1))), null<ptr<void>>));
-// DEFAULT-NEXT:         if logical_or<bool>(read<bool>(%22), ne<i32>(read<i32>(%2), const<i32>(5)))
+// DEFAULT-NEXT:             write<bool>(%22, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%7, const<i32>(3)), null<ptr<void>>));
+// DEFAULT-NEXT:         let %23: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%22)
+// DEFAULT-NEXT:             write<bool>(%23, const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%23, ne<ptr<void>>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%7, neg<i32, overflow=ub>(const<i32>(1))), null<ptr<void>>));
+// DEFAULT-NEXT:         if logical_or<bool>(read<bool>(%23), ne<i32>(read<i32>(%2), const<i32>(5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -46,10 +46,10 @@ foo (struct S s)
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %0 j: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 k: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar(%6 x: i162b) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(%5 s: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i162b) -> void>(%3, mul<i162b, overflow=ub>(read<i162b>(field0(%5)), widen<i162b, reason=usual_arith>(read<i32>(%0))));
-// DEFAULT-NEXT:         mul<i162b, overflow=ub>(read<i162b>(field0(%5)), widen<i162b, reason=usual_arith>(read<i32>(%1)));
+// DEFAULT-NEXT:     fn %4 @bar(%7 x: i162b) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @foo(%6 s: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i162b) -> void>(%4, mul<i162b, overflow=ub>(read<i162b>(field0(%6)), widen<i162b, reason=usual_arith>(read<i32>(%0))));
+// DEFAULT-NEXT:         mul<i162b, overflow=ub>(read<i162b>(field0(%6)), widen<i162b, reason=usual_arith>(read<i32>(%1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

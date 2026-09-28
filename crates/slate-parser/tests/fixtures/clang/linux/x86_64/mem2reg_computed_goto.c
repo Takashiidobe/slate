@@ -45,23 +45,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 labels: array<ptr<void>, 2> [storage=static] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3)) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([100, 111, 110, 101, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @walk(%4 position: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%5), read<i32>(deref(read<ptr<i32>>(%4))))));
-// DEFAULT-NEXT:         label %2 again:
-// DEFAULT-NEXT:             let %10: ptr<i32> [synthetic] = read<ptr<i32>>(%4);
-// DEFAULT-NEXT:             let %11: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<i32>>(%4, read<ptr<i32>>(%11));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%5), read<i32>(deref(read<ptr<i32>>(%4))))));
-// DEFAULT-NEXT:         label %3 done:
+// DEFAULT-NEXT:     global %6 labels: array<ptr<void>, 2> [storage=static] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%3), index1 = label_addr<ptr<void>>(%4)) [linkage=internal];
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([100, 111, 110, 101, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @walk(%5 position: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%6), read<i32>(deref(read<ptr<i32>>(%5))))));
+// DEFAULT-NEXT:         label %3 again:
+// DEFAULT-NEXT:             let %11: ptr<i32> [synthetic] = read<ptr<i32>>(%5);
+// DEFAULT-NEXT:             let %12: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%11), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<i32>>(%5, read<ptr<i32>>(%12));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%6), read<i32>(deref(read<ptr<i32>>(%5))))));
+// DEFAULT-NEXT:         label %4 done:
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 path: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%1, array_decay<ptr<i32>, length=Some(2)>(%7));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%9)));
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 path: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%2, array_decay<ptr<i32>, length=Some(2)>(%8));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%10)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

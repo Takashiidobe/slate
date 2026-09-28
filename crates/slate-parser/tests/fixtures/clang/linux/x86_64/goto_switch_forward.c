@@ -53,31 +53,31 @@ done:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 x: i32 [storage=automatic] = const<i32>(2);
-// DEFAULT-NEXT:         let %7 r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         switch %9 read<i32>(%6)
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 x: i32 [storage=automatic] = const<i32>(2);
+// DEFAULT-NEXT:         let %8 r: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         switch %10 read<i32>(%7)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %9 const<i32>(1):
-// DEFAULT-NEXT:                     goto %2;
-// DEFAULT-NEXT:                 case %9 const<i32>(2):
+// DEFAULT-NEXT:                 case %10 const<i32>(1):
 // DEFAULT-NEXT:                     goto %3;
-// DEFAULT-NEXT:                 default %9:
+// DEFAULT-NEXT:                 case %10 const<i32>(2):
 // DEFAULT-NEXT:                     goto %4;
+// DEFAULT-NEXT:                 default %10:
+// DEFAULT-NEXT:                     goto %5;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         label %2 one:
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(10));
-// DEFAULT-NEXT:         goto %5;
-// DEFAULT-NEXT:         label %3 two:
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(20));
-// DEFAULT-NEXT:         goto %5;
-// DEFAULT-NEXT:         label %4 other:
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(30));
-// DEFAULT-NEXT:         goto %5;
-// DEFAULT-NEXT:         label %5 done:
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), read<i32>(%7));
+// DEFAULT-NEXT:         label %3 one:
+// DEFAULT-NEXT:             write<i32>(%8, const<i32>(10));
+// DEFAULT-NEXT:         goto %6;
+// DEFAULT-NEXT:         label %4 two:
+// DEFAULT-NEXT:             write<i32>(%8, const<i32>(20));
+// DEFAULT-NEXT:         goto %6;
+// DEFAULT-NEXT:         label %5 other:
+// DEFAULT-NEXT:             write<i32>(%8, const<i32>(30));
+// DEFAULT-NEXT:         goto %6;
+// DEFAULT-NEXT:         label %6 done:
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), read<i32>(%8));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

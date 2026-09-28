@@ -38,15 +38,15 @@ int use_wrapper(void) {
 // DEFAULT-NEXT:     type @type0 local_int = i32;
 // DEFAULT-NEXT:     type @type1 nested_int = i64;
 // DEFAULT-NEXT:     type @type2 outer_int = i64;
-// DEFAULT-NEXT:     global %6 from_outer: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 from_nested: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 from_local: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @system_call(%10 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @local_wrapper(%5 value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%5));
+// DEFAULT-NEXT:     global %7 from_outer: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %8 from_nested: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %9 from_local: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %4 @system_call(%11 value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @local_wrapper(%6 value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%4, read<i32>(%6));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @use_wrapper() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1));
+// DEFAULT-NEXT:     fn %10 @use_wrapper() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%5, const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

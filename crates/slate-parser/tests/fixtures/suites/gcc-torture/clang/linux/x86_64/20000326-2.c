@@ -34,11 +34,11 @@ void foo (int x, int y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printk(%5 fmt: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%3 x: i32, %4 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         label %2 here:
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%6)), label_addr<ptr<void>>(%2));
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printk(%6 fmt: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @foo(%4 x: i32, %5 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         label %3 here:
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%7)), label_addr<ptr<void>>(%3));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

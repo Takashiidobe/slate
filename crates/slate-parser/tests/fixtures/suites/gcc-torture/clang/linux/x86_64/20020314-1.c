@@ -56,27 +56,27 @@ repeat:
 // DEFAULT-NEXT:     type @type0 tux_req_struct = struct incomplete;
 // DEFAULT-NEXT:     type @type1 tux_req_t = @type0;
 // DEFAULT-NEXT:     type @type2 socket = struct incomplete;
-// DEFAULT-NEXT:     fn %3 @add_output_space_event(%11 req: ptr<@type0>, %12 <unnamed>: ptr<@type2>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @del_tux_atom(%13 req: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @add_req_to_workqueue(%14 req: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @user_send_buffer(%8 req: ptr<@type0>, %9 cachemiss: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 ret: i32 [storage=automatic];
-// DEFAULT-NEXT:         label %7 repeat:
-// DEFAULT-NEXT:             switch %15 read<i32>(%10)
+// DEFAULT-NEXT:     fn %4 @add_output_space_event(%14 req: ptr<@type0>, %15 <unnamed>: ptr<@type2>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @del_tux_atom(%16 req: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %8 @add_req_to_workqueue(%17 req: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %9 @user_send_buffer(%11 req: ptr<@type0>, %12 cachemiss: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %13 ret: i32 [storage=automatic];
+// DEFAULT-NEXT:         label %10 repeat:
+// DEFAULT-NEXT:             switch %18 read<i32>(%13)
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %15 const<i32>(-11):
-// DEFAULT-NEXT:                         if ne<i32>(call<i32, signature=fn(ptr<@type0>, ptr<@type2>) -> i32>(%3, read<ptr<@type0>>(%8), read<ptr<@type2>>(field0(deref(read<ptr<@type0>>(%8))))), const<i32>(0))
+// DEFAULT-NEXT:                     case %18 const<i32>(-11):
+// DEFAULT-NEXT:                         if ne<i32>(call<i32, signature=fn(ptr<@type0>, ptr<@type2>) -> i32>(%4, read<ptr<@type0>>(%11), read<ptr<@type2>>(field0(deref(read<ptr<@type0>>(%11))))), const<i32>(0))
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 call<void, signature=fn(ptr<@type0>) -> void>(%4, read<ptr<@type0>>(%8));
-// DEFAULT-NEXT:                                 goto %7;
+// DEFAULT-NEXT:                                 call<void, signature=fn(ptr<@type0>) -> void>(%6, read<ptr<@type0>>(%11));
+// DEFAULT-NEXT:                                 goto %10;
 // DEFAULT-NEXT:                             }
-// DEFAULT-NEXT:                     do %16
+// DEFAULT-NEXT:                     do %19
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                     break %15;
-// DEFAULT-NEXT:                     default %15:
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type0>) -> void>(%5, read<ptr<@type0>>(%8));
+// DEFAULT-NEXT:                     break %18;
+// DEFAULT-NEXT:                     default %18:
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type0>) -> void>(%8, read<ptr<@type0>>(%11));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

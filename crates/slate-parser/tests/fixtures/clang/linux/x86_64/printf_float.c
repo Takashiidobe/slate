@@ -36,14 +36,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([37, 102, 32, 37, 46, 50, 102, 32, 37, 46, 48, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([116, 97, 105, 108, 32, 37, 46, 51, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%4 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 x: f32 [storage=automatic] = const<f32>(1.5);
-// DEFAULT-NEXT:         let %3 y: f64 [storage=automatic] = const<f64>(2.25);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%5)), float_widen<f64, reason=vararg>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%2), const<f32>(0.5))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), const<f64>(2.0)), const<f64>(3.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%6)), const<f64>(1.25));
+// DEFAULT-NEXT:     global %6 .str6: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([37, 102, 32, 37, 46, 50, 102, 32, 37, 46, 48, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %7 .str7: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([116, 97, 105, 108, 32, 37, 46, 51, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 x: f32 [storage=automatic] = const<f32>(1.5);
+// DEFAULT-NEXT:         let %4 y: f64 [storage=automatic] = const<f64>(2.25);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%6)), float_widen<f64, reason=vararg>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%3), const<f32>(0.5))), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%4), const<f64>(2.0)), const<f64>(3.0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), const<f64>(1.25));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

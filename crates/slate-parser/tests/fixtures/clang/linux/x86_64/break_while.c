@@ -44,29 +44,29 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @countdown(%2 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 steps: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %6 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @countdown(%3 n: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %4 steps: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         while %7 ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if le<i32>(read<i32>(%2), const<i32>(0))
+// DEFAULT-NEXT:                 if le<i32>(read<i32>(%3), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         break %6;
+// DEFAULT-NEXT:                         break %7;
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%9), const<i32>(2));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%10));
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%12));
+// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%3);
+// DEFAULT-NEXT:                 let %11: i32 [synthetic] = div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%10), const<i32>(2));
+// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%11));
+// DEFAULT-NEXT:                 let %12: i32 [synthetic] = read<i32>(%4);
+// DEFAULT-NEXT:                 let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%13));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(100)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0)));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(100)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

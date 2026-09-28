@@ -80,88 +80,88 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 x: volatile array<i32, 1024> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %8 vc: volatile complex<f64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 t0: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 t1: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 t2: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 t3: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @feclearexcept(%21 __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fetestexcept(%22 __excepts: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @exit(%23 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @fill_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 y: volatile array<i32, 1024> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %24
+// DEFAULT-NEXT:     global %7 x: volatile array<i32, 1024> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %11 vc: volatile complex<f64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %14 t0: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %15 t1: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %16 t2: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %17 t3: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %1 @feclearexcept(%24 __excepts: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @fetestexcept(%25 __excepts: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %6 @exit(%26 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @fill_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %9 y: volatile array<i32, 1024> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %27
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%7, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%7), const<i32>(1024))
+// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(1024))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %30: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%31));
+// DEFAULT-NEXT:                 let %33: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %34: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%33), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%34));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%6), read<i32>(%7))), const<i32>(2146435072));
-// DEFAULT-NEXT:         for %25
+// DEFAULT-NEXT:                 write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%9), read<i32>(%10))), const<i32>(2146435072));
+// DEFAULT-NEXT:         for %28
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%7, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%7), const<i32>(1024))
+// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(1024))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %32: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %33: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%32), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%33));
+// DEFAULT-NEXT:                 let %35: i32 [synthetic] = read<i32>(%10);
+// DEFAULT-NEXT:                 let %36: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%35), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%36));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%4), read<i32>(%7))), read<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%6), read<i32>(%7)))));
+// DEFAULT-NEXT:                 write<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%7), read<i32>(%10))), read<i32, volatile>(deref(ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<volatile i32>, length=Some(1024)>(%9), read<i32>(%10)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @use_complex(%10 c: complex<f64>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<complex<f64>, volatile>(%8, read<complex<f64>>(%10));
+// DEFAULT-NEXT:     fn %12 @use_complex(%13 c: complex<f64>) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<complex<f64>, volatile>(%11, read<complex<f64>>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @use_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %16 a: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %17 b: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %18 c: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %19 d: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         do %26
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f64>(real(%16), read<f64>(%11));
-// DEFAULT-NEXT:                 write<f64>(imag(%16), read<f64>(%12));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%16));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %27
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f64>(real(%17), read<f64>(%12));
-// DEFAULT-NEXT:                 write<f64>(imag(%17), read<f64>(%13));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%17));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %28
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f64>(real(%18), read<f64>(%13));
-// DEFAULT-NEXT:                 write<f64>(imag(%18), read<f64>(%14));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%18));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:     fn %18 @use_stack() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %19 a: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %20 b: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %21 c: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %22 d: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         do %29
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<f64>(real(%19), read<f64>(%14));
-// DEFAULT-NEXT:                 write<f64>(imag(%19), read<f64>(%11));
-// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%9, read<complex<f64>>(%19));
+// DEFAULT-NEXT:                 write<f64>(imag(%19), read<f64>(%15));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%12, read<complex<f64>>(%19));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %30
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 write<f64>(real(%20), read<f64>(%15));
+// DEFAULT-NEXT:                 write<f64>(imag(%20), read<f64>(%16));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%12, read<complex<f64>>(%20));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %31
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 write<f64>(real(%21), read<f64>(%16));
+// DEFAULT-NEXT:                 write<f64>(imag(%21), read<f64>(%17));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%12, read<complex<f64>>(%21));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         do %32
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 write<f64>(real(%22), read<f64>(%17));
+// DEFAULT-NEXT:                 write<f64>(imag(%22), read<f64>(%14));
+// DEFAULT-NEXT:                 call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%12, read<complex<f64>>(%22));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%18);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%3, const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -108,19 +108,19 @@ foo (long long a)
 // DEFAULT-NEXT:         field2 sign: u32 : 1;
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 6, 7], bit_offsets=[Some(0), Some(52), Some(63)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type14 FLO_union_type = @type12;
-// DEFAULT-NEXT:     global %17 x: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %18 x: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %16 @foo(%21 a: i64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%21), const<i64>(20015998343868))
+// DEFAULT-NEXT:     fn %17 @foo(%22 a: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%22), const<i64>(20015998343868))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @pack_d(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %19 dst: @type12 [storage=automatic] = aggregate<@type12, zero_fill=false>(field0 = const<i64>(81985529216486895));
-// DEFAULT-NEXT:         write<i64>(%17, reinterpret<i64, reason=assign, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(field2(%19)))));
+// DEFAULT-NEXT:     fn %19 @pack_d(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %20 dst: @type12 [storage=automatic] = aggregate<@type12, zero_fill=false>(field0 = const<i64>(81985529216486895));
+// DEFAULT-NEXT:         write<i64>(%18, reinterpret<i64, reason=assign, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(field2(%20)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%18);
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%16, read<i64>(%17));
+// DEFAULT-NEXT:     fn %21 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%19);
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%17, read<i64>(%18));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

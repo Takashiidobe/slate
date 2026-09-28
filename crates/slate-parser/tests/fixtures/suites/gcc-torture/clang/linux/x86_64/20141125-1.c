@@ -40,17 +40,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 a: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%1)), const<u64>(288230376151711743)), const<u64>(0))
+// DEFAULT-NEXT:     fn %1 @f(%2 a: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<u64>(and<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%2)), const<u64>(288230376151711743)), const<u64>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(1024);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%0, reinterpret<i64, reason=arg, fits=always>(const<u64>(5203730698787094528))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%0, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(18158513697557839872))), const<i32>(1024))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%1, reinterpret<i64, reason=arg, fits=always>(const<u64>(5203730698787094528))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%1, reinterpret<i64, reason=arg, fits=unknown>(const<u64>(18158513697557839872))), const<i32>(1024))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

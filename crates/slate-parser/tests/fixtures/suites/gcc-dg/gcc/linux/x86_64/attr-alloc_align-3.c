@@ -80,37 +80,37 @@ test6 (int len, int align)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @my_alloc1(%28 len: i32, %29 align: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @my_alloc2(%30 align: i32, %31 len: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test1(%3 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%0, read<i32>(%3), const<i32>(32));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%5)), widen<i64, reason=usual_arith>(const<i32>(31))));
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test2(%7 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @my_alloc1(%32 len: i32, %33 align: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %5 @my_alloc2(%34 align: i32, %35 len: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %6 @test1(%7 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%1, const<i32>(32), read<i32>(%7));
+// DEFAULT-NEXT:         let %9 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%2, read<i32>(%7), const<i32>(32));
 // DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%9)), widen<i64, reason=usual_arith>(const<i32>(31))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @test3(%11 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %10 @test2(%11 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %12 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %13 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%0, read<i32>(%11), const<i32>(16));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%13)), widen<i64, reason=usual_arith>(const<i32>(15))));
+// DEFAULT-NEXT:         let %13 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%5, const<i32>(32), read<i32>(%11));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%13)), widen<i64, reason=usual_arith>(const<i32>(31))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test4(%15 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @test3(%15 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %16 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %17 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%1, const<i32>(16), read<i32>(%15));
+// DEFAULT-NEXT:         let %17 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%2, read<i32>(%15), const<i32>(16));
 // DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%17)), widen<i64, reason=usual_arith>(const<i32>(15))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @test5(%19 len: i32, %20 align: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %21 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %22 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%0, read<i32>(%19), read<i32>(%20));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%22)), widen<i64, reason=usual_arith>(const<i32>(15))));
+// DEFAULT-NEXT:     fn %18 @test4(%19 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %20 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %21 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%5, const<i32>(16), read<i32>(%19));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%21)), widen<i64, reason=usual_arith>(const<i32>(15))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @test6(%24 len: i32, %25 align: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %26 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %27 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%1, read<i32>(%25), read<i32>(%24));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%27)), widen<i64, reason=usual_arith>(const<i32>(15))));
+// DEFAULT-NEXT:     fn %22 @test5(%23 len: i32, %24 align: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %25 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %26 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%2, read<i32>(%23), read<i32>(%24));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%26)), widen<i64, reason=usual_arith>(const<i32>(15))));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %27 @test6(%28 len: i32, %29 align: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %30 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %31 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32, i32) -> ptr<i8>>(%5, read<i32>(%29), read<i32>(%28));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%31)), widen<i64, reason=usual_arith>(const<i32>(15))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

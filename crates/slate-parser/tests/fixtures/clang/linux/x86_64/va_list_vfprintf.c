@@ -54,17 +54,17 @@ int main(void) {
 // DEFAULT-NEXT:     type @type10 _IO_wide_data = struct incomplete;
 // DEFAULT-NEXT:     type @type11 va_list = va_list;
 // DEFAULT-NEXT:     extern %11 stdout: ptr<@type5> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([102, 111, 114, 119, 97, 114, 100, 101, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %12 @vfprintf(%17 __s: ptr<@type5> [restrict], %18 __format: ptr<const i8> [restrict], %19 __arg: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @print_values(%14 format: ptr<const i8>, ...) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %15 args: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%15);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%12, read<ptr<@type5>>(%11), read<ptr<const i8>>(%14), read<va_list>(%15));
-// DEFAULT-NEXT:         va_end(%15);
+// DEFAULT-NEXT:     global %23 .str23: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %24 .str24: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([102, 111, 114, 119, 97, 114, 100, 101, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %15 @vfprintf(%20 __s: ptr<@type5> [restrict], %21 __format: ptr<const i8> [restrict], %22 __arg: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %16 @print_values(%17 format: ptr<const i8>, ...) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %18 args: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%18);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type5>, ptr<const i8>, va_list) -> i32>(%15, read<ptr<@type5>>(%11), read<ptr<const i8>>(%17), read<va_list>(%18));
+// DEFAULT-NEXT:         va_end(%18);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%13, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%20)), const<i32>(42), array_decay<ptr<i8>, length=Some(10)>(%21));
+// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%16, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%23)), const<i32>(42), array_decay<ptr<i8>, length=Some(10)>(%24));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

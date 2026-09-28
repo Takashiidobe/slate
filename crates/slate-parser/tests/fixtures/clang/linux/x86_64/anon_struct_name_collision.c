@@ -48,12 +48,12 @@ int main(void) {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 named: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));
-// DEFAULT-NEXT:         let %5 point: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%7)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%3)), read<i32>(field0(%5))), read<i32>(field1(%5))));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %4 named: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7));
+// DEFAULT-NEXT:         let %6 point: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%4)), read<i32>(field0(%6))), read<i32>(field1(%6))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

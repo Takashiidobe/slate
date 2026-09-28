@@ -33,12 +33,12 @@ void foo(const char *s){
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @strstr(%4 s1: ptr<const i8>, %5 s2: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 s: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 cp: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i8>>(%3, call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%0, read<ptr<const i8>>(%2), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%6))));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%0, read<ptr<const i8>>(%2), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%6)));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @strstr(%6 s1: ptr<const i8>, %7 s2: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %3 @foo(%4 s: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %5 cp: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i8>>(%5, call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%4), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%8))));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%4), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

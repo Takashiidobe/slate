@@ -44,14 +44,14 @@ int test_setjmpex(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 jmp_buf = array<i8, 1>;
-// DEFAULT-NEXT:     global %3 jb: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @_setjmp(%6 env: ptr<i8> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @_setjmpex(%7 env: ptr<i8> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @test_setjmp() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%1, array_decay<ptr<i8>, length=Some(1)>(%3));
+// DEFAULT-NEXT:     global %5 jb: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %2 @_setjmp(%8 env: ptr<i8> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %4 @_setjmpex(%9 env: ptr<i8> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @test_setjmp() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%2, array_decay<ptr<i8>, length=Some(1)>(%5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test_setjmpex() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%2, array_decay<ptr<i8>, length=Some(1)>(%3));
+// DEFAULT-NEXT:     fn %7 @test_setjmpex() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>) -> i32>(%4, array_decay<ptr<i8>, length=Some(1)>(%5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

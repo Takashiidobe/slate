@@ -41,12 +41,12 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([227, 130, 178, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([227, 130, 178, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @strcmp(%4 __s1: ptr<const i8>, %5 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 s: array<i8, 4> [storage=automatic] [const] = code_units<array<i8, 4>>([227, 130, 178, 0]);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%1, array_decay<ptr<const i8>, length=Some(4)>(%3), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%6))), const<i32>(0))
+// DEFAULT-NEXT:     fn %3 @strcmp(%6 __s1: ptr<const i8>, %7 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %5 s: array<i8, 4> [storage=automatic] [const] = code_units<array<i8, 4>>([227, 130, 178, 0]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%3, array_decay<ptr<const i8>, length=Some(4)>(%5), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

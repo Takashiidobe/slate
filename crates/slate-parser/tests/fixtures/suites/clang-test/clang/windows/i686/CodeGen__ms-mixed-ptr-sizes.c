@@ -71,38 +71,38 @@ int test_compare4(int *__ptr32 __sptr i, int *__ptr64 j) {
 // DEFAULT-NEXT:         field0 p32: ptr<i32>;
 // DEFAULT-NEXT:         field1 p64: ptr<i32, ptr64>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %1 @use_foo(%29 f: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test_sign_ext(%3 f: ptr<@type0>, %4 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32, ptr64>>(field1(deref(read<ptr<@type0>>(%3))), address_space_cast<ptr<i32, ptr64>, reason=assign>(read<ptr<i32>>(%4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%3));
+// DEFAULT-NEXT:     fn %2 @use_foo(%30 f: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @test_sign_ext(%4 f: ptr<@type0>, %5 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32, ptr64>>(field1(deref(read<ptr<@type0>>(%4))), address_space_cast<ptr<i32, ptr64>, reason=assign>(read<ptr<i32>>(%5)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%4));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test_zero_ext(%6 f: ptr<@type0>, %7 i: ptr<i32, ptr32_uptr>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32, ptr64>>(field1(deref(read<ptr<@type0>>(%6))), address_space_cast<ptr<i32, ptr64>, reason=assign>(read<ptr<i32, ptr32_uptr>>(%7)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%6));
+// DEFAULT-NEXT:     fn %6 @test_zero_ext(%7 f: ptr<@type0>, %8 i: ptr<i32, ptr32_uptr>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32, ptr64>>(field1(deref(read<ptr<@type0>>(%7))), address_space_cast<ptr<i32, ptr64>, reason=assign>(read<ptr<i32, ptr32_uptr>>(%8)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test_trunc(%9 f: ptr<@type0>, %10 i: ptr<i32, ptr64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%9))), address_space_cast<ptr<i32>, reason=assign>(read<ptr<i32, ptr64>>(%10)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%9));
+// DEFAULT-NEXT:     fn %9 @test_trunc(%10 f: ptr<@type0>, %11 i: ptr<i32, ptr64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%10))), address_space_cast<ptr<i32>, reason=assign>(read<ptr<i32, ptr64>>(%11)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test_noop(%12 f: ptr<@type0>, %13 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%12))), read<ptr<i32>>(%13));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%12));
+// DEFAULT-NEXT:     fn %12 @test_noop(%13 f: ptr<@type0>, %14 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%13))), read<ptr<i32>>(%14));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test_other(%15 f: ptr<@type0>, %16 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%15))), read<ptr<i32>>(%16));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%15));
+// DEFAULT-NEXT:     fn %15 @test_other(%16 f: ptr<@type0>, %17 i: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%16))), read<ptr<i32>>(%17));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%16));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @test_compare1(%18 i: ptr<i32, ptr32_uptr>, %19 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr32_uptr>>(read<ptr<i32, ptr32_uptr>>(%18), address_space_cast<ptr<i32, ptr32_uptr>, reason=usual_arith>(read<ptr<i32, ptr64>>(%19))));
+// DEFAULT-NEXT:     fn %18 @test_compare1(%19 i: ptr<i32, ptr32_uptr>, %20 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr32_uptr>>(read<ptr<i32, ptr32_uptr>>(%19), address_space_cast<ptr<i32, ptr32_uptr>, reason=usual_arith>(read<ptr<i32, ptr64>>(%20))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @test_compare2(%21 i: ptr<i32>, %22 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%21), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr64>>(%22))));
+// DEFAULT-NEXT:     fn %21 @test_compare2(%22 i: ptr<i32>, %23 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%22), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr64>>(%23))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @test_compare3(%24 i: ptr<i32, ptr32_uptr>, %25 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr64>>(read<ptr<i32, ptr64>>(%25), address_space_cast<ptr<i32, ptr64>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%24))));
+// DEFAULT-NEXT:     fn %24 @test_compare3(%25 i: ptr<i32, ptr32_uptr>, %26 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr64>>(read<ptr<i32, ptr64>>(%26), address_space_cast<ptr<i32, ptr64>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%25))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @test_compare4(%27 i: ptr<i32>, %28 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr64>>(read<ptr<i32, ptr64>>(%28), address_space_cast<ptr<i32, ptr64>, reason=usual_arith>(read<ptr<i32>>(%27))));
+// DEFAULT-NEXT:     fn %27 @test_compare4(%28 i: ptr<i32>, %29 j: ptr<i32, ptr64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32, ptr64>>(read<ptr<i32, ptr64>>(%29), address_space_cast<ptr<i32, ptr64>, reason=usual_arith>(read<ptr<i32>>(%28))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

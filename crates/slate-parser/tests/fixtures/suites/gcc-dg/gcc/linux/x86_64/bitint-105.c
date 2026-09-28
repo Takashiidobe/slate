@@ -54,25 +54,25 @@ l1:;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%14 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar(%15 x: i129b) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @baz(%5 x: i32, %6 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%4), index1 = label_addr<ptr<void>>(%3));
-// DEFAULT-NEXT:         label %3 l2:
-// DEFAULT-NEXT:             write<i32>(%5, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
+// DEFAULT-NEXT:     fn %0 @foo(%15 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @bar(%16 x: i129b) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @baz(%6 x: i32, %7 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %8 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%5), index1 = label_addr<ptr<void>>(%4));
+// DEFAULT-NEXT:         label %4 l2:
+// DEFAULT-NEXT:             write<i32>(%6, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
 // DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%1, read<i129b>(%6));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%7), and<i32>(read<i32>(%5), const<i32>(1)))));
-// DEFAULT-NEXT:         label %4 l1:
+// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%2, read<i129b>(%7));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%8), and<i32>(read<i32>(%6), const<i32>(1)))));
+// DEFAULT-NEXT:         label %5 l1:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @qux(%11 x: i32, %12 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %13 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%10), index1 = label_addr<ptr<void>>(%9));
-// DEFAULT-NEXT:         label %9 l2:
-// DEFAULT-NEXT:             write<i32>(%11, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
+// DEFAULT-NEXT:     fn %9 @qux(%12 x: i32, %13 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %14 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%11), index1 = label_addr<ptr<void>>(%10));
+// DEFAULT-NEXT:         label %10 l2:
+// DEFAULT-NEXT:             write<i32>(%12, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
 // DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%1, read<i129b>(%12));
-// DEFAULT-NEXT:         label %10 l1:
+// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%2, read<i129b>(%13));
+// DEFAULT-NEXT:         label %11 l1:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

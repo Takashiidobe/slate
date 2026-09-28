@@ -72,23 +72,23 @@ int main() {
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
 // DEFAULT-NEXT:     type @type2 Pcc_cell = @type1;
 // DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @Parrot_gc_mark_PMC_alive_fun(%5 interp: ptr<i32>, %6 pmc: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %6 @Parrot_gc_mark_PMC_alive_fun(%7 interp: ptr<i32>, %8 pmc: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @mark_cell(%8 interp: ptr<i32>, %9 c: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i64>(read<i64>(field2(deref(read<ptr<@type1>>(%9)))), widen<i64, reason=usual_arith>(const<i32>(4))), ne<ptr<@type0>>(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%9)))), null<ptr<@type0>>)), not<bool>(ne<u32>(and<u32>(read<u32>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%9))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(18)))), const<u32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>, ptr<@type0>) -> void>(%4, read<ptr<i32>>(%8), read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%9)))));
+// DEFAULT-NEXT:     fn %11 @mark_cell(%12 interp: ptr<i32>, %13 c: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i64>(read<i64>(field2(deref(read<ptr<@type1>>(%13)))), widen<i64, reason=usual_arith>(const<i32>(4))), ne<ptr<@type0>>(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%13)))), null<ptr<@type0>>)), not<bool>(ne<u32>(and<u32>(read<u32>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%13))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(18)))), const<u32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<i32>, ptr<@type0>) -> void>(%6, read<ptr<i32>>(%12), read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%13)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @foo(%11 interp: ptr<i32>, %12 c: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type1>) -> void>(%7, read<ptr<i32>>(%11), read<ptr<@type1>>(%12));
+// DEFAULT-NEXT:     fn %16 @foo(%17 interp: ptr<i32>, %18 c: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type1>) -> void>(%11, read<ptr<i32>>(%17), read<ptr<@type1>>(%18));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 c: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%15), null<ptr<@type0>>);
-// DEFAULT-NEXT:         write<i64>(field1(%15), widen<i64, reason=assign>(const<i32>(42)));
-// DEFAULT-NEXT:         write<i64>(field2(%15), widen<i64, reason=assign>(const<i32>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type1>) -> void>(%10, addr_of<ptr<i32>>(%14), addr_of<ptr<@type1>>(%15));
+// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %20 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %21 c: @type1 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%21), null<ptr<@type0>>);
+// DEFAULT-NEXT:         write<i64>(field1(%21), widen<i64, reason=assign>(const<i32>(42)));
+// DEFAULT-NEXT:         write<i64>(field2(%21), widen<i64, reason=assign>(const<i32>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<@type1>) -> void>(%16, addr_of<ptr<i32>>(%20), addr_of<ptr<@type1>>(%21));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -63,21 +63,21 @@ int main(void) {
 // DEFAULT-NEXT:         field2 __saved_mask: @type1;
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
 // DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %7 buf: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %8 stop: bool [storage=static] = const<bool>(false) [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @_setjmp(%13 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @longjmp(%14 __env: ptr<@type3> [array=1], %15 __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @call_func(%10 func: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%10));
+// DEFAULT-NEXT:     global %10 buf: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %11 stop: bool [storage=static] = const<bool>(false) [linkage=internal];
+// DEFAULT-NEXT:     fn %6 @_setjmp(%16 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @longjmp(%17 __env: ptr<@type3> [array=1], %18 __val: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %12 @call_func(%13 func: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @func() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool>(%8, const<bool>(true));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type3>, i32) -> void>(%6, array_decay<ptr<@type3>, length=Some(1)>(%7), const<i32>(1));
+// DEFAULT-NEXT:     fn %14 @func() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool>(%11, const<bool>(true));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type3>, i32) -> void>(%9, array_decay<ptr<@type3>, length=Some(1)>(%10), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>) -> i32>(%5, array_decay<ptr<@type3>, length=Some(1)>(%7));
-// DEFAULT-NEXT:         while %16 not<bool>(read<bool>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<fn() -> void>) -> void>(%9, function_decay<ptr<fn() -> void>>(%11));
+// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>) -> i32>(%6, array_decay<ptr<@type3>, length=Some(1)>(%10));
+// DEFAULT-NEXT:         while %19 not<bool>(read<bool>(%11))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<fn() -> void>) -> void>(%12, function_decay<ptr<fn() -> void>>(%14));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

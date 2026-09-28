@@ -72,9 +72,9 @@ void noalias_caller(int *x) { noalias_callee(x); }
 // DEFAULT-NEXT:     fn %11 @f20() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @noalias_callee(%15 x: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %13 @noalias_caller(%14 x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%12, read<ptr<i32>>(%14));
+// DEFAULT-NEXT:     fn %13 @noalias_callee(%16 x: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %14 @noalias_caller(%15 x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%13, read<ptr<i32>>(%15));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -64,17 +64,17 @@ bar495 (int i)
 // DEFAULT-NEXT:         field1 b: u495b : 471;
 // DEFAULT-NEXT:         field2 c: i495b : 2;
 // DEFAULT-NEXT:     } [size=64, align=8, offsets=[0, 0, 59], bit_offsets=[Some(0), Some(2), Some(473)], bit_units=[(0, 60)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %1 @foo156(%10 <unnamed>: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %1 @foo156(%11 <unnamed>: ptr<@type0>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @bar156(%3 i: i32) -> u156b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %4 r156: array<@type0, 12> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(12)>(%4), const<i32>(0)))));
 // DEFAULT-NEXT:         return read<u156b>(bitfield1<unit=0, bytes=0..18, bits=2..137>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(12)>(%4), read<i32>(%3)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo495(%11 r495: ptr<@type1>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @bar495(%8 i: i32) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 r495: array<@type1, 12> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%6, array_decay<ptr<@type1>, length=Some(12)>(%9));
-// DEFAULT-NEXT:         return read<u495b>(bitfield1<unit=0, bytes=0..60, bits=2..473>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(12)>(%9), read<i32>(%8)))));
+// DEFAULT-NEXT:     fn %7 @foo495(%12 r495: ptr<@type1>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %8 @bar495(%9 i: i32) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %10 r495: array<@type1, 12> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%7, array_decay<ptr<@type1>, length=Some(12)>(%10));
+// DEFAULT-NEXT:         return read<u495b>(bitfield1<unit=0, bytes=0..60, bits=2..473>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(12)>(%10), read<i32>(%9)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

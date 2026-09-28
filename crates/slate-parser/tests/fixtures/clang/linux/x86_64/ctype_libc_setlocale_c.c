@@ -38,17 +38,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([67, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @tolower(%7 __c: i32) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %1 @toupper(%8 __c: i32) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %2 @setlocale(%9 __category: i32, %10 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%2, const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%12)));
-// DEFAULT-NEXT:         let %5 lower: i32 [storage=automatic] = const<i32>(113);
-// DEFAULT-NEXT:         let %6 upper: i32 [storage=automatic] = const<i32>(81);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%13)), call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%5)), call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%6)));
+// DEFAULT-NEXT:     global %17 .str17: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([67, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %18 .str18: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @tolower(%12 __c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @toupper(%13 __c: i32) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %6 @setlocale(%14 __category: i32, %15 __locale: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %8 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(i32, ptr<const i8>) -> ptr<i8>>(%6, const<i32>(6), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%17)));
+// DEFAULT-NEXT:         let %10 lower: i32 [storage=automatic] = const<i32>(113);
+// DEFAULT-NEXT:         let %11 upper: i32 [storage=automatic] = const<i32>(81);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%8, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)), call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%10)), call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%11)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -59,33 +59,33 @@ _Static_assert(__builtin_types_compatible_p(__typeof__(g), int __stdcall (int)),
 // IR-NEXT:     type @type3 H = struct {
 // IR-NEXT:         field0 cb: ptr<fn stdcall(i32) -> i32>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     global %23 table: array<ptr<fn fastcall(i32) -> i32>, 2> [storage=static] [linkage=external] [c="int (*[2])(int) __attribute__((fastcall))"];
-// IR-NEXT:     global %25 p: ptr<fn stdcall(i32) -> i32> [storage=static] = function_decay<ptr<fn stdcall(i32) -> i32>>(%19) [linkage=external] [c="PF"] [c_canon="int (*)(int) __attribute__((stdcall))"] [typedef_chain="PF"];
-// IR-NEXT:     fn %3 @sc(%4 a: i32 [c="int"], %5 b: i64 [c="long long"]) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c="int(int, long long) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"] {
-// IR-NEXT:         return read<i32>(%4);
+// IR-NEXT:     global %25 table: array<ptr<fn fastcall(i32) -> i32>, 2> [storage=static] [linkage=external] [c="int (*[2])(int) __attribute__((fastcall))"];
+// IR-NEXT:     global %27 p: ptr<fn stdcall(i32) -> i32> [storage=static] = function_decay<ptr<fn stdcall(i32) -> i32>>(%21) [linkage=external] [c="PF"] [c_canon="int (*)(int) __attribute__((stdcall))"] [typedef_chain="PF"];
+// IR-NEXT:     fn %5 @sc(%6 a: i32 [c="int"], %7 b: i64 [c="long long"]) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c="int(int, long long) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"] {
+// IR-NEXT:         return read<i32>(%6);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @fc(%7 a: i32 [c="int"], %8 b: i32 [c="int"], %9 c: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl fastcall(scalar, scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int, int) __attribute__((fastcall))"] [c_attributes="[CallingConvention(Fastcall)]"] {
-// IR-NEXT:         return read<i32>(%7);
+// IR-NEXT:     fn %8 @fc(%9 a: i32 [c="int"], %10 b: i32 [c="int"], %11 c: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl fastcall(scalar, scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int, int) __attribute__((fastcall))"] [c_attributes="[CallingConvention(Fastcall)]"] {
+// IR-NEXT:         return read<i32>(%9);
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @vc(%11 a: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl vectorcall(scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int) __attribute__((vectorcall))"] [c_attributes="[CallingConvention(Vectorcall)]"] {
-// IR-NEXT:         return read<i32>(%11);
-// IR-NEXT:     }
-// IR-NEXT:     fn %12 @tc(%13 a: i32 [c="int"], %14 b: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl thiscall(scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int) __attribute__((thiscall))"] [c_attributes="[CallingConvention(Thiscall)]"] {
+// IR-NEXT:     fn %12 @vc(%13 a: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl vectorcall(scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int) __attribute__((vectorcall))"] [c_attributes="[CallingConvention(Vectorcall)]"] {
 // IR-NEXT:         return read<i32>(%13);
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @var(%16 a: i32 [c="int"], ...) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, ...)"] [c_attributes="[CallingConvention(Stdcall)]"] {
-// IR-NEXT:         return read<i32>(%16);
+// IR-NEXT:     fn %14 @tc(%15 a: i32 [c="int"], %16 b: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl thiscall(scalar, scalar) -> scalar] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int) __attribute__((thiscall))"] [c_attributes="[CallingConvention(Thiscall)]"] {
+// IR-NEXT:         return read<i32>(%15);
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @cd(%18 a: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] [c_attributes="[CallingConvention(Cdecl)]"] {
+// IR-NEXT:     fn %17 @var(%18 a: i32 [c="int"], ...) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, ...)"] [c_attributes="[CallingConvention(Stdcall)]"] {
 // IR-NEXT:         return read<i32>(%18);
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @f(%20 a: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar) -> scalar] [fallthrough=ub_if_used] [c="int(int) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"] {
+// IR-NEXT:     fn %19 @cd(%20 a: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] [c_attributes="[CallingConvention(Cdecl)]"] {
 // IR-NEXT:         return read<i32>(%20);
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @g(%30 <unnamed>: i32) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar) -> scalar] [c="int(int) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"];
-// IR-NEXT:     fn %22 @ret_pf() -> ptr<fn stdcall(i32) -> i32> [linkage=external] [abi=x86_cdecl stdcall() -> scalar] [c="PF(void) __attribute__((stdcall))"] [c_canon="int (*(void))(int) __attribute__((stdcall)) __attribute__((stdcall))"] [typedef_chain="PF"] [c_attributes="[CallingConvention(Stdcall)]"];
-// IR-NEXT:     fn %26 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=x86_cdecl stdcall(scalar) -> scalar>(read<ptr<fn stdcall(i32) -> i32>>(%25), const<i32>(1)), call<i32, abi=x86_cdecl fastcall(scalar, scalar, scalar) -> scalar>(%6, const<i32>(1), const<i32>(2), const<i32>(3))), call<i32>(%15, const<i32>(1), const<i32>(2))), call<i32, abi=x86_cdecl fastcall(scalar) -> scalar>(read<ptr<fn fastcall(i32) -> i32>>(deref(ptr_offset<ptr<ptr<fn fastcall(i32) -> i32>>, subtract=false>(array_decay<ptr<ptr<fn fastcall(i32) -> i32>>, length=Some(2)>(%23), const<i32>(0)))), const<i32>(1)));
+// IR-NEXT:     fn %21 @f(%22 a: i32 [c="int"]) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar) -> scalar] [fallthrough=ub_if_used] [c="int(int) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"] {
+// IR-NEXT:         return read<i32>(%22);
+// IR-NEXT:     }
+// IR-NEXT:     fn %23 @g(%32 <unnamed>: i32) -> i32 [linkage=external] [abi=x86_cdecl stdcall(scalar) -> scalar] [c="int(int) __attribute__((stdcall))"] [c_attributes="[CallingConvention(Stdcall)]"];
+// IR-NEXT:     fn %24 @ret_pf() -> ptr<fn stdcall(i32) -> i32> [linkage=external] [abi=x86_cdecl stdcall() -> scalar] [c="PF(void) __attribute__((stdcall))"] [c_canon="int (*(void))(int) __attribute__((stdcall)) __attribute__((stdcall))"] [typedef_chain="PF"] [c_attributes="[CallingConvention(Stdcall)]"];
+// IR-NEXT:     fn %28 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=x86_cdecl stdcall(scalar) -> scalar>(read<ptr<fn stdcall(i32) -> i32>>(%27), const<i32>(1)), call<i32, abi=x86_cdecl fastcall(scalar, scalar, scalar) -> scalar>(%8, const<i32>(1), const<i32>(2), const<i32>(3))), call<i32>(%17, const<i32>(1), const<i32>(2))), call<i32, abi=x86_cdecl fastcall(scalar) -> scalar>(read<ptr<fn fastcall(i32) -> i32>>(deref(ptr_offset<ptr<ptr<fn fastcall(i32) -> i32>>, subtract=false>(array_decay<ptr<ptr<fn fastcall(i32) -> i32>>, length=Some(2)>(%25), const<i32>(0)))), const<i32>(1)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

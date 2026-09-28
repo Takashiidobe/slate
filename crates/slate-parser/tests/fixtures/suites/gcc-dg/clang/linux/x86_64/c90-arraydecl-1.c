@@ -55,12 +55,12 @@ void bar4 (int a[const static 2]); /* { dg-bogus "warning" "warning in place of 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo0(%7 a: i32, %8 b: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo1(%9 <unnamed>: i32, %10 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar0(%11 a: ptr<i32> [const]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar1(%12 a: ptr<i32> [const] [array=2]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar2(%13 a: ptr<i32> [array=static 2]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @bar3(%14 a: ptr<i32> [const] [array=static 2]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @bar4(%15 a: ptr<i32> [const] [array=static 2]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %2 @foo0(%14 a: i32, %15 b: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @foo1(%16 <unnamed>: i32, %17 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @bar0(%18 a: ptr<i32> [const]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %7 @bar1(%19 a: ptr<i32> [const] [array=2]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %9 @bar2(%20 a: ptr<i32> [array=static 2]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %11 @bar3(%21 a: ptr<i32> [const] [array=static 2]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %13 @bar4(%22 a: ptr<i32> [const] [array=static 2]) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

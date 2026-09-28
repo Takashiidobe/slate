@@ -60,17 +60,17 @@ main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 s1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %3 t1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %4 s2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 102, 40, 50, 41, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 t2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 104, 40, 50, 41, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @strcmp(%7 __s1: ptr<const i8>, %8 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%0, array_decay<ptr<const i8>, length=Some(4)>(%2), array_decay<ptr<const i8>, length=Some(4)>(%3)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%0, array_decay<ptr<const i8>, length=Some(7)>(%4), array_decay<ptr<const i8>, length=Some(7)>(%5)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     global %4 s1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %5 t1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %6 s2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 102, 40, 50, 41, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %7 t2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 104, 40, 50, 41, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @strcmp(%9 __s1: ptr<const i8>, %10 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%2, array_decay<ptr<const i8>, length=Some(4)>(%4), array_decay<ptr<const i8>, length=Some(4)>(%5)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%2, array_decay<ptr<const i8>, length=Some(7)>(%6), array_decay<ptr<const i8>, length=Some(7)>(%7)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

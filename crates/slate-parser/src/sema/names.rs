@@ -493,8 +493,11 @@ impl Resolver {
                     self.push_scope();
                     let result = parameters.iter().try_for_each(|parameter| {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
-                        if self.collecting_labels {
-                            self.visit_declarator(&parameter.declarator)?;
+                        self.visit_declarator(&parameter.declarator)?;
+                        if !self.collecting_labels
+                            && let Some(name) = parameter.declarator.name()
+                        {
+                            self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
                         }
                         Ok(())
                     });

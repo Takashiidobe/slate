@@ -35,8 +35,8 @@ int main() {
 // DEFAULT-NEXT:     global %0 values: array<array<i32, 4>, 3> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %1 handler: ptr<fn(i8, ptr<i32>) -> i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %2 @factory() -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @callback(%5 value: i32, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %4 @callback(%6 value: i32, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

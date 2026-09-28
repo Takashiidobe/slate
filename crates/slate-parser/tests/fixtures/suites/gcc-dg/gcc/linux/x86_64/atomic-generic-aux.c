@@ -84,33 +84,33 @@ void __atomic_store (size_t size, void *obj, void *val, int model)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %1 @memcpy(%27 __dest: ptr<void> [restrict], %28 __src: ptr<const void> [restrict], %29 __n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memcmp(%30 __s1: ptr<const void>, %31 __s2: ptr<const void>, %32 __n: u64) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %3 @__atomic_exchange(%4 size: u64, %5 obj: ptr<void>, %6 val: ptr<void>, %7 ret: ptr<void>, %8 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%7), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%5)), read<u64>(%4));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%5), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%6)), read<u64>(%4));
+// DEFAULT-NEXT:     fn %4 @memcpy(%33 __dest: ptr<void> [restrict], %34 __src: ptr<const void> [restrict], %35 __n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %8 @memcmp(%36 __s1: ptr<const void>, %37 __s2: ptr<const void>, %38 __n: u64) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %9 @__atomic_exchange(%10 size: u64, %11 obj: ptr<void>, %12 val: ptr<void>, %13 ret: ptr<void>, %14 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%13), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%11)), read<u64>(%10));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%11), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%12)), read<u64>(%10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__atomic_compare_exchange(%10 size: u64, %11 obj: ptr<void>, %12 expected: ptr<void>, %13 desired: ptr<void>, %14 model1: i32, %15 model2: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %16 ret: bool [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%2, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%11)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%12)), read<u64>(%10)), const<i32>(0)))
+// DEFAULT-NEXT:     fn %15 @__atomic_compare_exchange(%16 size: u64, %17 obj: ptr<void>, %18 expected: ptr<void>, %19 desired: ptr<void>, %20 model1: i32, %21 model2: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %22 ret: bool [storage=automatic];
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%8, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%17)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%18)), read<u64>(%16)), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%11), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%13)), read<u64>(%10));
-// DEFAULT-NEXT:                 write<bool>(%16, const<bool>(true));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%17), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%19)), read<u64>(%16));
+// DEFAULT-NEXT:                 write<bool>(%22, const<bool>(true));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%12), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%11)), read<u64>(%10));
-// DEFAULT-NEXT:                 write<bool>(%16, const<bool>(false));
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%18), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%17)), read<u64>(%16));
+// DEFAULT-NEXT:                 write<bool>(%22, const<bool>(false));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%14), const<i32>(5)), ne<i32>(read<i32>(%15), const<i32>(2)))
-// DEFAULT-NEXT:             write<bool>(%16, not<bool>(read<bool>(%16)));
-// DEFAULT-NEXT:         return read<bool>(%16);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%20), const<i32>(5)), ne<i32>(read<i32>(%21), const<i32>(2)))
+// DEFAULT-NEXT:             write<bool>(%22, not<bool>(read<bool>(%22)));
+// DEFAULT-NEXT:         return read<bool>(%22);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__atomic_load(%18 size: u64, %19 obj: ptr<void>, %20 ret: ptr<void>, %21 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%20), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%19)), read<u64>(%18));
+// DEFAULT-NEXT:     fn %23 @__atomic_load(%24 size: u64, %25 obj: ptr<void>, %26 ret: ptr<void>, %27 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%26), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%25)), read<u64>(%24));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__atomic_store(%23 size: u64, %24 obj: ptr<void>, %25 val: ptr<void>, %26 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, read<ptr<void>>(%24), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%25)), read<u64>(%23));
+// DEFAULT-NEXT:     fn %28 @__atomic_store(%29 size: u64, %30 obj: ptr<void>, %31 val: ptr<void>, %32 model: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%4, read<ptr<void>>(%30), pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%31)), read<u64>(%29));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

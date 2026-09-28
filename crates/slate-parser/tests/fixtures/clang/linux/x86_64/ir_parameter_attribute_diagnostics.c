@@ -136,7 +136,7 @@ void f(__declspec(code_seg("s")) int p);
 // IR-WARN_ALIGNED-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN_ALIGNED-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN_ALIGNED-NEXT:     }
-// IR-WARN_ALIGNED-NEXT:     fn %0 @f(%1 q: i32) -> void [linkage=external];
+// IR-WARN_ALIGNED-NEXT:     fn %1 @f(%2 q: i32) -> void [linkage=external];
 // IR-WARN_ALIGNED-NEXT: }
 // SLATE-FILECHECK-END IR-WARN_ALIGNED
 // SLATE-FILECHECK-BEGIN IR-WARN_ALIGNAS
@@ -162,7 +162,7 @@ void f(__declspec(code_seg("s")) int p);
 // IR-WARN_ALIGNAS-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN_ALIGNAS-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN_ALIGNAS-NEXT:     }
-// IR-WARN_ALIGNAS-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_ALIGNAS-NEXT:     fn %1 @f(%2 p: i32) -> void [linkage=external];
 // IR-WARN_ALIGNAS-NEXT: }
 // SLATE-FILECHECK-END IR-WARN_ALIGNAS
 // SLATE-FILECHECK-BEGIN IR-WARN_SYMBOL
@@ -188,7 +188,7 @@ void f(__declspec(code_seg("s")) int p);
 // IR-WARN_SYMBOL-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN_SYMBOL-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN_SYMBOL-NEXT:     }
-// IR-WARN_SYMBOL-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_SYMBOL-NEXT:     fn %1 @f(%2 p: i32) -> void [linkage=external];
 // IR-WARN_SYMBOL-NEXT: }
 // SLATE-FILECHECK-END IR-WARN_SYMBOL
 // SLATE-FILECHECK-BEGIN IR-WARN_LAYOUT
@@ -214,7 +214,7 @@ void f(__declspec(code_seg("s")) int p);
 // IR-WARN_LAYOUT-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN_LAYOUT-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN_LAYOUT-NEXT:     }
-// IR-WARN_LAYOUT-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_LAYOUT-NEXT:     fn %1 @f(%2 p: i32) -> void [linkage=external];
 // IR-WARN_LAYOUT-NEXT: }
 // SLATE-FILECHECK-END IR-WARN_LAYOUT
 // SLATE-FILECHECK-BEGIN VECTOR
@@ -240,7 +240,7 @@ void f(__declspec(code_seg("s")) int p);
 // VECTOR-NEXT:         storage d64 [size=8, align=8];
 // VECTOR-NEXT:         storage d128 [size=16, align=16];
 // VECTOR-NEXT:     }
-// VECTOR-NEXT:     fn %0 @f(%1 p: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(direct) -> void];
+// VECTOR-NEXT:     fn %1 @f(%2 p: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(direct) -> void];
 // VECTOR-NEXT: }
 // SLATE-FILECHECK-END VECTOR
 // SLATE-FILECHECK-BEGIN IR-WARN_IGNORED
@@ -266,6 +266,6 @@ void f(__declspec(code_seg("s")) int p);
 // IR-WARN_IGNORED-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN_IGNORED-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN_IGNORED-NEXT:     }
-// IR-WARN_IGNORED-NEXT:     fn %0 @f(%1 p: i32) -> void [linkage=external];
+// IR-WARN_IGNORED-NEXT:     fn %1 @f(%2 p: i32) -> void [linkage=external];
 // IR-WARN_IGNORED-NEXT: }
 // SLATE-FILECHECK-END IR-WARN_IGNORED

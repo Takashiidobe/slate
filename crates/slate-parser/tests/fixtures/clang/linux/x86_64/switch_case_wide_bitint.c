@@ -52,26 +52,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 big = i256b;
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @classify(%3 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 v: i256b [storage=automatic] = add<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i128b>(170141183460469231731687303715884105727)), widen<i256b, reason=explicit>(read<i32>(%3)));
-// DEFAULT-NEXT:         switch %7 read<i256b>(%4)
+// DEFAULT-NEXT:     global %9 .str9: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %3 @classify(%4 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %5 v: i256b [storage=automatic] = add<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i128b>(170141183460469231731687303715884105727)), widen<i256b, reason=explicit>(read<i32>(%4)));
+// DEFAULT-NEXT:         switch %8 read<i256b>(%5)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %7 const<i256b>(170141183460469231731687303715884105727):
-// DEFAULT-NEXT:                     case %7 const<i256b>(170141183460469231731687303715884105728):
-// DEFAULT-NEXT:                         case %7 const<i256b>(170141183460469231731687303715884105729):
+// DEFAULT-NEXT:                 case %8 const<i256b>(170141183460469231731687303715884105727):
+// DEFAULT-NEXT:                     case %8 const<i256b>(170141183460469231731687303715884105728):
+// DEFAULT-NEXT:                         case %8 const<i256b>(170141183460469231731687303715884105729):
 // DEFAULT-NEXT:                             return const<i32>(1);
-// DEFAULT-NEXT:                 case %7 const<i256b>(170141183460469231731687303715884105736):
+// DEFAULT-NEXT:                 case %8 const<i256b>(170141183460469231731687303715884105736):
 // DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 case %7 const<i256b>(-170141183460469231731687303715884105727):
+// DEFAULT-NEXT:                 case %8 const<i256b>(-170141183460469231731687303715884105727):
 // DEFAULT-NEXT:                     return const<i32>(3);
-// DEFAULT-NEXT:                 default %7:
+// DEFAULT-NEXT:                 default %8:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%8)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(9)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(5)));
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(9)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

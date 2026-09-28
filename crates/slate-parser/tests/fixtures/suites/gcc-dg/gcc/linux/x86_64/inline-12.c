@@ -43,7 +43,7 @@ void g(inline int(void)); /* { dg-error "parameter '\\({anonymous}\\)' declared 
 // DEFAULT-NEXT:     type @type1 d = i32;
 // DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %1 b: ptr<fn() -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @e(%6 f: ptr<fn() -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @g(%7 <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %5 @e(%7 f: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %6 @g(%8 <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

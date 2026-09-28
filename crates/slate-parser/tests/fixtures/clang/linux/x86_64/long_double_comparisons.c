@@ -39,15 +39,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %7 .str7: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%5 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 zero: f80 [storage=automatic] = const<f80>(0);
-// DEFAULT-NEXT:         let %3 tiny: f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
-// DEFAULT-NEXT:         let %4 one: f80 [storage=automatic] = const<f80>(1);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%6)), from_bool<i32, reason=vararg>(gt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%2))), from_bool<i32, reason=vararg>(lt<f80, exceptions=ignore>(read<f80>(%2), read<f80>(%3))), from_bool<i32, reason=vararg>(ge<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%3))), from_bool<i32, reason=vararg>(le<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%4))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%7)), from_bool<i32, reason=vararg>(lt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%2))), from_bool<i32, reason=vararg>(gt<f80, exceptions=ignore>(read<f80>(%2), read<f80>(%3))), from_bool<i32, reason=vararg>(le<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%3))), from_bool<i32, reason=vararg>(ge<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%4))));
+// DEFAULT-NEXT:     global %8 .str8: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 zero: f80 [storage=automatic] = const<f80>(0);
+// DEFAULT-NEXT:         let %4 tiny: f80 [storage=automatic] = const<f80>(3.64519953188247460253E-4951);
+// DEFAULT-NEXT:         let %5 one: f80 [storage=automatic] = const<f80>(1);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%7)), from_bool<i32, reason=vararg>(gt<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%3))), from_bool<i32, reason=vararg>(lt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%4))), from_bool<i32, reason=vararg>(ge<f80, exceptions=ignore>(read<f80>(%5), read<f80>(%4))), from_bool<i32, reason=vararg>(le<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%8)), from_bool<i32, reason=vararg>(lt<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%3))), from_bool<i32, reason=vararg>(gt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%4))), from_bool<i32, reason=vararg>(le<f80, exceptions=ignore>(read<f80>(%5), read<f80>(%4))), from_bool<i32, reason=vararg>(ge<f80, exceptions=ignore>(read<f80>(%4), read<f80>(%5))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

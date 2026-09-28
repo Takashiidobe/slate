@@ -45,13 +45,13 @@ void f(void)
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
 // DEFAULT-NEXT:     type @type1 s1 = @type0;
-// DEFAULT-NEXT:     fn %2 @g(%6 b: ptr<u8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %5 b: ptr<u8> [storage=automatic];
-// DEFAULT-NEXT:         write<i16>(field0(%4), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<ptr<u8>>(%5, pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type0>>(%4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>) -> void>(%2, read<ptr<u8>>(%5));
+// DEFAULT-NEXT:     fn %3 @g(%7 b: ptr<u8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %4 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic];
+// DEFAULT-NEXT:         let %6 b: ptr<u8> [storage=automatic];
+// DEFAULT-NEXT:         write<i16>(field0(%5), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<ptr<u8>>(%6, pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type0>>(%5)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>) -> void>(%3, read<ptr<u8>>(%6));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

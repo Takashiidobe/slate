@@ -39,16 +39,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_ctzll(%8 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @lowest_bit(%3 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(call<i32, signature=fn(u64) -> i32>(%9, read<u64>(%3)))));
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %2 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %10 @__builtin_ctzll(%9 <unnamed>: u64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %3 @lowest_bit(%4 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(call<i32, signature=fn(u64) -> i32>(%10, read<u64>(%4)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 x: u64 [storage=automatic] = const<u64>(19070976);
-// DEFAULT-NEXT:         let %6 n: u64 [storage=automatic] = call<u64, signature=fn(u64) -> u64>(%2, read<u64>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%10)), read<u64>(%6));
+// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %6 x: u64 [storage=automatic] = const<u64>(19070976);
+// DEFAULT-NEXT:         let %7 n: u64 [storage=automatic] = call<u64, signature=fn(u64) -> u64>(%3, read<u64>(%6));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%11)), read<u64>(%7));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

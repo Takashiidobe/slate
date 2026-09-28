@@ -44,12 +44,12 @@ int main(void) {
 // DEFAULT-NEXT:         %1 IN_ELIF = const<i32>(4);
 // DEFAULT-NEXT:         %2 IN_ELSE = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 conditional: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<@type1>(field0(%7), int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type1>(field0(%7)))), const<i32>(4));
+// DEFAULT-NEXT:     global %10 .str10: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %8 conditional: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<@type1>(field0(%8), int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%10)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type1>(field0(%8)))), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

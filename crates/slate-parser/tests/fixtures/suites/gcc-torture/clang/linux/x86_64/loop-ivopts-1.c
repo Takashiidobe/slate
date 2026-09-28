@@ -53,50 +53,50 @@ void foo(float *x) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 t16: array<f32, 16> [storage=static] [align=16] = aggregate<array<f32, 16>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(3.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(4.0)), index4 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(5.0)), index5 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(6.0)), index6 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(7.0)), index7 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(8.0)), index8 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(9.0)), index9 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(10.0)), index10 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(11.0)), index11 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(12.0)), index12 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(13.0)), index13 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(14.0)), index14 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(15.0)), index15 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(16.0))) [linkage=internal];
-// DEFAULT-NEXT:     global %9 tmp: array<f32, 4> [storage=static] [align=16] = aggregate<array<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @foo(%3 x: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 k: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 temp: f32 [storage=automatic];
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     global %9 t16: array<f32, 16> [storage=static] [align=16] = aggregate<array<f32, 16>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(3.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(4.0)), index4 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(5.0)), index5 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(6.0)), index6 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(7.0)), index7 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(8.0)), index8 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(9.0)), index9 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(10.0)), index10 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(11.0)), index11 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(12.0)), index12 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(13.0)), index13 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(14.0)), index14 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(15.0)), index15 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(16.0))) [linkage=internal];
+// DEFAULT-NEXT:     global %10 tmp: array<f32, 4> [storage=static] [align=16] = aggregate<array<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0))) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @foo(%4 x: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %6 j: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %7 k: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %8 temp: f32 [storage=automatic];
+// DEFAULT-NEXT:         for %12
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(4))
+// DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%14));
+// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%5);
+// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%15));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i32>(%6, sub<i32, overflow=ub>(const<i32>(3), read<i32>(%4)));
-// DEFAULT-NEXT:                     write<f32>(%7, read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%8), mul<i32, overflow=ub>(const<i32>(5), read<i32>(%6))))));
-// DEFAULT-NEXT:                     for %12
+// DEFAULT-NEXT:                     write<i32>(%7, sub<i32, overflow=ub>(const<i32>(3), read<i32>(%5)));
+// DEFAULT-NEXT:                     write<f32>(%8, read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%9), mul<i32, overflow=ub>(const<i32>(5), read<i32>(%7))))));
+// DEFAULT-NEXT:                     for %13
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             write<i32>(%5, add<i32, overflow=ub>(read<i32>(%6), const<i32>(1)));
-// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%5), const<i32>(4))
+// DEFAULT-NEXT:                             write<i32>(%6, add<i32, overflow=ub>(read<i32>(%7), const<i32>(1)));
+// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%6), const<i32>(4))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %15: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                             let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%5, read<i32>(%16));
+// DEFAULT-NEXT:                             let %16: i32 [synthetic] = read<i32>(%6);
+// DEFAULT-NEXT:                             let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%6, read<i32>(%17));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), read<i32>(%6))), mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%8), add<i32, overflow=ub>(read<i32>(%6), mul<i32, overflow=ub>(read<i32>(%5), const<i32>(4)))))), read<f32>(%7)));
+// DEFAULT-NEXT:                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%10), read<i32>(%7))), mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(16)>(%9), add<i32, overflow=ub>(read<i32>(%7), mul<i32, overflow=ub>(read<i32>(%6), const<i32>(4)))))), read<f32>(%8)));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), const<i32>(0))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), const<i32>(0)))));
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), const<i32>(1))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), const<i32>(1)))));
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), const<i32>(2))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), const<i32>(2)))));
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), const<i32>(3))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%9), const<i32>(3)))));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%4), const<i32>(0))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%10), const<i32>(0)))));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%4), const<i32>(1))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%10), const<i32>(1)))));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%4), const<i32>(2))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%10), const<i32>(2)))));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%4), const<i32>(3))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(%10), const<i32>(3)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 x: array<f32, 4> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%0, array_decay<ptr<f32>, length=Some(4)>(%2));
+// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %3 x: array<f32, 4> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%1, array_decay<ptr<f32>, length=Some(4)>(%3));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

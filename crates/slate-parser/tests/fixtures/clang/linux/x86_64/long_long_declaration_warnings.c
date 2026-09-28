@@ -99,10 +99,10 @@ ll_t typedef_use_does_not_warn;
 // IR-C89-NEXT:     } [size=8, align=8, offsets=[0]];
 // IR-C89-NEXT:     global %0 file_scope: i64 [storage=static] [linkage=external];
 // IR-C89-NEXT:     global %1 unsigned_file_scope: u64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     global %7 typedef_use_does_not_warn: i64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     fn %4 @returns_long_long(%8 parameter: i64) -> i64 [linkage=external];
-// IR-C89-NEXT:     fn %5 @body() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-C89-NEXT:         let %6 local: i64 [storage=automatic];
+// IR-C89-NEXT:     global %8 typedef_use_does_not_warn: i64 [storage=static] [linkage=external];
+// IR-C89-NEXT:     fn %5 @returns_long_long(%9 parameter: i64) -> i64 [linkage=external];
+// IR-C89-NEXT:     fn %6 @body() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-C89-NEXT:         let %7 local: i64 [storage=automatic];
 // IR-C89-NEXT:     }
 // IR-C89-NEXT: }
 // SLATE-FILECHECK-END IR-C89

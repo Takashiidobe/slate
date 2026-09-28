@@ -67,16 +67,16 @@ int main(void) {
 // DEFAULT-NEXT:         field0 handle: ptr<i8>;
 // DEFAULT-NEXT:         field1 suffix: ptr<i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 100, 32, 37, 115, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 e: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(1));
-// DEFAULT-NEXT:         let %7 h: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([72, 0]);
-// DEFAULT-NEXT:         let %8 s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([83, 0]);
-// DEFAULT-NEXT:         write<ptr<i8>>(field0(field1(field1(%6))), array_decay<ptr<i8>, length=Some(2)>(%7));
-// DEFAULT-NEXT:         write<ptr<i8>>(field1(field1(field1(%6))), array_decay<ptr<i8>, length=Some(2)>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%10)), read<i32>(field0(%6)), read<ptr<i8>>(field0(field1(field1(%6)))), read<ptr<i8>>(field1(field1(field1(%6)))));
+// DEFAULT-NEXT:     global %11 .str11: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 100, 32, 37, 115, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %1 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %7 e: @type0 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%7), const<i32>(1));
+// DEFAULT-NEXT:         let %8 h: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([72, 0]);
+// DEFAULT-NEXT:         let %9 s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([83, 0]);
+// DEFAULT-NEXT:         write<ptr<i8>>(field0(field1(field1(%7))), array_decay<ptr<i8>, length=Some(2)>(%8));
+// DEFAULT-NEXT:         write<ptr<i8>>(field1(field1(field1(%7))), array_decay<ptr<i8>, length=Some(2)>(%9));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%11)), read<i32>(field0(%7)), read<ptr<i8>>(field0(field1(field1(%7)))), read<ptr<i8>>(field1(field1(field1(%7)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

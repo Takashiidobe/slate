@@ -60,23 +60,23 @@ int main (void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 lv1: u64 [storage=static] = const<u64>(3735928559) [linkage=internal];
-// DEFAULT-NEXT:     global %3 Av1a: u64 [storage=static] [linkage=external] [weak] [alias="lv1"];
+// DEFAULT-NEXT:     global %3 lv1: u64 [storage=static] = const<u64>(3735928559) [linkage=internal];
+// DEFAULT-NEXT:     global %4 Av1a: u64 [storage=static] [linkage=external] [weak] [alias="lv1"];
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @lf1() -> u64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %2 @exit(%8 __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %5 @lf1() -> u64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<u64>(84983463);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @Af1a() -> u64 [linkage=external] [weak] [alias="lf1"];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8: bool [synthetic];
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(not<bool>(ne<ptr<u64>>(addr_of<ptr<u64>>(%3), null<ptr<u64>>)), not<bool>(ne<ptr<fn() -> u64>>(addr_of<ptr<fn() -> u64>>(%5), null<ptr<fn() -> u64>>))), ne<u64>(read<u64>(%3), const<u64>(3735928559)))
-// DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
+// DEFAULT-NEXT:     fn %6 @Af1a() -> u64 [linkage=external] [weak] [alias="lf1"];
+// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %9: bool [synthetic];
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(not<bool>(ne<ptr<u64>>(addr_of<ptr<u64>>(%4), null<ptr<u64>>)), not<bool>(ne<ptr<fn() -> u64>>(addr_of<ptr<fn() -> u64>>(%6), null<ptr<fn() -> u64>>))), ne<u64>(read<u64>(%4), const<u64>(3735928559)))
+// DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%8, ne<u64>(call<u64, signature=fn() -> u64>(%5), const<u64>(84983463)));
-// DEFAULT-NEXT:         if read<bool>(%8)
+// DEFAULT-NEXT:             write<bool>(%9, ne<u64>(call<u64, signature=fn() -> u64>(%6), const<u64>(84983463)));
+// DEFAULT-NEXT:         if read<bool>(%9)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

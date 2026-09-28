@@ -48,10 +48,10 @@ size_t count(void) { return 1; }
 // DEFAULT-NEXT:     type @type7 plain_char = i8 [c="char"];
 // DEFAULT-NEXT:     type @type8 signed_char = i8 [c="signed char"];
 // DEFAULT-NEXT:     type @type9 unsigned_char = u8 [c="unsigned char"];
-// DEFAULT-NEXT:     fn %10 @value() -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"] {
+// DEFAULT-NEXT:     fn %12 @value() -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"] {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @count() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="size_t"] [c="size_t(void)"] [c_canon="unsigned long(void)"] [typedef_chain="size_t"] {
+// DEFAULT-NEXT:     fn %13 @count() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="size_t"] [c="size_t(void)"] [c_canon="unsigned long(void)"] [typedef_chain="size_t"] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
