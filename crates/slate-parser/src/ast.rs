@@ -838,6 +838,7 @@ pub enum MsAsmExpr {
         operator: MsAsmOperator,
         operand: Box<Span<MsAsmExpr>>,
     },
+    TypeKeyword(crate::lexer::Keyword),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

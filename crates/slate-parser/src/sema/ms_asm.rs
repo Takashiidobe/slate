@@ -7,11 +7,13 @@ use super::types::Ordinary;
 use crate::ast::{
     self, MsAsmBinaryOp, MsAsmExpr, MsAsmOperator, MsAsmSegment, MsAsmSize, Register, Span,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AsmAccess, AsmClobber, AsmConstraint, AsmDialect, AsmMemory, AsmOperand, AsmOperandKind,
     AsmOptions, AsmPiece, AsmSymbol, BindingId, BindingKind, InlineAsm, PlaceKind, Type,
     TypeDefinitionKind, ValueKind,
 };
+use crate::lexer::Keyword;
 use crate::target::x86::decode_register;
 use std::collections::{BTreeSet, HashMap};
 use std::fmt::Write;
@@ -257,6 +259,11 @@ impl Lowerer {
             MsAsmOperand::Reference(reference) => reference,
         };
         let registers = reference.base.is_some() || reference.index.is_some();
+        let size = match reference.size {
+            Some(size) => Some(size_keyword(size)),
+            None if sized => reference.ty.and_then(|ty| self.natural_size(ty)),
+            None => None,
+        };
         if reference.short {
             lowered.text("short ");
         }
@@ -349,11 +356,6 @@ impl Lowerer {
                         index
                     }
                 };
-                let size = match reference.size {
-                    Some(size) => Some(size_keyword(size)),
-                    None if sized => reference.ty.and_then(|ty| self.natural_size(ty)),
-                    None => None,
-                };
                 if let Some(segment) = reference.segment {
                     lowered.text(segment_spelling(segment));
                     lowered.text(":");
@@ -374,8 +376,8 @@ impl Lowerer {
             }
             None => {
                 let mut text = String::new();
-                if let Some(size) = reference.size {
-                    let _ = write!(text, "{} ptr ", size_keyword(size));
+                if let Some(size) = size {
+                    let _ = write!(text, "{size} ptr ");
                 }
                 if let Some(segment) = reference.segment {
                     let _ = write!(text, "{}:", segment_spelling(segment));
@@ -442,13 +444,26 @@ impl Lowerer {
             MsAsmExpr::Name(name) => self.ms_asm_name(expr, name)?,
             MsAsmExpr::Member { base, field } => {
                 let mut value = self.ms_asm_value(base)?;
-                let ty = value.ty.take().ok_or(ResolveError::Invalid(
-                    "`__asm` member of an untyped operand",
-                ))?;
-                let ty = self.unaliased(ty);
-                let (ty, offset) = self.types.offsetof_field(ty, &field.value).map_err(|_| {
-                    ResolveError::Invalid("no such struct or union member in `__asm`")
-                })?;
+                let no_such_member =
+                    ResolveError::Invalid("no such struct or union member in `__asm`");
+                let (ty, offset) = match value.ty.take().map(|ty| self.unaliased(ty)) {
+                    Some(ty)
+                        if matches!(self.kind(&ty), Some(TypeDefinitionKind::Record { .. })) =>
+                    {
+                        self.types
+                            .offsetof_field(ty, &field.value)
+                            .map_err(|_| no_such_member)?
+                    }
+                    _ if self.types.flavor == CompilerFlavor::Msvc => {
+                        self.types.ms_asm_field(&field.value)?
+                    }
+                    Some(_) => return Err(no_such_member),
+                    None => {
+                        return Err(ResolveError::Invalid(
+                            "`__asm` member of an untyped operand",
+                        ));
+                    }
+                };
                 value.constant = value.constant.wrapping_add(offset as i64);
                 value.ty = Some(ty);
                 value
@@ -486,6 +501,17 @@ impl Lowerer {
                 value.segment = Some(*segment);
                 value.bracketed = true;
                 value
+            }
+            MsAsmExpr::Operator {
+                operator: MsAsmOperator::Type,
+                operand,
+            } if let MsAsmExpr::TypeKeyword(keyword) = operand.value => {
+                Value::constant(self.ms_asm_keyword_size(keyword)?)
+            }
+            MsAsmExpr::TypeKeyword(_) => {
+                return Err(ResolveError::Invalid(
+                    "C type keyword outside `TYPE` in `__asm`",
+                ));
             }
             MsAsmExpr::Operator { operator, operand } => {
                 let mut value = self.ms_asm_value(operand)?;
@@ -597,6 +623,24 @@ impl Lowerer {
             MsAsmOperator::Length => Ok(length),
             _ => size(ty),
         }
+    }
+
+    fn ms_asm_keyword_size(&self, keyword: Keyword) -> Result<i64, ResolveError> {
+        let target = self.types.target_info();
+        let bits = match keyword {
+            Keyword::Char | Keyword::Signed | Keyword::Unsigned => 8,
+            Keyword::Short => target.short_width,
+            Keyword::Int => target.int_width,
+            Keyword::Long => target.long_width,
+            Keyword::Float => 32,
+            Keyword::Double | Keyword::Int64 => 64,
+            _ => {
+                return Err(ResolveError::Invalid(
+                    "`TYPE` of an unsupported C type keyword in `__asm`",
+                ));
+            }
+        };
+        Ok(i64::from(bits / 8))
     }
 
     fn unaliased(&self, mut ty: Type) -> Type {
@@ -803,6 +847,7 @@ fn render(expr: &MsAsmExpr) -> String {
         MsAsmExpr::SegmentRegister(segment) => segment_spelling(*segment).to_owned(),
         MsAsmExpr::St(index) => format!("st({index})"),
         MsAsmExpr::Number(number) => number.to_string(),
+        MsAsmExpr::TypeKeyword(keyword) => <&str>::from(*keyword).to_owned(),
         MsAsmExpr::Name(name) => name.clone(),
         MsAsmExpr::Member { base, field } => format!("{}.{}", render(&base.value), field.value),
         MsAsmExpr::Index { base, index } => {

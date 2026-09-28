@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::ast::{
     AlignAsOperand, ArrayDeclarator, ArraySize, Attribute, DeclarationSpecifiers, Declarator,
@@ -1018,6 +1018,71 @@ impl TypeResolver {
             .get(index)
             .ok_or(ResolveError::Unsupported("missing field offset"))?;
         Ok((field.ty.clone(), offset))
+    }
+
+    pub(super) fn ms_asm_field(&self, name: &str) -> Result<(Type, u64), ResolveError> {
+        let mut shadowed = HashSet::new();
+        let mut records = Vec::new();
+        for scope in self.tag_names.iter().rev() {
+            for ((kind, tag), id) in scope {
+                if *kind != TagKind::Enum && shadowed.insert(tag.as_str()) {
+                    self.with_anonymous_records(*id, &mut records);
+                }
+            }
+        }
+        let mut hits = records
+            .into_iter()
+            .filter_map(|id| self.flattened_field(id, name));
+        match (hits.next(), hits.next()) {
+            (Some(hit), None) => Ok(hit),
+            (None, _) => Err(ResolveError::Invalid(
+                "illegal struct/union member in `__asm`",
+            )),
+            (Some(_), Some(_)) => Err(ResolveError::Invalid("ambiguous member name in `__asm`")),
+        }
+    }
+
+    fn record_fields(&self, id: TypeId) -> Option<(&[Span<Field>], &[u64])> {
+        match self.definitions.get(id.0 as usize) {
+            Some(TypeDefinition {
+                kind:
+                    TypeDefinitionKind::Record {
+                        fields: Some(fields),
+                        layout: Some(layout),
+                        ..
+                    },
+                ..
+            }) => Some((fields, &layout.offsets)),
+            _ => None,
+        }
+    }
+
+    fn with_anonymous_records(&self, id: TypeId, records: &mut Vec<TypeId>) {
+        if records.contains(&id) {
+            return;
+        }
+        records.push(id);
+        for field in self.record_fields(id).map_or(&[][..], |(fields, _)| fields) {
+            if let (None, Type::Defined(inner)) = (&field.name, &field.ty) {
+                self.with_anonymous_records(*inner, records);
+            }
+        }
+    }
+
+    fn flattened_field(&self, id: TypeId, name: &str) -> Option<(Type, u64)> {
+        let (fields, offsets) = self.record_fields(id)?;
+        fields
+            .iter()
+            .zip(offsets)
+            .find_map(|(field, offset)| match (&field.name, &field.ty) {
+                (Some(field_name), ty) if field_name == name && field.bit_width.is_none() => {
+                    Some((ty.clone(), *offset))
+                }
+                (None, Type::Defined(inner)) => self
+                    .flattened_field(*inner, name)
+                    .map(|(ty, inner_offset)| (ty, offset + inner_offset)),
+                _ => None,
+            })
     }
 
     pub fn define_alias<'a>(

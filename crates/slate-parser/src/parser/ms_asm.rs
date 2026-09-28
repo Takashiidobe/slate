@@ -423,6 +423,16 @@ impl<'p, 'a> OperandParser<'p, 'a> {
         }
         if let Some(operator) = self.peek_word(0).as_deref().and_then(operator) {
             self.pos += 1;
+            if operator == MsAsmOperator::Type
+                && self.parser.flavor() == CompilerFlavor::Msvc
+                && let Some(Token::Keyword(keyword)) = self.peek()
+                && is_type_keyword(*keyword)
+            {
+                let keyword_start = self.pos;
+                self.pos += 1;
+                let operand = self.node(MsAsmExpr::TypeKeyword(*keyword), keyword_start);
+                return Ok(self.node(MsAsmExpr::Operator { operator, operand }, start));
+            }
             let operand = self.prefixed()?;
             return Ok(self.node(MsAsmExpr::Operator { operator, operand }, start));
         }
@@ -559,6 +569,21 @@ fn size(name: &str) -> Option<MsAsmSize> {
         "real10" => MsAsmSize::Real10,
         _ => return None,
     })
+}
+
+fn is_type_keyword(keyword: Keyword) -> bool {
+    matches!(
+        keyword,
+        Keyword::Char
+            | Keyword::Short
+            | Keyword::Int
+            | Keyword::Long
+            | Keyword::Int64
+            | Keyword::Float
+            | Keyword::Double
+            | Keyword::Signed
+            | Keyword::Unsigned
+    )
 }
 
 fn operator(name: &str) -> Option<MsAsmOperator> {

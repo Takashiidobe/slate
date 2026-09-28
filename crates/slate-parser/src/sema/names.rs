@@ -905,7 +905,8 @@ impl Resolver {
             MsAsmExpr::Register(_)
             | MsAsmExpr::SegmentRegister(_)
             | MsAsmExpr::St(_)
-            | MsAsmExpr::Number(_) => Ok(()),
+            | MsAsmExpr::Number(_)
+            | MsAsmExpr::TypeKeyword(_) => Ok(()),
             MsAsmExpr::Member { base, .. } => self.ms_asm_expr(base),
             MsAsmExpr::Index { base, index } => {
                 self.ms_asm_expr(base)?;

@@ -476,7 +476,10 @@ MsAsmExpr = "Register(" Register ")"
           | "Negate(" span<MsAsmExpr> ")"
           | Ptr { size: MsAsmSize, operand: span<MsAsmExpr> }
           | Segment { segment: MsAsmSegment, operand: span<MsAsmExpr> }
-          | Operator { operator: MsAsmOperator, operand: span<MsAsmExpr> } ;
+          | Operator { operator: MsAsmOperator, operand: span<MsAsmExpr> }
+          | "TypeKeyword(" MsAsmTypeKeyword ")" ;       (* only as the operand of TYPE, msvc flavor *)
+MsAsmTypeKeyword = "Char" | "Short" | "Int" | "Long" | "Int64" | "Float" | "Double"
+                 | "Signed" | "Unsigned" ;
 MsAsmSegment  = "Es" | "Cs" | "Ss" | "Ds" | "Fs" | "Gs" ;
 MsAsmBinaryOp = "Add" | "Sub" | "Mul" | "Div" ;
 MsAsmSize     = "Byte" | "Word" | "Dword" | "Fword" | "Qword" | "Tbyte"

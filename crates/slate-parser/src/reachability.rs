@@ -388,7 +388,8 @@ impl<'a> Reachability<'a> {
             MsAsmExpr::Register(_)
             | MsAsmExpr::SegmentRegister(_)
             | MsAsmExpr::St(_)
-            | MsAsmExpr::Number(_) => {}
+            | MsAsmExpr::Number(_)
+            | MsAsmExpr::TypeKeyword(_) => {}
             MsAsmExpr::Member { base, .. } => self.mark_ms_asm_expr(base),
             MsAsmExpr::Index {
                 base: lhs,

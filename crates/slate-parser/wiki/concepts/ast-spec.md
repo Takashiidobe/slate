@@ -642,7 +642,8 @@ template, operands with constraints, clobbers and labels.
 optional label, prefixes, a mnemonic and MASM operand expressions. Registers,
 numbers and operators are decoded at parse time; names are left for sema,
 because only scope decides whether `x` is a local, a global, a function or
-an asm label. It is a separate variant from `GnuAsm` because the two share
+an asm label. The one exception is `TYPE int` in the MSVC flavor: a C type
+keyword there parses to `TypeKeyword`. It is a separate variant from `GnuAsm` because the two share
 nothing until IR. Since the token stream records no line ends, the parser
 first rewrites each MS asm region: it drops `;` comments and inserts
 `Newline` tokens at instruction boundaries (`Parser::mark_ms_asm_lines`).

@@ -158,15 +158,35 @@ needs a typed operand (an object or typedef) and adds the field offset.
 `x[i]` and `x + i` both add bytes. The same file then lowers the result
 into IR.
 
-Where the compilers disagree, this follows clang:
+Where the compilers disagree:
 
 - MSVC binds `TYPE` tighter than `.`: `TYPE s.f` is `TYPE s + offsetof(f)`.
-  clang gives the field's size.
-- MSVC accepts and clang rejects: `[eax].f` (field looked up across all
-  structs), `.f` on a pointer or scalar (warning C4537, offset ignored),
-  `TYPE int`, `TYPE T` on a typedef, and two symbols in one operand. We
-  accept `TYPE T` and reject the rest.
+  clang gives the field's size. We follow clang.
+- MSVC accepts and clang rejects; the MSVC flavor accepts, the Clang flavor
+  rejects (`slate-parser-25m.6.7`, verified with cl.exe x86 `/FAs`):
+  - `.f` on an untyped operand (`[ebx].f`, `[ebx+4].f`) or on a pointer or
+    scalar (`g.f`, `local.f`; C4537 for locals only) looks `f` up in every
+    struct and union whose tag is visible at that point, including
+    function-local tags but not ones declared later. The field's offset is
+    added (it is *not* ignored, whatever C4537 suggests) and its type
+    becomes the operand's type. A name found in two records is C2410
+    ("ambiguous member name"), even at the same offset, and an anonymous
+    member counts both in its own record and in the enclosing one, so
+    `[ebx].anon` is always ambiguous. No match is C2411. A struct-typed
+    operand still needs the field in that struct (`s.missing` is C2411).
+    `TypeResolver::ms_asm_field`.
+  - `TYPE` on a single C type keyword: `char`/`__int8` 1, `short` 2, `int`
+    4, `long` 4, `__int64` 8, `float` 4, `double` 8, and a lone `signed` or
+    `unsigned` is 1 (sic). Two-word types, `void`, `_Bool`, `wchar_t`, and
+    `SIZE`/`LENGTH` on a keyword are syntax errors.
+  - `TYPE T` on a typedef: we accept in both flavors.
+- Two C symbols in one operand (`s + g`) is C2424 in MSVC too, not only in
+  clang. Rejected in both flavors.
 - clang accepts and MSVC rejects: `offset local` (C2415). We accept.
+
+A register-only memory reference whose type comes from a field (`mov
+[ebx].f, 1`, `movzx eax, [ebx].c`) gets its `ptr` size like an object
+reference does, matching cl.exe's `DWORD PTR [ebx+8]`.
 
 ### IR
 
