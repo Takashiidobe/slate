@@ -24,10 +24,28 @@ pub enum ClangHeaders {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GccHeaders {
+    X86,
+    Aarch64,
+    Arm,
+}
+
+impl GccHeaders {
+    pub fn family(self) -> &'static str {
+        match self {
+            Self::X86 => "x86",
+            Self::Aarch64 => "aarch64",
+            Self::Arm => "arm",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TargetProfile {
     pub predefines: &'static [Predefines],
     pub sysroot: SysrootLayout,
     pub clang_headers: ClangHeaders,
+    pub gcc_headers: Option<GccHeaders>,
     pub va_list: VaListKind,
     pub convention: AbiConvention,
 }
@@ -137,6 +155,7 @@ pub const X86_64_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
         multiarch: Some("x86_64-linux-gnu"),
     },
     clang_headers: ClangHeaders::Upstream,
+    gcc_headers: Some(GccHeaders::X86),
     va_list: VaListKind::X86_64Sysv,
     convention: AbiConvention::SysV64,
 };
@@ -148,6 +167,7 @@ const I686_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
         multiarch: Some("i386-linux-gnu"),
     },
     clang_headers: ClangHeaders::Upstream,
+    gcc_headers: Some(GccHeaders::X86),
     va_list: VaListKind::CharPointer,
     convention: AbiConvention::X86Cdecl,
 };
@@ -161,6 +181,7 @@ const fn clang_unix(
         predefines,
         sysroot: SysrootLayout::Unix { multiarch: None },
         clang_headers: ClangHeaders::Upstream,
+        gcc_headers: None,
         va_list,
         convention,
     }
@@ -171,6 +192,7 @@ const fn arm32_linux(predefines: &'static [Predefines]) -> TargetProfile {
         predefines,
         sysroot: SysrootLayout::Unix { multiarch: None },
         clang_headers: ClangHeaders::Upstream,
+        gcc_headers: Some(GccHeaders::Arm),
         va_list: VaListKind::ArmAapcs,
         convention: AbiConvention::Aapcs32,
     }
@@ -184,6 +206,7 @@ const fn windows_msvc(
         predefines,
         sysroot: SysrootLayout::WindowsKits,
         clang_headers: ClangHeaders::Upstream,
+        gcc_headers: None,
         va_list: VaListKind::CharPointer,
         convention,
     }
@@ -209,6 +232,7 @@ pub const TARGETS: &[TargetSpec] = &[
                 multiarch: Some("aarch64-linux-gnu"),
             },
             clang_headers: ClangHeaders::Upstream,
+            gcc_headers: Some(GccHeaders::Aarch64),
             va_list: VaListKind::AArch64Aapcs,
             convention: AbiConvention::Aapcs64,
         },

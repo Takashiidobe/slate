@@ -25,7 +25,10 @@ pub fn include_paths(target: &TargetInfo, flavor: CompilerFlavor) -> Vec<PathBuf
             ]
         }
         CompilerFlavor::Clang => vec![("clang-".into(), "include".into())],
-        CompilerFlavor::Gcc => vec![("gcc-".into(), "include".into())],
+        CompilerFlavor::Gcc => match target.profile.gcc_headers {
+            Some(headers) => vec![("gcc-".into(), format!("{}/include", headers.family()))],
+            None => Vec::new(),
+        },
         CompilerFlavor::Msvc => vec![("msvc-".into(), format!("{}/include", target.triple))],
     };
 

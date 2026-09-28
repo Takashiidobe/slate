@@ -17,6 +17,9 @@ A spec holds:
   `sysroot::include_paths_at` probes under the sysroot.
 - `profile.clang_headers`: `AppleFirst` prefers an `apple-clang-*` builtin
   header profile over upstream clang's.
+- `profile.gcc_headers`: the GCC header family (`x86`, `aarch64`, `arm`)
+  whose `gcc-*/<family>/include` the gcc flavor searches; `None` when the
+  target has no gcc flavor.
 - `profile.va_list`: what `__builtin_va_list` is.
 - `profile.convention`: the ABI convention. `Aapcs32` becomes
   `Aapcs32HardFloat` for non-variadic calls when the ISA is hard-float; that is
