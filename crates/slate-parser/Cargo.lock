@@ -866,6 +866,7 @@ dependencies = [
  "clang-ast",
  "custom_debug",
  "directories",
+ "foldhash",
  "libc",
  "libtest-mimic",
  "miette",

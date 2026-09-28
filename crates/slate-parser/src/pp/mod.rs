@@ -44,7 +44,6 @@ pub enum PPNodeKind {
         provenance: Provenance,
     },
     Code {
-        text: String,
         tokens: Vec<Span<Token>>,
         provenance: Provenance,
     },
@@ -77,7 +76,7 @@ struct LineOverride {
 
 pub struct Preprocessor<'a> {
     pub files: Files,
-    pub macros: HashMap<String, MacroEntry>,
+    pub macros: foldhash::HashMap<String, MacroEntry>,
     pub main_file: Option<FileId>,
     outermost_system_header: Option<FileId>,
     search: &'a SearchPaths,
@@ -113,7 +112,7 @@ impl<'a> Preprocessor<'a> {
     ) -> Self {
         Preprocessor {
             files: Files::new(),
-            macros: HashMap::new(),
+            macros: foldhash::HashMap::default(),
             main_file: None,
             outermost_system_header: None,
             search,
@@ -518,7 +517,7 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn record_line_directive(&mut self, directive: &Directive) -> Result<(), PPFailure> {
-        let expanded = self.expand_macros(&directive.arguments, &mut HashSet::new());
+        let expanded = self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
         let Some(Span {
             value: Token::IntLit(number),
             ..
@@ -592,8 +591,10 @@ impl<'a> Preprocessor<'a> {
                             directive.arguments.value_at(0),
                             Some(Token::StringLit(_) | Token::Less)
                         ) {
-                            expanded.arguments =
-                                self.expand_macros(&directive.arguments, &mut HashSet::new());
+                            expanded.arguments = self.expand_macros(
+                                &directive.arguments,
+                                &mut foldhash::HashSet::default(),
+                            );
                         }
                         let include = include_target(self.source(directive.loc.file), &expanded)?;
                         nodes.extend(
@@ -631,7 +632,7 @@ impl<'a> Preprocessor<'a> {
         let loc = Span::cover((), source_tokens).spelling;
         let provenance = self.provenance(loc);
         let expanded = self
-            .expand_macros(source_tokens, &mut HashSet::new())
+            .expand_macros(source_tokens, &mut foldhash::HashSet::default())
             .into_iter()
             .map(|token| self.classify_keyword(token).with_provenance(provenance))
             .collect::<Vec<_>>();
@@ -645,7 +646,6 @@ impl<'a> Preprocessor<'a> {
                     nodes.push(
                         Span::new(
                             PPNodeKind::Code {
-                                text: tokens_source(code.values()),
                                 tokens: code,
                                 provenance,
                             },
@@ -691,7 +691,6 @@ impl<'a> Preprocessor<'a> {
             nodes.push(
                 Span::new(
                     PPNodeKind::Code {
-                        text: tokens_source(code.values()),
                         tokens: code,
                         provenance,
                     },
@@ -749,7 +748,7 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
-        let arguments = self.expand_macros(&directive.arguments, &mut HashSet::new());
+        let arguments = self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
         let Some(Span {
             value: Token::StringLit(name),
             ..
@@ -872,16 +871,10 @@ impl<'a> Preprocessor<'a> {
             .into_iter()
             .map(|token| token.with_provenance(provenance))
             .collect();
-        Ok(Span::new(
-            PPNodeKind::Code {
-                text: tokens_source(tokens.values()),
-                tokens,
-                provenance,
-            },
-            loc,
-            loc,
+        Ok(
+            Span::new(PPNodeKind::Code { tokens, provenance }, loc, loc)
+                .with_provenance(provenance),
         )
-        .with_provenance(provenance))
     }
 
     fn walk_conditional(&mut self, section: &IfSection) -> Result<Vec<PPNode>, PPFailure> {

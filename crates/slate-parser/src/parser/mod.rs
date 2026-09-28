@@ -257,7 +257,7 @@ impl Drop for ParseCheckpoint<'_> {
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
 
-fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
+fn resolve_biggest_alignment(macros: &foldhash::HashMap<String, MacroEntry>) -> i64 {
     macros
         .get("__BIGGEST_ALIGNMENT__")
         .and_then(|entry| const_expr::Parser::evaluate(&entry.definition.replacement).ok())

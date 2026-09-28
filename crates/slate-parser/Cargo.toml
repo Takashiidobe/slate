@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 custom_debug = "0.6.2"
 directories = "6.0.0"
+foldhash = "0.2"
 libc = "0.2"
 miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
 num-bigint = "0.5"
