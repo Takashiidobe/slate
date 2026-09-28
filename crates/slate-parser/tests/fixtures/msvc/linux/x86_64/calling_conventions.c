@@ -46,7 +46,7 @@ void __cdecl definition(void) { __declspec(align(16)) int local; }
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     global %6 pointer: ptr<fn() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %7 fast_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 vector_pointer: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %8 vector_pointer: ptr<fn vectorcall() -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %9 method_pointer: ptr<fn(ptr<void>) -> void> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %11 imported: i32 [storage=static] [linkage=external] [dllimport];
 // DEFAULT-NEXT:     global %13 aligned: i32 [storage=static] [align=16] [linkage=external];
@@ -54,7 +54,7 @@ void __cdecl definition(void) { __declspec(align(16)) int local; }
 // DEFAULT-NEXT:     fn %0 @caller() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %1 @callee() -> void [linkage=external];
 // DEFAULT-NEXT:     fn %2 @fast() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @vector() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %3 @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
 // DEFAULT-NEXT:     fn %4 @method(%18 <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %10 @accepts(%19 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %12 @exported() -> void [linkage=external] [dllexport];

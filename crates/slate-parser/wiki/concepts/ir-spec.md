@@ -1460,9 +1460,10 @@ registers, so the disqualified ones are the explicit `sret` cases. clang
 ignores an empty record result before that rule, so it is `void`.
 `tests/fixtures/clang/windows/i686/abi_target.c` pins these against clang.
 
-**x86-32 calling conventions.** `__stdcall`, `__fastcall`, `__vectorcall`
+**x86 calling conventions.** `__stdcall`, `__fastcall`, `__vectorcall`
 and `__thiscall` (keywords or GNU attributes) are part of the function type
-on 32-bit x86 targets only: `CTypeKind::Function` and `ir::Type::Function`
+on 32-bit x86 targets, and `__vectorcall` on x86-64 too (clang and cl.exe
+honour it on x86-64, on Linux as well as Windows): `CTypeKind::Function` and `ir::Type::Function`
 carry a `CallConv`, printed `fn stdcall(i32) -> i32`, and the function's and
 each call's `AbiSignature.calling` repeats it (`x86_win32 stdcall(...)`), so
 a call keeps its convention even when compact printing drops the signature.
@@ -1470,10 +1471,8 @@ a call keeps its convention even when compact printing drops the signature.
 or trailing attribute goes to the innermost function declarator (or to a
 function typedef named by the specifiers), and one on a pointer or grouped
 declarator to the function type beneath it. A convention on a variadic
-function is dropped, as clang does (`-Wignored-attributes`). On x86-64 and
-other targets the attributes are ignored, as clang does for all of them
-except `vectorcall`, which clang honours on x86-64 too but slate does not yet
-model. Types differing only in convention are incompatible (pointer
+function is dropped, as clang does (`-Wignored-attributes`). On x86-64 the
+other three are ignored, and on other targets all four are, as clang does. Types differing only in convention are incompatible (pointer
 conversions, `_Generic`, `__builtin_types_compatible_p`); a redeclaration
 without a convention inherits the earlier one, and one that adds or changes
 it is rejected, as clang, gcc and MSVC all do.
@@ -1484,8 +1483,15 @@ vectorcall, XMM assignment of vectors and HVAs for vectorcall, and the
 Windows symbol decoration (`_f@8`, `@f@8`, `f@@8`) -- is left to the Rust
 side, where `extern "stdcall"` etc. lower to the same LLVM conventions clang
 uses. The argument `abi_pass` shapes are the platform's cdecl ones.
+On x86-64 that
+is not what clang does for `vectorcall`: on Windows it passes and returns
+homogeneous float/vector aggregates in XMM registers, and rustc's
+`extern "vectorcall"` there follows neither clang's Linux (SysV) nor its
+Windows shapes (slate-parser-x74n).
 `clang/{windows,linux}/i686/calling_conventions.c`,
-`clang/linux/x86_64/calling_conventions_ignored.c` and the two
+`clang/linux/x86_64/calling_conventions_ignored.c`,
+`clang/{windows,linux}/x86_64/calling_convention_vectorcall.c`,
+`error/clang/linux/x86_64/calling_convention_vectorcall_pointer_mismatch.c` and the two
 `error/clang/windows/i686/calling_convention_*.c` fixtures pin this.
 
 ARM32 picks hard-float from the resolved float ABI (`TargetIsa::Arm`, default

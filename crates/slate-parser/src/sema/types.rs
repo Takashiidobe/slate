@@ -1145,18 +1145,20 @@ impl TypeResolver {
         &self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Option<CallConv> {
-        if self.target.family != TargetFamily::X86 {
-            return None;
-        }
+        let x86 = match self.target.family {
+            TargetFamily::X86 => true,
+            TargetFamily::X86_64 => false,
+            TargetFamily::AArch64 | TargetFamily::Arm32 => return None,
+        };
         attributes
             .into_iter()
             .filter_map(|attribute| match &attribute.value {
                 Attribute::CallingConvention(convention) => match convention {
                     crate::ast::CallingConvention::Cdecl => Some(CallConv::C),
-                    crate::ast::CallingConvention::Stdcall => Some(CallConv::X86Stdcall),
-                    crate::ast::CallingConvention::Fastcall => Some(CallConv::X86Fastcall),
                     crate::ast::CallingConvention::Vectorcall => Some(CallConv::X86Vectorcall),
-                    crate::ast::CallingConvention::Thiscall => Some(CallConv::X86Thiscall),
+                    crate::ast::CallingConvention::Stdcall if x86 => Some(CallConv::X86Stdcall),
+                    crate::ast::CallingConvention::Fastcall if x86 => Some(CallConv::X86Fastcall),
+                    crate::ast::CallingConvention::Thiscall if x86 => Some(CallConv::X86Thiscall),
                     _ => None,
                 },
                 _ => None,

@@ -37,7 +37,7 @@
 // C23-NEXT:     fn %0 @caller() -> void [linkage=external];
 // C23-NEXT:     fn %1 @callee() -> void [linkage=external];
 // C23-NEXT:     fn %2 @fast() -> void [linkage=external];
-// C23-NEXT:     fn %3 @vector() -> void [linkage=external];
+// C23-NEXT:     fn %3 @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
 // C23-NEXT:     fn %4 @method(%10 <unnamed>: ptr<void>) -> void [linkage=external];
 // C23-NEXT:     fn %5 @ms() -> void [linkage=external];
 // C23-NEXT:     fn %6 @sysv() -> void [linkage=external];

@@ -106,7 +106,7 @@ compatible with any array of compatible element (6.7.6.2p6); functions compare
 return types, and an unprototyped declaration is compatible with a
 non-variadic prototype whose parameters are unchanged by the default argument
 promotions. Functions with different calling conventions (x86-32
-`stdcall`/`fastcall`/`vectorcall`/`thiscall`) are never compatible;
+`stdcall`/`fastcall`/`vectorcall`/`thiscall`, x86-64 `vectorcall`) are never compatible;
 `CTypes::with_convention` rebuilds a type with the convention on its first
 reachable function type.
 
