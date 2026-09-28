@@ -62,6 +62,13 @@ pub(crate) fn attributes<'a>(
 }
 
 impl Lowerer {
+    pub(super) fn record_implicit_function(&mut self, id: BindingId) {
+        self.function_declarations
+            .entry(id)
+            .or_default()
+            .has_external_declaration = true;
+    }
+
     pub(super) fn record_function(
         &mut self,
         id: BindingId,

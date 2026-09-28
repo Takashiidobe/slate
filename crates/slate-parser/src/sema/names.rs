@@ -405,7 +405,17 @@ impl Resolver {
                 if implicit_builtin.is_none()
                     && !super::expression::specially_lowered(callee, arguments)
                 {
-                    self.visit_expr(callee)?;
+                    match &callee.value {
+                        ExprKind::Identifier(name)
+                            if self.flavor == CompilerFlavor::Msvc
+                                && !self.collecting_labels
+                                && self.lookup_ordinary(name).is_none()
+                                && !super::expression::predefined_function_name(name) =>
+                        {
+                            self.declare_implicit_function(name, callee);
+                        }
+                        _ => self.visit_expr(callee)?,
+                    }
                 }
                 for argument in arguments {
                     self.visit_expr(argument)?;
@@ -789,6 +799,20 @@ impl Resolver {
         };
         self.push_reference(name, entry, span);
         Ok(())
+    }
+
+    fn declare_implicit_function(&mut self, name: &str, callee: &Expr) {
+        let entry = match self.linked.get(name) {
+            Some(entry) if entry.kind == BindingKind::Function => entry.clone(),
+            _ => {
+                let entry = self.new_entry(name, BindingKind::Function, callee);
+                self.resolution.implicit_functions.insert(entry.id);
+                self.linked.insert(name.into(), entry.clone());
+                entry
+            }
+        };
+        self.ordinary[0].insert(name.into(), entry.clone());
+        self.push_reference(name, entry, callee);
     }
 
     fn lookup_ordinary(&self, name: &str) -> Option<&Entry> {

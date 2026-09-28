@@ -20,10 +20,11 @@ pub enum Warning {
     IgnoredAttributes,
     UnknownAttributes,
     DeprecatedNonPrototype,
+    ImplicitFunctionDeclaration,
 }
 
 impl Warning {
-    pub const ALL: [Self; 16] = [
+    pub const ALL: [Self; 17] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -40,6 +41,7 @@ impl Warning {
         Self::IgnoredAttributes,
         Self::UnknownAttributes,
         Self::DeprecatedNonPrototype,
+        Self::ImplicitFunctionDeclaration,
     ];
 
     pub fn name(self) -> &'static str {
@@ -62,6 +64,7 @@ impl Warning {
             Self::IgnoredAttributes => "ignored-attributes",
             Self::UnknownAttributes => "unknown-attributes",
             Self::DeprecatedNonPrototype => "deprecated-non-prototype",
+            Self::ImplicitFunctionDeclaration => "implicit-function-declaration",
         }
     }
 
@@ -88,6 +91,9 @@ impl Warning {
         match self {
             Self::LongLong | Self::BitIntExtension => DefaultSeverity::Ignored,
             Self::DeprecatedNonPrototype if flavor != CompilerFlavor::Clang => {
+                DefaultSeverity::Ignored
+            }
+            Self::ImplicitFunctionDeclaration if flavor == CompilerFlavor::Msvc => {
                 DefaultSeverity::Ignored
             }
             Self::C99Compat if standard.stdc_version() >= Some(199901) => DefaultSeverity::Ignored,

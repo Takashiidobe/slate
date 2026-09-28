@@ -119,6 +119,17 @@ function's `[noreturn]` (`tests/fixtures/clang/linux/x86_64/ir_builtin_noreturn.
 are given). `ConstIgnoringErrno` and similar variants do not count, and
 `NoThrow` is dropped since C without `-fexceptions` never unwinds. A builtin used only inside an
 unevaluated `sizeof`/`_Generic` operand leaves no declaration.
+Under the MSVC flavor, calling an undeclared identifier that is not a builtin
+implicitly declares `extern int name()` at file scope, as cl.exe does (C4013,
+a level-3 warning, so `-Wimplicit-function-declaration` is off by default).
+The unit gets one unprototyped `fn` carrying `c_implicit` metadata, placed
+before the item that first calls it. Later calls anywhere in the unit reuse it,
+a later compatible declaration or definition merges with it, and an
+incompatible one is the conflicting-types error cl.exe reports as C2371
+(`tests/fixtures/msvc/windows/i686/implicit_function_declaration.c`,
+`tests/fixtures/error/msvc/windows/i686/implicit_function_declaration_*.c`).
+Only a call target is declared this way: any other use of the name is
+unresolved, and clang and gcc keep rejecting the call.
 Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
 and unprototyped distinction even when a later redeclaration of the same

@@ -1,5 +1,5 @@
 use super::attributes::{Subject, Use};
-use super::ctype::QualType;
+use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
@@ -65,7 +65,10 @@ pub fn resolve_module(
     let mut error_count = 0;
     for (declaration, item) in unit.decls.iter().zip(items) {
         let errors: Vec<ResolveError> = if item.errors.is_empty() {
-            let Err(error) = lower_item(&mut lower, declaration, features) else {
+            let Err(error) = lower
+                .declare_implicit_functions(item.declared.clone())
+                .and_then(|()| lower_item(&mut lower, declaration, features))
+            else {
                 continue;
             };
             lower.reset_after_failed_item();
@@ -137,6 +140,63 @@ impl Lowerer {
             .map(|(id, c)| (id, self.types.access_of(c)))
             .collect();
         super::effects_statements::normalize(&mut self.module, self.next_id, access)
+    }
+
+    fn declare_implicit_functions(
+        &mut self,
+        declared: std::ops::Range<u32>,
+    ) -> Result<(), ResolveError> {
+        for id in declared.map(BindingId) {
+            if self.names.implicit_functions.contains(&id) {
+                self.declare_implicit_function(id)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn declare_implicit_function(&mut self, id: BindingId) -> Result<(), ResolveError> {
+        let binding = self
+            .names
+            .bindings
+            .iter()
+            .find(|binding| binding.value.id == id)
+            .ok_or(ResolveError::Unsupported("missing declaration binding"))?
+            .clone();
+        let ret = self.types.ctypes.int();
+        let resolved = self.types.ctypes.qual(CTypeKind::Function {
+            ret,
+            params: Vec::new(),
+            variadic: false,
+            prototyped: false,
+            convention: CallConv::C,
+        });
+        let ty = self.types.ir_type(resolved);
+        let abi = self.c_abi_signature(resolved, &ty, None)?;
+        let previous = self.types.entities.declare(id, resolved, false);
+        self.record_implicit_function(id);
+        let mut symbol = SymbolAttributes::default();
+        self.types.pragmas.apply(&binding.name, &mut symbol);
+        let function = binding.derive(Function {
+            id,
+            name: binding.name.clone(),
+            parameters: Parameters::Unprototyped,
+            return_type: Some(self.context.int_type()),
+            abi,
+            linkage: Linkage::External,
+            symbol,
+            semantics: Default::default(),
+            body: None,
+            fallthrough: None,
+        });
+        let message = format!(
+            "implicit declaration of function '{}'; assuming extern returning int",
+            binding.name
+        );
+        self.warn(Warning::ImplicitFunctionDeclaration, &message, &function);
+        let mut metadata = vec![("c_implicit".into(), "true".into())];
+        metadata.extend(self.types.render(resolved).entries());
+        self.module.annotate(&function, metadata);
+        self.declare_function(function, previous)
     }
 
     fn reset_after_failed_item(&mut self) {
