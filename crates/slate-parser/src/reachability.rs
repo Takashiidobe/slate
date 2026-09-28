@@ -100,7 +100,8 @@ impl<'a> Reachability<'a> {
             return;
         }
         match &self.nodes[id].value {
-            DeclKind::Comment(_) | DeclKind::Asm { .. } | DeclKind::Pragma(_) => {}
+            DeclKind::Comment(_) | DeclKind::Pragma(_) => {}
+            DeclKind::Asm(asm) => self.mark_gnu_asm(asm),
             DeclKind::StaticAssert(assertion) => self.mark_expr(&assertion.condition),
             DeclKind::Function(function) => self.mark_function(function),
             DeclKind::Declaration(declaration) => self.mark_declaration(declaration),
@@ -277,11 +278,11 @@ impl<'a> Reachability<'a> {
                 self.mark_stmt(body);
             }
             StmtKind::StaticAssert(assertion) => self.mark_expr(&assertion.condition),
+            StmtKind::Asm(asm) => self.mark_gnu_asm(asm),
             StmtKind::Null
             | StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::LocalLabelDecl(_)
-            | StmtKind::Asm(_)
             | StmtKind::Goto(_)
             | StmtKind::Break
             | StmtKind::Continue
@@ -377,6 +378,15 @@ impl<'a> Reachability<'a> {
             | ExprKind::LabelAddress(_)
             | ExprKind::BoolLiteral(_)
             | ExprKind::NullPtrLiteral => {}
+        }
+    }
+
+    fn mark_gnu_asm(&mut self, asm: &GnuAsm) {
+        let Some(operands) = &asm.operands else {
+            return;
+        };
+        for operand in operands.outputs.iter().chain(&operands.inputs) {
+            self.mark_expr(&operand.expr);
         }
     }
 
