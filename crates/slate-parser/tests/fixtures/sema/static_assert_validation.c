@@ -10,6 +10,7 @@
 // SLATE-FILECHECK-DEFINES CALL_POINTER CALL_POINTER
 // SLATE-FILECHECK-DEFINES CALL_COMMA CALL_COMMA
 // SLATE-FILECHECK-DEFINES CALL_LIBRARY CALL_LIBRARY
+// SLATE-FILECHECK-DEFINES CONCAT CONCAT
 // SLATE-FILECHECK-ERROR FALSE_FILE
 // SLATE-FILECHECK-ERROR FALSE_BLOCK
 // SLATE-FILECHECK-ERROR NONCONSTANT
@@ -21,6 +22,7 @@
 // SLATE-FILECHECK-ERROR CALL_POINTER
 // SLATE-FILECHECK-ERROR CALL_COMMA
 // SLATE-FILECHECK-ERROR CALL_LIBRARY
+// SLATE-FILECHECK-ERROR CONCAT
 // SLATE-FILECHECK-ARGS -std=c23
 
 #if defined(FALSE_FILE)
@@ -51,6 +53,11 @@ static_assert((1, f()), "comma operand call");
 #elif defined(CALL_LIBRARY)
 int abs(int);
 static_assert(abs(-2) == 2, "abs does not fold");
+#elif defined(CONCAT)
+#define NAMED(x) #x " named"
+static_assert(1, "file " "scope");
+void concat(void) { static_assert(1, "block " u8"scope"); }
+static_assert(0, "pieces " NAMED(macro) L" joined");
 #else
 typedef unsigned char byte;
 enum { FIRST = 2, SECOND = FIRST + 1 };
@@ -204,17 +211,28 @@ void valid(int n) {
 // CALL_LIBRARY: 28 │ int abs(int);
 // CALL_LIBRARY: 29 │ static_assert(abs(-2) == 2, "abs does not fold");
 // CALL_LIBRARY: ·               ───────
-// CALL_LIBRARY: 30 │ #else
+// CALL_LIBRARY: 30 │ #elif defined(CONCAT)
 // CALL_LIBRARY: ╰────
 // SLATE-FILECHECK-END CALL_LIBRARY
+// SLATE-FILECHECK-BEGIN CONCAT
+// CONCAT: Error:   × semantic analysis failed
+// CONCAT: Error:
+// CONCAT: × static assertion failed: pieces macro named joined
+// CONCAT: ╭─[tests/fixtures/sema/static_assert_validation.c:34:15]
+// CONCAT: 33 │ void concat(void) { static_assert(1, "block " u8"scope"); }
+// CONCAT: 34 │ static_assert(0, "pieces " NAMED(macro) L" joined");
+// CONCAT: ·               ─
+// CONCAT: 35 │ #else
+// CONCAT: ╰────
+// SLATE-FILECHECK-END CONCAT
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: Error:   × semantic analysis failed
 // VALID: Error:
 // VALID: × static assertion requires an integer constant expression: nonconstant call
-// VALID: ╭─[tests/fixtures/sema/static_assert_validation.c:46:15]
-// VALID: 45 │ static_assert(1 ? 1 : opaque());
-// VALID: 46 │ static_assert(sizeof(opaque()) == sizeof(int));
+// VALID: ╭─[tests/fixtures/sema/static_assert_validation.c:51:15]
+// VALID: 50 │ static_assert(1 ? 1 : opaque());
+// VALID: 51 │ static_assert(sizeof(opaque()) == sizeof(int));
 // VALID: ·               ───────────────────────────────
-// VALID: 47 │ static_assert(_Generic(1, int: 1, default: opaque()));
+// VALID: 52 │ static_assert(_Generic(1, int: 1, default: opaque()));
 // VALID: ╰────
 // SLATE-FILECHECK-END VALID

@@ -1,6 +1,6 @@
 use super::asm::is_asm_keyword;
 use super::declarator::{DeclaratorError, DeclaratorParser, IdentifierList};
-use super::{Annotation, Parser, ParserInput, span_tokens};
+use super::{Annotation, Parser, ParserInput, span_tokens, string_literal_content};
 use crate::ast::*;
 use crate::const_expr;
 use crate::error::ParseError;
@@ -266,10 +266,15 @@ impl Parser {
         let condition = self.parse_expression(&arguments[..condition_end])?;
         let message = comma
             .map(|comma| {
-                if let [message] = &arguments[comma + 1..]
-                    && let Token::StringLit(message) = &message.value
+                let pieces = &arguments[comma + 1..];
+                let contents: Option<Vec<&str>> = pieces
+                    .iter()
+                    .map(|piece| string_literal_content(&piece.value))
+                    .collect();
+                if let Some(contents) = contents
+                    && !contents.is_empty()
                 {
-                    Ok(message.clone())
+                    Ok(contents.concat())
                 } else {
                     Err(self.error_at_tokens(
                         arguments,
