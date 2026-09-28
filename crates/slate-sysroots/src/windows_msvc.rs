@@ -1,45 +1,150 @@
 use crate::install::install_staged;
 use crate::{DoctorCheck, Paths, Target};
-use std::ffi::OsStr;
+use std::env;
 use std::fs;
-use std::io;
+use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::sync::Arc;
+use xwin::manifest::PackageManifest;
+use xwin::util::ProgressTarget;
 
-pub(crate) fn install(paths: &Paths, target: Target, xwin: &OsStr) -> io::Result<PathBuf> {
+const MANIFEST_VERSION: u8 = 18;
+const LICENSE_URL: &str = "https://go.microsoft.com/fwlink/?LinkId=2086102";
+
+pub(crate) struct Versions {
+    pub(crate) crt: String,
+    pub(crate) sdk: String,
+}
+
+pub(crate) fn install(paths: &Paths, target: Target) -> io::Result<PathBuf> {
+    install_with(paths, target, |root| {
+        accept_license()?;
+        splat(&paths.cache.join("xwin"), root, target)
+    })
+}
+
+pub(crate) fn install_with(
+    paths: &Paths,
+    target: Target,
+    fetch: impl FnOnce(&Path) -> io::Result<Versions>,
+) -> io::Result<PathBuf> {
     install_staged(
         paths,
         target,
         |root| validate(root, target),
         |root| {
-            let xwin_cache = paths.cache.join("xwin");
-            fs::create_dir_all(&xwin_cache)?;
-            let status = Command::new(xwin)
-                .arg("--arch")
-                .arg(arch(target))
-                .arg("--cache-dir")
-                .arg(&xwin_cache)
-                .arg("splat")
-                .arg("--output")
-                .arg(root)
-                .status()
-                .map_err(|error| {
-                    io::Error::new(error.kind(), format!("could not run xwin: {error}"))
-                })?;
-            if !status.success() {
-                return Err(io::Error::other(format!("xwin failed with {status}")));
-            }
+            let versions = fetch(root)?;
             validate(root, target)?;
             fs::write(
                 root.join("SYSROOT-MANIFEST.txt"),
                 format!(
-                    "Target: {}\nOperating system: Windows\nABI: MSVC\nSource: Microsoft CRT and Windows SDK, assembled by xwin\nLicense acceptance: handled by xwin\nContents: headers and libraries; local use only\n",
-                    target.triple()
+                    "Target: {}\nOperating system: Windows\nABI: MSVC\nSource: Microsoft CRT and Windows SDK, assembled by xwin\nVisual Studio manifest: {MANIFEST_VERSION}\nMSVC CRT: {}\nWindows SDK: {}\nUniversal CRT: from the Windows SDK\nContents: headers and libraries; local use only\n",
+                    target.triple(),
+                    versions.crt,
+                    versions.sdk,
                 ),
             )?;
             Ok(())
         },
     )
+}
+
+fn accept_license() -> io::Result<()> {
+    if env::var_os("XWIN_ACCEPT_LICENSE").is_some() {
+        return Ok(());
+    }
+    eprint!("Do you accept the license at {LICENSE_URL} (yes | no)? ");
+    io::stderr().flush()?;
+    let mut answer = String::new();
+    io::stdin().lock().read_line(&mut answer)?;
+    match answer.trim() {
+        "yes" => Ok(()),
+        _ => Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!("the Microsoft license at {LICENSE_URL} was not accepted"),
+        )),
+    }
+}
+
+fn splat(cache: &Path, root: &Path, target: Target) -> io::Result<Versions> {
+    splat_xwin(cache, root, target).map_err(|error| io::Error::other(format!("xwin: {error:#}")))
+}
+
+fn splat_xwin(cache: &Path, root: &Path, target: Target) -> anyhow::Result<Versions> {
+    let utf8 = |path: &Path| {
+        xwin::PathBuf::from_path_buf(path.to_path_buf())
+            .map_err(|path| anyhow::anyhow!("{} is not a valid utf-8 path", path.display()))
+    };
+    let tls = xwin::ureq::tls::TlsConfig::builder()
+        .root_certs(xwin::ureq::tls::RootCerts::PlatformVerifier)
+        .build();
+    let client = xwin::ureq::config::Config::builder()
+        .tls_config(tls)
+        .build()
+        .new_agent();
+    let draw_target = ProgressTarget::Hidden;
+    let ctx = Arc::new(xwin::Ctx::with_dir(utf8(cache)?, draw_target, client, 0)?);
+    let progress = indicatif::ProgressBar::hidden();
+    let manifest =
+        xwin::manifest::get_manifest(&ctx, MANIFEST_VERSION, "release", progress.clone())?;
+    let mut packages = xwin::manifest::get_package_manifest(&ctx, &manifest, progress)?;
+    use_sdk_ucrt(&mut packages);
+    let arch = xwin_arch(target) as u32;
+    let variant = xwin::Variant::Desktop as u32;
+    let (crt_version, sdk_version) = pinned_versions(target);
+    let pruned = xwin::prune_pkg_list(
+        &packages,
+        arch,
+        variant,
+        false,
+        false,
+        Some(sdk_version.into()),
+        Some(crt_version.into()),
+    )?;
+    let versions = Versions {
+        crt: pruned.crt_version.clone(),
+        sdk: pruned.sdk_version.clone(),
+    };
+    let work = pruned
+        .payloads
+        .into_iter()
+        .map(|payload| xwin::WorkItem {
+            payload: Arc::new(payload),
+            progress: indicatif::ProgressBar::hidden(),
+        })
+        .collect();
+    let splat = xwin::SplatConfig {
+        include_debug_libs: false,
+        include_debug_symbols: false,
+        enable_symlinks: true,
+        preserve_ms_arch_notation: false,
+        use_winsysroot_style: false,
+        output: utf8(root)?,
+        map: None,
+        copy: false,
+    };
+    ctx.execute(
+        packages.packages,
+        work,
+        pruned.crt_version,
+        pruned.sdk_version,
+        pruned.vcr_version,
+        arch,
+        variant,
+        xwin::Ops::Splat(splat),
+    )?;
+    Ok(versions)
+}
+
+fn use_sdk_ucrt(packages: &mut PackageManifest) {
+    packages
+        .packages
+        .remove("Microsoft.Windows.UniversalCRT.HeadersLibsSources.Msi");
+    for package in packages.packages.values_mut() {
+        for payload in &mut package.payloads {
+            payload.file_name = payload.file_name.replace('\\', "/");
+        }
+    }
 }
 
 pub(crate) fn include_paths(root: &Path) -> Vec<PathBuf> {
@@ -109,7 +214,39 @@ pub(crate) fn doctor(root: &Path, target: Target) -> Vec<DoctorCheck> {
             present,
         }
     })
+    .chain([ucrt_matches_crt(root)])
     .collect()
+}
+
+fn ucrt_matches_crt(root: &Path) -> DoctorCheck {
+    let marker = "_UCRT_DISABLE_CLANG_WARNINGS";
+    let mentions = |relative: &str, text: &str| {
+        fs::read_to_string(root.join(relative)).is_ok_and(|contents| contents.contains(text))
+    };
+    let path = root.join("sdk/include/ucrt/corecrt.h");
+    DoctorCheck {
+        label: "Universal CRT as new as the MSVC CRT",
+        present: path.is_file() && !mentions("crt/include/threads.h", marker)
+            || mentions("sdk/include/ucrt/corecrt.h", &format!("#define {marker}")),
+        path,
+    }
+}
+
+fn pinned_versions(target: Target) -> (&'static str, &'static str) {
+    match target {
+        Target::Thumbv7aPcWindowsMsvc => ("14.44.17.14", "10.0.22621"),
+        _ => ("14.51", "10.0.26100"),
+    }
+}
+
+fn xwin_arch(target: Target) -> xwin::Arch {
+    match target {
+        Target::I686PcWindowsMsvc => xwin::Arch::X86,
+        Target::X86_64PcWindowsMsvc => xwin::Arch::X86_64,
+        Target::Aarch64PcWindowsMsvc => xwin::Arch::Aarch64,
+        Target::Thumbv7aPcWindowsMsvc => xwin::Arch::Aarch,
+        _ => unreachable!("Windows MSVC module received a non-Windows target"),
+    }
 }
 
 fn arch(target: Target) -> &'static str {
@@ -117,6 +254,7 @@ fn arch(target: Target) -> &'static str {
         Target::I686PcWindowsMsvc => "x86",
         Target::X86_64PcWindowsMsvc => "x86_64",
         Target::Aarch64PcWindowsMsvc => "aarch64",
+        Target::Thumbv7aPcWindowsMsvc => "aarch",
         _ => unreachable!("Windows MSVC module received a non-Windows target"),
     }
 }

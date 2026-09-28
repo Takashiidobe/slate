@@ -96,7 +96,10 @@ impl Paths {
 fn is_msvc_target(target: Target) -> bool {
     matches!(
         target,
-        Target::I686PcWindowsMsvc | Target::X86_64PcWindowsMsvc | Target::Aarch64PcWindowsMsvc
+        Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::Aarch64PcWindowsMsvc
+            | Target::Thumbv7aPcWindowsMsvc
     )
 }
 

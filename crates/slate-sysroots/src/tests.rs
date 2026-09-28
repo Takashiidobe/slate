@@ -1,11 +1,10 @@
 use crate::install::staging_path;
-use crate::{CompilerHeaders, Paths, Target};
+use crate::{CompilerHeaders, Paths, Target, windows_msvc};
 use std::env;
-use std::ffi::OsStr;
 use std::fs;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 struct TestDir(PathBuf);
 
@@ -14,10 +13,6 @@ impl TestDir {
         let path = staging_path(&env::temp_dir(), "slate-sysroots-test").unwrap();
         fs::create_dir(&path).unwrap();
         Self(path)
-    }
-
-    fn script(&self, body: &str) -> PathBuf {
-        self.script_named("xwin", body)
     }
 
     fn script_named(&self, name: &str, body: &str) -> PathBuf {
@@ -41,19 +36,53 @@ impl Drop for TestDir {
     }
 }
 
+fn fake_splat(root: &Path, arch: &str) {
+    for dir in [
+        "crt/include",
+        "sdk/include/ucrt",
+        "sdk/include/um",
+        "sdk/include/shared",
+        "sdk/include/winrt",
+        "sdk/include/cppwinrt",
+    ] {
+        fs::create_dir_all(root.join(dir)).unwrap();
+    }
+    fs::create_dir_all(root.join(format!("crt/lib/{arch}"))).unwrap();
+    for file in [
+        "crt/include/vcruntime.h",
+        "crt/include/yvals_core.h",
+        "sdk/include/ucrt/stdio.h",
+        "sdk/include/ucrt/stdlib.h",
+        "sdk/include/ucrt/corecrt.h",
+        "sdk/include/um/windows.h",
+    ] {
+        fs::write(root.join(file), "").unwrap();
+    }
+    fs::write(root.join(format!("crt/lib/{arch}/msvcrt.lib")), "").unwrap();
+}
+
+fn versions() -> windows_msvc::Versions {
+    windows_msvc::Versions {
+        crt: "14.51.36244".into(),
+        sdk: "10.0.26100".into(),
+    }
+}
+
 #[test]
 fn installs_windows_msvc_targets() {
     for (target, arch) in [
         (Target::I686PcWindowsMsvc, "x86"),
         (Target::X86_64PcWindowsMsvc, "x86_64"),
         (Target::Aarch64PcWindowsMsvc, "aarch64"),
+        (Target::Thumbv7aPcWindowsMsvc, "aarch"),
     ] {
         let temp = TestDir::new();
-        let xwin = temp.script(&format!(
-            "#!/bin/sh\nset -eu\n[ \"$1\" = --arch ]\n[ \"$2\" = {arch} ]\n[ \"$3\" = --cache-dir ]\n[ \"$5\" = splat ]\n[ \"$6\" = --output ]\nmkdir -p \"$7/crt/include\" \"$7/sdk/include/ucrt\" \"$7/sdk/include/um\" \"$7/sdk/include/shared\" \"$7/sdk/include/winrt\" \"$7/sdk/include/cppwinrt\" \"$7/crt/lib/{arch}\"\ntouch \"$7/crt/include/vcruntime.h\" \"$7/crt/include/yvals_core.h\" \"$7/sdk/include/ucrt/stdio.h\" \"$7/sdk/include/ucrt/stdlib.h\" \"$7/sdk/include/um/windows.h\" \"$7/crt/lib/{arch}/msvcrt.lib\"\n"
-        ));
         let paths = temp.paths();
-        let installed = paths.install_with_xwin(target, xwin.as_os_str()).unwrap();
+        let installed = windows_msvc::install_with(&paths, target, |root| {
+            fake_splat(root, arch);
+            Ok(versions())
+        })
+        .unwrap();
 
         assert_eq!(installed, paths.sysroot_path(target));
         assert_eq!(paths.resolve(target).unwrap(), installed);
@@ -71,11 +100,11 @@ fn installs_windows_msvc_targets() {
             paths.include_paths(target).unwrap()
         );
         assert!(paths.doctor(target).iter().all(|check| check.present));
-        assert!(installed.join("SYSROOT-MANIFEST.txt").is_file());
-        assert!(paths.cache.join("xwin").is_dir());
+        let manifest = fs::read_to_string(installed.join("SYSROOT-MANIFEST.txt")).unwrap();
+        assert!(manifest.contains("MSVC CRT: 14.51.36244"));
+        assert!(manifest.contains("Windows SDK: 10.0.26100"));
         assert_eq!(
-            paths
-                .install_with_xwin(target, OsStr::new("missing-xwin"))
+            windows_msvc::install_with(&paths, target, |_| Err(std::io::Error::other("refetched")))
                 .unwrap(),
             installed
         );
@@ -391,11 +420,12 @@ fn doctor_checks_target_specific_libraries() {
 #[test]
 fn failed_xwin_leaves_no_installation() {
     let temp = TestDir::new();
-    let xwin = temp.script("#!/bin/sh\nexit 17\n");
     let paths = temp.paths();
     let target = Target::Aarch64PcWindowsMsvc;
 
-    assert!(paths.install_with_xwin(target, xwin.as_os_str()).is_err());
+    assert!(
+        windows_msvc::install_with(&paths, target, |_| Err(std::io::Error::other("xwin"))).is_err()
+    );
     assert!(paths.doctor(target).iter().all(|check| !check.present));
     assert!(!paths.sysroot_path(target).exists());
     assert!(
@@ -454,6 +484,32 @@ fn linux_targets_resolve_prebuilt_header_layouts() {
             paths.include_paths(target).unwrap(),
             vec![root.join(include)]
         );
-        assert!(paths.install_with_xwin(target, OsStr::new("xwin")).is_err());
     }
+}
+
+#[test]
+fn doctor_rejects_ucrt_older_than_crt() {
+    let temp = TestDir::new();
+    let paths = temp.paths();
+    let target = Target::X86_64PcWindowsMsvc;
+    let root = paths.sysroot_path(target);
+    fake_splat(&root, "x86_64");
+    assert!(paths.doctor(target).iter().all(|check| check.present));
+
+    fs::write(
+        root.join("crt/include/threads.h"),
+        "_UCRT_DISABLE_CLANG_WARNINGS\n",
+    )
+    .unwrap();
+    let stale = paths.doctor(target);
+    assert!(!stale[4].present);
+    assert_eq!(stale[4].path, root.join("sdk/include/ucrt/corecrt.h"));
+    assert!(paths.resolve(target).is_err());
+
+    fs::write(
+        root.join("sdk/include/ucrt/corecrt.h"),
+        "#define _UCRT_DISABLE_CLANG_WARNINGS\n",
+    )
+    .unwrap();
+    assert!(paths.doctor(target).iter().all(|check| check.present));
 }

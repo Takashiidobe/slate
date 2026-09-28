@@ -53,6 +53,7 @@ fn run() -> std::io::Result<ExitCode> {
                     CompilerHeaders::Msvc(Target::I686PcWindowsMsvc),
                     CompilerHeaders::Msvc(Target::X86_64PcWindowsMsvc),
                     CompilerHeaders::Msvc(Target::Aarch64PcWindowsMsvc),
+                    CompilerHeaders::Msvc(Target::Thumbv7aPcWindowsMsvc),
                 ],
             },
             _ => {

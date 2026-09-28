@@ -13,8 +13,6 @@ pub use compiler_headers::{CLANG_VERSION, CompilerHeaders, GCC_VERSION};
 pub use target::Target;
 
 use directories::ProjectDirs;
-use std::env;
-use std::ffi::OsStr;
 use std::io;
 use std::path::PathBuf;
 
@@ -50,7 +48,8 @@ impl Paths {
         let validation = match target {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
-            | Target::Aarch64PcWindowsMsvc => windows_msvc::validate(&path, target),
+            | Target::Aarch64PcWindowsMsvc
+            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::validate(&path, target),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::validate(&path, target)
             }
@@ -82,7 +81,8 @@ impl Paths {
         Ok(match target {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
-            | Target::Aarch64PcWindowsMsvc => windows_msvc::include_paths(&root),
+            | Target::Aarch64PcWindowsMsvc
+            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::include_paths(&root),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::include_paths(&root, target)
             }
@@ -136,7 +136,8 @@ impl Paths {
         match target {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
-            | Target::Aarch64PcWindowsMsvc => windows_msvc::doctor(&root, target),
+            | Target::Aarch64PcWindowsMsvc
+            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::doctor(&root, target),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::doctor(&root, target)
             }
@@ -155,10 +156,8 @@ impl Paths {
         match target {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
-            | Target::Aarch64PcWindowsMsvc => {
-                let xwin = env::var_os("XWIN").unwrap_or_else(|| "xwin".into());
-                self.install_with_xwin(target, &xwin)
-            }
+            | Target::Aarch64PcWindowsMsvc
+            | Target::Thumbv7aPcWindowsMsvc => windows_msvc::install(self, target),
             Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
                 linux_gnu::install(self, target)
             }
@@ -177,18 +176,6 @@ impl Paths {
 
     pub fn remove(&self, target: Target) -> io::Result<()> {
         install::remove(self, target)
-    }
-
-    pub fn install_with_xwin(&self, target: Target, xwin: &OsStr) -> io::Result<PathBuf> {
-        match target {
-            Target::I686PcWindowsMsvc
-            | Target::X86_64PcWindowsMsvc
-            | Target::Aarch64PcWindowsMsvc => windows_msvc::install(self, target, xwin),
-            _ => Err(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                format!("{} is not a Windows MSVC target", target.triple()),
-            )),
-        }
     }
 
     pub fn install_darwin_with_sdk(

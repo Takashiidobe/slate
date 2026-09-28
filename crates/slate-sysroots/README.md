@@ -13,6 +13,7 @@ cargo run -- path x86_64-pc-windows-msvc
 cargo run -- doctor x86_64-pc-windows-msvc
 cargo run -- install aarch64-pc-windows-msvc
 cargo run -- doctor aarch64-pc-windows-msvc
+cargo run -- install thumbv7a-pc-windows-msvc
 cargo run -- install x86_64-unknown-linux-gnu
 cargo run -- install aarch64-unknown-linux-gnu
 cargo run -- install x86_64-unknown-linux-musl
@@ -32,10 +33,17 @@ cargo run -- path compiler-headers gcc
 cargo run -- path compiler-headers msvc x86_64-pc-windows-msvc
 ```
 
-The Windows installer requires `xwin` on `PATH`, or set `XWIN` to its executable.
-It uses `xwin` to acquire the Microsoft CRT and Windows SDK. `xwin` handles
-license acceptance. The installed files are for local use and are not bundled
-with Slate.
+The Windows installer uses the `xwin` library to acquire the Microsoft CRT and
+Windows SDK from the Visual Studio 2026 manifest. It asks you to accept the
+Microsoft license on stdin; set `XWIN_ACCEPT_LICENSE` to accept it
+non-interactively. Versions are pinned to match the `cl.exe` oracle: MSVC CRT
+14.51 with Windows SDK 10.0.26100. `thumbv7a-pc-windows-msvc` is the exception:
+MSVC 14.44 and SDK 10.0.22621 are the last releases with 32-bit ARM support.
+The Universal CRT always comes from the pinned SDK. xwin on its own would pick
+a standalone UCRT package that is older than the CRT, which breaks
+`threads.h`. `doctor` checks for this mismatch, and `SYSROOT-MANIFEST.txt`
+records the versions that were installed. The installed files are for local
+use and are not bundled with Slate.
 
 Installed sysroots live in Slate's platform-specific local data directory:
 
@@ -70,7 +78,8 @@ the active Xcode or Command Line Tools compiler into a versioned
 are acquired locally for the user and are not distributed with Slate.
 
 The supported Rust targets are `i686-pc-windows-msvc`,
-`x86_64-pc-windows-msvc`, and `aarch64-pc-windows-msvc`, plus x86_64 and
+`x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, and
+`thumbv7a-pc-windows-msvc`, plus x86_64 and
 aarch64 targets for Linux (glibc and musl), FreeBSD, Android, and macOS. Each
 target has its own sysroot.
 
