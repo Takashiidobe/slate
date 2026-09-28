@@ -42,6 +42,20 @@ and language mode are sent to `cl.exe` in batches of up to 32. If a batch fails,
 the sweep splits it to identify which fixtures failed. C89, C99, and C23 fixture
 modes use MSVC's C17 mode because those modes are unavailable in `cl.exe`.
 
+## clang/test MS-mode sweep
+
+`tools/llvm_lit_sweep.py <out.jsonl>` runs every Windows-triple or
+`%clang_cl` RUN line in `~/llvm-project/clang/test/**/*.c` through slate
+(both flavors), `clang --target=<triple> -fsyntax-only` with the slate
+sysroot as `-isystem`, and `tools/cl.exe /Zs`. Driver, PCH, CIR and `-E`-only
+runs are skipped, and so are `-verify` runs whose prefixes expect errors.
+The sweep pins slate to the oracle's effective standard (gnu17 for clang,
+the mapped `/std:` for msvc) because slate's gnu23 default would mask other
+gaps. `--migrate tests/fixtures/msvc/clang-test` writes fixtures for newly
+accepted files (never overwriting), named `<Dir>__<stem>-<arch>[-msvc].c`
+with the target in `SLATE-FILECHECK-ARGS`. The updater only reads a target
+from the directory under `sema/`.
+
 ## Gotchas
 
 - C mode defaults to a pre-C11 dialect. Pass `/std:c11` or `/std:c17`
