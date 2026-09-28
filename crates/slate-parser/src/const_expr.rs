@@ -877,18 +877,22 @@ pub struct Parser<'a> {
     span_ranges: Option<SpanRangeIndex>,
     position: usize,
     context: Option<&'a crate::parser::Parser>,
+    features: StandardFeatures,
     nesting: Cell<u32>,
     directive: bool,
 }
 
 impl<'a> Parser<'a> {
     fn features(&self) -> StandardFeatures {
-        self.context
-            .map_or_else(StandardFeatures::default, |parser| parser.features())
+        self.features
     }
 
-    pub fn parse(tokens: &'a [Span<Token>]) -> Result<Expr, ConstExprError> {
+    pub fn parse(
+        tokens: &'a [Span<Token>],
+        features: StandardFeatures,
+    ) -> Result<Expr, ConstExprError> {
         let mut parser = Self::new(tokens, None);
+        parser.features = features;
         let expression = parser.parse_conditional()?;
         if parser.peek().is_some() {
             return Err(ConstExprError::UnexpectedTokens);
@@ -930,8 +934,11 @@ impl<'a> Parser<'a> {
         Ok((initializer, parser.position))
     }
 
-    pub fn evaluate(tokens: &'a [Span<Token>]) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(&Self::parse(tokens)?, EvalContext::default())
+    pub fn evaluate(
+        tokens: &'a [Span<Token>],
+        features: StandardFeatures,
+    ) -> Result<i64, ConstExprError> {
+        Self::evaluate_expr(&Self::parse(tokens, features)?, EvalContext::default())
     }
 
     pub fn evaluate_ast(expression: &Expr) -> Result<i64, ConstExprError> {
@@ -940,11 +947,11 @@ impl<'a> Parser<'a> {
 
     pub fn evaluate_with_defined(
         tokens: &'a [Span<Token>],
-        target: &TargetInfo,
-        flavor: CompilerFlavor,
+        dialect: &crate::dialect::Dialect,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
         let mut parser = Self::new(tokens, None);
+        parser.features = dialect.features();
         parser.directive = true;
         let at_position = |parser: &Self, error| LocatedConstExprError {
             token: Some(parser.failure_position(&error)),
@@ -958,8 +965,8 @@ impl<'a> Parser<'a> {
         }
         let ctx = EvalContext {
             is_defined: Some(is_defined),
-            target: Some(target),
-            flavor,
+            target: Some(dialect.target()),
+            flavor: dialect.flavor(),
         };
         Self::evaluate_wide(&expression, ctx)
             .map(|value| i64::from(!value.is_zero()))
@@ -982,7 +989,6 @@ impl<'a> Parser<'a> {
             )),
             ExprKind::FloatLiteral(_) => Err(ConstExprError::NotConstant("floating literal")),
             ExprKind::Identifier(name) => match ctx.is_defined {
-                Some(_) if name == "true" => Ok(1),
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             },
@@ -1301,6 +1307,7 @@ impl<'a> Parser<'a> {
             span_ranges: (!indexed_by_context).then(|| SpanRangeIndex::new(tokens)),
             position: 0,
             context,
+            features: context.map_or_else(StandardFeatures::default, |parser| parser.features()),
             nesting: Cell::new(0),
             directive: false,
         }

@@ -895,12 +895,9 @@ impl<'a> Preprocessor<'a> {
             self.dialect.standard(),
             self.dialect.target(),
         );
-        const_expr::Parser::evaluate_with_defined(
-            &expanded,
-            self.dialect.target(),
-            self.dialect.flavor(),
-            &|macro_name| self.is_defined(macro_name),
-        )
+        const_expr::Parser::evaluate_with_defined(&expanded, self.dialect, &|macro_name| {
+            self.is_defined(macro_name)
+        })
         .map(|value| value != 0)
         .map_err(|located| {
             let loc = match located.token {

@@ -253,10 +253,15 @@ impl Drop for ParseCheckpoint<'_> {
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
 
-fn resolve_biggest_alignment(macros: &foldhash::HashMap<String, MacroEntry>) -> i64 {
+fn resolve_biggest_alignment(
+    macros: &foldhash::HashMap<String, MacroEntry>,
+    features: StandardFeatures,
+) -> i64 {
     macros
         .get("__BIGGEST_ALIGNMENT__")
-        .and_then(|entry| const_expr::Parser::evaluate(&entry.definition.replacement).ok())
+        .and_then(|entry| {
+            const_expr::Parser::evaluate(&entry.definition.replacement, features).ok()
+        })
         .unwrap_or(FALLBACK_BIGGEST_ALIGNMENT)
 }
 
@@ -382,7 +387,7 @@ impl Parser {
         let mut nodes = self.prepare_preprocessor(&mut pp)?;
         nodes.extend(pp.parse_str("<main>", src).map_err(FrontendError::PP)?);
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, dialect.features());
         self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.ok_or_else(|| {
             FrontendError::Parse(ParseError::new(
@@ -418,7 +423,7 @@ impl Parser {
         nodes.extend(pp.parse_file(path).map_err(FrontendError::PP)?);
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros, dialect.features());
         self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.ok_or_else(|| {
             FrontendError::Parse(ParseError::new(
