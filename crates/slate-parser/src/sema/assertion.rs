@@ -1,22 +1,46 @@
+use super::names::ItemResolution;
 use crate::ast::*;
-use crate::const_expr::{BinaryOp, UnaryOp};
-use crate::ir::{Number, NumericType, Type, Value, ValueKind};
+use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
+use crate::ir::{
+    BindingId, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type, Value,
+    ValueKind,
+};
 use crate::visit::{self, Visitor};
 use num_bigint::{BigInt, Sign};
 
 use super::ctype::QualType;
+use super::ctype::convert::ConversionContext;
 use super::entity::ObjectRequest;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
 
-pub(super) fn validate(unit: &TranslationUnit, types: &mut TypeResolver) -> Vec<SemaError> {
+pub(super) fn validate(
+    unit: &TranslationUnit,
+    types: &mut TypeResolver,
+    names: &NameResolution,
+    items: &[ItemResolution],
+) -> Vec<SemaError> {
     let mut checker = Checker {
         unit,
         types,
         errors: Vec::new(),
+        return_type: None,
     };
-    for declaration in &unit.decls {
+    for (declaration, item) in unit.decls.iter().zip(items) {
+        for id in item.declared.clone().map(BindingId) {
+            if names.implicit_functions.contains(&id) {
+                let ty = checker.types.ctypes.implicit_function();
+                checker.types.entities.declare(id, ty, false);
+                checker.types.entities.merge_declaration(
+                    id,
+                    Linkage::External,
+                    None,
+                    false,
+                    SymbolAttributes::default(),
+                );
+            }
+        }
         match &declaration.value {
             DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
             DeclKind::Declaration(declaration) => checker.declaration(declaration, true),
@@ -40,6 +64,7 @@ struct Checker<'a> {
     unit: &'a TranslationUnit,
     types: &'a mut TypeResolver,
     errors: Vec<SemaError>,
+    return_type: Option<QualType>,
 }
 
 impl Checker<'_> {
@@ -83,7 +108,13 @@ impl Checker<'_> {
             .push(error(condition.provenance, condition.expansion, message));
     }
 
-    fn declare_object(&mut self, node: NodeId, ty: QualType, alignment: Option<u64>) {
+    fn declare_object(
+        &mut self,
+        node: NodeId,
+        ty: QualType,
+        alignment: Option<u64>,
+        linkage: Option<Linkage>,
+    ) {
         let Some(&id) = self.types.declarations.get(&node) else {
             return;
         };
@@ -96,6 +127,15 @@ impl Checker<'_> {
             None => ty,
         };
         self.types.entities.declare(id, ty, false);
+        if let Some(linkage) = linkage {
+            self.types.entities.merge_declaration(
+                id,
+                linkage,
+                None,
+                false,
+                SymbolAttributes::default(),
+            );
+        }
         let _ = self.types.entities.merge_request(
             id,
             ObjectRequest {
@@ -106,44 +146,60 @@ impl Checker<'_> {
     }
 
     fn function(&mut self, node: NodeId, owner: Option<Span<()>>, function: &FunctionDefinition) {
+        let owner_linkage = owner.is_some();
         let mut names = None;
+        let mut return_type = None;
         let owner = std::mem::replace(&mut self.types.owner, owner);
         let resolved = self
             .types
             .resolve(&function.specifiers, &function.declarator);
         self.types.owner = owner;
         if let Ok(ty) = resolved {
-            self.declare_object(node, ty, None);
+            let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
+            self.declare_object(node, ty, None, linkage.flatten());
             names = function
                 .declarator
                 .name()
                 .map(|name| self.types.function_names(ty, name));
+            return_type = self
+                .types
+                .ctypes
+                .function_parts(ty)
+                .map(|(returned, ..)| returned)
+                .filter(|&returned| !self.types.ctypes.is_void(returned));
         }
+        let enclosing_return = std::mem::replace(&mut self.return_type, return_type);
         let enclosing = std::mem::replace(&mut self.types.function_names, names);
         for parameter in function
             .declarator
             .function_parameters()
             .map_or(&[][..], ParameterList::parameters)
         {
+            self.specifier(&parameter.specifiers.ty);
+            self.declarator(&parameter.declarator);
             let owner = self.types.owner.replace(parameter.derive(()));
             self.tag(&parameter.specifiers.ty);
+            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
             let resolved = self
                 .types
                 .resolve(&parameter.specifiers, &parameter.declarator);
+            self.types.provisional_extents = provisional;
             self.types.owner = owner;
             if let Ok(resolved) = resolved
                 && !self.types.ctypes.is_void(resolved)
             {
+                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
                 let adjusted = self
                     .types
-                    .adjusted_parameter(resolved, super::ctype::Qualifiers::NONE);
-                self.declare_object(parameter.id, adjusted, None);
+                    .adjusted_parameter(resolved, declared_array.qualifiers.into());
+                self.declare_object(parameter.id, adjusted, None, None);
             }
         }
         for stmt in &function.body {
             self.statement(stmt);
         }
         self.types.function_names = enclosing;
+        self.return_type = enclosing_return;
     }
 
     fn declaration(&mut self, declaration: &Declaration, global: bool) {
@@ -161,16 +217,21 @@ impl Checker<'_> {
             &mut self.types.owner,
             first.map(|declarator| declarator.derive(())),
         );
+        self.specifier(&declaration.specifiers.ty);
         self.tag(&declaration.specifiers.ty);
         self.types.owner = owner;
         for declarator in &declaration.declarators {
+            self.declarator(&declarator.declarator);
             let Some(name) = declarator.declarator.name() else {
                 continue;
             };
             let owner = self.types.owner.replace(declarator.derive(()));
+            let mut initialized = None;
+            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
             let resolved = self
                 .types
                 .declarator_type(&declaration.specifiers, declarator);
+            self.types.provisional_extents = provisional;
             if let Ok(resolved) = resolved
                 && declaration.specifiers.storage == StorageClass::Typedef
             {
@@ -179,14 +240,23 @@ impl Checker<'_> {
                     .attributes
                     .iter()
                     .chain(&declarator.attributes);
-                let _ =
+                if self.types.ctypes.is_variably_modified(resolved) {
                     self.types
-                        .define_alias(declarator.id, name.to_owned(), resolved, attributes);
+                        .declare_provisional_alias(declarator.id, name.to_owned(), resolved);
+                } else {
+                    let _ = self.types.define_alias(
+                        declarator.id,
+                        name.to_owned(),
+                        resolved,
+                        attributes,
+                    );
+                }
             }
             self.types.owner = owner;
             if let Ok(resolved) = resolved
                 && declaration.specifiers.storage != StorageClass::Typedef
-                && !self.types.ctypes.is_void(resolved)
+                && (!self.types.ctypes.is_void(resolved)
+                    || declaration.specifiers.storage == StorageClass::Extern)
             {
                 let completed = self
                     .types
@@ -199,7 +269,21 @@ impl Checker<'_> {
                 let requested = super::types::requested_alignment(self.types, attributes)
                     .ok()
                     .flatten();
-                self.declare_object(declarator.id, completed, requested);
+                let storage = declaration.specifiers.storage;
+                let linkage = if global
+                    || storage == StorageClass::Extern
+                    || self.types.ctypes.is_function(completed)
+                {
+                    linkage(storage)
+                } else {
+                    None
+                };
+                self.declare_object(declarator.id, completed, requested, linkage);
+                if !self.types.ctypes.is_array(completed)
+                    && !self.types.ctypes.is_function(completed)
+                {
+                    initialized = Some(completed);
+                }
                 if declaration.specifiers.is_constexpr
                     && let Some(Initializer::Expr(expr)) = &declarator.initializer
                     && ice_shape(self.types, expr).is_constant()
@@ -223,6 +307,9 @@ impl Checker<'_> {
                     ));
                 }
                 self.initializer(initializer);
+                if let (Some(to), Initializer::Expr(expr)) = (initialized, initializer) {
+                    self.convert(expr, to, ConversionContext::Assign);
+                }
             }
         }
     }
@@ -343,12 +430,36 @@ impl Checker<'_> {
                 }
                 self.statement(body);
             }
-            StmtKind::Labeled { body, .. }
-            | StmtKind::Attributed { body, .. }
-            | StmtKind::SwitchLabel { body, .. } => self.statement(body),
-            StmtKind::Expr(expr) | StmtKind::Return(expr) | StmtKind::ComputedGoto(expr) => {
-                self.expression(expr)
+            StmtKind::SwitchLabel { label, body } => {
+                match label {
+                    SwitchLabel::Case(value) => self.expression(value),
+                    SwitchLabel::CaseRange { start, end } => {
+                        self.expression(start);
+                        self.expression(end);
+                    }
+                    SwitchLabel::Default => {}
+                }
+                self.statement(body);
             }
+            StmtKind::Asm(asm) => {
+                for operand in asm
+                    .operands
+                    .iter()
+                    .flat_map(|operands| operands.outputs.iter().chain(&operands.inputs))
+                {
+                    self.expression(&operand.expr);
+                }
+            }
+            StmtKind::Labeled { body, .. } | StmtKind::Attributed { body, .. } => {
+                self.statement(body)
+            }
+            StmtKind::Return(expr) => {
+                self.expression(expr);
+                if let Some(to) = self.return_type {
+                    self.convert(expr, to, ConversionContext::Return);
+                }
+            }
+            StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => self.expression(expr),
             _ => {}
         }
     }
@@ -371,9 +482,12 @@ impl Checker<'_> {
                     self.statement(stmt);
                 }
             }
-            ExprKind::Cast { ty, value }
-            | ExprKind::BitCast { ty, value }
-            | ExprKind::ConvertVector { ty, value } => {
+            ExprKind::Cast { ty, value } => {
+                self.type_name(ty);
+                self.expression(value);
+                self.cast(expr, ty, value);
+            }
+            ExprKind::BitCast { ty, value } | ExprKind::ConvertVector { ty, value } => {
                 self.type_name(ty);
                 self.expression(value);
             }
@@ -396,12 +510,18 @@ impl Checker<'_> {
             | ExprKind::SizeOfExpr(expr)
             | ExprKind::AlignOfExpr(expr)
             | ExprKind::Member { base: expr, .. } => self.expression(expr),
-            ExprKind::Binary { left, right, .. }
-            | ExprKind::Assign {
-                target: left,
-                value: right,
-                ..
+            ExprKind::Assign { op, target, value } => {
+                self.expression(target);
+                self.expression(value);
+                if *op == AssignOp::Assign
+                    && let Ok(target) = self.types.typed(target)
+                    && target.lvalue
+                    && self.types.require_modifiable_lvalue(target.c).is_ok()
+                {
+                    self.convert(value, target.c, ConversionContext::Assign);
+                }
             }
+            ExprKind::Binary { left, right, .. }
             | ExprKind::Comma { left, right }
             | ExprKind::Index {
                 base: left,
@@ -426,6 +546,7 @@ impl Checker<'_> {
                 for argument in arguments {
                     self.expression(argument);
                 }
+                self.arguments(callee, arguments);
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 self.type_name(ty);
@@ -455,7 +576,102 @@ impl Checker<'_> {
         }
     }
 
+    fn convert(&mut self, expr: &Expr, to: QualType, context: ConversionContext) {
+        if let Ok(from) = self.types.operand_type(expr) {
+            self.convert_at(expr, expr, from, to, context);
+        }
+    }
+
+    fn convert_at(
+        &mut self,
+        at: &Expr,
+        expr: &Expr,
+        from: QualType,
+        to: QualType,
+        context: ConversionContext,
+    ) {
+        if let Err(reason) = self.types.record_conversion(expr, from, to, context) {
+            self.errors
+                .push(error(at.provenance, at.expansion, reason.to_string()));
+        }
+    }
+
+    fn cast(&mut self, cast: &Expr, ty: &TypeName, value: &Expr) {
+        let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
+        let to = self.types.resolve(&ty.specifiers, &ty.declarator);
+        self.types.provisional_extents = provisional;
+        let (Ok(to), Ok(from)) = (to, self.types.operand_type(value)) else {
+            return;
+        };
+        let to = self.types.ctypes.unqualified(to);
+        if self.types.ctypes.is_void(to)
+            || !matches!(self.types.union_cast_member(to, from), Ok(None))
+        {
+            return;
+        }
+        self.convert_at(cast, value, from, to, ConversionContext::Cast);
+    }
+
+    fn arguments(&mut self, callee: &Expr, arguments: &[Expr]) {
+        let Ok(Some(signature)) = self.types.argument_signature(callee, arguments) else {
+            return;
+        };
+        let Some((_, parameters, ..)) = self.types.ctypes.function_parts(signature) else {
+            return;
+        };
+        let parameters = parameters.to_vec();
+        for (index, argument) in arguments.iter().enumerate() {
+            let Ok(from) = self.types.operand_type(argument) else {
+                continue;
+            };
+            match parameters.get(index) {
+                Some(&parameter) => {
+                    let to = self.types.ctypes.adjust_parameter(parameter);
+                    self.convert_at(argument, argument, from, to, ConversionContext::Arg);
+                }
+                None => {
+                    let from = self.types.ctypes.enum_underlying(from).unwrap_or(from);
+                    let target = self.types.target_info().clone();
+                    let to = self.types.ctypes.default_promotion(from, &target);
+                    self.convert_at(argument, argument, from, to, ConversionContext::Arg);
+                }
+            }
+        }
+    }
+
+    fn declarator(&mut self, declarator: &Declarator) {
+        match declarator {
+            Declarator::Grouped(inner)
+            | Declarator::Attributed { inner, .. }
+            | Declarator::Pointer { inner, .. } => self.declarator(inner),
+            Declarator::Array { inner, size, .. } => {
+                self.declarator(inner);
+                if let ArraySize::Expression(size) = size {
+                    self.expression(size);
+                }
+            }
+            Declarator::Function { inner, parameters } => {
+                self.declarator(inner);
+                for parameter in parameters.parameters() {
+                    self.specifier(&parameter.specifiers.ty);
+                    self.declarator(&parameter.declarator);
+                }
+            }
+            Declarator::Abstract | Declarator::Name(_) => {}
+        }
+    }
+
+    fn specifier(&mut self, ty: &TypeSpecifier) {
+        if let TypeSpecifier::TypeOf(TypeOfOperand::Expression(operand))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(operand)) = ty
+        {
+            self.expression(operand);
+        }
+    }
+
     fn type_name(&mut self, ty: &TypeName) {
+        self.specifier(&ty.specifiers.ty);
+        self.declarator(&ty.declarator);
         self.tag(&ty.specifiers.ty);
         let _ = self.types.resolve(&ty.specifiers, &ty.declarator);
     }
@@ -697,5 +913,13 @@ fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
             .generic_selection(controlling, associations)
             .map_or(Shape::Skip, |selected| ice_shape(types, selected)),
         _ => Shape::Skip,
+    }
+}
+
+fn linkage(storage: StorageClass) -> Option<Linkage> {
+    match storage {
+        StorageClass::Static => Some(Linkage::Internal),
+        StorageClass::None | StorageClass::Extern => Some(Linkage::External),
+        _ => None,
     }
 }

@@ -33,19 +33,20 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: ⚠ 'transparent_union' attribute ignored; it applies only to unions
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/transparent_union_call.c:14:34]
-// DEFAULT: 13 │   struct Second *second;
-// DEFAULT: 14 │ } PointerArgument __attribute__((transparent_union));
-// DEFAULT: ·                                  ─────────────────
-// DEFAULT: 15 │
+// DEFAULT: Error:
+// DEFAULT: × conversion between a struct or union and an unrelated type
+// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/transparent_union_call.c:23:32]
+// DEFAULT: 22 │   struct Second second = {.value = 29};
+// DEFAULT: 23 │   printf("%d %d\n", read_value(&first), read_value(&second));
+// DEFAULT: ·                                ──────
+// DEFAULT: 24 │   return 0;
 // DEFAULT: ╰────
 // DEFAULT: Error:
 // DEFAULT: × conversion between a struct or union and an unrelated type
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/transparent_union_call.c:23:21]
+// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/transparent_union_call.c:23:52]
 // DEFAULT: 22 │   struct Second second = {.value = 29};
 // DEFAULT: 23 │   printf("%d %d\n", read_value(&first), read_value(&second));
-// DEFAULT: ·                     ──────────────────
+// DEFAULT: ·                                                    ───────
 // DEFAULT: 24 │   return 0;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

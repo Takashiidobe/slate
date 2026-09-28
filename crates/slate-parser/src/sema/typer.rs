@@ -1,5 +1,6 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
+use super::ctype::convert::ConversionContext;
 use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::{
     SourceLocationBuiltin, choose_expr_operands, constant_p_operand, source_location_builtin,
@@ -75,7 +76,7 @@ impl TypeResolver {
         }
     }
 
-    fn operand_type(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+    pub(super) fn operand_type(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         let typed = self.typed(e)?;
         Ok(self.rvalue_type(typed))
     }
@@ -619,32 +620,60 @@ impl TypeResolver {
         if va_builtin(callee).is_some() {
             return Ok(Typed::rvalue(self.ctypes.qual(CTypeKind::Void)));
         }
-        let signature = match self.builtin_callee(callee, arguments) {
-            Some((builtin, _)) => {
-                if let Some(custom) = super::builtins::custom_builtin(builtin) {
-                    return self.custom_builtin_type(custom, arguments);
-                }
-                match super::builtins::derived_signature(builtin) {
-                    Some(derived) => {
-                        let first = match (derived, arguments.first()) {
-                            (DerivedSignature::Declared, _) | (_, None) => None,
-                            (_, Some(argument)) => {
-                                let typed = self.typed(argument)?;
-                                Some(self.ctypes.lvalue_conversion(typed.c))
-                            }
-                        };
-                        self.derived_signature(builtin, derived, arguments.len(), first)?
-                    }
-                    None => self.builtin_signature(builtin).ok_or(UNTYPED)?,
-                }
-            }
-            None => {
-                let pointer = self.operand_type(callee)?;
-                self.ctypes.pointee(pointer).ok_or(UNTYPED)?
-            }
-        };
+        if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
+            && let Some(custom) = super::builtins::custom_builtin(builtin)
+        {
+            return self.custom_builtin_type(custom, arguments);
+        }
+        let signature = self.call_signature(callee, arguments)?;
         let (returned, ..) = self.ctypes.function_parts(signature).ok_or(UNTYPED)?;
         Ok(Typed::rvalue(returned))
+    }
+
+    pub(super) fn argument_signature(
+        &mut self,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Result<Option<QualType>, ResolveError> {
+        if atomic_builtin(callee).is_some()
+            || constant_p_operand(callee, arguments).is_some()
+            || (arguments.is_empty() && source_location_builtin(callee).is_some())
+            || choose_expr_operands(callee, arguments).is_some()
+            || va_builtin(callee).is_some()
+            || self
+                .builtin_callee(callee, arguments)
+                .is_some_and(|(builtin, _)| super::builtins::custom_builtin(builtin).is_some())
+        {
+            return Ok(None);
+        }
+        self.call_signature(callee, arguments).map(Some)
+    }
+
+    fn call_signature(
+        &mut self,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Result<QualType, ResolveError> {
+        if let Some((builtin, _)) = self.builtin_callee(callee, arguments) {
+            let signature = match super::builtins::derived_signature(builtin) {
+                Some(derived) => {
+                    let first = match (derived, arguments.first()) {
+                        (DerivedSignature::Declared, _) | (_, None) => None,
+                        (_, Some(argument)) => {
+                            let typed = self.typed(argument)?;
+                            Some(self.ctypes.lvalue_conversion(typed.c))
+                        }
+                    };
+                    Some(self.derived_signature(builtin, derived, arguments.len(), first)?)
+                }
+                None => self.builtin_signature(builtin),
+            };
+            if let Some(signature) = signature {
+                return Ok(signature);
+            }
+        }
+        let pointer = self.operand_type(callee)?;
+        self.ctypes.pointee(pointer).ok_or(UNTYPED)
     }
 
     fn atomic_type(
@@ -755,7 +784,7 @@ impl TypeResolver {
                 let from = self.operand_type(value)?;
                 if self.ctypes.is_integer(from) {
                     Some(self.integer_constant_zero(value))
-                } else if self.ctypes.is_pointer(from) {
+                } else if self.ctypes.is_pointer(from) || self.ctypes.is_nullptr(from) {
                     self.null_pointer(value)?
                 } else {
                     None
@@ -763,6 +792,31 @@ impl TypeResolver {
             }
             _ => Some(false),
         })
+    }
+
+    pub(super) fn null_pointer_constant(&mut self, e: &Expr) -> bool {
+        let Ok(c) = self.operand_type(e) else {
+            return false;
+        };
+        if self.ctypes.is_integer(c) {
+            return self.integer_constant_zero(e);
+        }
+        (self.ctypes.is_pointer(c) || self.ctypes.is_nullptr(c))
+            && matches!(self.null_pointer(e), Ok(Some(true)))
+    }
+
+    pub(super) fn record_conversion(
+        &mut self,
+        e: &Expr,
+        from: QualType,
+        to: QualType,
+        context: ConversionContext,
+    ) -> Result<(), ResolveError> {
+        let to = self.ctypes.unqualified(to);
+        let null = self.null_pointer_constant(e);
+        let conversion = self.ctypes.classify_conversion(from, to, context, null)?;
+        self.conversions.insert(e.id, conversion);
+        Ok(())
     }
 
     pub(super) fn integer_constant_zero(&mut self, e: &Expr) -> bool {
@@ -887,10 +941,14 @@ impl TypeResolver {
                 let target = self.target_info().clone();
                 return Ok(self.ctypes.ptrdiff_type(&target));
             }
-            BinaryOp::Add | BinaryOp::Sub if lp && self.ctypes.is_integer(right) => {
+            BinaryOp::Add | BinaryOp::Sub
+                if self.ctypes.is_pointer(left) && self.ctypes.is_integer(right) =>
+            {
                 return Ok(left);
             }
-            BinaryOp::Add if rp && self.ctypes.is_integer(left) => return Ok(right),
+            BinaryOp::Add if self.ctypes.is_pointer(right) && self.ctypes.is_integer(left) => {
+                return Ok(right);
+            }
             _ if lp || rp => return Err(UNTYPED),
             _ => {}
         }

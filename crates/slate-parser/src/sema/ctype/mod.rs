@@ -488,6 +488,17 @@ impl CTypes {
         }
     }
 
+    pub fn implicit_function(&mut self) -> QualType {
+        let ret = self.int();
+        self.qual(CTypeKind::Function {
+            ret,
+            params: Vec::new(),
+            variadic: false,
+            prototyped: false,
+            convention: CallConv::C,
+        })
+    }
+
     pub fn function_parts(&self, q: QualType) -> Option<(QualType, &[QualType], bool, bool)> {
         match self.kind(self.desugar(q).ty) {
             CTypeKind::Function {

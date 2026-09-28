@@ -56,6 +56,7 @@ pub struct TypeResolver {
     pub(super) entities: super::entity::Entities,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
+    pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) inferred: Option<QualType>,
     pub(super) function_names: Option<FunctionNames>,
     pub(super) locals: HashMap<BindingId, QualType>,
@@ -95,6 +96,7 @@ impl TypeResolver {
             entities: super::entity::Entities::default(),
             typeof_operands: HashMap::new(),
             expression_types: HashMap::new(),
+            conversions: HashMap::new(),
             inferred: None,
             function_names: None,
             locals: HashMap::new(),
@@ -1119,6 +1121,23 @@ impl TypeResolver {
         self.aliases.insert(binding, alias);
         self.alias_definitions.insert(node, (id, alias));
         Ok(id)
+    }
+
+    pub(super) fn declare_provisional_alias(
+        &mut self,
+        node: crate::ast::NodeId,
+        name: String,
+        resolved: QualType,
+    ) {
+        let Some(&binding) = self.declarations.get(&node) else {
+            return;
+        };
+        let alias = self.ctypes.qual(CTypeKind::Typedef {
+            name,
+            underlying: resolved,
+            alignment: None,
+        });
+        self.aliases.insert(binding, alias);
     }
 
     // declarator-position type attributes change only their own declarator's base type

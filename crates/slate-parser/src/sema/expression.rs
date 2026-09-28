@@ -1,5 +1,5 @@
 use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature};
-use super::ctype::convert::{CastKind, ConversionContext};
+use super::ctype::convert::{CastKind, Conversion, ConversionContext};
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
@@ -81,7 +81,7 @@ impl Lowerer {
                     .default_promotion(value.c, &self.context.target);
                 (value, to, ConversionReason::Vararg)
             };
-            lowered.push(self.convert_expr(argument, value, to, reason)?.value);
+            lowered.push(self.convert_recorded(argument, value, to, reason)?.value);
         }
         let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
         Ok(self.operand(
@@ -671,6 +671,23 @@ impl Lowerer {
         self.convert_classified(Some(e), value, to, reason)
     }
 
+    pub(super) fn convert_recorded(
+        &mut self,
+        e: &Expr,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
+        let conversion = *self
+            .types
+            .conversions
+            .get(&e.id)
+            .ok_or(ResolveError::Internal(
+                "conversion not recorded by the checker",
+            ))?;
+        self.apply_conversion(Some(e), conversion, value, to, reason)
+    }
+
     fn convert_classified(
         &mut self,
         e: Option<&Expr>,
@@ -684,6 +701,18 @@ impl Lowerer {
             self.types
                 .ctypes
                 .classify_conversion(value.c, c, conversion_context(reason), null)?;
+        self.apply_conversion(e, conversion, value, c, reason)
+    }
+
+    fn apply_conversion(
+        &mut self,
+        e: Option<&Expr>,
+        conversion: Conversion,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.unqualified(to);
         if let Some((warning, message)) = conversion.warning {
             if let Some(e) = e {
                 self.warn(warning, message, e);
@@ -825,6 +854,9 @@ impl Lowerer {
             }
             CastKind::NullPointer => Ok(self.value(&value.node, ty, ValueKind::Null)),
             CastKind::PtrToBool => self.condition(value, Some(reason)),
+            CastKind::Pointer if value.ty == ty && self.types.ctypes.is_variably_modified(to) => {
+                Ok(value)
+            }
             CastKind::Pointer | CastKind::PtrToInt | CastKind::IntToPtr => {
                 let kind = match (kind, &value.ty, &ty) {
                     (CastKind::PtrToInt, ..) => ConversionKind::PtrToInt,
@@ -1955,7 +1987,7 @@ impl Lowerer {
                         },
                     )
                 } else if !is_void {
-                    self.convert_expr(value_expr, value, to, ConversionReason::Explicit)?
+                    self.convert_recorded(value_expr, value, to, ConversionReason::Explicit)?
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);
                     self.operand(
@@ -2176,8 +2208,12 @@ impl Lowerer {
                     if temporary_rooted(&place.place) {
                         return Err(ResolveError::Rejected("expression is not assignable"));
                     }
-                    let value =
-                        self.convert_expr(value_expr, value, place.c, ConversionReason::Assign)?;
+                    let value = self.convert_recorded(
+                        value_expr,
+                        value,
+                        place.c,
+                        ConversionReason::Assign,
+                    )?;
                     let c = value.c;
                     return Ok(self.operand(
                         e,

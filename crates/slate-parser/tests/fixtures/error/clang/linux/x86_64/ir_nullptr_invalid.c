@@ -38,10 +38,10 @@ int arithmetic(nullptr_t n) { return n + 1; }
 // FROM_POINTER: Error:   × semantic analysis failed
 // FROM_POINTER: Error:
 // FROM_POINTER: × conversion to nullptr_t from a type other than nullptr_t
-// FROM_POINTER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_nullptr_invalid.c:8:34]
+// FROM_POINTER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_nullptr_invalid.c:8:41]
 // FROM_POINTER: 7 │ #ifdef FROM_POINTER
 // FROM_POINTER: 8 │ nullptr_t from_pointer(int *p) { return p; }
-// FROM_POINTER: ·                                  ─────────
+// FROM_POINTER: ·                                         ─
 // FROM_POINTER: 9 │ #endif
 // FROM_POINTER: ╰────
 // SLATE-FILECHECK-END FROM_POINTER

@@ -31,6 +31,7 @@ pub enum CastKind {
     NullPointer,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Conversion {
     pub kind: CastKind,
     pub warning: Option<(Warning, &'static str)>,
@@ -76,6 +77,9 @@ impl CTypes {
         {
             return Ok(Conversion::plain(if record && context.is_assignment() {
                 CastKind::RecordCopy
+            } else if self.is_pointer(to) && self.is_variably_modified(to) {
+                // extents bound only in lowering may differ between the two types
+                CastKind::Pointer
             } else {
                 CastKind::Identity
             }));

@@ -166,9 +166,21 @@ complete. The checker's resolver warnings are kept per item
 (`item_diagnostics`) and replayed when lowering reaches that item, so the
 warning order is unchanged. The checker walks in source order and resolves
 the type names inside expressions (casts, `sizeof`, compound literals,
-`_Generic`), so `TypeId`s are numbered in source order; a VLA typedef, which
-the checker cannot resolve without extent bindings, is numbered when lowering
-reaches it. Anything that scans all tags must bound itself by position:
+`_Generic`), so `TypeId`s are numbered in source order; a VLA typedef is
+numbered when lowering reaches it, because the checker gives it only a
+provisional alias (`declare_provisional_alias`: `aliases[binding]` over the
+`vla<T, *>` type, no `TypeId`, no memo).
+
+The checker declares what lowering would before typing uses of it, since its
+answers are memoized for lowering: objects, parameters and casts resolve with
+`provisional_extents` so VLA locals and parameters are declared; parameters
+keep their array declarator's qualifiers (`int a[restrict 4]`); functions and
+file-scope or `extern` objects get their linkage (so `builtin_callee` sees a
+redeclared library builtin the same way); `extern void` objects are declared;
+and each item's implicit function declarations are declared from
+`NameResolution.implicit_functions` (`CTypes::implicit_function`). It walks
+every expression lowering evaluates: `case` labels, asm operands, declarator
+array sizes and `typeof` operands included. Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has
 already defined later tags.

@@ -1,5 +1,5 @@
 use super::attributes::{Subject, Use};
-use super::ctype::{CTypeKind, QualType};
+use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
@@ -171,14 +171,7 @@ impl Lowerer {
             .find(|binding| binding.value.id == id)
             .ok_or(ResolveError::Internal("missing declaration binding"))?
             .clone();
-        let ret = self.types.ctypes.int();
-        let resolved = self.types.ctypes.qual(CTypeKind::Function {
-            ret,
-            params: Vec::new(),
-            variadic: false,
-            prototyped: false,
-            convention: CallConv::C,
-        });
+        let resolved = self.types.ctypes.implicit_function();
         let ty = self.types.ir_type(resolved);
         let abi = self.c_abi_signature(resolved, &ty, None)?;
         let previous = self.types.entities.declare(id, resolved, false);
@@ -1397,7 +1390,7 @@ impl Lowerer {
                     return_type.ok_or(ResolveError::Rejected("value return from void function"))?;
                 let value = self.expr(expr)?;
                 Statement::Return(Some(
-                    self.convert_expr(expr, value, ty, ConversionReason::Return)?
+                    self.convert_recorded(expr, value, ty, ConversionReason::Return)?
                         .value,
                 ))
             }

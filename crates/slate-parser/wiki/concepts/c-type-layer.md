@@ -141,6 +141,24 @@ rather than a silent `pointer_cast`. `ConversionContext` has no `Init` arm:
 initialization reaches lowering as `ConversionReason::Assign` and the two
 obey the same constraints, so a separate arm would be unreachable.
 
+The static-assertion checker, not lowering, classifies the conversions at
+simple assignment, prototyped and variadic call arguments, `return`, explicit
+casts and a declaration's top-level non-array initializer
+(slate-parser-cc94.5.1). It types the operand with the expression typer, asks
+`TypeResolver::null_pointer_constant`, and records the `Conversion` per operand
+`NodeId` in `TypeResolver::conversions` (`record_conversion`); an ill-formed
+conversion is a `SemaError` from `analyze`, so plain `parse` rejects it.
+Lowering's `convert_recorded` reads the record at those sites and emits its
+kind and warning (warning order is unchanged); a missing record is `Internal`.
+Conversions inside braced initializers, atomic/builtin arguments and the
+usual arithmetic conversions still classify in lowering (`convert_expr`)
+until cc94.5.4/.5.5. Because the checker sees variably modified types with
+unbound extents (`vla<T, *>`), a pointer-to-VM conversion between types that
+are `same` classifies as `Pointer`, not `Identity`, and `emit_cast` drops a
+`Pointer` cast whose IR types turn out equal; otherwise the checker and
+lowering would disagree about whether two differently bound extents need a
+cast.
+
 The layout-approximation helpers this replaces — `pointer_conversion_warning`,
 `differ_only_in_sign`, `differ_only_in_nested_qualifiers` and
 `compatible_ignoring_qualifiers` — are gone. Because signedness is now
