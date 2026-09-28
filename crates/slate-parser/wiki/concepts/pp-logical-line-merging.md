@@ -30,7 +30,7 @@ things it deliberately does NOT do, both load-bearing:
 - **Never merge across a `#` line.** GCC-dg fixtures rely on being able to
   select one _argument_ of an open call via `#ifdef`/`#else`/`#endif`
   (e.g. `printf(..., limits_total,\n#ifdef X\n bounds_total\n#else\n 0\n#endif\n);`
-  in `tests/fixtures/c11.c`). If merging swallowed the directive lines as
+  in `tests/fixtures/clang/linux/x86_64/c11.c`). If merging swallowed the directive lines as
   plain tokens, the conditional would corrupt the token stream. A line
   whose depth is still open when a directive is hit is left exactly as
   before (its own, individually-unbalanced `Item::Text`) -- this already
@@ -57,7 +57,7 @@ interleaved `Comment` node and re-emitting it once the statement
 construction completes -- e.g. a trailing comment on the closing line of a
 multi-line `asm volatile(...)` ends up positioned right after the
 resulting `Asm` statement, not before it (see
-`tests/fixtures/gcc-dg/guality__pr43329-1.c`,
+`tests/fixtures/suites/gcc-dg/clang/linux/x86_64/guality__pr43329-1.c`,
 `guality__pr45003-*.c`, `guality__pr58791-*.c`). Bundling a
 continuation line's comment into the head (the simplest merge
 implementation) reproduces the _old_ per-line node layout's comment

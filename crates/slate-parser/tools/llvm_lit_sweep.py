@@ -234,8 +234,8 @@ def stripped_source(text):
     return "".join(line for line in text.splitlines(keepends=True) if not directive.match(line))
 
 
-def fixture_directives(flavor, triple, configs):
-    lines = [f"// SLATE-FILECHECK-FLAVOR {flavor}\n", f"// SLATE-FILECHECK-ARGS -target={triple}\n"]
+def fixture_directives(flavor, configs):
+    lines = []
     for index, config in enumerate(configs):
         prefix = "DEFAULT" if len(configs) == 1 else f"CFG{index}"
         defines = [d for d in config["defines"] if d.startswith("-D")]
@@ -255,16 +255,16 @@ def migrate(results, dest):
     written = []
     for (file, triple), configs in sorted(groups.items()):
         source = stripped_source((ROOT / file).read_text(errors="replace"))
-        stem = file.removesuffix(".c").replace("/", "__") + "-" + triple.split("-")[0]
+        stem = file.removesuffix(".c").replace("/", "__")
         flavors = ["clang"]
         if all(c["msvc"] == 0 and c["slate_msvc"] == 0 for c in configs):
             flavors.append("msvc")
         for flavor in flavors:
-            path = dest / (stem + ("-msvc" if flavor == "msvc" else "") + ".c")
+            path = dest / flavor / "windows" / triple.split("-")[0] / (stem + ".c")
             if path.exists():
                 continue
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(source.rstrip("\n") + "\n\n" + fixture_directives(flavor, triple, configs))
+            path.write_text(source.rstrip("\n") + "\n\n" + fixture_directives(flavor, configs))
             written.append(path)
     return written
 
@@ -276,7 +276,7 @@ def main():
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--jobs", type=int, default=os.cpu_count())
     parser.add_argument("--filter", help="only run files whose relative path contains this")
-    parser.add_argument("--migrate", type=Path, metavar="DIR", help="write fixtures for accepted files that DIR does not have yet, e.g. tests/fixtures/msvc/clang-test")
+    parser.add_argument("--migrate", type=Path, metavar="DIR", help="write fixtures for accepted files that DIR does not have yet, e.g. tests/fixtures/suites/clang-test")
     args = parser.parse_args()
     ROOT = args.root
     jobs = []

@@ -75,7 +75,7 @@ IR node by an AST id: enumerator references resolve through
 on the node that owns the fact, so each key prints on exactly one node. A
 declarator's C type annotates the declared entity (let, global, function,
 parameter, typedef alias), not type definitions it happens to create.
-`tests/fixtures/sema/ir_metadata_single_owner.c` covers this.
+`tests/fixtures/clang/linux/x86_64/ir_metadata_single_owner.c` covers this.
 
 The module node model includes named aliases, records with field layouts,
 enums with typed enumerators, globals, and function prototypes or definitions.
@@ -111,9 +111,9 @@ redeclaration of any function of the same name with linkage, so a builtin
 called without a visible declaration binds to an earlier block-scope `extern`
 declaration or to a later one at any scope (`__builtin_exit` included), and
 the unit gets one `fn` for it
-(`tests/fixtures/sema/ir_implicit_builtin_redeclared.c`); calls lowered before
+(`tests/fixtures/gcc/linux/x86_64/ir_implicit_builtin_redeclared.c`); calls lowered before
 the later declaration still use the builtin's signature. The builtin's `NoReturn` attribute becomes the
-function's `[noreturn]` (`tests/fixtures/sema/ir_builtin_noreturn.c`), and
+function's `[noreturn]` (`tests/fixtures/clang/linux/x86_64/ir_builtin_noreturn.c`), and
 `Const`/`Pure` become `[memory=none]`/`[memory=read]`, exactly as GNU
 `__attribute__((const))`/`((pure))` on a declaration do (`const` wins when both
 are given). `ConstIgnoringErrno` and similar variants do not count, and
@@ -123,7 +123,7 @@ Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
 and unprototyped distinction even when a later redeclaration of the same
 function changes it
-(`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
+(`tests/fixtures/clang/linux/x86_64/ir_call_signatures.c`); `--compact-ir` hides it.
 
 Clang's target-independent `Builtins.td` is expanded through `clang-tblgen`
 into the checked-in Rust registry in `src/sema/clang_builtins.rs`. The generator
@@ -145,20 +145,20 @@ a missing `noreturn` still match); calls then go to that declaration with the
 builtin's signature, and the declaration picks up the builtin's `noreturn` and
 `c_builtin`. An incompatible or `static` declaration shadows the
 builtin and its calls go to the declared function
-(`tests/fixtures/sema/ir_redeclared_builtins.c`). An incompatible one with
+(`tests/fixtures/clang/linux/x86_64/ir_redeclared_builtins.c`). An incompatible one with
 external linkage still inherits a builtin's `noreturn`, because clang keeps
 noreturn in the function type it merges with the implicit builtin
 declaration (`int exit(long);` is `[noreturn]`); `Const`/`Pure` are
 attributes tied to builtin status and are not inherited. This is the clang
 flavor only: GCC (`void _Exit(long);` in
-`tests/fixtures/builtin_prefixed_library_gcc.c`) and MSVC keep compiling
+`tests/fixtures/gcc/linux/x86_64/builtin_prefixed_library.c`) and MSVC keep compiling
 code after such a call. Under the MSVC flavor a library builtin
 (`ClangBuiltinKind::Library`: `exit`, `abort`, `toupper`, `cbrt`) gets
 neither `noreturn` nor `Const`/`Pure` from the registry, declared or
 implicit: cl.exe calls `toupper(x) + toupper(x)` twice and keeps code after
 `exit`, and learns noreturn only from `__declspec(noreturn)`, which like the
 GNU attribute applies to every declaration and call of the function
-(`tests/fixtures/sema/ir_library_builtins_msvc.c`). The declaration keeps
+(`tests/fixtures/msvc/linux/x86_64/ir_library_builtins.c`). The declaration keeps
 `c_builtin`, which names the libc entity rather than claiming semantics.
 Header provenance plays no
 part: it decides libc identity for the Rust handoff, not builtin semantics.
@@ -183,7 +183,7 @@ else. The generic checked arithmetic builtins lower to
 `overflow_add/sub/mul<bool>(left, right, place)`,
 which computes in the mathematical domain, stores the converted result through
 the destination place, and returns whether conversion overflowed. Fixture:
-`tests/fixtures/sema/ir_implicit_builtins.c`.
+`tests/fixtures/clang/linux/x86_64/ir_implicit_builtins.c`.
 
 `__builtin_va_list` follows clang's per-target `BuiltinVaListKind`
 (`TargetInfo::va_list_kind`). Where clang makes it `char *` (Windows, i386,
@@ -196,10 +196,10 @@ pointer sized for 32-bit ARM. It does not model the array-to-pointer decay the x
 aarch64 ABIs give a `va_list` parameter; it is passed as one scalar handle.
 `__builtin_va_arg(ap, T)` lowers to `va_arg<T>(place)`: a type-directed read
 that advances the list, so it counts as a side effect for hoisting like a call.
-`T` may be a record (`tests/fixtures/sema/ir_va_arg.c`). `__builtin_va_start`,
+`T` may be a record (`tests/fixtures/clang/linux/x86_64/ir_va_arg.c`). `__builtin_va_start`,
 `__builtin_va_end` and `__builtin_va_copy` lower to void `va_start(place)`,
 `va_end(place)` and `va_copy(dest, src)` values, also effects
-(`tests/fixtures/sema/ir_va_start_end_copy.c`). They are recognized by callee
+(`tests/fixtures/clang/linux/x86_64/ir_va_start_end_copy.c`). They are recognized by callee
 name in sema, not declared; va_start's last-named-parameter argument is
 resolved but dropped, as the IR does not need it.
 
@@ -226,7 +226,7 @@ as the bare name in C, while Clang spells the whole declaration
 `CTypes::declaration_spelling`. None of the three is a declared entity, so
 they are bound in `Lowerer::place` ahead of name resolution and each
 occurrence emits its own `.strN`; a use outside a function is rejected, where
-Clang warns and recovers. `tests/fixtures/sema/ir_function_name_builtins.c`
+Clang warns and recovers. `tests/fixtures/clang/linux/x86_64/ir_function_name_builtins.c`
 pins the Clang spelling together with `sizeof`, indexing and a static
 initializer, and `ir_function_name_builtins_gcc.c` pins the GCC one.
 
@@ -243,7 +243,7 @@ selected operand's constant value.
 `_Generic` resolves during lowering rather than reaching the IR: sema types the
 controlling operand, matches it against the association types, and lowers only
 the selected expression, so the selected branch can be constant or runtime and
-the others produce no IR at all (`tests/fixtures/sema/ir_generic_selection.c`).
+the others produce no IR at all (`tests/fixtures/clang/linux/x86_64/ir_generic_selection.c`).
 The controlling operand is unevaluated, so typing it rolls back any binding IDs
 or string-literal globals its lowering would have created. A selection is also a
 place when the selected expression is one, which is what makes `_Generic(...) = v`
@@ -262,7 +262,7 @@ qualification, while preserving pointee qualifiers. Resolved declarations keep
 their `typeof` spelling, canonical C type, and applicable typedef chain metadata.
 Function types can declare functions without a new parameter list, and existing
 variable array types retain their captured extents. See
-`tests/fixtures/sema/ir_typeof.c` and `ir_typeof_qualifiers.c`.
+`tests/fixtures/clang/linux/x86_64/ir_typeof.c` and `ir_typeof_qualifiers.c`.
 
 **Decided:** `__auto_type` and C23 `auto` (`TypeSpecifier::Inferred`) are
 resolved entirely in sema, through the typeof path, so the IR only ever sees the
@@ -292,7 +292,7 @@ other storage classes combine with the C23 inference `auto`.
 
 Known gap: slate types `nullptr` as `void *` rather than `nullptr_t`, so
 `auto n = nullptr` deduces `void *`, and `auto *p = nullptr` is accepted where
-clang rejects it. See `tests/fixtures/sema/c23_auto_inference.c` and
+clang rejects it. See `tests/fixtures/clang/linux/x86_64/c23_auto_inference.c` and
 `gcc_auto_inference.c`.
 
 Declarator type derivation visits prefix pointers and arrays before wrapping
@@ -302,12 +302,12 @@ suffix function and array forms, so `int *f(void)` is `fn() -> ptr<i32>` and
 wrap it, matching C's precedence. Pointer↔integer casts lower as explicit
 `ptr_to_int`/`int_to_ptr` conversions, and pointer relational comparisons
 reuse `CompareOp::{lt, le, gt, ge}` on pointer operands
-(`tests/fixtures/sema/ir_pointers.c`: buffer fill cursor, string walk,
+(`tests/fixtures/clang/linux/x86_64/ir_pointers.c`: buffer fill cursor, string walk,
 out-parameter write, pointer round-trip). A function designator used as a
 value decays to `function_decay<ptr<fn(..)>>(place)`, and since C makes `*f`
 on a function designator that same designator, `(*fp)(x)` lowers identically
 to `fp(x)` and `(*f)(x)` stays a direct call
-(`tests/fixtures/sema/ir_indirect_calls.c`: parameter, local, struct field,
+(`tests/fixtures/clang/linux/x86_64/ir_indirect_calls.c`: parameter, local, struct field,
 pointer table, conditional callee, variadic, higher-order argument, and a
 callee whose subexpression has side effects).
 
@@ -349,10 +349,10 @@ expectation generator pass dedicated defines, include paths, flavor, standard,
 and show-ID options first, followed by `SLATE-FILECHECK-ARGS` in source order.
 Thus the latter wins when a CLI option accepts repeated values. Extra arguments
 are split on whitespace; shell quoting is not interpreted.
-`tests/fixtures/sema/ir_module_promotions.c` exercises real C arithmetic,
+`tests/fixtures/clang/linux/x86_64/ir_module_promotions.c` exercises real C arithmetic,
 explicit narrowing, integer promotion, and return widening.
 
-The module dump also handles `tests/fixtures/add.c`: its stdio declaration,
+The module dump also handles `tests/fixtures/clang/linux/x86_64/add.c`: its stdio declaration,
 parameters, local variable, direct calls, string literal, and fallthrough metadata.
 Control flow retains `if`, `while`, `do/while`, `for`, `switch`, case/range/default
 labels, named labels, goto, computed goto, and blocks rather than canonicalizing
@@ -382,7 +382,7 @@ fixed type and every value in `int`, enumerators are `int`; otherwise they are
 the underlying integer before C23 and the enum type itself from C23
 (`StandardFeatures::enumerators_have_enum_type`), so a C23 enumerator reference
 crosses through `enum_to_int` like any other enum value
-(`tests/fixtures/sema/ir_enum_typing_c89.c`, `..._c23.c`). Known gap: clang
+(`tests/fixtures/clang/linux/x86_64/ir_enum_typing_c89.c`, `..._c23.c`). Known gap: clang
 keeps a C23 enumerator at its own type when that equals the underlying type
 (`enum P { P0 = 0x80000000 }` stays `unsigned int`); we use the enum type.
 Both conversions follow typedef chains, so an alias to an enum behaves the same.
@@ -524,7 +524,7 @@ integer promotion, and therefore selects on the declared bit-field type
 (`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
 Flexible-array semantics remain future work (layout and initializers exist; the extent lives on the initializer value),
-and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
+and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/clang/linux/x86_64/ir_records.c` covers nested
 records, unions, anonymous members, and bit-field reads, writes, compound
 assignment, and increment. The name-resolution dump remains a separate
 diagnostic view, not the module declaration representation.
@@ -684,7 +684,7 @@ that for `wb`, floored at 1 and 2 respectively, so `1wb` is `i2b`, `0uwb` is
 unsigned the way it does for standard integers — only `u` does. A value
 needing more than `BIT_INT_MAX_WIDTH` (65535) bits is diagnosed as too large
 for any `_BitInt` type rather than falling back to a standard integer.
-Fixture: `tests/fixtures/sema/ir_bitint_literals.c`; widths verified against
+Fixture: `tests/fixtures/clang/linux/x86_64/ir_bitint_literals.c`; widths verified against
 clang 22.1.8.
 
 They are exempt from the integer promotions (C23 6.3.1.1), so `_BitInt(8) + _BitInt(8)` stays `i8b`, and `~a`, `-a`, `+a`,
@@ -700,7 +700,7 @@ type still wins (`_BitInt(40) + int` is `i40b`). Because `i32b` and `i32`
 share a value representation, the conversion between them changes only the
 type; `convert` emits an exact `reinterpret` for it rather than nothing, so
 the operand type cannot silently disagree with the operation's type.
-`tests/fixtures/sema/ir_bitint_conversions.c` pins every case; its result
+`tests/fixtures/clang/linux/x86_64/ir_bitint_conversions.c` pins every case; its result
 types were verified against clang 22.1.8 and gcc 16.2.1, which agree on all
 of them. MSVC 19.51 has no `_BitInt` at all, so there is no third oracle.
 slate-parser accepts `_BitInt` in every mode without an extension warning;
@@ -751,9 +751,9 @@ cargo run -- parse source.c --dump-ir-expressions --show-spans
 
 This diagnostic mode prints expression roots from function expression and
 return statements, not functions or an executable module. It does not
-resolve return conversions, declarations, or control flow. Fixtures live in
-`tests/fixtures/sema/`; `SLATE-FILECHECK-ARGS` supplies extra renderer
-arguments to both the test harness and expectation generator.
+resolve return conversions, declarations, or control flow. Fixtures opt in
+with `--dump-ir-expressions` in `SLATE-FILECHECK-ARGS`, which supplies extra
+renderer arguments to both the test harness and expectation generator.
 
 ```text
 add<i32, overflow=ub>(const<i32>(1), const<i32>(2))
@@ -795,7 +795,7 @@ emit: non-`static` function definitions, file-scope object definitions
 without `extern` (tentative ones included, declarations of a function
 typedef excluded), and `extern` objects with an initializer. That last group
 is what keeps a gcc-style `#include "other.c"` test from lowering to an
-empty module (`tests/fixtures/reachable_from_include.c`). An `inline`
+empty module (`tests/fixtures/clang/linux/x86_64/reachable_from_include.c`). An `inline`
 definition counts only when clang gives it a non-discardable linkage,
 judged over every file-scope declaration of the name: `gnu_inline` or
 gnu89 keeps plain `inline` and drops `extern inline`, C99 keeps
@@ -803,7 +803,8 @@ gnu89 keeps plain `inline` and drops `extern inline`, C99 keeps
 windows-msvc target keeps only `dllexport` or an `extern` redeclaration.
 Everything else there is `linkonce_odr` in clang, emitted only if used,
 even though clang sometimes emits an unused one depending on declaration
-order (`tests/fixtures/reachable_inline_from_include*.c`). Keeping a
+order (`reachable_inline_from_include*.c` under `tests/fixtures/clang/linux/x86_64/`
+and `tests/fixtures/clang/windows/x86_64/`). Keeping a
 declaration also keeps every other declaration of its name, since
 redeclarations change emission and attributes.
 
@@ -1218,7 +1219,7 @@ Hard cases hoisting must respect (evaluation order and sequencing):
   `[memory=none]` or `[memory=read]` function is not a side effect, only its
   arguments can be, so `a && square(b)` stays `logical_and` instead of
   spilling into a synthetic and an `if`
-  (`tests/fixtures/sema/ir_const_pure_calls.c`).
+  (`tests/fixtures/clang/linux/x86_64/ir_const_pure_calls.c`).
 - Loop conditions and `for` increments with side effects stay attached to
   their `while`/`for` as a statement block with a trailing expression, so
   they re-run per iteration without changing the loop's form.
@@ -1338,9 +1339,9 @@ and integer components (gcc and clang both implement it that way); it prints
 as `not<complex<...>>` and is the only unary operator besides `neg` a complex
 operand accepts. `_Imaginary` still rejects `~`, matching clang, which has no
 imaginary support at all. Fixture:
-`tests/fixtures/sema/ir_complex_conjugate.c`. The component
+`tests/fixtures/clang/linux/x86_64/ir_complex_conjugate.c`. The component
 of a complex conversion is converted on each side, with the conversion
-contract recorded on the operation. `tests/fixtures/sema/ir_complex.c` pins
+contract recorded on the operation. `tests/fixtures/clang/linux/x86_64/ir_complex.c` pins
 these forms, the common complex sizes, and GNU integer-complex spelling.
 Function declarations and calls now carry an `AbiSignature` resolved from the
 target's ISA and ABI environment. It records the calling convention and the
@@ -1381,7 +1382,7 @@ array field or complex whose size is 1, 2, 4 or 8 bytes and whose non-empty
 fields are all themselves register-sized comes back as one `coerce<iN>` (a
 single `float` or pointer member included, unlike Darwin); anything else,
 including a flexible array member or a field like `char[3]`, is `sret` with
-the natural alignment. `tests/fixtures/sema/i686-pc-windows-msvc/abi_target.c`
+the natural alignment. `tests/fixtures/clang/windows/i686/abi_target.c`
 pins these against clang.
 
 The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
@@ -1436,7 +1437,7 @@ braced complex initializer. An integer imaginary literal's component is the
 type the literal would have without `i`/`j` (`5000000000i` is
 `complex<i64>`), matching clang. Imaginary literals are not integer
 constant expressions, so `#if 3i` and array bounds reject them.
-`tests/fixtures/sema/ir_imaginary.c` and `ir_imaginary_invalid.c` pin these
+`tests/fixtures/clang/linux/x86_64/ir_imaginary.c` and `ir_imaginary_invalid.c` pin these
 forms.
 
 **Implemented for vectors:** `Type::Vector { element, lanes }` prints as
@@ -1477,7 +1478,7 @@ one-lane `double` vector is passed in memory on `sysv64` (`vector<f64, 1>` is
 `byval<align=8>`, though its result is `direct`), and an eight-byte vector of
 integer lanes narrower than 64 bits is an MMX type that `x86_cdecl` passes as
 `i64`, while `vector<i64, 1>` and float-lane vectors of that size pass
-directly. `tests/fixtures/sema/ir_vector_abi.c` pins baseline `sysv64`
+directly. `tests/fixtures/clang/linux/x86_64/ir_vector_abi.c` pins baseline `sysv64`
 (`ir_vector_abi_avx.c` and `ir_vector_abi_avx512f.c` pin the wider ISAs) including the
 indirect and variadic call sites, and the `abi_target.c` fixture in each
 target directory pins the rest; all of them were diffed against clang's IR
@@ -1526,7 +1527,7 @@ its two-argument form takes a runtime integer mask vector and prints
 the ordinary scalar conversion of the element types over vector operand and
 result types (`int_to_float<vector<f32, 4>>(..)`), so it carries the same
 exactness and exception policy as the scalar conversion it mirrors.
-`tests/fixtures/sema/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
+`tests/fixtures/clang/linux/x86_64/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
 
 **Implemented for fixed-point:** `Type::FixedPoint` prints as `fixed<i32, 15>`
 (`sat_fixed<..>` for `_Sat`): a two's-complement storage word of `width` bits
@@ -1563,7 +1564,7 @@ a real floating one. Clang instead computes the common type from the maximum
 integral and fractional bit counts, which can name a type that is wider than
 either operand; we model the result at the C type level, which is what N1169
 describes and is enough for translation. A fixed-point operand mixed with a
-complex or imaginary operand is rejected. `tests/fixtures/sema/ir_fixed_point.c`
+complex or imaginary operand is rejected. `tests/fixtures/clang/linux/x86_64/ir_fixed_point.c`
 and `ir_fixed_point_invalid.c` pin these forms.
 
 N1169 fixed-point literal suffixes (`r`/`k`, with optional `u` and
@@ -1873,7 +1874,7 @@ initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   float-to-integer conversion that is out of range (undefined) folds per
   flavor: clang saturates and maps NaN to 0, msvc wraps an integer part below
   2^64 and folds anything else to 0, gcc does not fold it
-  (`tests/fixtures/sema/ir_float_constant_folding.c`).
+  (`tests/fixtures/clang/linux/x86_64/ir_float_constant_folding.c`).
 - A `constexpr` object whose initializer folds is declared as an ordinary
   constant, so it is usable as an integer constant expression
   (`constexpr int w = 7; int a[w];`).
@@ -1991,7 +1992,7 @@ on the C type of the place. An array, a `const`-qualified lvalue, or a
 struct/union with a (recursively) `const`-qualified member is
 `ResolveError::Invalid`. All three compilers reject these, so they are errors
 rather than warnings. Fixture:
-`tests/fixtures/sema/ir_modifiable_lvalue.c`.
+`tests/fixtures/error/clang/linux/x86_64/ir_modifiable_lvalue.c`.
 
 ### Pointer comparisons
 
@@ -2001,7 +2002,7 @@ pointers whose pointees have no composite type warns
 `compare-distinct-pointer-types`; comparing a pointer against an integer that
 is not a null pointer constant warns `pointer-integer-compare`. Both are
 warnings in clang, gcc and MSVC alike. Fixture:
-`tests/fixtures/sema/ir_pointer_comparison.c`.
+`tests/fixtures/clang/linux/x86_64/ir_pointer_comparison.c`.
 
 ### Conditional operator
 
@@ -2011,7 +2012,7 @@ operand's type; otherwise two pointers merge into a pointer to the composite
 type carrying the union of both pointee qualifier sets, with `void *` winning
 over an object pointer. `(void *)0` is a null pointer constant, so
 `c ? (int *)0 : (void *)0` is `int *`, not `void *` — verified against clang
-22 and gcc 16. Fixture: `tests/fixtures/sema/ir_conditional_composite.c`.
+22 and gcc 16. Fixture: `tests/fixtures/clang/linux/x86_64/ir_conditional_composite.c`.
 
 The GNU omitted-middle form `a ?: b` evaluates `a` once and uses it as both
 the truth test and the then-operand. It lowers to a `capture<%id>` around the
@@ -2020,7 +2021,7 @@ the then-operand both reading `%id`; everything after that is the ordinary
 conditional walk above, so the result type is still the usual-arithmetic or
 composite-pointer type of `a` and `b`. This is the IR's answer to clang's
 `BinaryConditionalOperator`/`OpaqueValueExpr` pair. Fixture:
-`tests/fixtures/sema/ir_gnu_conditional.c`.
+`tests/fixtures/clang/linux/x86_64/ir_gnu_conditional.c`.
 
 ### Promotions
 
@@ -2179,14 +2180,13 @@ Integer/pointer conversions across an assignment, argument, return or
 initializer warn `int-conversion` and still emit `int_to_ptr`/`ptr_to_int`; an
 explicit cast is silent. A pointer converted to `_Bool`, implicitly or by cast,
 is the comparison against null C 6.3.1.2 specifies: `ne(p, null)`, never a
-warning (`tests/fixtures/sema/ir_pointer_to_bool.c`). A null pointer constant (an integer constant
+warning (`tests/fixtures/clang/linux/x86_64/ir_pointer_to_bool.c`). A null pointer constant (an integer constant
 expression 0, or such an expression cast to `void *`) becomes `null<ptr<T>>`
 rather than a converted integer, so it never warns.
 
-Fixtures: `tests/fixtures/sema/ir_pointer_sign.c`,
-`tests/fixtures/sema/ir_pointer_conversion_warnings.c`,
-`tests/fixtures/sema/ir_conversion_rules.c`,
-`tests/fixtures/sema/ir_atomic_pointee.c`.
+Fixtures: `tests/fixtures/clang/linux/x86_64/ir_pointer_sign.c`,
+`tests/fixtures/clang/linux/x86_64/ir_pointer_conversion_warnings.c`,
+`tests/fixtures/clang/linux/x86_64/ir_conversion_rules.c`.
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
@@ -2230,10 +2230,10 @@ redeclaring one as the other. `CTypes::ptr32_extension_is_qualifier` makes the
 two ptr32 spaces compatible there. The conversion between them still lowers
 to `address_space_cast`.
 
-Fixtures: `tests/fixtures/sema/x86_64-pc-windows-msvc/ms_mixed_pointers.c`,
-`ms_mixed_pointers_msvc.c`, `tests/fixtures/sema/ms_mixed_pointers_32_bit.c`,
-and `tests/fixtures/error/ms-*-conflict.c` and
-`tests/fixtures/error/ms-pointer-modifier-non-pointer.c`.
+Fixtures: `ms_mixed_pointers.c` under `tests/fixtures/clang/windows/x86_64/`,
+`tests/fixtures/msvc/windows/x86_64/` and `tests/fixtures/msvc/windows/i686/`,
+and `ms-*-conflict.c` and `ms-pointer-modifier-non-pointer.c` under
+`tests/fixtures/error/clang/windows/x86_64/`.
 
 ### Qualified access
 
@@ -2317,8 +2317,8 @@ on the type:
   _Atomic struct { char a[3]; } value; char tail; }` is 12 bytes with the
   value at offset 4 under clang, and 5 bytes at offset 1 under gcc. Measured
   against clang 22.1.8 and gcc 16.2.1; fixtures
-  `tests/fixtures/sema/ir_atomic_layout.c` (clang) and
-  `ir_atomic_layout_gcc.c` (gcc).
+  `tests/fixtures/clang/linux/x86_64/ir_atomic_layout.c` (clang) and
+  `tests/fixtures/gcc/linux/x86_64/ir_atomic_layout.c` (gcc).
 
   `--flavor=msvc` has a third rule, from MSVC's non-standard
   `/experimental:c11atomics` opt-in. There is no power-of-two promotion: a
@@ -2333,7 +2333,7 @@ on the type:
   tail; }` is 16 bytes with the value at offset 4 and the tail at 12.
   Measured against cl.exe 19.51 `/std:c17 /experimental:c11atomics` on
   x86_64-pc-windows-msvc; fixture
-  `tests/fixtures/sema/x86_64-pc-windows-msvc/ir_atomic_layout.c`.
+  `tests/fixtures/msvc/windows/x86_64/ir_atomic_layout.c`.
 
   We model only the size and alignment, not a hidden lock field: C forbids
   reaching a member of an atomic aggregate, so the interior offsets are not
@@ -2366,9 +2366,9 @@ on the type:
   MSVC does this for atomic records. GCC uses the ordinary record or complex
   ABI, including HFA passing.
 
-`tests/fixtures/sema/ir_qualified_access.c`,
-`tests/fixtures/sema/ir_array_parameter.c` and
-`tests/fixtures/sema/ir_atomic_layout.c` cover these.
+`tests/fixtures/clang/linux/x86_64/ir_qualified_access.c`,
+`tests/fixtures/clang/linux/x86_64/ir_array_parameter.c` and
+`tests/fixtures/clang/linux/x86_64/ir_atomic_layout.c` cover these.
 
 ### Explicit atomic operations
 
@@ -2491,7 +2491,7 @@ their own:
   other two call libatomic's `bool __atomic_is_lock_free(size_t, const
   volatile void *)`, declared on first use.
 
-`tests/fixtures/sema/ir_atomic_builtins.c`, `ir_atomic_stdatomic.c`,
+`tests/fixtures/clang/linux/x86_64/ir_atomic_builtins.c`, `ir_atomic_stdatomic.c`,
 `ir_atomic_sync.c`, `ir_atomic_sync_gcc.c`, `ir_atomic_extensions.c`,
 `ir_atomic_scoped.c` and `ir_atomic_lock_free.c` (plus the AArch64 and
 `-mcx16` variants) cover these.
@@ -2542,8 +2542,8 @@ int add(int a, int b) { int c = a + b; return c; }
 int main(void) { printf("%d\n", add(2, 3)); }
 ```
 
-`tests/fixtures/sema/ir_add.c` is the executable version; it includes
-`tests/fixtures/add.c`. The excerpts omit the target header and the string
+`tests/fixtures/clang/linux/x86_64/ir_add.c` is the executable version; it includes
+`tests/fixtures/clang/linux/x86_64/add.c`. The excerpts omit the target header and the string
 literal global.
 
 Source metadata shown (`--show-metadata`):

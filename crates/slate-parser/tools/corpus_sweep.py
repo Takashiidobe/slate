@@ -9,12 +9,13 @@ from collections import defaultdict
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
+from update_filecheck import placement
+
 
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+(\S+)(?:\s+(.*))?$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+(\S+)\s*$")
 STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+(\S+)\s+(\S+)\s*$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
-FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 ARGS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ARGS\s+(.*)$")
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ")
 END_RE = re.compile(r"^// SLATE-FILECHECK-END ")
@@ -65,12 +66,6 @@ def fixture_source(source: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def target_for(fixture: Path) -> str | None:
-    if fixture.parent.parent.name == "sema":
-        return fixture.parent.name
-    return None
-
-
 def jobs(fixtures: Path) -> tuple[list[Job], int]:
     result = []
     expected_errors = 0
@@ -89,10 +84,7 @@ def jobs(fixtures: Path) -> tuple[list[Job], int]:
             if (match := ISYSTEM_RE.match(line))
             for path in match.group(1).split()
         )
-        flavor = next(
-            (match.group(1) for line in source.splitlines() if (match := FLAVOR_RE.match(line))),
-            None,
-        )
+        flavor, target = placement(fixture)
         extra_args = tuple(
             arg
             for line in source.splitlines()
@@ -116,7 +108,7 @@ def jobs(fixtures: Path) -> tuple[list[Job], int]:
                     defines=tuple((match.group(2) or "").split()),
                     standard=standards.get(prefix),
                     flavor=flavor,
-                    target=target_for(fixture),
+                    target=target,
                     isystem=isystem,
                     extra_args=extra_args,
                 )

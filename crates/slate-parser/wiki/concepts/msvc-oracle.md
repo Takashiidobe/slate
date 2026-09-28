@@ -34,7 +34,7 @@ There is no AST dump, so it cannot replace `clang -ast-dump`.
 Check one fixture without compiling or linking an executable:
 
 ```
-python3 tools/corpus_sweep.py --tool msvc --fixtures tests/fixtures/add.c
+python3 tools/corpus_sweep.py --tool msvc --fixtures tests/fixtures/clang/linux/x86_64/add.c
 ```
 
 `/Zs` stops after syntax checking. Fixtures with identical defines, include paths,
@@ -51,10 +51,10 @@ sysroot as `-isystem`, and `tools/cl.exe /Zs`. Driver, PCH, CIR and `-E`-only
 runs are skipped, and so are `-verify` runs whose prefixes expect errors.
 The sweep pins slate to the oracle's effective standard (gnu17 for clang,
 the mapped `/std:` for msvc) because slate's gnu23 default would mask other
-gaps. `--migrate tests/fixtures/msvc/clang-test` writes fixtures for newly
-accepted files (never overwriting), named `<Dir>__<stem>-<arch>[-msvc].c`
-with the target in `SLATE-FILECHECK-ARGS`. The updater only reads a target
-from the directory under `sema/`.
+gaps. `--migrate tests/fixtures/suites/clang-test` writes fixtures for newly
+accepted files (never overwriting) as
+`<flavor>/windows/<arch>/<Dir>__<stem>.c`, so the directory carries the
+compiler and target.
 
 ## Gotchas
 

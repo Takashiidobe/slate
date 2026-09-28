@@ -94,7 +94,7 @@ increment and body, then the enclosing bindings are restored.
   `expansion` `Loc`, but each gets a distinct `NodeId`, which is what lets
   `src/sema/` preserve identity rather than keying nodes by location (see
   [[ir-spec]]). `slate-parser parse --show-ids` prints it on every `Span`
-  in the debug dump; `tests/fixtures/node_ids_macro_expansion.c` (enabled via
+  in the debug dump; `tests/fixtures/clang/linux/x86_64/node_ids_macro_expansion.c` (enabled via
   `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an
   expansion `Loc` still get distinct ids.
 - `Provenance { file, kind: System | User, line, system_header }`: stored on every

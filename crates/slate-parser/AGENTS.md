@@ -122,6 +122,10 @@ think about refactoring it.
 
 Oracle compilers: `clang` and `gcc` are installed natively; MSVC is `tools/cl.exe`.
 
+A fixture's directory sets its compiler and target
+(`tests/fixtures/<flavor>/<os>/<arch>/`, with `error/` and `suites/`
+variants); see `wiki/concepts/fixture-layout.md`.
+
 FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.

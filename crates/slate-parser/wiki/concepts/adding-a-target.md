@@ -35,8 +35,12 @@ Steps:
    `arm-linux-gnueabihf-gcc`); `arm-none-eabi-gcc` is bare-metal and has
    different integer typedefs.
 2. Add the layout constructor and the `TargetSpec`.
-3. Add a `DEFINES`/`PREFIX-ARGS` pair per supported flavor to
-   `tests/fixtures/sema/target_registry.c` and regenerate it. Fixtures under
-   `tests/fixtures/sema/<triple>/` run with that target automatically.
+3. Give the target a fixture directory per supported flavor (see
+   `wiki/concepts/fixture-layout.md`): `tests/fixtures/<flavor>/<os>/<arch>/`
+   if the arch is the OS's usual one, added to `CANONICAL_TRIPLES` in both
+   `tests/filecheck.rs` and `tools/update_filecheck.py`, otherwise
+   `tests/fixtures/<flavor>/<os>/<triple>/`. A new OS also needs an
+   `OS_DIRECTORIES` entry in both. Copy `target_registry.c` from another leaf
+   into each new directory and regenerate it.
 4. `tools/corpus_sweep.py` mirrors the sysroot candidate lists in
    `sysroot_include_paths`; update it if the new layout differs.

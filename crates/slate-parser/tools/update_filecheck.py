@@ -22,7 +22,6 @@ BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 WARNING_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-WARNING\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
-FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+([A-Za-z0-9_-]+)\s+(\S+)\s*$")
 PREFIX_ARGS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-PREFIX-ARGS\s+([A-Za-z0-9_-]+)\s+(.*)$")
 SHOW_IDS_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-SHOW-IDS\s+([A-Za-z0-9_-]+)\s*$")
@@ -38,18 +37,61 @@ def isystem_paths(source: str) -> list[str]:
     return paths
 
 
-def flavor_args(source: str) -> list[str]:
-    for line in source.splitlines():
-        match = FLAVOR_RE.match(line)
-        if match:
-            return [f"--flavor={match.group(1)}"]
-    return []
+FLAVORS = {"gcc", "clang", "msvc"}
+OS_DIRECTORIES = {"linux", "windows", "darwin", "android", "freebsd"}
+CANONICAL_TRIPLES = {
+    ("linux", "x86_64"): "x86_64-unknown-linux-gnu",
+    ("linux", "i686"): "i686-unknown-linux-gnu",
+    ("linux", "aarch64"): "aarch64-unknown-linux-gnu",
+    ("windows", "x86_64"): "x86_64-pc-windows-msvc",
+    ("windows", "i686"): "i686-pc-windows-msvc",
+    ("windows", "aarch64"): "aarch64-pc-windows-msvc",
+    ("darwin", "x86_64"): "x86_64-apple-darwin",
+    ("darwin", "aarch64"): "aarch64-apple-darwin",
+    ("android", "x86_64"): "x86_64-linux-android",
+    ("android", "aarch64"): "aarch64-linux-android",
+    ("freebsd", "x86_64"): "x86_64-unknown-freebsd",
+    ("freebsd", "aarch64"): "aarch64-unknown-freebsd",
+}
+TRIPLE_OS_MARKERS = (
+    ("-windows-", "windows"),
+    ("-apple-darwin", "darwin"),
+    ("-linux-android", "android"),
+    ("-freebsd", "freebsd"),
+    ("-linux-", "linux"),
+)
 
 
-def target_args(fixture: Path) -> list[str]:
-    if fixture.parent.parent.name == "sema":
-        return [f"--target={fixture.parent.name}"]
-    return []
+def placement(fixture: Path) -> tuple[str, str]:
+    # must stay in step with fixture_placement in tests/filecheck.rs
+    fixtures = Path(__file__).resolve().parent.parent / "tests/fixtures"
+    dirs = list(fixture.resolve().relative_to(fixtures).parent.parts)
+    if dirs[:1] == ["error"]:
+        dirs = dirs[1:]
+    elif dirs[:1] == ["suites"] and len(dirs) > 1:
+        dirs = dirs[2:]
+    shape = "expected [error/ | suites/<name>/]<gcc|clang|msvc>/[<os>/[<arch> | <triple>]]/"
+    if not dirs or dirs[0] not in FLAVORS:
+        raise ValueError(f"{fixture}: no compiler directory; {shape}")
+    if len(dirs) > 3:
+        raise ValueError(f"{fixture}: too many directories; {shape}")
+    flavor = dirs[0]
+    os_name = dirs[1] if len(dirs) > 1 else ("windows" if flavor == "msvc" else "linux")
+    if os_name not in OS_DIRECTORIES:
+        raise ValueError(f"{fixture}: `{os_name}` is not an OS directory; {shape}")
+    leaf = dirs[2] if len(dirs) > 2 else "x86_64"
+    triple = CANONICAL_TRIPLES.get((os_name, leaf))
+    if triple is None:
+        leaf_os = next((name for marker, name in TRIPLE_OS_MARKERS if marker in leaf), None)
+        if leaf_os != os_name:
+            raise ValueError(f"{fixture}: `{leaf}` is not an arch or {os_name} triple; {shape}")
+        triple = leaf
+    return flavor, triple
+
+
+def placement_args(fixture: Path) -> list[str]:
+    flavor, triple = placement(fixture)
+    return [f"--flavor={flavor}", f"--target={triple}"]
 
 
 def configurations(source: str) -> list[tuple[str, list[str]]]:
@@ -157,10 +199,9 @@ def render(
                    else ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)])
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
-        command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
-        command.extend(target_args(fixture))
+        command.extend(placement_args(fixture))
         filecheck_args = fixture_args(source)
         if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
             command.append("--dump-ir")
@@ -189,10 +230,9 @@ def render_warnings(
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
-        command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
-        command.extend(target_args(fixture))
+        command.extend(placement_args(fixture))
         filecheck_args = fixture_args(source)
         if not any(arg.startswith("--dump-ir") for arg in filecheck_args):
             command.append("--dump-ir")
@@ -227,10 +267,9 @@ def render_error(
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
-        command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
-        command.extend(target_args(fixture))
+        command.extend(placement_args(fixture))
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())

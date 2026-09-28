@@ -168,7 +168,7 @@ Each step builds and is worth verifying before the next:
 4. **Conversions and arithmetic.** Predicates, common type, `ArithSema`,
    `ConversionKind`. Probe each operator by hand — including the ones that
    must be *rejected* — before generating a fixture.
-5. **Fixtures and docs.** A `tests/fixtures/sema/ir_<family>.c` and an
+5. **Fixtures and docs.** A `tests/fixtures/clang/linux/x86_64/ir_<family>.c` and an
    `ir_<family>_invalid.c`, both generated, never hand-written. Then
    `ir-spec.md`, `ir-grammar.md`, and the AST pages in the same commit.
 

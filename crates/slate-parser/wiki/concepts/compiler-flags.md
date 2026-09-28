@@ -406,8 +406,8 @@ storage alignment. Local `aligned` and `_Alignas` attributes remain layout
 overrides on individual objects, fields, and aggregate types.
 
 ```sh
-cargo run -- parse tests/fixtures/sema/numeric_seed.c --dump-ir-expressions -fwrapv -frounding-math -ftrapping-math
-cargo run -- parse tests/fixtures/sema/long_double_128.c --dump-ir-expressions -mlong-double-128
+cargo run -- parse tests/fixtures/clang/linux/x86_64/numeric_seed.c --dump-ir-expressions -fwrapv -frounding-math -ftrapping-math
+cargo run -- parse tests/fixtures/clang/linux/x86_64/long_double_128.c --dump-ir-expressions -mlong-double-128
 ```
 
 Pointer wrapping implied by strict-overflow flags is retained in the

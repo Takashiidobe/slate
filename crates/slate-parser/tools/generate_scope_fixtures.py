@@ -47,7 +47,7 @@ def main():
             "",
         ])
     lines.append("// SLATE-FILECHECK-DEFINES DEFAULT")
-    fixture = Path(__file__).resolve().parent.parent / "tests/fixtures/parser_scope_combinations.c"
+    fixture = Path(__file__).resolve().parent.parent / "tests/fixtures/clang/linux/x86_64/parser_scope_combinations.c"
     source = "\n".join(lines) + "\n"
     if fixture.exists():
         old = fixture.read_text()

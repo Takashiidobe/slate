@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from update_filecheck import placement
+
 
 def clang_layouts(source: Path, clang: str, target: str | None) -> dict[str, tuple[int, int, list[int], list[int | None]]]:
     command = [clang]
@@ -66,6 +68,13 @@ def slate_layouts(source: Path, binary: Path, target: str | None) -> dict[str, t
     return layouts
 
 
+def fixture_target(source: Path) -> str | None:
+    try:
+        return placement(source)[1]
+    except ValueError:
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
@@ -73,7 +82,7 @@ def main() -> int:
     parser.add_argument("--binary", type=Path, default=Path("target/debug/slate-parser"))
     parser.add_argument("--target")
     args = parser.parse_args()
-    target = args.target or (args.source.parent.name if args.source.parent.parent.name == "sema" else None)
+    target = args.target or fixture_target(args.source)
     expected = clang_layouts(args.source, args.clang, target)
     actual = slate_layouts(args.source, args.binary, target)
     mismatches = []

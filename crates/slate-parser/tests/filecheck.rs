@@ -7,7 +7,7 @@ use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
 use slate_parser::sysroot;
-use slate_parser::target_info::TargetInfo;
+use slate_parser::target_info::{TargetInfo, TargetOs};
 use std::ffi::OsString;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -141,13 +141,6 @@ fn expand_home(path: &str) -> String {
     )
 }
 
-fn flavor(source: &str) -> Option<String> {
-    source
-        .lines()
-        .find_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-FLAVOR "))
-        .map(|name| name.trim().to_string())
-}
-
 fn std_for_prefix(source: &str, prefix: &str) -> Option<String> {
     source.lines().find_map(|line| {
         let rest = line.trim().strip_prefix("// SLATE-FILECHECK-STD ")?;
@@ -178,16 +171,140 @@ fn prefix_args(source: &str, prefix: &str) -> Vec<String> {
         .collect()
 }
 
-fn fixture_args(fixture: &Path) -> Vec<String> {
-    let mut args = Vec::new();
-    if let Some(triple) = fixture
+const OS_DIRECTORIES: [(&str, TargetOs); 5] = [
+    ("linux", TargetOs::Linux),
+    ("windows", TargetOs::Windows),
+    ("darwin", TargetOs::Darwin),
+    ("android", TargetOs::Android),
+    ("freebsd", TargetOs::FreeBsd),
+];
+
+const CANONICAL_TRIPLES: [(&str, &str, &str); 12] = [
+    ("linux", "x86_64", "x86_64-unknown-linux-gnu"),
+    ("linux", "i686", "i686-unknown-linux-gnu"),
+    ("linux", "aarch64", "aarch64-unknown-linux-gnu"),
+    ("windows", "x86_64", "x86_64-pc-windows-msvc"),
+    ("windows", "i686", "i686-pc-windows-msvc"),
+    ("windows", "aarch64", "aarch64-pc-windows-msvc"),
+    ("darwin", "x86_64", "x86_64-apple-darwin"),
+    ("darwin", "aarch64", "aarch64-apple-darwin"),
+    ("android", "x86_64", "x86_64-linux-android"),
+    ("android", "aarch64", "aarch64-linux-android"),
+    ("freebsd", "x86_64", "x86_64-unknown-freebsd"),
+    ("freebsd", "aarch64", "aarch64-unknown-freebsd"),
+];
+
+struct Placement {
+    flavor: String,
+    triple: String,
+}
+
+fn fixture_placement(fixture: &Path) -> Placement {
+    let relative = fixture
+        .strip_prefix(fixtures_dir())
+        .unwrap_or_else(|_| panic!("{} is outside tests/fixtures", fixture.display()));
+    let mut dirs: Vec<&str> = relative
         .parent()
-        .and_then(Path::file_name)
-        .and_then(|name| name.to_str())
-        .filter(|name| TargetInfo::for_triple(name).is_ok())
-    {
-        args.push(format!("--target={triple}"));
+        .into_iter()
+        .flat_map(Path::iter)
+        .map(|part| part.to_str().expect("fixture path is UTF-8"))
+        .collect();
+    match dirs.as_slice() {
+        ["error", ..] => {
+            dirs.remove(0);
+        }
+        ["suites", _, ..] => {
+            dirs.drain(..2);
+        }
+        _ => {}
     }
+    let placement_error = |reason: &str| -> ! {
+        panic!(
+            "{}: {reason}; expected [error/ | suites/<name>/]<gcc|clang|msvc>/[<os>/[<arch> | <triple>]]/",
+            fixture.display()
+        )
+    };
+    let (flavor, rest) = dirs
+        .split_first()
+        .unwrap_or_else(|| placement_error("no compiler directory"));
+    let compiler: CompilerFlavor = flavor
+        .parse()
+        .unwrap_or_else(|_| placement_error(&format!("`{flavor}` is not a compiler")));
+    let os = rest.first().copied().unwrap_or(match compiler {
+        CompilerFlavor::Msvc => "windows",
+        CompilerFlavor::Gcc | CompilerFlavor::Clang => "linux",
+    });
+    let target_os = OS_DIRECTORIES
+        .iter()
+        .find(|(name, _)| *name == os)
+        .map(|(_, target_os)| *target_os)
+        .unwrap_or_else(|| placement_error(&format!("`{os}` is not an OS directory")));
+    let canonical = |arch: &str| {
+        CANONICAL_TRIPLES
+            .iter()
+            .find(|(name, candidate, _)| *name == os && *candidate == arch)
+            .map(|(_, _, triple)| triple.to_string())
+    };
+    let triple = match rest {
+        [] | [_] => canonical("x86_64")
+            .unwrap_or_else(|| placement_error(&format!("`{os}` has no default arch"))),
+        [_, leaf] => canonical(leaf)
+            .or_else(|| {
+                TargetInfo::for_triple(leaf)
+                    .is_ok_and(|target| target.os == target_os)
+                    .then(|| leaf.to_string())
+            })
+            .unwrap_or_else(|| placement_error(&format!("`{leaf}` is not an arch or {os} triple"))),
+        _ => placement_error("too many directories"),
+    };
+    Placement {
+        flavor: flavor.to_string(),
+        triple,
+    }
+}
+
+// invalid values stay allowed so option-parsing errors remain testable
+fn check_directive_placement(fixture: &Path, source: &str, placement: &Placement) {
+    let args: Vec<&str> = source
+        .lines()
+        .filter_map(|line| {
+            let line = line.trim();
+            line.strip_prefix("// SLATE-FILECHECK-ARGS ").or_else(|| {
+                line.strip_prefix("// SLATE-FILECHECK-PREFIX-ARGS ")
+                    .and_then(|rest| rest.split_once(char::is_whitespace))
+                    .map(|(_, args)| args)
+            })
+        })
+        .flat_map(str::split_whitespace)
+        .collect();
+    for (index, arg) in args.iter().enumerate() {
+        let option = arg.trim_start_matches('-');
+        let (name, value) = match option.split_once('=') {
+            Some((name, value)) => (name, Some(value)),
+            None => (option, args.get(index + 1).copied()),
+        };
+        let Some(value) = value else { continue };
+        let conflicts = match name {
+            "target" => TargetInfo::for_triple(value).is_ok() && value != placement.triple,
+            "flavor" => value.parse::<CompilerFlavor>().is_ok() && value != placement.flavor,
+            _ => false,
+        };
+        assert!(
+            !conflicts,
+            "{}: directive `{arg}` disagrees with the directory placement ({} {})",
+            fixture.display(),
+            placement.flavor,
+            placement.triple
+        );
+    }
+}
+
+fn fixture_args(fixture: &Path) -> Vec<String> {
+    let placement = fixture_placement(fixture);
+    let mut args = vec![
+        format!("--flavor={}", placement.flavor),
+        format!("--target={}", placement.triple),
+    ];
     args.extend(
         decode_source_bytes(&std::fs::read(fixture).expect("read fixture arguments"))
             .lines()
@@ -196,16 +313,6 @@ fn fixture_args(fixture: &Path) -> Vec<String> {
             .map(str::to_string),
     );
     args
-}
-
-fn fixture_target(fixture: &Path) -> String {
-    fixture
-        .parent()
-        .and_then(Path::file_name)
-        .and_then(|name| name.to_str())
-        .filter(|name| TargetInfo::for_triple(name).is_ok())
-        .unwrap_or("x86_64-unknown-linux-gnu")
-        .to_string()
 }
 
 fn warning_configurations(source: &str) -> Vec<String> {
@@ -290,7 +397,6 @@ struct FixtureJob {
     prefix: String,
     defines: Vec<String>,
     isystem: Vec<String>,
-    flavor: Option<String>,
     standard: Option<String>,
     show_ids: bool,
     error: bool,
@@ -305,7 +411,6 @@ fn run_job(job: FixtureJob) {
             &job.prefix,
             &job.defines,
             &job.isystem,
-            job.flavor.as_deref(),
             job.standard.as_deref(),
             job.show_ids,
         );
@@ -315,7 +420,6 @@ fn run_job(job: FixtureJob) {
             &job.prefix,
             &job.defines,
             &job.isystem,
-            job.flavor.as_deref(),
             job.standard.as_deref(),
             job.show_ids,
         );
@@ -325,7 +429,6 @@ fn run_job(job: FixtureJob) {
             &job.prefix,
             &job.defines,
             &job.isystem,
-            job.flavor.as_deref(),
             job.standard.as_deref(),
             job.show_ids,
             job.warnings,
@@ -333,16 +436,11 @@ fn run_job(job: FixtureJob) {
     }
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "each param is an independent fixture config knob"
-)]
 fn run_fixture(
     fixture: &Path,
     prefix: &str,
     defines: &[String],
     isystem: &[String],
-    flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
     warnings: bool,
@@ -377,9 +475,6 @@ fn run_fixture(
     }
     for path in isystem {
         command.arg(format!("-isystem{path}"));
-    }
-    if let Some(flavor) = flavor {
-        command.arg(format!("--flavor={flavor}"));
     }
     if let Some(standard) = standard {
         command.arg(format!("-std={standard}"));
@@ -470,7 +565,7 @@ fn run_fixture(
     }
 
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
-        assert_evaluated_matches_clang(fixture, defines, isystem, flavor);
+        assert_evaluated_matches_clang(fixture, defines, isystem);
     }
 }
 
@@ -506,13 +601,10 @@ fn run_error_fixture(
     prefix: &str,
     defines: &[String],
     isystem: &[String],
-    flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
 ) {
-    run_expected_failure_fixture(
-        fixture, prefix, defines, isystem, flavor, standard, show_ids, false,
-    );
+    run_expected_failure_fixture(fixture, prefix, defines, isystem, standard, show_ids, false);
 }
 
 fn run_ir_error_fixture(
@@ -520,25 +612,17 @@ fn run_ir_error_fixture(
     prefix: &str,
     defines: &[String],
     isystem: &[String],
-    flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
 ) {
-    run_expected_failure_fixture(
-        fixture, prefix, defines, isystem, flavor, standard, show_ids, true,
-    );
+    run_expected_failure_fixture(fixture, prefix, defines, isystem, standard, show_ids, true);
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "each param is an independent fixture config knob"
-)]
 fn run_expected_failure_fixture(
     fixture: &Path,
     prefix: &str,
     defines: &[String],
     isystem: &[String],
-    flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
     ir: bool,
@@ -552,9 +636,6 @@ fn run_expected_failure_fixture(
     }
     for path in isystem {
         command.arg(format!("-isystem{path}"));
-    }
-    if let Some(flavor) = flavor {
-        command.arg(format!("--flavor={flavor}"));
     }
     if let Some(standard) = standard {
         command.arg(format!("-std={standard}"));
@@ -605,12 +686,7 @@ fn run_expected_failure_fixture(
     }
 }
 
-fn assert_evaluated_matches_clang(
-    fixture: &Path,
-    defines: &[String],
-    isystem: &[String],
-    flavor: Option<&str>,
-) {
+fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &[String]) {
     if matches!(
         fixture.file_stem().and_then(|name| name.to_str()),
         Some(
@@ -622,10 +698,9 @@ fn assert_evaluated_matches_clang(
     ) {
         return;
     }
-    let flavor = flavor.map_or_else(CompilerFlavor::default, |name| {
-        name.parse().expect("valid fixture flavor")
-    });
-    let target = TargetInfo::for_triple(&fixture_target(fixture)).expect("valid fixture target");
+    let placement = fixture_placement(fixture);
+    let flavor: CompilerFlavor = placement.flavor.parse().expect("valid fixture flavor");
+    let target = TargetInfo::for_triple(&placement.triple).expect("valid fixture target");
     let mut system: Vec<PathBuf> = isystem.iter().map(PathBuf::from).collect();
     system.extend(compiler_headers::include_paths(&target, flavor));
     system.extend(sysroot::include_paths(&target, flavor));
@@ -661,7 +736,8 @@ fn assert_evaluated_matches_clang(
 
 fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> ClangNode {
     let mut command = Command::new("clang");
-    let target = TargetInfo::for_triple(&fixture_target(fixture)).expect("valid fixture target");
+    let target =
+        TargetInfo::for_triple(&fixture_placement(fixture).triple).expect("valid fixture target");
     command.arg(format!("--target={}", target.triple));
     if let Some(resource_include) = compiler_headers::include_paths(&target, CompilerFlavor::Clang)
         .into_iter()
@@ -1197,7 +1273,7 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
     let errors = error_configurations(&source);
     let ir_errors = ir_error_configurations(&source);
     let warnings = warning_configurations(&source);
-    let flavor = flavor(&source);
+    check_directive_placement(fixture, &source, &fixture_placement(fixture));
     let isystem = isystem_paths(&source);
     let config_names = configs
         .iter()
@@ -1218,7 +1294,6 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
                 prefix: prefix.clone(),
                 defines: defines.to_vec(),
                 isystem: isystem.clone(),
-                flavor: flavor.clone(),
                 standard: std_for_prefix(&source, prefix),
                 show_ids: show_ids_for_prefix(&source, prefix),
                 error: true,
@@ -1239,7 +1314,6 @@ fn fixture_jobs(fixture: &Path, jobs: &mut Vec<FixtureJob>) {
             prefix: prefix.clone(),
             defines: defines.clone(),
             isystem: isystem.clone(),
-            flavor: flavor.clone(),
             standard: std_for_prefix(&source, prefix),
             show_ids: show_ids_for_prefix(&source, prefix),
             error: errors.contains(prefix),
