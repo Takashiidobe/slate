@@ -8,5 +8,14 @@ void f(void) {
 // SLATE-FILECHECK-ERROR SEMANTIC
 
 // SLATE-FILECHECK-BEGIN SEMANTIC
-// SEMANTIC: Error:   × invalid in this context: address of register variable requested
+// SEMANTIC: Error:   × semantic analysis failed
+// SEMANTIC: Error:
+// SEMANTIC: × invalid in this context: address of register variable requested
+// SEMANTIC: ╭─[tests/fixtures/error/asm-memory-register-variable-gcc.c:1:1]
+// SEMANTIC: 1 │ ╭─▶ void f(void) {
+// SEMANTIC: 2 │ │       register int r = 1;
+// SEMANTIC: 3 │ │       asm("# %0" : "=m"(r));
+// SEMANTIC: 4 │ ╰─▶ }
+// SEMANTIC: 5 │
+// SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

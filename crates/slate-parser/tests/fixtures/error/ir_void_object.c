@@ -45,8 +45,24 @@ alias bad;
 // STATIC: ╰────
 // SLATE-FILECHECK-END STATIC
 // SLATE-FILECHECK-BEGIN BLOCK
-// BLOCK: Error:   × invalid in this context: object cannot have type void
+// BLOCK: Error:   × semantic analysis failed
+// BLOCK: Error:
+// BLOCK: × invalid in this context: object cannot have type void
+// BLOCK: ╭─[tests/fixtures/error/ir_void_object.c:9:1]
+// BLOCK: 8 │ #ifdef BLOCK
+// BLOCK: 9 │ void f(void) { void bad; (void)bad; }
+// BLOCK: · ─────────────────────────────────────
+// BLOCK: 10 │ #endif
+// BLOCK: ╰────
 // SLATE-FILECHECK-END BLOCK
 // SLATE-FILECHECK-BEGIN TYPEDEF
-// TYPEDEF: Error:   × invalid in this context: object cannot have type void
+// TYPEDEF: Error:   × semantic analysis failed
+// TYPEDEF: Error:
+// TYPEDEF: × invalid in this context: object cannot have type void
+// TYPEDEF: ╭─[tests/fixtures/error/ir_void_object.c:13:1]
+// TYPEDEF: 12 │ typedef void alias;
+// TYPEDEF: 13 │ alias bad;
+// TYPEDEF: · ──────────
+// TYPEDEF: 14 │ #endif
+// TYPEDEF: ╰────
 // SLATE-FILECHECK-END TYPEDEF

@@ -56,13 +56,49 @@ int outer(int x) {
 #endif
 
 // SLATE-FILECHECK-BEGIN RETURN
-// RETURN: Error:   × invalid in this context: non-void function should return a value
+// RETURN: Error:   × semantic analysis failed
+// RETURN: Error:
+// RETURN: × invalid in this context: non-void function should return a value
+// RETURN: ╭─[tests/fixtures/sema/statement_flavor_rules.c:20:1]
+// RETURN: 19 │     #ifdef RETURN
+// RETURN: 20 │ ╭─▶ int valueless(int x) {
+// RETURN: 21 │ │     if (x)
+// RETURN: 22 │ │       return;
+// RETURN: 23 │ │     return g(x);
+// RETURN: 24 │ ╰─▶ }
+// RETURN: 25 │     #endif
+// RETURN: ╰────
 // SLATE-FILECHECK-END RETURN
 // SLATE-FILECHECK-BEGIN FALLTHROUGH
-// FALLTHROUGH: Error:   × invalid in this context: fallthrough attribute on a non-empty statement
+// FALLTHROUGH: Error:   × semantic analysis failed
+// FALLTHROUGH: Error:
+// FALLTHROUGH: × invalid in this context: fallthrough attribute on a non-empty statement
+// FALLTHROUGH: ╭─[tests/fixtures/sema/statement_flavor_rules.c:28:1]
+// FALLTHROUGH: 27 │     #ifdef FALLTHROUGH
+// FALLTHROUGH: 28 │ ╭─▶ int misplaced(int x) {
+// FALLTHROUGH: 29 │ │     switch (x) {
+// FALLTHROUGH: 30 │ │     case 1:
+// FALLTHROUGH: 31 │ │       {{\[\[}}fallthrough]] x++;
+// FALLTHROUGH: 32 │ │     default:
+// FALLTHROUGH: 33 │ │       break;
+// FALLTHROUGH: 34 │ │     }
+// FALLTHROUGH: 35 │ │     return x;
+// FALLTHROUGH: 36 │ ╰─▶ }
+// FALLTHROUGH: 37 │     #endif
+// FALLTHROUGH: ╰────
 // SLATE-FILECHECK-END FALLTHROUGH
 // SLATE-FILECHECK-BEGIN NESTED
-// NESTED: Error:   × invalid in this context: function definition is not allowed here
+// NESTED: Error:   × semantic analysis failed
+// NESTED: Error:
+// NESTED: × invalid in this context: function definition is not allowed here
+// NESTED: ╭─[tests/fixtures/sema/statement_flavor_rules.c:40:1]
+// NESTED: 39 │     #ifdef NESTED
+// NESTED: 40 │ ╭─▶ int outer(int x) {
+// NESTED: 41 │ │     int inner(int y) { return y + x; }
+// NESTED: 42 │ │     return inner(x);
+// NESTED: 43 │ ╰─▶ }
+// NESTED: 44 │     #endif
+// NESTED: ╰────
 // SLATE-FILECHECK-END NESTED
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

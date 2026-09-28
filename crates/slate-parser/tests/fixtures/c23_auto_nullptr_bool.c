@@ -16,7 +16,31 @@ void f(void) {
 // SLATE-FILECHECK-IR-ERROR C17
 
 // SLATE-FILECHECK-BEGIN C17
-// C17: Error:   × unresolved ordinary name `nullptr`
+// C17: Error:   × semantic analysis failed
+// C17: Error:
+// C17: × unresolved ordinary name `nullptr`
+// C17: ╭─[tests/fixtures/c23_auto_nullptr_bool.c:7:12]
+// C17: 6 │ #endif
+// C17: 7 │   int *p = nullptr;
+// C17: ·            ───────
+// C17: 8 │   _Bool t = true;
+// C17: ╰────
+// C17: Error:
+// C17: × unresolved ordinary name `true`
+// C17: ╭─[tests/fixtures/c23_auto_nullptr_bool.c:8:13]
+// C17: 7 │   int *p = nullptr;
+// C17: 8 │   _Bool t = true;
+// C17: ·             ────
+// C17: 9 │   _Bool u = false;
+// C17: ╰────
+// C17: Error:
+// C17: × unresolved ordinary name `false`
+// C17: ╭─[tests/fixtures/c23_auto_nullptr_bool.c:9:13]
+// C17: 8 │   _Bool t = true;
+// C17: 9 │   _Bool u = false;
+// C17: ·             ─────
+// C17: 10 │ }
+// C17: ╰────
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
 // C23: module {

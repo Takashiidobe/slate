@@ -213,18 +213,40 @@ pub fn with_sources(
     diagnostics: Vec<SemaError>,
     files: &Files,
 ) -> Result<Vec<SemaError>, SemaErrors> {
-    let errors: Vec<SemaError> = diagnostics
-        .into_iter()
-        .map(|error| error.with_source(files))
-        .collect();
-    if errors.iter().any(|error| error.severity == Severity::Error) {
-        Err(SemaErrors { errors })
+    let mut error_count = 0;
+    let mut located = Vec::new();
+    for diagnostic in diagnostics {
+        if diagnostic.severity == Severity::Error {
+            if error_count == ERROR_LIMIT {
+                located.push(SemaError::unlocated(
+                    "too many errors emitted, stopping now",
+                ));
+                break;
+            }
+            error_count += 1;
+        }
+        located.push(diagnostic.with_source(files));
+    }
+    if error_count > 0 {
+        Err(SemaErrors { errors: located })
     } else {
-        Ok(errors)
+        Ok(located)
     }
 }
 
 impl SemaError {
+    pub(super) fn unlocated(message: impl Into<String>) -> Self {
+        Self {
+            message: message.into(),
+            severity: Severity::Error,
+            warning: None,
+            provenance: None,
+            loc: None,
+            source_code: NamedSource::new("<unknown>", String::new()),
+            span: SourceSpan::new(0.into(), 0),
+        }
+    }
+
     fn with_source(mut self, files: &Files) -> Self {
         let Some(loc) = self.loc else {
             return self;
@@ -620,6 +642,8 @@ pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>
 }
 
 pub(super) const BIT_INT_MAX_WIDTH: u32 = 65535;
+
+pub(super) const ERROR_LIMIT: usize = 20;
 
 pub(super) fn bit_int_literal_width(literal: &IntegerLiteral) -> Option<u32> {
     let signed = !literal.suffix.unsigned;

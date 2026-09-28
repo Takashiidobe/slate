@@ -32,5 +32,24 @@ int main(void) {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: conversion between a struct or union and an
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: ⚠ 'transparent_union' attribute ignored; it applies only to unions
+// DEFAULT: ╭─[tests/fixtures/transparent_union_call.c:14:34]
+// DEFAULT: 13 │   struct Second *second;
+// DEFAULT: 14 │ } PointerArgument __attribute__((transparent_union));
+// DEFAULT: ·                                  ─────────────────
+// DEFAULT: 15 │
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × invalid in this context: conversion between a struct or union and an
+// DEFAULT: ╭─[tests/fixtures/transparent_union_call.c:20:1]
+// DEFAULT: 19 │
+// DEFAULT: 20 │ ╭─▶ int main(void) {
+// DEFAULT: 21 │ │     struct First  first  = {.value = 17};
+// DEFAULT: 22 │ │     struct Second second = {.value = 29};
+// DEFAULT: 23 │ │     printf("%d %d\n", read_value(&first), read_value(&second));
+// DEFAULT: 24 │ │     return 0;
+// DEFAULT: 25 │ ╰─▶ }
+// DEFAULT: 26 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

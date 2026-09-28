@@ -21,11 +21,62 @@ unsigned long invalid(struct Flags *f) {
 }
 
 // SLATE-FILECHECK-BEGIN SIZEOF
-// SIZEOF: Error:   × invalid in this context: application of sizeof or alignof to a bit-field
+// SIZEOF: Error:   × semantic analysis failed
+// SIZEOF: Error:
+// SIZEOF: × invalid in this context: application of sizeof or alignof to a bit-field
+// SIZEOF: ╭─[tests/fixtures/sema/ir_bitfield_invalid.c:4:1]
+// SIZEOF: 3 │
+// SIZEOF: 4 │ ╭─▶ unsigned long invalid(struct Flags *f) {
+// SIZEOF: 5 │ │   #ifdef SIZEOF
+// SIZEOF: 6 │ │       return sizeof(f->low);
+// SIZEOF: 7 │ │   #endif
+// SIZEOF: 8 │ │   #ifdef ALIGNOF
+// SIZEOF: 9 │ │       return _Alignof(f->low);
+// SIZEOF: 10 │ │   #endif
+// SIZEOF: 11 │ │   #ifdef ADDRESS
+// SIZEOF: 12 │ │       return (unsigned long)&f->low;
+// SIZEOF: 13 │ │   #endif
+// SIZEOF: 14 │ ╰─▶ }
+// SIZEOF: 15 │
+// SIZEOF: ╰────
 // SLATE-FILECHECK-END SIZEOF
 // SLATE-FILECHECK-BEGIN ALIGNOF
-// ALIGNOF: Error:   × invalid in this context: application of sizeof or alignof to a bit-field
+// ALIGNOF: Error:   × semantic analysis failed
+// ALIGNOF: Error:
+// ALIGNOF: × invalid in this context: application of sizeof or alignof to a bit-field
+// ALIGNOF: ╭─[tests/fixtures/sema/ir_bitfield_invalid.c:4:1]
+// ALIGNOF: 3 │
+// ALIGNOF: 4 │ ╭─▶ unsigned long invalid(struct Flags *f) {
+// ALIGNOF: 5 │ │   #ifdef SIZEOF
+// ALIGNOF: 6 │ │       return sizeof(f->low);
+// ALIGNOF: 7 │ │   #endif
+// ALIGNOF: 8 │ │   #ifdef ALIGNOF
+// ALIGNOF: 9 │ │       return _Alignof(f->low);
+// ALIGNOF: 10 │ │   #endif
+// ALIGNOF: 11 │ │   #ifdef ADDRESS
+// ALIGNOF: 12 │ │       return (unsigned long)&f->low;
+// ALIGNOF: 13 │ │   #endif
+// ALIGNOF: 14 │ ╰─▶ }
+// ALIGNOF: 15 │
+// ALIGNOF: ╰────
 // SLATE-FILECHECK-END ALIGNOF
 // SLATE-FILECHECK-BEGIN ADDRESS
-// ADDRESS: Error:   × invalid in this context: address of a bit-field
+// ADDRESS: Error:   × semantic analysis failed
+// ADDRESS: Error:
+// ADDRESS: × invalid in this context: address of a bit-field
+// ADDRESS: ╭─[tests/fixtures/sema/ir_bitfield_invalid.c:4:1]
+// ADDRESS: 3 │
+// ADDRESS: 4 │ ╭─▶ unsigned long invalid(struct Flags *f) {
+// ADDRESS: 5 │ │   #ifdef SIZEOF
+// ADDRESS: 6 │ │       return sizeof(f->low);
+// ADDRESS: 7 │ │   #endif
+// ADDRESS: 8 │ │   #ifdef ALIGNOF
+// ADDRESS: 9 │ │       return _Alignof(f->low);
+// ADDRESS: 10 │ │   #endif
+// ADDRESS: 11 │ │   #ifdef ADDRESS
+// ADDRESS: 12 │ │       return (unsigned long)&f->low;
+// ADDRESS: 13 │ │   #endif
+// ADDRESS: 14 │ ╰─▶ }
+// ADDRESS: 15 │
+// ADDRESS: ╰────
 // SLATE-FILECHECK-END ADDRESS

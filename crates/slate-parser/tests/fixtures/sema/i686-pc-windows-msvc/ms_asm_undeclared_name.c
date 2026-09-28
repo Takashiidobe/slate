@@ -8,5 +8,13 @@ int f(void) {
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved label name `missing`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved label name `missing`
+// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_undeclared_name.c:3:18]
+// DEFAULT: 2 │ int f(void) {
+// DEFAULT: 3 │   __asm mov eax, missing
+// DEFAULT: ·                  ───────
+// DEFAULT: 4 │   return 0;
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

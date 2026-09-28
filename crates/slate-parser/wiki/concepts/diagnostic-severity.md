@@ -252,9 +252,9 @@ types, so they come from IR lowering rather than `TranslationUnit::analyze`.
 So do the four above. So does
 `conflicting-types`, which has no clang counterpart (clang errors) and is
 named after clang's "conflicting types" error. `Lowerer`
-collects them in `diagnostics` through `Lowerer::warn`, `resolve_module`
-returns them next to the `Module`, and the driver passes them through
-`sema::with_sources`, the same function `analyze` uses. A promoted warning
+collects them in `diagnostics` through `Lowerer::warn`, and `resolve_module`
+passes them through `with_sources`, the same function `analyze` uses, before
+returning them next to the `Module`. A promoted warning
 fails `ir --dump-ir` exactly like an `analyze` error. A warning is reported on
 the converted value's node, which carries the operand's span, so a warning on
 `take((unsigned *)p)` points at `p` rather than the whole cast.
@@ -320,6 +320,35 @@ rather than the `alignof` failure underneath. `DIAGNOSTIC_TIERS` now ranks the
 candidates: an indented `× …` (the detailed diagnostic) first, then
 `Error:   × …` (miette's wrapper, which is often just "semantic analysis
 failed"), and a `⚠ …` only when the run produced no error marker at all.
+
+## Reporting more than the first error
+
+Sema reports up to 20 errors, clang's default `-ferror-limit`, then adds
+"too many errors emitted, stopping now". Any error still means no IR: this is
+reporting, not recovery. The limit lives in `with_sources`, so `analyze` and
+`resolve_module` share it; only errors count toward it. `-ferror-limit` is not
+accepted because it changes no code's meaning.
+
+Both IR-stage passes continue item by item over the top-level declarations:
+
+- `names::resolve_items` records an unresolved reference (ordinary, typedef,
+  label, MS asm label) and keeps visiting, so declarations after it are still
+  bound and `int a = undeclared, b;` does not cascade into errors on `b`. Any
+  other names error ends that item and resets the resolver to file scope.
+- `resolve_module` does not lower an item with names errors. A lowering error
+  resets per-function `Lowerer` state and moves on. Lowering errors carry no
+  span yet, so they point at the whole top-level declaration.
+
+Poisoning keeps one bad declaration from causing more errors: the bindings a
+failed item declares are poisoned, and a later item's *lowering* error is
+dropped if that item references a poisoned binding (clang marks such decls
+invalid). The check runs before the failed item's own bindings are poisoned,
+so a recursive function still reports its own error. Names errors are never
+dropped: a name missing from scope is not caused by a lowering failure.
+Post-passes (`finish_module`) run only on an error-free unit, since they would
+only report the gaps the failed items left. Fixtures:
+`sema_reports_all_errors.c`, `sema_poisoned_declaration.c`,
+`sema_error_limit.c`.
 
 ## Testing
 

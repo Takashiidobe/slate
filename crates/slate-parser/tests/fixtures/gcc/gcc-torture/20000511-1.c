@@ -37,5 +37,13 @@ int f(X x, X y)
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved ordinary name `f`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved ordinary name `f`
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20000511-1.c:15:10]
+// DEFAULT: 14 │   xxx.y = 0xf;
+// DEFAULT: 15 │   return f (xxx, xxx);
+// DEFAULT: ·          ─
+// DEFAULT: 16 │ }
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

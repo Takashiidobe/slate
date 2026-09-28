@@ -5,5 +5,13 @@
 static __declspec(selectany) int chosen = 1;
 
 // SLATE-FILECHECK-BEGIN IR
-// IR: Error:   × invalid in this context: selectany without external linkage
+// IR: Error:   × semantic analysis failed
+// IR: Error:
+// IR: × invalid in this context: selectany without external linkage
+// IR: ╭─[tests/fixtures/error/selectany_internal_linkage.c:2:1]
+// IR: 1 │
+// IR: 2 │ static __declspec(selectany) int chosen = 1;
+// IR: · ────────────────────────────────────────────
+// IR: 3 │
+// IR: ╰────
 // SLATE-FILECHECK-END IR

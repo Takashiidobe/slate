@@ -117,9 +117,8 @@ fn run() -> miette::Result<()> {
             slate_parser::sema::types::resolve_type_module(&ast)
                 .map_err(|error| miette::miette!("{error}"))?
         } else {
-            let (module, diagnostics) = slate_parser::sema::resolve_module(&ast, &files)
-                .map_err(|error| miette::miette!("{error}"))?;
-            for warning in slate_parser::sema::with_sources(diagnostics, &files)? {
+            let (module, diagnostics) = slate_parser::sema::resolve_module(&ast, &files)?;
+            for warning in diagnostics {
                 eprintln!("{:?}", miette::Report::new(warning));
             }
             module

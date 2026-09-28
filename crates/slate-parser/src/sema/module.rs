@@ -1,4 +1,3 @@
-use super::SemaError;
 use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
@@ -6,6 +5,8 @@ use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement, default_contraction};
 use super::types::{Ordinary, TypeResolver, is_folded};
+use super::validate::{ERROR_LIMIT, with_sources};
+use super::{SemaError, SemaErrors};
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
@@ -16,20 +17,20 @@ use crate::ir::*;
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetEnvironment;
 use num_bigint::Sign;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
 pub fn resolve_module(
     unit: &TranslationUnit,
     files: &crate::files::Files,
-) -> Result<(Module, Vec<SemaError>), ResolveError> {
+) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let features = StandardFeatures::new(unit.standard);
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
         .with_features(features)
         .with_contraction(default_contraction(unit.flavor, unit.standard));
-    let names = super::names::resolve(unit)?;
+    let (names, items) = super::names::resolve_items(unit);
     let next_id = names
         .bindings
         .iter()
@@ -60,135 +61,32 @@ pub fn resolve_module(
         compound_start: false,
         context,
     };
-    for declaration in &unit.decls {
-        match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
-            DeclKind::Pragma(pragma) => {
-                lower.floating_pragmas.apply(
-                    &mut lower.context.region,
-                    &pragma.kind,
-                    PragmaPlacement::File,
-                )?;
-            }
-            DeclKind::Asm(asm) => {
-                let lowered = declaration.derive(lower.asm(asm)?);
-                lower.module.asm.push(lowered);
-            }
-            DeclKind::Declaration(item) => {
-                lower.declaration(item, true)?;
-            }
-            DeclKind::Function(function) => {
-                let attributes = super::function::attributes(
-                    &function.specifiers,
-                    &function.declarator,
-                    &function.attributes,
-                );
-                lower
-                    .types
-                    .check_attributes(attributes.iter().copied(), Subject::Function)?;
-                let mut symbol = function_symbol(attributes.iter().copied(), None)?;
-                let name = function
-                    .declarator
-                    .name()
-                    .ok_or(ResolveError::Unsupported("unnamed function"))?;
-                lower.types.pragmas.apply(name, &mut symbol);
-                let id = lower.declaration_id(declaration.id, name)?;
-                lower.record_function(id, &function.specifiers, &attributes, true, true)?;
-                let start = lower.types.definitions.len();
-                let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
-                let (return_c, ..) = lower
-                    .types
-                    .ctypes
-                    .function_parts(resolved)
-                    .ok_or(ResolveError::Unsupported("function definition declarator"))?;
-                let c_return = lower.types.render(return_c).spelling;
-                for definition in &lower.types.definitions[start..] {
-                    lower
-                        .type_spans
-                        .insert(definition.id, declaration.derive(definition.clone()));
-                }
-                let ty = lower.types.object_type(resolved, "void function type")?;
-                let Type::Function { return_type, .. } = &ty else {
-                    return Err(ResolveError::Unsupported("function definition declarator"));
-                };
-                let return_type = return_type.as_ref().map(|ty| (**ty).clone());
-                let abi = lower.c_abi_signature(resolved, &ty, None)?;
-                let previous = lower.types.entities.declare(id, resolved, false);
-                let mut metadata = vec![
-                    (
-                        "c_storage".into(),
-                        function.specifiers.storage.as_str().into(),
-                    ),
-                    ("c_return".into(), c_return),
-                ];
-                metadata.extend(lower.types.render(resolved).entries());
-                let params = function
-                    .declarator
-                    .function_parameters()
-                    .ok_or(ResolveError::Unsupported("missing function parameters"))?;
-                if matches!(params, ParameterList::IdentifierList { .. }) {
-                    lower.warn(
-                        Warning::DeprecatedNonPrototype,
-                        "a function definition without a prototype is deprecated in all versions of C and is not supported in C23",
-                        declaration,
-                    );
-                }
-                let mut prologue = Vec::new();
-                lower.in_function = true;
-                lower.in_naked_function = lower.is_naked(id);
-                lower.function_name = Some(name.to_string());
-                lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
-                lower.return_type = return_type.as_ref().map(|_| return_c);
-                let body = lower.scoped(|lower| {
-                    let parameters = lower.parameters(params, Some(&mut prologue))?;
-                    let body = lower.compound(|lower| {
-                        lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
-                    })?;
-                    prologue.extend(body);
-                    Ok((parameters, prologue))
-                });
-                lower.in_function = false;
-                lower.in_naked_function = false;
-                lower.function_name = None;
-                lower.pretty_function_name = None;
-                lower.return_type = None;
-                let (parameters, mut body) = body?;
-                let asm_return = lower.finish_ms_asm_return(
-                    &declaration.derive(()),
-                    return_type.as_ref(),
-                    &mut body,
-                    name == "main"
-                        && return_type == Some(lower.context.int_type())
-                        && features.main_implicit_return_zero,
-                )?;
-                let fallthrough = if let Some(value) = asm_return {
-                    Fallthrough::Return(Box::new(value))
-                } else if name == "main"
-                    && return_type == Some(lower.context.int_type())
-                    && features.main_implicit_return_zero
-                {
-                    Fallthrough::ReturnZero
-                } else if return_type.is_none() {
-                    Fallthrough::ReturnVoid
-                } else {
-                    Fallthrough::UndefinedIfUsed
-                };
-                let lowered = declaration.derive(Function {
-                    id,
-                    name: name.into(),
-                    parameters,
-                    return_type,
-                    abi,
-                    linkage: linkage(function.specifiers.storage)?,
-                    symbol,
-                    semantics: Default::default(),
-                    body: Some(body),
-                    fallthrough: Some(fallthrough),
-                });
-                lower.module.annotate(&lowered, metadata);
-                lower.declare_function(lowered, previous)?;
-            }
+    let mut poisoned = HashSet::new();
+    let mut error_count = 0;
+    for (declaration, item) in unit.decls.iter().zip(items) {
+        let errors: Vec<ResolveError> = if item.errors.is_empty() {
+            let Err(error) = lower_item(&mut lower, declaration, features) else {
+                continue;
+            };
+            lower.reset_after_failed_item();
+            let uses_poisoned = lower.names.references[item.references]
+                .iter()
+                .any(|reference| poisoned.contains(&reference.binding));
+            if uses_poisoned { vec![] } else { vec![error] }
+        } else {
+            item.errors.into_iter().map(ResolveError::Names).collect()
+        };
+        poisoned.extend(item.declared.map(BindingId));
+        for error in &errors {
+            lower.types.diagnostics.push(item_error(error, declaration));
         }
+        error_count += errors.len();
+        if error_count > ERROR_LIMIT {
+            break;
+        }
+    }
+    if error_count > 0 {
+        with_sources(std::mem::take(&mut lower.types.diagnostics), files)?;
     }
     for definition in &lower.types.definitions {
         if let Some(span) = lower.type_spans.get(&definition.id) {
@@ -210,15 +108,185 @@ pub fn resolve_module(
             *length = Some(1);
         }
     }
-    lower.resolve_object_requests(unit)?;
-    lower.finish_functions(unit.options.effective_inline_semantics(unit.standard))?;
-    let declared: Vec<_> = lower.types.entities.types().collect();
-    let access = declared
-        .into_iter()
-        .map(|(id, c)| (id, lower.types.access_of(c)))
-        .collect();
-    super::effects_statements::normalize(&mut lower.module, lower.next_id, access)?;
-    Ok((lower.module, lower.types.diagnostics))
+    lower.finish_module(unit).map_err(unlocated)?;
+    let diagnostics = with_sources(lower.types.diagnostics, files)?;
+    Ok((lower.module, diagnostics))
+}
+
+fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
+    super::validate::error(
+        item.provenance,
+        error.loc().unwrap_or(item.expansion),
+        error.to_string(),
+    )
+}
+
+fn unlocated(error: ResolveError) -> SemaErrors {
+    SemaErrors {
+        errors: vec![SemaError::unlocated(error.to_string())],
+    }
+}
+
+impl Lowerer {
+    fn finish_module(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
+        self.resolve_object_requests(unit)?;
+        self.finish_functions(unit.options.effective_inline_semantics(unit.standard))?;
+        let declared: Vec<_> = self.types.entities.types().collect();
+        let access = declared
+            .into_iter()
+            .map(|(id, c)| (id, self.types.access_of(c)))
+            .collect();
+        super::effects_statements::normalize(&mut self.module, self.next_id, access)
+    }
+
+    fn reset_after_failed_item(&mut self) {
+        self.break_targets.clear();
+        self.continue_targets.clear();
+        self.switches.clear();
+        self.ms_asm_return.clear();
+        self.in_function = false;
+        self.in_naked_function = false;
+        self.function_name = None;
+        self.pretty_function_name = None;
+        self.return_type = None;
+        self.compound_start = false;
+    }
+}
+
+fn lower_item(
+    lower: &mut Lowerer,
+    declaration: &ast::Decl,
+    features: StandardFeatures,
+) -> Result<(), ResolveError> {
+    match &declaration.value {
+        DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
+        DeclKind::Pragma(pragma) => {
+            lower.floating_pragmas.apply(
+                &mut lower.context.region,
+                &pragma.kind,
+                PragmaPlacement::File,
+            )?;
+        }
+        DeclKind::Asm(asm) => {
+            let lowered = declaration.derive(lower.asm(asm)?);
+            lower.module.asm.push(lowered);
+        }
+        DeclKind::Declaration(item) => {
+            lower.declaration(item, true)?;
+        }
+        DeclKind::Function(function) => {
+            let attributes = super::function::attributes(
+                &function.specifiers,
+                &function.declarator,
+                &function.attributes,
+            );
+            lower
+                .types
+                .check_attributes(attributes.iter().copied(), Subject::Function)?;
+            let mut symbol = function_symbol(attributes.iter().copied(), None)?;
+            let name = function
+                .declarator
+                .name()
+                .ok_or(ResolveError::Unsupported("unnamed function"))?;
+            lower.types.pragmas.apply(name, &mut symbol);
+            let id = lower.declaration_id(declaration.id, name)?;
+            lower.record_function(id, &function.specifiers, &attributes, true, true)?;
+            let start = lower.types.definitions.len();
+            let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
+            let (return_c, ..) = lower
+                .types
+                .ctypes
+                .function_parts(resolved)
+                .ok_or(ResolveError::Unsupported("function definition declarator"))?;
+            let c_return = lower.types.render(return_c).spelling;
+            for definition in &lower.types.definitions[start..] {
+                lower
+                    .type_spans
+                    .insert(definition.id, declaration.derive(definition.clone()));
+            }
+            let ty = lower.types.object_type(resolved, "void function type")?;
+            let Type::Function { return_type, .. } = &ty else {
+                return Err(ResolveError::Unsupported("function definition declarator"));
+            };
+            let return_type = return_type.as_ref().map(|ty| (**ty).clone());
+            let abi = lower.c_abi_signature(resolved, &ty, None)?;
+            let previous = lower.types.entities.declare(id, resolved, false);
+            let mut metadata = vec![
+                (
+                    "c_storage".into(),
+                    function.specifiers.storage.as_str().into(),
+                ),
+                ("c_return".into(), c_return),
+            ];
+            metadata.extend(lower.types.render(resolved).entries());
+            let params = function
+                .declarator
+                .function_parameters()
+                .ok_or(ResolveError::Unsupported("missing function parameters"))?;
+            if matches!(params, ParameterList::IdentifierList { .. }) {
+                lower.warn(
+                    Warning::DeprecatedNonPrototype,
+                    "a function definition without a prototype is deprecated in all versions of C and is not supported in C23",
+                    declaration,
+                );
+            }
+            let mut prologue = Vec::new();
+            lower.in_function = true;
+            lower.in_naked_function = lower.is_naked(id);
+            lower.function_name = Some(name.to_string());
+            lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
+            lower.return_type = return_type.as_ref().map(|_| return_c);
+            let body = lower.scoped(|lower| {
+                let parameters = lower.parameters(params, Some(&mut prologue))?;
+                let body = lower.compound(|lower| {
+                    lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
+                })?;
+                prologue.extend(body);
+                Ok((parameters, prologue))
+            });
+            lower.in_function = false;
+            lower.in_naked_function = false;
+            lower.function_name = None;
+            lower.pretty_function_name = None;
+            lower.return_type = None;
+            let (parameters, mut body) = body?;
+            let asm_return = lower.finish_ms_asm_return(
+                &declaration.derive(()),
+                return_type.as_ref(),
+                &mut body,
+                name == "main"
+                    && return_type == Some(lower.context.int_type())
+                    && features.main_implicit_return_zero,
+            )?;
+            let fallthrough = if let Some(value) = asm_return {
+                Fallthrough::Return(Box::new(value))
+            } else if name == "main"
+                && return_type == Some(lower.context.int_type())
+                && features.main_implicit_return_zero
+            {
+                Fallthrough::ReturnZero
+            } else if return_type.is_none() {
+                Fallthrough::ReturnVoid
+            } else {
+                Fallthrough::UndefinedIfUsed
+            };
+            let lowered = declaration.derive(Function {
+                id,
+                name: name.into(),
+                parameters,
+                return_type,
+                abi,
+                linkage: linkage(function.specifiers.storage)?,
+                symbol,
+                semantics: Default::default(),
+                body: Some(body),
+                fallthrough: Some(fallthrough),
+            });
+            lower.module.annotate(&lowered, metadata);
+            lower.declare_function(lowered, previous)?;
+        }
+    }
+    Ok(())
 }
 
 fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {

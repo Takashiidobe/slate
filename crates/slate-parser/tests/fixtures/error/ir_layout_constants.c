@@ -23,14 +23,46 @@ void bad(void) { (_BitInt(sizeof(int) - 4))1; }
 #endif
 
 // SLATE-FILECHECK-BEGIN FIELD
-// FIELD: Error:   × unsupported in numeric IR lowering: unknown offsetof member
+// FIELD: Error:   × semantic analysis failed
+// FIELD: Error:
+// FIELD: × unsupported in numeric IR lowering: unknown offsetof member
+// FIELD: ╭─[tests/fixtures/error/ir_layout_constants.c:3:1]
+// FIELD: 2 │ #ifdef FIELD
+// FIELD: 3 │ unsigned long bad(void) { return __builtin_offsetof(struct S, missing); }
+// FIELD: · ─────────────────────────────────────────────────────────────────────────
+// FIELD: 4 │ #endif
+// FIELD: ╰────
 // SLATE-FILECHECK-END FIELD
 // SLATE-FILECHECK-BEGIN INCOMPLETE
-// INCOMPLETE: Error:   × unsupported in numeric IR lowering: sizeof of incomplete type
+// INCOMPLETE: Error:   × semantic analysis failed
+// INCOMPLETE: Error:
+// INCOMPLETE: × unsupported in numeric IR lowering: sizeof of incomplete type
+// INCOMPLETE: ╭─[tests/fixtures/error/ir_layout_constants.c:7:1]
+// INCOMPLETE: 6 │ struct Incomplete;
+// INCOMPLETE: 7 │ unsigned long bad(void) { return sizeof(struct Incomplete); }
+// INCOMPLETE: · ─────────────────────────────────────────────────────────────
+// INCOMPLETE: 8 │ #endif
+// INCOMPLETE: ╰────
 // SLATE-FILECHECK-END INCOMPLETE
 // SLATE-FILECHECK-BEGIN BITFIELD
-// BITFIELD: Error:   × unsupported in numeric IR lowering: offsetof bit-field
+// BITFIELD: Error:   × semantic analysis failed
+// BITFIELD: Error:
+// BITFIELD: × unsupported in numeric IR lowering: offsetof bit-field
+// BITFIELD: ╭─[tests/fixtures/error/ir_layout_constants.c:10:1]
+// BITFIELD: 9 │ #ifdef BITFIELD
+// BITFIELD: 10 │ unsigned long bad(void) { return __builtin_offsetof(struct S, bits); }
+// BITFIELD: · ──────────────────────────────────────────────────────────────────────
+// BITFIELD: 11 │ #endif
+// BITFIELD: ╰────
 // SLATE-FILECHECK-END BITFIELD
 // SLATE-FILECHECK-BEGIN WIDTH
-// WIDTH: Error:   × unsupported in numeric IR lowering: invalid _BitInt width
+// WIDTH: Error:   × semantic analysis failed
+// WIDTH: Error:
+// WIDTH: × unsupported in numeric IR lowering: invalid _BitInt width
+// WIDTH: ╭─[tests/fixtures/error/ir_layout_constants.c:13:1]
+// WIDTH: 12 │ #ifdef WIDTH
+// WIDTH: 13 │ void bad(void) { (_BitInt(sizeof(int) - 4))1; }
+// WIDTH: · ───────────────────────────────────────────────
+// WIDTH: 14 │ #endif
+// WIDTH: ╰────
 // SLATE-FILECHECK-END WIDTH

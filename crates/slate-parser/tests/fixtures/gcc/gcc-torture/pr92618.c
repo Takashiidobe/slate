@@ -60,5 +60,41 @@ int main() {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: target builtin type
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: ⚠ unknown attribute 'noipa' ignored
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/pr92618.c:9:16]
+// DEFAULT: 8 │
+// DEFAULT: 9 │ __attribute__((noipa)) __m128i bar(void) {
+// DEFAULT: ·                ─────
+// DEFAULT: 10 │   static int cnt;
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × unsupported in numeric IR lowering: target builtin type
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/pr92618.c:9:1]
+// DEFAULT: 8 │
+// DEFAULT: 9 │ ╭─▶ __attribute__((noipa)) __m128i bar(void) {
+// DEFAULT: 10 │ │     static int cnt;
+// DEFAULT: 11 │ │     cnt += 2;
+// DEFAULT: 12 │ │     return (__m128i){cnt, cnt + 1};
+// DEFAULT: 13 │ ╰─▶ }
+// DEFAULT: 14 │
+// DEFAULT: ╰────
+// DEFAULT: ⚠ unknown attribute 'noipa' ignored
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/pr92618.c:19:16]
+// DEFAULT: 18 │
+// DEFAULT: 19 │ __attribute__((noipa)) __m128i qux(void) {
+// DEFAULT: ·                ─────
+// DEFAULT: 20 │   static double cnt;
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × unsupported in numeric IR lowering: target builtin type
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/pr92618.c:19:1]
+// DEFAULT: 18 │
+// DEFAULT: 19 │ ╭─▶ __attribute__((noipa)) __m128i qux(void) {
+// DEFAULT: 20 │ │     static double cnt;
+// DEFAULT: 21 │ │     cnt += 2.0;
+// DEFAULT: 22 │ │     return (__m128i)(__m128d){cnt, cnt + 1.0};
+// DEFAULT: 23 │ ╰─▶ }
+// DEFAULT: 24 │     #endif
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

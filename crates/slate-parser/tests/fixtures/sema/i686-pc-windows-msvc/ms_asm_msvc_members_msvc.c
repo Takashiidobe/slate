@@ -78,16 +78,48 @@ int size_keyword(void) { __asm mov eax, SIZE int }
 #endif
 
 // SLATE-FILECHECK-BEGIN AMBIGUOUS
-// AMBIGUOUS: Error:   × invalid in this context: ambiguous member name in `__asm`
+// AMBIGUOUS: Error:   × semantic analysis failed
+// AMBIGUOUS: Error:
+// AMBIGUOUS: × invalid in this context: ambiguous member name in `__asm`
+// AMBIGUOUS: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_msvc.c:42:1]
+// AMBIGUOUS: 41 │ #if defined(AMBIGUOUS)
+// AMBIGUOUS: 42 │ int ambiguous(void) { __asm mov eax, [ebx].second }
+// AMBIGUOUS: · ───────────────────────────────────────────────────
+// AMBIGUOUS: 43 │ #endif
+// AMBIGUOUS: ╰────
 // SLATE-FILECHECK-END AMBIGUOUS
 // SLATE-FILECHECK-BEGIN ANONYMOUS
-// ANONYMOUS: Error:   × invalid in this context: ambiguous member name in `__asm`
+// ANONYMOUS: Error:   × semantic analysis failed
+// ANONYMOUS: Error:
+// ANONYMOUS: × invalid in this context: ambiguous member name in `__asm`
+// ANONYMOUS: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_msvc.c:46:1]
+// ANONYMOUS: 45 │ #if defined(ANONYMOUS)
+// ANONYMOUS: 46 │ int anonymous(void) { __asm mov eax, [ebx].deep }
+// ANONYMOUS: · ─────────────────────────────────────────────────
+// ANONYMOUS: 47 │ #endif
+// ANONYMOUS: ╰────
 // SLATE-FILECHECK-END ANONYMOUS
 // SLATE-FILECHECK-BEGIN UNKNOWN
-// UNKNOWN: Error:   × invalid in this context: illegal struct/union member in `__asm`
+// UNKNOWN: Error:   × semantic analysis failed
+// UNKNOWN: Error:
+// UNKNOWN: × invalid in this context: illegal struct/union member in `__asm`
+// UNKNOWN: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_msvc.c:50:1]
+// UNKNOWN: 49 │ #if defined(UNKNOWN)
+// UNKNOWN: 50 │ int unknown(void) { __asm mov eax, global.missing }
+// UNKNOWN: · ───────────────────────────────────────────────────
+// UNKNOWN: 51 │ #endif
+// UNKNOWN: ╰────
 // SLATE-FILECHECK-END UNKNOWN
 // SLATE-FILECHECK-BEGIN LATER
-// LATER: Error:   × invalid in this context: illegal struct/union member in `__asm`
+// LATER: Error:   × semantic analysis failed
+// LATER: Error:
+// LATER: × invalid in this context: illegal struct/union member in `__asm`
+// LATER: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_msvc.c:54:1]
+// LATER: 53 │ #if defined(LATER)
+// LATER: 54 │ int later(void) { __asm mov eax, [ebx].after }
+// LATER: · ──────────────────────────────────────────────
+// LATER: 55 │ struct after_use { int a0; int after; };
+// LATER: ╰────
 // SLATE-FILECHECK-END LATER
 // SLATE-FILECHECK-BEGIN TWO_WORDS
 // TWO_WORDS: Error:   × unexpected token in `__asm` operand

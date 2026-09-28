@@ -8,5 +8,15 @@ int f(void) {
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: `__asm` operand scales two registers
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × invalid in this context: `__asm` operand scales two registers
+// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_two_scaled_registers.c:2:1]
+// DEFAULT: 1 │
+// DEFAULT: 2 │ ╭─▶ int f(void) {
+// DEFAULT: 3 │ │     __asm mov eax, [eax * 2 + ebx * 4]
+// DEFAULT: 4 │ │     return 0;
+// DEFAULT: 5 │ ╰─▶ }
+// DEFAULT: 6 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -20,5 +20,17 @@ int foo()
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: function definition is not allowed here
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × invalid in this context: function definition is not allowed here
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20021204-1.c:7:1]
+// DEFAULT: 6 │
+// DEFAULT: 7 │ ╭─▶ extern inline int t()
+// DEFAULT: 8 │ │   {
+// DEFAULT: 9 │ │     int q() { return 0; }
+// DEFAULT: 10 │ │
+// DEFAULT: 11 │ │     return q();
+// DEFAULT: 12 │ ╰─▶ }
+// DEFAULT: 13 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -23,5 +23,13 @@ void zzz (char *s1, char *s2, int len, int *q)
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved ordinary name `foo`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved ordinary name `foo`
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20030224-1.c:19:3]
+// DEFAULT: 18 │
+// DEFAULT: 19 │   foo (x, x);
+// DEFAULT: ·   ───
+// DEFAULT: 20 │ }
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

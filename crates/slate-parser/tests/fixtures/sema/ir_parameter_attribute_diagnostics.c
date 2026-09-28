@@ -34,10 +34,26 @@ void f(__declspec(code_seg("s")) int p);
 #endif
 
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL
-// ERR_SYMBOL: Error:   × invalid in this context: 'section' attribute only applies to functions and
+// ERR_SYMBOL: Error:   × semantic analysis failed
+// ERR_SYMBOL: Error:
+// ERR_SYMBOL: × invalid in this context: 'section' attribute only applies to functions and
+// ERR_SYMBOL: ╭─[tests/fixtures/sema/ir_parameter_attribute_diagnostics.c:7:1]
+// ERR_SYMBOL: 6 │ #elif defined(ERR_SYMBOL)
+// ERR_SYMBOL: 7 │ void f(int p __attribute__((section("s"))));
+// ERR_SYMBOL: · ────────────────────────────────────────────
+// ERR_SYMBOL: 8 │ #elif defined(WARN_SYMBOL)
+// ERR_SYMBOL: ╰────
 // SLATE-FILECHECK-END ERR_SYMBOL
 // SLATE-FILECHECK-BEGIN ERR_UNSUPPORTED
-// ERR_UNSUPPORTED: Error:   × unsupported in numeric IR lowering: code segment attribute
+// ERR_UNSUPPORTED: Error:   × semantic analysis failed
+// ERR_UNSUPPORTED: Error:
+// ERR_UNSUPPORTED: × unsupported in numeric IR lowering: code segment attribute
+// ERR_UNSUPPORTED: ╭─[tests/fixtures/sema/ir_parameter_attribute_diagnostics.c:17:1]
+// ERR_UNSUPPORTED: 16 │ #elif defined(ERR_UNSUPPORTED)
+// ERR_UNSUPPORTED: 17 │ void f(__declspec(code_seg("s")) int p);
+// ERR_UNSUPPORTED: · ────────────────────────────────────────
+// ERR_UNSUPPORTED: 18 │ #endif
+// ERR_UNSUPPORTED: ╰────
 // SLATE-FILECHECK-END ERR_UNSUPPORTED
 // SLATE-FILECHECK-BEGIN WARN_ALIGNED
 // WARN_ALIGNED: -Wparameter-alignment

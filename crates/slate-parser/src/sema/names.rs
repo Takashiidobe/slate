@@ -1,7 +1,7 @@
 use crate::ast::{
     ArraySize, Decl, DeclKind, Declaration, Declarator, EnumItemKind, Expr, ExprKind, Initializer,
-    InitializerItem, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId, TagSpecifier,
-    TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    InitializerItem, Loc, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
+    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -15,12 +15,28 @@ pub enum ResolveError {
     Unresolved {
         namespace: &'static str,
         name: String,
+        loc: Loc,
     },
     #[error("duplicate {namespace} name `{name}`")]
     Duplicate {
         namespace: &'static str,
         name: String,
+        loc: Loc,
     },
+}
+
+impl ResolveError {
+    pub fn loc(&self) -> Loc {
+        match self {
+            Self::Unresolved { loc, .. } | Self::Duplicate { loc, .. } => *loc,
+        }
+    }
+}
+
+pub struct ItemResolution {
+    pub declared: std::ops::Range<u32>,
+    pub references: std::ops::Range<usize>,
+    pub errors: Vec<ResolveError>,
 }
 
 #[derive(Clone)]
@@ -31,9 +47,20 @@ struct Entry {
 }
 
 pub fn resolve(unit: &TranslationUnit) -> Result<NameResolution, ResolveError> {
+    let (resolution, items) = resolve_items(unit);
+    match items
+        .into_iter()
+        .find_map(|item| item.errors.into_iter().next())
+    {
+        Some(error) => Err(error),
+        None => Ok(resolution),
+    }
+}
+
+pub fn resolve_items(unit: &TranslationUnit) -> (NameResolution, Vec<ItemResolution>) {
     let mut resolver = Resolver::new(unit);
-    resolver.visit_translation_unit(unit)?;
-    Ok(resolver.resolution)
+    let items = unit.decls.iter().map(|decl| resolver.item(decl)).collect();
+    (resolver.resolution, items)
 }
 
 struct Resolver {
@@ -55,6 +82,7 @@ struct Resolver {
     implicit_builtin_calls: HashMap<&'static str, Vec<Span<()>>>,
     flavor: CompilerFlavor,
     next_id: u32,
+    errors: Vec<ResolveError>,
 }
 
 impl Resolver {
@@ -82,6 +110,7 @@ impl Resolver {
             implicit_builtin_calls: HashMap::new(),
             flavor: unit.flavor,
             next_id: 0,
+            errors: Vec::new(),
         }
     }
 
@@ -602,9 +631,10 @@ impl Resolver {
                 && binding.kind == BindingKind::Label
                 && !self.defined_labels.contains(&binding.value.id)
             {
-                return Err(ResolveError::Unresolved {
+                self.errors.push(ResolveError::Unresolved {
                     namespace: "label",
                     name: binding.name.clone(),
+                    loc: binding.expansion,
                 });
             }
         }
@@ -617,6 +647,7 @@ impl Resolver {
                 return Err(ResolveError::Duplicate {
                     namespace: "label",
                     name: label.value.clone(),
+                    loc: label.expansion,
                 });
             }
             let entry = self.new_entry(&label.value, BindingKind::Label, label);
@@ -630,6 +661,7 @@ impl Resolver {
                 .ok_or_else(|| ResolveError::Unresolved {
                     namespace: "label",
                     name: label.value.clone(),
+                    loc: label.expansion,
                 })?
         };
         self.local_labels
@@ -654,6 +686,7 @@ impl Resolver {
             return Err(ResolveError::Duplicate {
                 namespace: "ordinary",
                 name: name.into(),
+                loc: span.expansion,
             });
         }
         let entry = match self.linked.get(name) {
@@ -690,6 +723,7 @@ impl Resolver {
                 return Err(ResolveError::Duplicate {
                     namespace: "label",
                     name: label.value.clone(),
+                    loc: label.expansion,
                 });
             }
             return Ok(entry);
@@ -701,6 +735,7 @@ impl Resolver {
             return Err(ResolveError::Duplicate {
                 namespace: "label",
                 name: label.value.clone(),
+                loc: label.expansion,
             });
         }
         let entry = self.new_entry(&label.value, BindingKind::Label, label);
@@ -744,13 +779,14 @@ impl Resolver {
         {
             return Ok(());
         }
-        let entry =
-            self.lookup_ordinary(name)
-                .cloned()
-                .ok_or_else(|| ResolveError::Unresolved {
-                    namespace: "ordinary",
-                    name: name.into(),
-                })?;
+        let Some(entry) = self.lookup_ordinary(name).cloned() else {
+            self.errors.push(ResolveError::Unresolved {
+                namespace: "ordinary",
+                name: name.into(),
+                loc: span.expansion,
+            });
+            return Ok(());
+        };
         self.push_reference(name, entry, span);
         Ok(())
     }
@@ -763,17 +799,21 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
-        let entry = self
+        let Some(entry) = self
             .ordinary
             .iter()
             .rev()
             .find_map(|scope| scope.get(name))
             .filter(|entry| entry.kind == BindingKind::Typedef)
             .cloned()
-            .ok_or_else(|| ResolveError::Unresolved {
+        else {
+            self.errors.push(ResolveError::Unresolved {
                 namespace: "typedef",
                 name: name.into(),
-            })?;
+                loc: span.expansion,
+            });
+            return Ok(());
+        };
         self.push_reference(name, entry, span);
         Ok(())
     }
@@ -831,7 +871,7 @@ impl Resolver {
             return Ok(());
         }
         let name = label.value.as_ref();
-        let entry = self
+        let Some(entry) = self
             .local_labels
             .iter()
             .rev()
@@ -847,10 +887,14 @@ impl Resolver {
                     .flatten()
             })
             .cloned()
-            .ok_or_else(|| ResolveError::Unresolved {
+        else {
+            self.errors.push(ResolveError::Unresolved {
                 namespace: "label",
                 name: name.into(),
-            })?;
+                loc: label.expansion,
+            });
+            return Ok(());
+        };
         self.push_reference(name, entry, label);
         Ok(())
     }
@@ -867,6 +911,7 @@ impl Resolver {
                             return Err(ResolveError::Duplicate {
                                 namespace: "label",
                                 name: label.value.clone(),
+                                loc: label.expansion,
                             });
                         }
                         let entry = self.new_entry(&label.value, BindingKind::Label, label);
@@ -898,10 +943,14 @@ impl Resolver {
             MsAsmExpr::Name(name) if self.flavor == CompilerFlavor::Msvc => {
                 self.reference_label(&expr.clone().with_value(name.clone()))
             }
-            MsAsmExpr::Name(name) => Err(ResolveError::Unresolved {
-                namespace: "label",
-                name: name.clone(),
-            }),
+            MsAsmExpr::Name(name) => {
+                self.errors.push(ResolveError::Unresolved {
+                    namespace: "label",
+                    name: name.clone(),
+                    loc: expr.expansion,
+                });
+                Ok(())
+            }
             MsAsmExpr::Register(_)
             | MsAsmExpr::SegmentRegister(_)
             | MsAsmExpr::St(_)
@@ -936,6 +985,29 @@ impl Resolver {
         ));
     }
 
+    fn item(&mut self, decl: &Decl) -> ItemResolution {
+        let first_binding = self.next_id;
+        let first_reference = self.resolution.references.len();
+        if let Err(error) = self.visit_decl(decl) {
+            self.errors.push(error);
+            self.reset_to_file_scope();
+        }
+        ItemResolution {
+            declared: first_binding..self.next_id,
+            references: first_reference..self.resolution.references.len(),
+            errors: std::mem::take(&mut self.errors),
+        }
+    }
+
+    fn reset_to_file_scope(&mut self) {
+        self.ordinary.truncate(1);
+        self.tags.truncate(1);
+        self.local_labels = vec![HashMap::new()];
+        self.labels.clear();
+        self.ms_asm_labels.clear();
+        self.collecting_labels = false;
+    }
+
     fn push_scope(&mut self) {
         self.ordinary.push(HashMap::new());
         self.tags.push(HashMap::new());
@@ -950,13 +1022,6 @@ impl Resolver {
 
 impl Visitor for Resolver {
     type Error = ResolveError;
-
-    fn visit_translation_unit(&mut self, unit: &TranslationUnit) -> Result<(), Self::Error> {
-        for declaration in &unit.decls {
-            self.visit_decl(declaration)?;
-        }
-        Ok(())
-    }
 
     fn visit_decl(&mut self, decl: &Decl) -> Result<(), Self::Error> {
         self.declaration_node(decl)

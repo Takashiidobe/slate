@@ -31,5 +31,17 @@ bar ()
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: non-void function should return a value
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × invalid in this context: non-void function should return a value
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020927-1.c:23:1]
+// DEFAULT: 22 │
+// DEFAULT: 23 │ ╭─▶ int
+// DEFAULT: 24 │ │   bar ()
+// DEFAULT: 25 │ │   {
+// DEFAULT: 26 │ │     if (foo ())
+// DEFAULT: 27 │ │       return;
+// DEFAULT: 28 │ ╰─▶ }
+// DEFAULT: 29 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

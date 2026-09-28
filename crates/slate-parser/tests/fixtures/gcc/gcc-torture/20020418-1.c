@@ -23,5 +23,16 @@ double bar (void)
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × invalid in this context: non-void function should return a value
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × invalid in this context: non-void function should return a value
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020418-1.c:11:1]
+// DEFAULT: 10 │
+// DEFAULT: 11 │ ╭─▶ double foo (void)
+// DEFAULT: 12 │ │   {
+// DEFAULT: 13 │ │     baz ();
+// DEFAULT: 14 │ │     return;
+// DEFAULT: 15 │ ╰─▶ }
+// DEFAULT: 16 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -26,5 +26,21 @@ simple_cst_equal ()
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved ordinary name `simple_cst_equal`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved ordinary name `simple_cst_equal`
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20031113-1.c:10:11]
+// DEFAULT: 9 │ {
+// DEFAULT: 10 │   return (simple_cst_equal ());
+// DEFAULT: ·           ────────────────
+// DEFAULT: 11 │ }
+// DEFAULT: ╰────
+// DEFAULT: Error:
+// DEFAULT: × unresolved ordinary name `simple_cst_equal`
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20031113-1.c:15:11]
+// DEFAULT: 14 │ {
+// DEFAULT: 15 │   return (simple_cst_equal ());
+// DEFAULT: ·           ────────────────
+// DEFAULT: 16 │ }
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

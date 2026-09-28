@@ -45,13 +45,37 @@ int bad_pp;
 #endif
 
 // SLATE-FILECHECK-BEGIN ENUM
-// ENUM: Error:   × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ENUM: Error:   × semantic analysis failed
+// ENUM: Error:
+// ENUM: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ENUM: ╭─[tests/fixtures/sema/constant_arithmetic_rejected.c:3:1]
+// ENUM: 2 │ #ifdef ENUM
+// ENUM: 3 │ enum E { BAD = 1 / 0 };
+// ENUM: · ───────────────────────
+// ENUM: 4 │ #endif
+// ENUM: ╰────
 // SLATE-FILECHECK-END ENUM
 // SLATE-FILECHECK-BEGIN BITFIELD
-// BITFIELD: Error:   × unsupported in numeric IR lowering: nonconstant or undefined integer
+// BITFIELD: Error:   × semantic analysis failed
+// BITFIELD: Error:
+// BITFIELD: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// BITFIELD: ╭─[tests/fixtures/sema/constant_arithmetic_rejected.c:7:1]
+// BITFIELD: 6 │ #ifdef BITFIELD
+// BITFIELD: 7 │ struct B { int x : 1 / 0; };
+// BITFIELD: · ────────────────────────────
+// BITFIELD: 8 │ #endif
+// BITFIELD: ╰────
 // SLATE-FILECHECK-END BITFIELD
 // SLATE-FILECHECK-BEGIN ARRAY
-// ARRAY: Error:   × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ARRAY: Error:   × semantic analysis failed
+// ARRAY: Error:
+// ARRAY: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ARRAY: ╭─[tests/fixtures/sema/constant_arithmetic_rejected.c:11:1]
+// ARRAY: 10 │ #ifdef ARRAY
+// ARRAY: 11 │ int bad_array[1 / 0];
+// ARRAY: · ─────────────────────
+// ARRAY: 12 │ #endif
+// ARRAY: ╰────
 // SLATE-FILECHECK-END ARRAY
 // SLATE-FILECHECK-BEGIN ASSERT
 // ASSERT: Error:   × semantic analysis failed

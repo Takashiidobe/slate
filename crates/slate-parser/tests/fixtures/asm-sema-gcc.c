@@ -14,5 +14,13 @@ int f(int x) {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved label name `missing`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved label name `missing`
+// DEFAULT: ╭─[tests/fixtures/asm-sema-gcc.c:7:23]
+// DEFAULT: 6 │   asm("" : "=r,m"(x) : "r"(x));
+// DEFAULT: 7 │   asm goto("" : : : : missing);
+// DEFAULT: ·                       ───────
+// DEFAULT: 8 │   return 0;
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

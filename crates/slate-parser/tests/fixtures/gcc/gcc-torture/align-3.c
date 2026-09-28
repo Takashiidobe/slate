@@ -18,5 +18,16 @@ int main() {
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: incomplete field type
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unsupported in numeric IR lowering: incomplete field type
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/align-3.c:9:1]
+// DEFAULT: 8 │
+// DEFAULT: 9 │ ╭─▶ int main() {
+// DEFAULT: 10 │ │     if (__alignof__(func) != 256)
+// DEFAULT: 11 │ │       abort();
+// DEFAULT: 12 │ │     return 0;
+// DEFAULT: 13 │ ╰─▶ }
+// DEFAULT: 14 │
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

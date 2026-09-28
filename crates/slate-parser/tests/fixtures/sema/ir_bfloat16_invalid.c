@@ -31,7 +31,15 @@ double mixed_case = 1.5dF;
 #endif
 
 // SLATE-FILECHECK-BEGIN DECIMAL
-// DECIMAL: Error:   × invalid operands to binary expression: bf16 + d64
+// DECIMAL: Error:   × semantic analysis failed
+// DECIMAL: Error:
+// DECIMAL: × invalid operands to binary expression: bf16 + d64
+// DECIMAL: ╭─[tests/fixtures/sema/ir_bfloat16_invalid.c:3:1]
+// DECIMAL: 2 │ #ifdef DECIMAL
+// DECIMAL: 3 │ _Decimal64 mixed(__bf16 x, _Decimal64 y) { return x + y; }
+// DECIMAL: · ──────────────────────────────────────────────────────────
+// DECIMAL: 4 │ #endif
+// DECIMAL: ╰────
 // SLATE-FILECHECK-END DECIMAL
 // SLATE-FILECHECK-BEGIN TRAILING
 // TRAILING: Error:   × semantic analysis failed

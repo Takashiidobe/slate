@@ -49,6 +49,15 @@ pub enum ResolveError {
     Layout(#[from] crate::target_info::LayoutError),
 }
 
+impl ResolveError {
+    pub fn loc(&self) -> Option<crate::ast::Loc> {
+        match self {
+            Self::Names(error) => Some(error.loc()),
+            _ => None,
+        }
+    }
+}
+
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
 
 pub struct Context {

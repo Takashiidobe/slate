@@ -25,7 +25,7 @@ the wrapper's `.value`.
 - `src/ast.rs` — `Decl::name` and `Decl::provenance` are exhaustive.
 - `src/sema/validate.rs` — typedef/tag collection and the main analysis pass match declarations.
 - `src/reachability.rs` — root dependency marking is exhaustive.
-- `src/sema/module.rs` — `resolve_module`'s dispatch is exhaustive: a new
+- `src/sema/module.rs` — `lower_item`'s dispatch is exhaustive: a new
   variant must lower to IR or be explicitly dropped.
 - `src/sema/pragmas.rs` — `collect`'s dispatch is exhaustive; a variant that can
   hold a pragma or a tag definition must be walked.

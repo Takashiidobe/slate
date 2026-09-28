@@ -57,10 +57,31 @@ int outer(int x) {
 #endif
 
 // SLATE-FILECHECK-BEGIN C99_RETURN
-// C99_RETURN: Error:   × invalid in this context: non-void function should return a value
+// C99_RETURN: Error:   × semantic analysis failed
+// C99_RETURN: Error:
+// C99_RETURN: × invalid in this context: non-void function should return a value
+// C99_RETURN: ╭─[tests/fixtures/sema/gcc_statement_flavor_rules.c:20:1]
+// C99_RETURN: 19 │     #ifdef RETURN
+// C99_RETURN: 20 │ ╭─▶ int valueless(int x) {
+// C99_RETURN: 21 │ │     if (x)
+// C99_RETURN: 22 │ │       return;
+// C99_RETURN: 23 │ │     return g(x);
+// C99_RETURN: 24 │ ╰─▶ }
+// C99_RETURN: 25 │     #endif
+// C99_RETURN: ╰────
 // SLATE-FILECHECK-END C99_RETURN
 // SLATE-FILECHECK-BEGIN NESTED
-// NESTED: Error:   × unsupported in numeric IR lowering: GNU nested function
+// NESTED: Error:   × semantic analysis failed
+// NESTED: Error:
+// NESTED: × unsupported in numeric IR lowering: GNU nested function
+// NESTED: ╭─[tests/fixtures/sema/gcc_statement_flavor_rules.c:40:1]
+// NESTED: 39 │     #ifdef NESTED
+// NESTED: 40 │ ╭─▶ int outer(int x) {
+// NESTED: 41 │ │     int inner(int y) { return y + x; }
+// NESTED: 42 │ │     return inner(x);
+// NESTED: 43 │ ╰─▶ }
+// NESTED: 44 │     #endif
+// NESTED: ╰────
 // SLATE-FILECHECK-END NESTED
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

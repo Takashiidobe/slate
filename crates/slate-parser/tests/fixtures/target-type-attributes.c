@@ -26,5 +26,34 @@ __attribute__((common, nocommon)) int common_value;
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unsupported in numeric IR lowering: ifunc attribute
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unsupported in numeric IR lowering: ifunc attribute
+// DEFAULT: ╭─[tests/fixtures/target-type-attributes.c:4:1]
+// DEFAULT: 3 │ __attribute__((target_clones("default", "arch=x86-64-v2"))) int cloned(void);
+// DEFAULT: 4 │ __attribute__((ifunc("resolver"))) int indirect(void);
+// DEFAULT: · ──────────────────────────────────────────────────────
+// DEFAULT: 5 │ __attribute__((dllimport)) int imported;
+// DEFAULT: ╰────
+// DEFAULT: ⚠ unknown attribute 'dllimport' ignored
+// DEFAULT: ╭─[tests/fixtures/target-type-attributes.c:5:16]
+// DEFAULT: 4 │ __attribute__((ifunc("resolver"))) int indirect(void);
+// DEFAULT: 5 │ __attribute__((dllimport)) int imported;
+// DEFAULT: ·                ─────────
+// DEFAULT: 6 │ __attribute__((weak_import)) extern int weak_platform;
+// DEFAULT: ╰────
+// DEFAULT: ⚠ unknown attribute 'nomips16' ignored
+// DEFAULT: ╭─[tests/fixtures/target-type-attributes.c:7:25]
+// DEFAULT: 6 │ __attribute__((weak_import)) extern int weak_platform;
+// DEFAULT: 7 │ __attribute__((stdcall, nomips16)) int calling_convention(void);
+// DEFAULT: ·                         ────────
+// DEFAULT: 8 │ __attribute__((availability(macos, introduced=12.0))) int platform_api;
+// DEFAULT: ╰────
+// DEFAULT: ⚠ unknown attribute 'scalar_storage_order' ignored
+// DEFAULT: ╭─[tests/fixtures/target-type-attributes.c:10:16]
+// DEFAULT: 9 │ typedef int vector_type __attribute__((ext_vector_type(2)));
+// DEFAULT: 10 │ __attribute__((scalar_storage_order("big-endian"))) int ordered;
+// DEFAULT: ·                ────────────────────
+// DEFAULT: 11 │ union union_value {
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

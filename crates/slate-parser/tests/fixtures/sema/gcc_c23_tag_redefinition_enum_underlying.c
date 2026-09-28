@@ -24,10 +24,26 @@ struct Pointer { unsigned *p; };
 #endif
 
 // SLATE-FILECHECK-BEGIN DIRECT
-// DIRECT: Error:   × invalid in this context: redefinition of struct, union, or enum tag
+// DIRECT: Error:   × semantic analysis failed
+// DIRECT: Error:
+// DIRECT: × invalid in this context: redefinition of struct, union, or enum tag
+// DIRECT: ╭─[tests/fixtures/sema/gcc_c23_tag_redefinition_enum_underlying.c:12:1]
+// DIRECT: 11 │ struct Direct { enum E x; };
+// DIRECT: 12 │ struct Direct { unsigned x; };
+// DIRECT: · ──────────────────────────────
+// DIRECT: 13 │ #endif
+// DIRECT: ╰────
 // SLATE-FILECHECK-END DIRECT
 // SLATE-FILECHECK-BEGIN POINTER
-// POINTER: Error:   × invalid in this context: redefinition of struct, union, or enum tag
+// POINTER: Error:   × semantic analysis failed
+// POINTER: Error:
+// POINTER: × invalid in this context: redefinition of struct, union, or enum tag
+// POINTER: ╭─[tests/fixtures/sema/gcc_c23_tag_redefinition_enum_underlying.c:17:1]
+// POINTER: 16 │ struct Pointer { enum E *p; };
+// POINTER: 17 │ struct Pointer { unsigned *p; };
+// POINTER: · ────────────────────────────────
+// POINTER: 18 │ #endif
+// POINTER: ╰────
 // SLATE-FILECHECK-END POINTER
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: module {

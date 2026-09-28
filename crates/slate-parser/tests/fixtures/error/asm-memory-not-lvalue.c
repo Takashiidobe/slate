@@ -6,5 +6,13 @@ void f(int x) {
 // SLATE-FILECHECK-ERROR SEMANTIC
 
 // SLATE-FILECHECK-BEGIN SEMANTIC
-// SEMANTIC: Error:   × invalid in this context: asm input with a memory-only constraint is not an
+// SEMANTIC: Error:   × semantic analysis failed
+// SEMANTIC: Error:
+// SEMANTIC: × invalid in this context: asm input with a memory-only constraint is not an
+// SEMANTIC: ╭─[tests/fixtures/error/asm-memory-not-lvalue.c:1:1]
+// SEMANTIC: 1 │ ╭─▶ void f(int x) {
+// SEMANTIC: 2 │ │       asm("# %0" : : "m"(x + 1));
+// SEMANTIC: 3 │ ╰─▶ }
+// SEMANTIC: 4 │
+// SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

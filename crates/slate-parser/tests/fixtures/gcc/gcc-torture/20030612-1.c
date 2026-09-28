@@ -17,5 +17,13 @@ test (void)
 // SLATE-FILECHECK-IR-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × unresolved ordinary name `bar`
+// DEFAULT: Error:   × semantic analysis failed
+// DEFAULT: Error:
+// DEFAULT: × unresolved ordinary name `bar`
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20030612-1.c:7:3]
+// DEFAULT: 6 │ {
+// DEFAULT: 7 │   bar (v0 == v1);
+// DEFAULT: ·   ───
+// DEFAULT: 8 │ }
+// DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT
