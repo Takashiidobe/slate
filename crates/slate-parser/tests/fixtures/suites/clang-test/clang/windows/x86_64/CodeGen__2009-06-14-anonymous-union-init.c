@@ -50,12 +50,12 @@ struct Foo foo = { {}, 16877 };
 // DEFAULT-NEXT:     type @type3 Foo = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: @type4;
 // DEFAULT-NEXT:         field1 s_mode: u16;
-// DEFAULT-NEXT:     } [size=2, align=2, offsets=[0, 0]];
+// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 4]];
 // DEFAULT-NEXT:     type @type4 = union {
 // DEFAULT-NEXT:         field0 x: @type5;
-// DEFAULT-NEXT:     } [size=0, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type5 empty = struct {
-// DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[]];
 // DEFAULT-NEXT:     global %3 sysfs_root: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
 // DEFAULT-NEXT:     global %7 foo: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = aggregate<@type4, zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
 // DEFAULT-NEXT: }

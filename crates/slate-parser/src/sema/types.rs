@@ -13,7 +13,7 @@ use crate::ir::{
     NumericType, PointerSpace, RecordKind, RecordLayout, Type, TypeDefinition, TypeDefinitionKind,
     TypeId, Value, ValueKind,
 };
-use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
+use crate::target_info::{LongDoubleFormat, StorageLayout, TargetEnvironment, TargetInfo};
 use num_bigint::{BigInt, BigUint};
 
 use super::attributes::{Subject, Use};
@@ -2229,6 +2229,16 @@ impl TypeResolver {
         rules: RecordRules,
         requested: Option<u64>,
     ) -> Result<RecordLayout, ResolveError> {
+        if self.target.environment == TargetEnvironment::Msvc {
+            return self.layout_microsoft_record(
+                kind,
+                fields,
+                field_types,
+                requests,
+                rules,
+                requested,
+            );
+        }
         let RecordRules {
             packed,
             ms_struct,
@@ -2244,18 +2254,7 @@ impl TypeResolver {
         for (position, ((field, &c), &(field_packed, field_aligned))) in
             fields.iter().zip(field_types).zip(requests).enumerate()
         {
-            let storage = match &field.ty {
-                Type::Array {
-                    element,
-                    length: None,
-                } if kind == TagKind::Union || position + 1 == fields.len() => StorageLayout {
-                    size_bytes: 0,
-                    alignment_bytes: self
-                        .qualified_storage((**element).clone(), field.access.atomic)?
-                        .alignment_bytes,
-                },
-                ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
-            };
+            let storage = self.member_storage(kind, fields.len(), position, field)?;
             let storage = self.typedef_storage(c, storage)?;
             required_align = required_align
                 .into_iter()
@@ -2263,18 +2262,7 @@ impl TypeResolver {
                 .chain(self.required_alignment(&field.ty))
                 .max();
             unit_sizes.push(storage.size_bytes);
-            let unit_bits = storage
-                .size_bytes
-                .checked_mul(8)
-                .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
-            if let Some(width) = field.bit_width {
-                if u64::from(width) > unit_bits {
-                    return Err(ResolveError::Unsupported("bit-field wider than its type"));
-                }
-                if width == 0 && field.name.is_some() {
-                    return Err(ResolveError::Unsupported("named zero-width bit-field"));
-                }
-            }
+            let unit_bits = checked_bit_width(field, storage)?;
             let mut natural = u64::from(storage.alignment_bytes);
             if ms_struct && !field.access.atomic {
                 natural = natural.max(self.ms_builtin_size(&field.ty)?.unwrap_or(1));
@@ -2365,48 +2353,181 @@ impl TypeResolver {
             }
         }
         let size = align_up(end_bits.div_ceil(8), aggregate_align)?;
-        let mut bit_units: Vec<BitFieldUnit> = Vec::new();
-        let mut field_units = Vec::new();
-        let mut prior_end = None;
-        for ((field, bit_offset), unit_size) in fields.iter().zip(&bit_offsets).zip(&unit_sizes) {
-            let (Some(width), Some(position)) =
-                (field.bit_width.filter(|width| *width != 0), bit_offset)
-            else {
-                field_units.push(None);
-                prior_end = None;
-                continue;
-            };
-            if ms_struct {
-                if kind == TagKind::Union || prior_end.is_none_or(|tail| *position >= tail) {
-                    bit_units.push(BitFieldUnit {
-                        offset: position / 8,
-                        size: *unit_size,
-                    });
-                    prior_end = Some(position + unit_size * 8);
-                }
-                field_units.push(Some(bit_units.len() - 1));
-                continue;
-            }
-            let end = position + u64::from(width);
-            let unit = if kind == TagKind::Struct && prior_end == Some(*position) {
-                let index = bit_units.len() - 1;
-                bit_units[index].size = end.div_ceil(8) - bit_units[index].offset;
-                index
-            } else {
-                let index = bit_units.len();
-                bit_units.push(BitFieldUnit {
-                    offset: position / 8,
-                    size: end.div_ceil(8) - position / 8,
-                });
-                index
-            };
-            field_units.push(Some(unit));
-            prior_end = Some(end);
-        }
+        let (bit_units, field_units) =
+            bit_field_units(kind, fields, &bit_offsets, &unit_sizes, ms_struct);
         Ok(RecordLayout {
             size,
             align: aggregate_align,
             required_align,
+            offsets,
+            bit_offsets,
+            bit_units,
+            field_units,
+        })
+    }
+
+    fn member_storage(
+        &self,
+        kind: TagKind,
+        count: usize,
+        position: usize,
+        field: &Field,
+    ) -> Result<StorageLayout, ResolveError> {
+        match &field.ty {
+            Type::Array {
+                element,
+                length: None,
+            } if kind == TagKind::Union || position + 1 == count => Ok(StorageLayout {
+                size_bytes: 0,
+                alignment_bytes: self
+                    .qualified_storage((**element).clone(), field.access.atomic)?
+                    .alignment_bytes,
+            }),
+            ty => self.qualified_storage(ty.clone(), field.access.atomic),
+        }
+    }
+
+    // clang's MicrosoftRecordLayoutBuilder, which clang uses for every MSVC-environment target, ms_struct or not
+    fn layout_microsoft_record(
+        &self,
+        kind: TagKind,
+        fields: &[crate::ast::Span<Field>],
+        field_types: &[QualType],
+        requests: &[(bool, Option<u64>)],
+        rules: RecordRules,
+        requested: Option<u64>,
+    ) -> Result<RecordLayout, ResolveError> {
+        let union = kind == TagKind::Union;
+        let max_field_alignment = if rules.packed {
+            Some(1)
+        } else {
+            rules
+                .max_field_alignment
+                .filter(|pack| pack * 8 <= u64::from(self.target.pointer_width))
+        };
+        let mut size = 0u64;
+        let mut alignment = 1u64;
+        let mut required: Option<u64> = None;
+        let mut after_bit_field = false;
+        let mut unit_size = 0u64;
+        let mut remaining_bits = 0u64;
+        let mut offsets = Vec::new();
+        let mut bit_offsets = Vec::new();
+        let mut unit_sizes = Vec::new();
+        for (position, ((field, &c), &(field_packed, field_aligned))) in
+            fields.iter().zip(field_types).zip(requests).enumerate()
+        {
+            let storage = self.member_storage(kind, fields.len(), position, field)?;
+            let unit_bits = checked_bit_width(field, storage)?;
+            unit_sizes.push(storage.size_bytes);
+            let typedef_alignment = match self.ctypes.typedef_alignment(c) {
+                Some(_) => Some(u64::from(self.typedef_storage(c, storage)?.alignment_bytes)),
+                None => None,
+            };
+            let mut field_required = field_aligned.into_iter().chain(typedef_alignment).max();
+            let mut field_alignment = u64::from(storage.alignment_bytes);
+            if field.bit_width.is_some() {
+                field_alignment = field_alignment.max(field_required.unwrap_or(1));
+            } else {
+                field_required = field_required
+                    .into_iter()
+                    .chain(self.required_alignment(&field.ty))
+                    .max();
+                required = required.into_iter().chain(field_required).max();
+            }
+            if let Some(max) = max_field_alignment {
+                field_alignment = field_alignment.min(max);
+            }
+            if field_packed {
+                field_alignment = 1;
+            }
+            let field_alignment = field_alignment.max(field_required.unwrap_or(1));
+            let bit_offset = match field.bit_width {
+                None => {
+                    after_bit_field = false;
+                    alignment = alignment.max(field_alignment);
+                    let offset = if union {
+                        0
+                    } else {
+                        align_up(size, field_alignment)?
+                    };
+                    size = size.max(
+                        offset
+                            .checked_add(storage.size_bytes)
+                            .ok_or(ResolveError::Unsupported("record size overflow"))?,
+                    );
+                    offsets.push(offset);
+                    bit_offsets.push(None);
+                    continue;
+                }
+                Some(0) if !after_bit_field => {
+                    if union {
+                        0
+                    } else {
+                        size * 8
+                    }
+                }
+                Some(0) => {
+                    after_bit_field = false;
+                    if union {
+                        size = size.max(storage.size_bytes);
+                        0
+                    } else {
+                        size = align_up(size, field_alignment)?;
+                        alignment = alignment.max(field_alignment);
+                        size * 8
+                    }
+                }
+                Some(width)
+                    if !union
+                        && after_bit_field
+                        && unit_size == storage.size_bytes
+                        && u64::from(width) <= remaining_bits =>
+                {
+                    let bit_offset = size * 8 - remaining_bits;
+                    remaining_bits -= u64::from(width);
+                    bit_offset
+                }
+                Some(width) => {
+                    after_bit_field = true;
+                    unit_size = storage.size_bytes;
+                    if union {
+                        size = size.max(storage.size_bytes);
+                        0
+                    } else {
+                        let offset = align_up(size, field_alignment)?;
+                        size = offset
+                            .checked_add(storage.size_bytes)
+                            .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                        alignment = alignment.max(field_alignment);
+                        remaining_bits = unit_bits - u64::from(width);
+                        offset * 8
+                    }
+                }
+            };
+            offsets.push(bit_offset / 8);
+            bit_offsets.push(Some(bit_offset));
+        }
+        size = align_up(size, alignment)?;
+        let required = required.into_iter().chain(requested).max();
+        let rounding = required.or((self.target.pointer_width == 64).then_some(1));
+        if let Some(rounding) = rounding {
+            alignment = alignment.max(rounding);
+            size = align_up(size, alignment)?;
+        }
+        if size == 0 {
+            size = if rounding.is_some_and(|rounding| rounding >= 4) {
+                alignment
+            } else {
+                4
+            };
+        }
+        let (bit_units, field_units) =
+            bit_field_units(kind, fields, &bit_offsets, &unit_sizes, true);
+        Ok(RecordLayout {
+            size,
+            align: alignment,
+            required_align: required,
             offsets,
             bit_offsets,
             bit_units,
@@ -2580,6 +2701,70 @@ fn incomplete_tag(kind: TagKind) -> TypeDefinitionKind {
             layout: None,
         },
     }
+}
+
+fn checked_bit_width(field: &Field, storage: StorageLayout) -> Result<u64, ResolveError> {
+    let unit_bits = storage
+        .size_bytes
+        .checked_mul(8)
+        .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
+    if let Some(width) = field.bit_width {
+        if u64::from(width) > unit_bits {
+            return Err(ResolveError::Unsupported("bit-field wider than its type"));
+        }
+        if width == 0 && field.name.is_some() {
+            return Err(ResolveError::Unsupported("named zero-width bit-field"));
+        }
+    }
+    Ok(unit_bits)
+}
+
+fn bit_field_units(
+    kind: TagKind,
+    fields: &[crate::ast::Span<Field>],
+    bit_offsets: &[Option<u64>],
+    unit_sizes: &[u64],
+    discrete: bool,
+) -> (Vec<BitFieldUnit>, Vec<Option<usize>>) {
+    let mut bit_units: Vec<BitFieldUnit> = Vec::new();
+    let mut field_units = Vec::new();
+    let mut prior_end = None;
+    for ((field, bit_offset), unit_size) in fields.iter().zip(bit_offsets).zip(unit_sizes) {
+        let (Some(width), Some(position)) =
+            (field.bit_width.filter(|width| *width != 0), bit_offset)
+        else {
+            field_units.push(None);
+            prior_end = None;
+            continue;
+        };
+        if discrete {
+            if kind == TagKind::Union || prior_end.is_none_or(|tail| *position >= tail) {
+                bit_units.push(BitFieldUnit {
+                    offset: position / 8,
+                    size: *unit_size,
+                });
+                prior_end = Some(position + unit_size * 8);
+            }
+            field_units.push(Some(bit_units.len() - 1));
+            continue;
+        }
+        let end = position + u64::from(width);
+        let unit = if kind == TagKind::Struct && prior_end == Some(*position) {
+            let index = bit_units.len() - 1;
+            bit_units[index].size = end.div_ceil(8) - bit_units[index].offset;
+            index
+        } else {
+            let index = bit_units.len();
+            bit_units.push(BitFieldUnit {
+                offset: position / 8,
+                size: end.div_ceil(8) - position / 8,
+            });
+            index
+        };
+        field_units.push(Some(unit));
+        prior_end = Some(end);
+    }
+    (bit_units, field_units)
 }
 
 fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {

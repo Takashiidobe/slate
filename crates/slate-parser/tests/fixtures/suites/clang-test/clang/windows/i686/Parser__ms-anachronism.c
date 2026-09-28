@@ -27,7 +27,7 @@ struct {} __cdecl s; // expected-warning {{'__cdecl' only applies to function ty
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 = struct {
-// DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[]];
 // DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

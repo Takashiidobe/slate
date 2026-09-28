@@ -223,28 +223,28 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field4 b: i8 : 3;
 // DEFAULT-NEXT:         field5 d: i8 : 4;
 // DEFAULT-NEXT:         field6 y: i16;
-// DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 1, 4, 4, 5, 6, 8], bit_offsets=[None, Some(8), Some(32), Some(32), Some(42), Some(48), None], bit_units=[(1, 3), (4, 2), (6, 1)], field_units=[None, Some(0), None, Some(1), Some(1), Some(2), None]];
+// DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 8, 12, 12, 14], bit_offsets=[None, Some(32), Some(64), Some(64), Some(96), Some(99), None], bit_units=[(4, 4), (8, 4), (12, 1)], field_units=[None, Some(0), None, Some(1), Some(2), Some(2), None]];
 // DEFAULT-NEXT:     type @type1 A = @type0;
 // DEFAULT-NEXT:     type @type2 B = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field2 a: i16 : 4;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 4, 4, 5], bit_offsets=[None, Some(32), Some(32), None], bit_units=[(4, 1)], field_units=[None, None, Some(0), None]];
+// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 1, 2, 4], bit_offsets=[None, Some(8), Some(16), None], bit_units=[(2, 2)], field_units=[None, None, Some(0), None]];
 // DEFAULT-NEXT:     type @type3 B = @type2;
 // DEFAULT-NEXT:     type @type4 C = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 a: i16 : 4;
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 1, 4, 4], bit_offsets=[None, Some(8), Some(32), None], bit_units=[(1, 1)], field_units=[None, Some(0), None, None]];
+// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 2, 4, 4], bit_offsets=[None, Some(16), Some(32), None], bit_units=[(2, 2)], field_units=[None, Some(0), None, None]];
 // DEFAULT-NEXT:     type @type5 C = @type4;
 // DEFAULT-NEXT:     type @type6 D = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 <anonymous>: i16 : 0;
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 2, 4, 4], bit_offsets=[None, Some(16), Some(32), None]];
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1, 1, 1], bit_offsets=[None, Some(8), Some(8), None]];
 // DEFAULT-NEXT:     type @type7 D = @type6;
 // DEFAULT-NEXT:     type @type8 E = union {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -252,7 +252,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 b: i32 : 3;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 1), (0, 1)], field_units=[None, Some(0), Some(1), None, None]];
+// DEFAULT-NEXT:     } [size=8, align=2, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 8), (0, 4)], field_units=[None, Some(0), Some(1), None, None]];
 // DEFAULT-NEXT:     type @type9 E = @type8;
 // DEFAULT-NEXT:     type @type10 F = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -266,7 +266,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field8 h: i16 : 11;
 // DEFAULT-NEXT:         field9 i: i16 : 11;
 // DEFAULT-NEXT:         field10 y: i16;
-// DEFAULT-NEXT:     } [size=14, align=2, offsets=[0, 1, 1, 2, 2, 3, 4, 6, 8, 10, 12], bit_offsets=[None, Some(8), Some(11), Some(16), Some(19), Some(25), Some(32), Some(48), Some(64), Some(80), None], bit_units=[(1, 1), (2, 2), (4, 1), (6, 2), (8, 2), (10, 2)], field_units=[None, Some(0), Some(0), Some(1), Some(1), Some(1), Some(2), Some(3), Some(4), Some(5), None]];
+// DEFAULT-NEXT:     } [size=16, align=2, offsets=[0, 1, 1, 2, 4, 4, 6, 8, 10, 12, 14], bit_offsets=[None, Some(8), Some(11), Some(16), Some(32), Some(38), Some(48), Some(64), Some(80), Some(96), None], bit_units=[(1, 1), (2, 1), (4, 2), (6, 2), (8, 2), (10, 2), (12, 2)], field_units=[None, Some(0), Some(0), Some(1), Some(2), Some(2), Some(3), Some(4), Some(5), Some(6), None]];
 // DEFAULT-NEXT:     type @type11 F = @type10;
 // DEFAULT-NEXT:     type @type12 G = union {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -274,19 +274,19 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 1)], field_units=[None, Some(0), None, None, None]];
+// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 4)], field_units=[None, Some(0), None, None, None]];
 // DEFAULT-NEXT:     type @type13 G = @type12;
 // DEFAULT-NEXT:     type @type14 H = struct {
 // DEFAULT-NEXT:         field0 a: u16 : 1;
 // DEFAULT-NEXT:         field1 <anonymous>: u8 : 0;
 // DEFAULT-NEXT:         field2 <anonymous>: u32 : 0;
 // DEFAULT-NEXT:         field3 c: u16 : 1;
-// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 1, 4, 4], bit_offsets=[Some(0), Some(8), Some(32), Some(32)], bit_units=[(0, 1), (4, 1)], field_units=[Some(0), None, None, Some(1)]];
+// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2, 2, 2], bit_offsets=[Some(0), Some(16), Some(16), Some(16)], bit_units=[(0, 2), (2, 2)], field_units=[Some(0), None, None, Some(1)]];
 // DEFAULT-NEXT:     type @type15 H = @type14;
 // DEFAULT-NEXT:     type @type16 I = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i16 : 8;
 // DEFAULT-NEXT:         field1 <anonymous>: i16 : 8;
-// DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
+// DEFAULT-NEXT:     } [size=2, align=2, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type17 I = @type16;
 // DEFAULT-NEXT:     type @type18 A1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -296,28 +296,28 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field4 b: i8 : 3;
 // DEFAULT-NEXT:         field5 d: i8 : 4;
 // DEFAULT-NEXT:         field6 y: i16;
-// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1, 4, 4, 5, 5, 7], bit_offsets=[None, Some(8), Some(32), Some(32), Some(42), Some(45), None], bit_units=[(1, 3), (4, 3)], field_units=[None, Some(0), None, Some(1), Some(1), Some(1), None]];
+// DEFAULT-NEXT:     } [size=12, align=1, offsets=[0, 1, 5, 5, 9, 9, 10], bit_offsets=[None, Some(8), Some(40), Some(40), Some(72), Some(75), None], bit_units=[(1, 4), (5, 4), (9, 1)], field_units=[None, Some(0), None, Some(1), Some(2), Some(2), None]];
 // DEFAULT-NEXT:     type @type19 A1 = @type18;
 // DEFAULT-NEXT:     type @type20 B1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field2 a: i16 : 4;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 4, 4, 5], bit_offsets=[None, Some(32), Some(32), None], bit_units=[(4, 1)], field_units=[None, None, Some(0), None]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 1, 1, 3], bit_offsets=[None, Some(8), Some(8), None], bit_units=[(1, 2)], field_units=[None, None, Some(0), None]];
 // DEFAULT-NEXT:     type @type21 B1 = @type20;
 // DEFAULT-NEXT:     type @type22 C1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 a: i16 : 4;
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1, 4, 4], bit_offsets=[None, Some(8), Some(32), None], bit_units=[(1, 1)], field_units=[None, Some(0), None, None]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 1, 3, 3], bit_offsets=[None, Some(8), Some(24), None], bit_units=[(1, 2)], field_units=[None, Some(0), None, None]];
 // DEFAULT-NEXT:     type @type23 C1 = @type22;
 // DEFAULT-NEXT:     type @type24 D1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 <anonymous>: i16 : 0;
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 y: i8;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 2, 4, 4], bit_offsets=[None, Some(16), Some(32), None]];
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1, 1, 1], bit_offsets=[None, Some(8), Some(8), None]];
 // DEFAULT-NEXT:     type @type25 D1 = @type24;
 // DEFAULT-NEXT:     type @type26 E1 = union {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -325,7 +325,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 b: i32 : 3;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 1), (0, 1)], field_units=[None, Some(0), Some(1), None, None]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 8), (0, 4)], field_units=[None, Some(0), Some(1), None, None]];
 // DEFAULT-NEXT:     type @type27 E1 = @type26;
 // DEFAULT-NEXT:     type @type28 F1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -339,7 +339,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field8 h: i16 : 11;
 // DEFAULT-NEXT:         field9 i: i16 : 11;
 // DEFAULT-NEXT:         field10 y: i16;
-// DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 1, 1, 1, 2, 2, 3, 4, 5, 7, 9], bit_offsets=[None, Some(8), Some(11), Some(14), Some(17), Some(23), Some(29), Some(35), Some(46), Some(57), None], bit_units=[(1, 8)], field_units=[None, Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), None]];
+// DEFAULT-NEXT:     } [size=15, align=1, offsets=[0, 1, 1, 2, 3, 3, 5, 7, 9, 11, 13], bit_offsets=[None, Some(8), Some(11), Some(16), Some(24), Some(30), Some(40), Some(56), Some(72), Some(88), None], bit_units=[(1, 1), (2, 1), (3, 2), (5, 2), (7, 2), (9, 2), (11, 2)], field_units=[None, Some(0), Some(0), Some(1), Some(2), Some(2), Some(3), Some(4), Some(5), Some(6), None]];
 // DEFAULT-NEXT:     type @type29 F1 = @type28;
 // DEFAULT-NEXT:     type @type30 G1 = union {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -347,20 +347,20 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 1)], field_units=[None, Some(0), None, None, None]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 4)], field_units=[None, Some(0), None, None, None]];
 // DEFAULT-NEXT:     type @type31 G1 = @type30;
 // DEFAULT-NEXT:     type @type32 H1 = struct {
 // DEFAULT-NEXT:         field0 a: u32 : 1;
 // DEFAULT-NEXT:         field1 <anonymous>: u8 : 0;
 // DEFAULT-NEXT:         field2 <anonymous>: u32 : 0;
 // DEFAULT-NEXT:         field3 c: u32 : 1;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1, 4, 4], bit_offsets=[Some(0), Some(8), Some(32), Some(32)], bit_units=[(0, 1), (4, 1)], field_units=[Some(0), None, None, Some(1)]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 4, 4, 4], bit_offsets=[Some(0), Some(32), Some(32), Some(32)], bit_units=[(0, 4), (4, 4)], field_units=[Some(0), None, None, Some(1)]];
 // DEFAULT-NEXT:     type @type33 H1 = @type32;
 // DEFAULT-NEXT:     type @type34 I1 = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i16 : 8;
 // DEFAULT-NEXT:         field1 <anonymous>: i16 : 8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
 // DEFAULT-NEXT:     type @type35 I1 = @type34;
-// DEFAULT-NEXT:     global %36 x: array<i32, 132> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %36 x: array<i32, 125> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

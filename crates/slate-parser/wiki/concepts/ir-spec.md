@@ -444,12 +444,12 @@ Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
 shim defaults. GCC on these Windows profiles is rejected rather than falling
 back to Linux macros.
 
-This is selection scaffolding, not Windows compatibility: Microsoft record
-layout, calling conventions, extended-type availability, compiler-option
-validation, standard-mode macro adjustments for native MSVC, and SDK/header
-integration remain incomplete. In particular, the current aggregate algorithm
-must not be treated as a Microsoft ABI oracle. The checked-in 32-bit ARM MSVC
-snapshot remains unwired.
+This is selection scaffolding, not full Windows compatibility: calling
+conventions, extended-type availability, compiler-option validation,
+standard-mode macro adjustments for native MSVC, and SDK/header integration
+remain incomplete. Record layout on these triples is Microsoft's (see
+"Microsoft record layout" below). The checked-in 32-bit ARM MSVC snapshot
+remains unwired.
 
 The type view resolves struct, union, and enum tag definitions. On the
 supported Linux x86_64, x86, AArch64, and ARM32 targets, record layout records byte size, aggregate alignment,
@@ -1149,8 +1149,41 @@ their size, which matters on i686, where `long long` becomes 8-aligned. A
 scalar whose size is not a power of two, such as i686 `long double`, is an
 error, as it is in clang. Storage units are the declared-type units, matching
 clang's discrete bit-field codegen. Oracle: clang's ItaniumRecordLayoutBuilder
-`IsMsStruct` path. Microsoft *target* layout (`*-windows-msvc`) is a separate,
-still-missing algorithm.
+`IsMsStruct` path. Microsoft *target* layout (`*-windows-msvc`) is a separate
+algorithm, below.
+
+### Microsoft record layout
+
+Every `*-windows-msvc` triple (x86_64, i686, aarch64, thumbv7a) lays out every
+record with clang's `MicrosoftRecordLayoutBuilder`. That holds under both the
+Clang and MSVC flavors, and `ms_struct`/`gcc_struct` make no difference; clang
+chooses the builder from the target alone. Where it differs from Itanium and
+from `ms_struct`:
+
+- Bit-fields share a unit only when their declared types have the same size
+  and the next one fits (`struct { char a : 4; int b : 4; }` is 8 bytes).
+  In a union, bit-fields take their type's size but do not raise alignment
+  (`union { int a : 3; }` is size 4, align 1).
+- A zero-width bit-field matters only directly after a non-zero-width
+  bit-field. There it rounds the offset up to its type's alignment and raises
+  record alignment. Anywhere else it is ignored (`struct { char a; int : 0;
+  char b; }` is 2 bytes).
+- `packed` on the record acts like `#pragma pack(1)`, bit-fields included.
+  A `#pragma pack` wider than a pointer is ignored.
+- Required alignment comes from `aligned`/`__declspec(align)`/`_Alignas` on a
+  field, from an aligned typedef, or from a nested record's own required
+  alignment. Pack does not cap it (a pack(1) record containing an
+  `aligned(16)` struct still puts it at 16). On a bit-field, the requested
+  alignment raises that field's alignment instead. It is recorded as
+  `required_align`, which the Win32 argument ABI reads.
+- A record with no storage (empty, only zero-width bit-fields, only
+  zero-length or flexible arrays) is 4 bytes, or its alignment when required
+  alignment is at least 4.
+- Bit units are the discrete declared-type units, as for `ms_struct`.
+
+Oracle: `clang -Xclang -fdump-record-layouts` on each triple, cross-checked
+with `tools/cl.exe` (x64, x86, arm64). Fixtures:
+`{clang,msvc}/windows/*/ms_record_layout.c`.
 
 `STDC FENV_ACCESS`/`FP_CONTRACT`/`CX_LIMITED_RANGE` and `float_control` are
 region-scoped rather than declaration-scoped: sema carries a `FloatingRegion`

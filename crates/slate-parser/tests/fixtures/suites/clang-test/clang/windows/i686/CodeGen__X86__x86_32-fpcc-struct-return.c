@@ -53,7 +53,7 @@ ZeroSized returnZero(ZeroSized x) { return x; }
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0]];
 // DEFAULT-NEXT:     type @type5 Short = @type4;
 // DEFAULT-NEXT:     type @type6 = struct {
-// DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[]];
 // DEFAULT-NEXT:     type @type7 ZeroSized = @type6;
 // DEFAULT-NEXT:     fn %8 @returnBig(%9 x: @type0) -> @type0 [linkage=external] [abi=x86_win32(coerce<i32, i32, i32, i32>) -> sret<align=4>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%9));
@@ -64,7 +64,7 @@ ZeroSized returnZero(ZeroSized x) { return x; }
 // DEFAULT-NEXT:     fn %12 @returnShort(%13 x: @type4) -> @type4 [linkage=external] [abi=x86_win32(coerce<i16>) -> coerce<i16>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type4, reason=return>(read<@type4>(%13));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @returnZero(%15 x: @type6) -> @type6 [linkage=external] [abi=x86_win32(coerce<>) -> sret<align=1>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %14 @returnZero(%15 x: @type6) -> @type6 [linkage=external] [abi=x86_win32(coerce<>) -> coerce<i32>] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type6, reason=return>(read<@type6>(%15));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
