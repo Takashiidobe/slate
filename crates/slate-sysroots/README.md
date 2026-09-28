@@ -62,12 +62,16 @@ sysroot alongside the Windows SDK headers; the installer does not duplicate
 them under `compiler-headers`.
 
 Compiler headers are installed under `compiler-headers/clang-22.1.8/include`
-and `compiler-headers/gcc-16.1.0/include` in the same data directory. The
+and `compiler-headers/gcc-16.2.0/include` in the same data directory. The
 Clang installer requires `git` and copies the upstream release's resource
 headers. The GCC installer downloads the release archive into Slate's cache,
-checks its SHA-256, and extracts GCC's generic `ginclude` headers. GCC's
-generated and target-specific compiler headers are not part of that source
-directory. `install compiler-headers msvc` installs all supported Windows
+checks its SHA-256, and assembles the headers GCC's `stmp-int-hdrs` step would
+install for a `use_gcc_stdint=wrap` target such as Linux: the `ginclude`
+headers, `limits.h` as `limitx.h` + `glimits.h` + `limity.h`, `syslimits.h`
+from `gsyslimits.h`, `stdint.h` from `stdint-wrap.h`, and `unwind.h` from
+libgcc's `unwind-generic.h`. For x86_64 Linux the result is byte-identical to
+an installed GCC 16.2's headers. Target `extra_headers` such as the x86
+intrinsics are not installed yet. `install compiler-headers msvc` installs all supported Windows
 MSVC sysroots and returns their existing CRT header paths. Add a Windows MSVC
 target triple to install or inspect one architecture only.
 

@@ -139,11 +139,18 @@ fn compiler_header_bundles_resolve_with_target_includes() {
     for (compiler, files) in [
         (
             CompilerHeaders::Clang,
-            ["stdarg.h", "stddef.h", "immintrin.h"],
+            &["stdarg.h", "stddef.h", "immintrin.h"] as &[&str],
         ),
         (
             CompilerHeaders::Gcc,
-            ["stdarg.h", "stddef.h", "stdint-gcc.h"],
+            &[
+                "stdarg.h",
+                "stddef.h",
+                "stdint.h",
+                "limits.h",
+                "syslimits.h",
+                "unwind.h",
+            ],
         ),
     ] {
         let include = paths.compiler_header_path(compiler);

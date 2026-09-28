@@ -1,15 +1,16 @@
 use crate::install::{install_staged_at, staging_path};
 use crate::{DoctorCheck, Paths, Target};
+use std::collections::HashMap;
 use std::env;
 use std::ffi::OsStr;
 use std::fs::{self, File};
-use std::io;
-use std::path::{Component, Path, PathBuf};
+use std::io::{self, Read};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub const CLANG_VERSION: &str = "22.1.8";
-pub const GCC_VERSION: &str = "16.1.0";
-const GCC_SHA256: &str = "50efb4d94c3397aff3b0d61a5abd748b4dd31d9d3f2ab7be05b171d36a510f79";
+pub const GCC_VERSION: &str = "16.2.0";
+const GCC_SHA256: &str = "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CompilerHeaders {
@@ -114,8 +115,15 @@ fn checks(compiler: CompilerHeaders, path: PathBuf) -> Vec<DoctorCheck> {
             &["stdarg.h", "stddef.h", "immintrin.h"],
         ),
         CompilerHeaders::Gcc => (
-            "GCC generic headers",
-            &["stdarg.h", "stddef.h", "stdint-gcc.h"],
+            "GCC compiler headers",
+            &[
+                "stdarg.h",
+                "stddef.h",
+                "stdint.h",
+                "limits.h",
+                "syslimits.h",
+                "unwind.h",
+            ],
         ),
         CompilerHeaders::Msvc(_) => ("MSVC compiler headers", &["vcruntime.h", "yvals_core.h"]),
     };
@@ -374,6 +382,31 @@ fn copy_link(source: &Path, target: &Path) -> io::Result<()> {
     }
 }
 
+const GCC_OUTPUTS: &[(&str, &[&str])] = &[
+    ("include/float.h", &["gcc/ginclude/float.h"]),
+    ("include/iso646.h", &["gcc/ginclude/iso646.h"]),
+    ("include/stdarg.h", &["gcc/ginclude/stdarg.h"]),
+    ("include/stdbool.h", &["gcc/ginclude/stdbool.h"]),
+    ("include/stddef.h", &["gcc/ginclude/stddef.h"]),
+    ("include/varargs.h", &["gcc/ginclude/varargs.h"]),
+    ("include/stdfix.h", &["gcc/ginclude/stdfix.h"]),
+    ("include/stdnoreturn.h", &["gcc/ginclude/stdnoreturn.h"]),
+    ("include/stdalign.h", &["gcc/ginclude/stdalign.h"]),
+    ("include/stdatomic.h", &["gcc/ginclude/stdatomic.h"]),
+    ("include/stdckdint.h", &["gcc/ginclude/stdckdint.h"]),
+    ("include/stdcountof.h", &["gcc/ginclude/stdcountof.h"]),
+    ("include/stdint-gcc.h", &["gcc/ginclude/stdint-gcc.h"]),
+    ("include/stdint.h", &["gcc/ginclude/stdint-wrap.h"]),
+    (
+        "include/limits.h",
+        &["gcc/limitx.h", "gcc/glimits.h", "gcc/limity.h"],
+    ),
+    ("include/syslimits.h", &["gcc/gsyslimits.h"]),
+    ("include/unwind.h", &["libgcc/unwind-generic.h"]),
+    ("COPYING3", &["COPYING3"]),
+    ("COPYING.RUNTIME", &["COPYING.RUNTIME"]),
+];
+
 fn install_gcc(cache: &Path, root: &Path) -> io::Result<()> {
     let filename = format!("gcc-{GCC_VERSION}.tar.xz");
     let url = format!("https://ftp.gnu.org/gnu/gcc/gcc-{GCC_VERSION}/{filename}");
@@ -382,49 +415,51 @@ fn install_gcc(cache: &Path, root: &Path) -> io::Result<()> {
     let file = File::open(archive)?;
     let decoder = xz2::read::XzDecoder::new(file);
     let mut archive = tar::Archive::new(decoder);
-    let prefix = format!("gcc-{GCC_VERSION}/gcc/ginclude/");
-    let license_prefix = format!("gcc-{GCC_VERSION}/");
+    let prefix = format!("gcc-{GCC_VERSION}/");
+    let mut sources: HashMap<&str, Vec<u8>> = HashMap::new();
     for entry in archive.entries()? {
         let mut entry = entry?;
+        if !entry.header().entry_type().is_file() {
+            continue;
+        }
         let path = entry.path()?;
-        let path = path.as_ref();
-        let output = if let Ok(relative) = path.strip_prefix(&prefix) {
-            Some(root.join("include").join(relative))
-        } else if let Ok(relative) = path.strip_prefix(&license_prefix) {
-            match relative.to_str() {
-                Some("COPYING3" | "COPYING.RUNTIME") => Some(root.join(relative)),
-                _ => None,
-            }
-        } else {
-            None
+        let Some(relative) = path
+            .strip_prefix(&prefix)
+            .ok()
+            .and_then(|relative| relative.to_str())
+        else {
+            continue;
         };
-        let Some(output) = output else { continue };
-        if path
-            .components()
-            .any(|component| !matches!(component, Component::Normal(_)))
-        {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "invalid GCC archive path",
-            ));
+        let Some(&source) = GCC_OUTPUTS
+            .iter()
+            .flat_map(|(_, sources)| sources.iter())
+            .find(|source| **source == relative)
+        else {
+            continue;
+        };
+        let mut contents = Vec::new();
+        entry.read_to_end(&mut contents)?;
+        sources.insert(source, contents);
+    }
+    for (output, inputs) in GCC_OUTPUTS {
+        let mut contents = Vec::new();
+        for input in *inputs {
+            let source = sources.get(input).ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    format!("GCC archive is missing {input}"),
+                )
+            })?;
+            contents.extend_from_slice(source);
         }
-        if entry.header().entry_type().is_dir() {
-            fs::create_dir_all(&output)?;
-        } else if entry.header().entry_type().is_file() {
-            fs::create_dir_all(output.parent().expect("archive entry has a parent"))?;
-            let mut file = File::create(output)?;
-            io::copy(&mut entry, &mut file)?;
-        } else {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "unexpected GCC archive entry",
-            ));
-        }
+        let output = root.join(output);
+        fs::create_dir_all(output.parent().expect("GCC output has a parent"))?;
+        fs::write(output, contents)?;
     }
     fs::write(
         root.join("COMPILER-HEADERS-MANIFEST.txt"),
         format!(
-            "Compiler: GCC\nVersion: {GCC_VERSION}\nSource URL: {url}\nSource path: gcc/ginclude\nScope: generic compiler headers only; target-specific and generated headers omitted\n"
+            "Compiler: GCC\nVersion: {GCC_VERSION}\nSource URL: {url}\nAssembly: stmp-int-hdrs from gcc/Makefile.in for a use_gcc_stdint=wrap target; limits.h is limitx.h + glimits.h + limity.h, stdint.h is ginclude/stdint-wrap.h, unwind.h is libgcc/unwind-generic.h\nScope: target-independent compiler headers; target extra_headers omitted\n"
         ),
     )?;
     Ok(())
