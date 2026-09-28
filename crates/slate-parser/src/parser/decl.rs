@@ -44,7 +44,7 @@ impl Parser {
                 parse_pack(self, &tokens[2..tokens.len() - 1])?
             }
             [Token::Ident(name), Token::Ident(symbol)] if name == "weak" => PragmaKind::Weak {
-                name: symbol.clone(),
+                name: symbol.to_string(),
                 alias: None,
             },
             [
@@ -53,8 +53,8 @@ impl Parser {
                 Token::Equal,
                 Token::Ident(alias),
             ] if name == "weak" => PragmaKind::Weak {
-                name: symbol.clone(),
-                alias: Some(alias.clone()),
+                name: symbol.to_string(),
+                alias: Some(alias.to_string()),
             },
             [
                 Token::Ident(gcc),
@@ -63,7 +63,7 @@ impl Parser {
                 rest @ ..,
             ] if gcc == "GCC" && visibility == "visibility" => {
                 let value = match rest {
-                    [Token::LParen, Token::Ident(value), Token::RParen] => Some(value.clone()),
+                    [Token::LParen, Token::Ident(value), Token::RParen] => Some(value.to_string()),
                     _ => None,
                 };
                 PragmaKind::Visibility {
@@ -563,7 +563,7 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
     for argument in arguments.by_ref() {
         match &argument.as_tokens()[..] {
             [Token::Ident(name)] if label.is_none() && alignment.is_none() => {
-                label = Some(name.clone());
+                label = Some(name.to_string());
             }
             _ => {
                 let checkpoint = parser.checkpoint();
@@ -647,7 +647,7 @@ pub(super) fn bare_identifier_names<'a>(
         if expect_ident {
             match token {
                 Token::Ident(name) if !context.is_some_and(|parser| parser.is_typedef(name)) => {
-                    names.push(name.clone())
+                    names.push(name.to_string())
                 }
                 _ => return None,
             }

@@ -133,7 +133,7 @@ impl<'a> DeclaratorParser<'a> {
         let Some(next) = shape.add(piece) else {
             return Err(DeclaratorError::CannotCombine(match token {
                 Token::Keyword(keyword) => <&str>::from(keyword).to_string(),
-                Token::Ident(name) => name,
+                Token::Ident(name) => name.into(),
                 other => format!("{other:?}"),
             }));
         };
@@ -188,9 +188,9 @@ impl<'a> DeclaratorParser<'a> {
                 })
             }
             Token::Ident(name) if is_target_builtin_name(&name) => {
-                TypeSpecifier::TargetBuiltin(name)
+                TypeSpecifier::TargetBuiltin(name.into())
             }
-            Token::Ident(name) => TypeSpecifier::Named(name),
+            Token::Ident(name) => TypeSpecifier::Named(name.into()),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
         })
     }
@@ -203,7 +203,7 @@ impl<'a> DeclaratorParser<'a> {
         let mut attributes = self.parse_attributes()?;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
-                let name = name.clone();
+                let name = name.to_string();
                 self.pos += 1;
                 Some(name)
             }
@@ -248,7 +248,7 @@ impl<'a> DeclaratorParser<'a> {
         let mut attributes = self.parse_attributes()?;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
-                let name = name.clone();
+                let name = name.to_string();
                 self.pos += 1;
                 Some(name)
             }
@@ -378,7 +378,7 @@ impl<'a> DeclaratorParser<'a> {
             }
             items.push(span_tokens(
                 EnumItemKind::Enumerator(Enumerator {
-                    name,
+                    name: name.to_string(),
                     attributes,
                     value,
                 }),
@@ -475,7 +475,7 @@ impl<'a> DeclaratorParser<'a> {
         let mut declarator = match self.peek().cloned() {
             Some(Token::Ident(name)) => {
                 self.pos += 1;
-                Declarator::Name(name)
+                Declarator::Name(name.into())
             }
             Some(Token::Keyword(keyword @ Keyword::Float16)) => {
                 self.pos += 1;
@@ -579,7 +579,7 @@ impl<'a> DeclaratorParser<'a> {
         implicit_int_function: bool,
     ) -> Result<DeclarationSpecifiers, DeclaratorError> {
         let mut specifiers = specifiers_with_type(TypeSpecifier::Void);
-        while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
+        while self.peek() == Some(&Token::Ident("__extension__".into())) {
             self.pos += 1;
         }
         specifiers.attributes = self.parse_attributes()?;
@@ -650,7 +650,7 @@ impl<'a> DeclaratorParser<'a> {
         specifiers: &mut DeclarationSpecifiers,
     ) -> Result<(), DeclaratorError> {
         loop {
-            while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
+            while self.peek() == Some(&Token::Ident("__extension__".into())) {
                 self.pos += 1;
             }
             let start = self.pos;

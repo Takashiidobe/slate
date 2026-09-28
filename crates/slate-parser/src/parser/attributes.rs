@@ -48,7 +48,7 @@ impl<'a> AttrCursor<'a> {
     pub(super) fn expect_ident(&mut self, message: &str) -> Result<String, String> {
         match self.peek() {
             Some(Token::Ident(name)) => {
-                let name = name.clone();
+                let name = name.to_string();
                 self.pos += 1;
                 Ok(name)
             }
@@ -271,14 +271,14 @@ fn parse_attribute_value(
     let canonical_name = unwrapped_attribute_name(name);
     let single_string = || match arguments {
         [single] => match &single.value {
-            Token::StringLit(value) => Some(value.clone()),
+            Token::StringLit(value) => Some(value.to_string()),
             _ => None,
         },
         _ => None,
     };
     let single_ident = || match arguments {
         [single] => match &single.value {
-            Token::Ident(value) => Some(value.clone()),
+            Token::Ident(value) => Some(value.to_string()),
             _ => None,
         },
         _ => None,

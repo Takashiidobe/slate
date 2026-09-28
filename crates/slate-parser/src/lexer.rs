@@ -1,6 +1,7 @@
 use crate::ast::{FileId, Loc, Span};
 use crate::files::raw_byte_for_char;
 use crate::standard_features::StandardFeatures;
+use std::rc::Rc;
 
 // a numeric escape or a raw source byte names a code unit directly; anything
 // else names a character that the execution encoding still has to encode
@@ -187,25 +188,96 @@ impl From<Keyword> for &'static str {
     }
 }
 
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub struct TokenText(Rc<str>);
+
+impl TokenText {
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::ops::Deref for TokenText {
+    type Target = str;
+
+    fn deref(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for TokenText {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Debug::fmt(&*self.0, formatter)
+    }
+}
+
+impl std::fmt::Display for TokenText {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(&self.0)
+    }
+}
+
+impl From<String> for TokenText {
+    fn from(text: String) -> Self {
+        Self(text.into())
+    }
+}
+
+impl From<&str> for TokenText {
+    fn from(text: &str) -> Self {
+        Self(text.into())
+    }
+}
+
+impl From<TokenText> for String {
+    fn from(text: TokenText) -> Self {
+        text.0.to_string()
+    }
+}
+
+impl PartialEq<str> for TokenText {
+    fn eq(&self, other: &str) -> bool {
+        &*self.0 == other
+    }
+}
+
+impl PartialEq<&str> for TokenText {
+    fn eq(&self, other: &&str) -> bool {
+        &*self.0 == *other
+    }
+}
+
+impl PartialEq<String> for TokenText {
+    fn eq(&self, other: &String) -> bool {
+        *self.0 == **other
+    }
+}
+
+impl PartialEq<TokenText> for String {
+    fn eq(&self, other: &TokenText) -> bool {
+        **self == *other.0
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     Keyword(Keyword),
     Sizeof,
     Alignof,
-    Ident(String),
-    IntLit(String),
-    FloatLit(String),
-    CharLit(String, Vec<u32>),
-    Utf8CharLit(String, Vec<u32>),
-    Utf16CharLit(String, Vec<u32>),
-    Utf32CharLit(String, Vec<u32>),
-    WideCharLit(String, Vec<u32>),
-    StringLit(String),
-    Utf8StringLit(String),
-    Utf16StringLit(String),
-    Utf32StringLit(String),
-    WideStringLit(String),
-    Comment(String),
+    Ident(TokenText),
+    IntLit(TokenText),
+    FloatLit(TokenText),
+    CharLit(TokenText, Rc<[u32]>),
+    Utf8CharLit(TokenText, Rc<[u32]>),
+    Utf16CharLit(TokenText, Rc<[u32]>),
+    Utf32CharLit(TokenText, Rc<[u32]>),
+    WideCharLit(TokenText, Rc<[u32]>),
+    StringLit(TokenText),
+    Utf8StringLit(TokenText),
+    Utf16StringLit(TokenText),
+    Utf32StringLit(TokenText),
+    WideStringLit(TokenText),
+    Comment(TokenText),
     Newline,
     LParen,
     RParen,
@@ -352,9 +424,9 @@ impl From<&Token> for String {
             Token::Sizeof => "sizeof".into(),
             Token::Alignof => "_Alignof".into(),
             Token::Keyword(keyword) => <&str>::from(*keyword).into(),
-            Token::Ident(name) => name.clone(),
-            Token::IntLit(value) => value.clone(),
-            Token::FloatLit(value) => value.clone(),
+            Token::Ident(name) => name.to_string(),
+            Token::IntLit(value) => value.to_string(),
+            Token::FloatLit(value) => value.to_string(),
             Token::CharLit(value, _) => format!("'{value}'"),
             Token::Utf8CharLit(value, _) => format!("u8'{value}'"),
             Token::Utf16CharLit(value, _) => format!("u'{value}'"),
@@ -365,7 +437,7 @@ impl From<&Token> for String {
             Token::Utf16StringLit(value) => format!("u\"{value}\""),
             Token::Utf32StringLit(value) => format!("U\"{value}\""),
             Token::WideStringLit(value) => format!("L\"{value}\""),
-            Token::Comment(text) => text.clone(),
+            Token::Comment(text) => text.to_string(),
             Token::Newline => "\n".into(),
             Token::LParen => "(".into(),
             Token::RParen => ")".into(),
@@ -638,7 +710,7 @@ impl Lexer {
                 self.pos += 1;
             }
             let text: String = self.chars[i..self.pos].iter().collect();
-            self.emit(Token::Comment(text));
+            self.emit(Token::Comment(text.into()));
             self.space_before = true;
         } else if self.try_consume("/*") {
             while self.pos < self.chars.len() && !self.peek_str("*/") {
@@ -646,7 +718,7 @@ impl Lexer {
             }
             self.pos = (self.pos + 2).min(self.chars.len());
             let text: String = self.chars[i..self.pos].iter().collect();
-            self.emit(Token::Comment(text));
+            self.emit(Token::Comment(text.into()));
             self.space_before = true;
         } else if c.is_ascii_digit()
             || (c == '.' && self.peek_at(1).is_some_and(|next| next.is_ascii_digit()))
@@ -659,7 +731,7 @@ impl Lexer {
                 &['e', 'E']
             };
             if spelling.contains('.') || spelling.contains(exponent) {
-                self.emit(Token::FloatLit(spelling));
+                self.emit(Token::FloatLit(spelling.into()));
             } else {
                 let digits = Self::integer_digits(&spelling).replace('\'', "");
                 let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
@@ -672,9 +744,9 @@ impl Lexer {
                     (10, digits.as_str())
                 };
                 if !digits.is_empty() && digits.chars().all(|digit| digit.is_digit(radix)) {
-                    self.emit(Token::IntLit(spelling));
+                    self.emit(Token::IntLit(spelling.into()));
                 } else {
-                    self.emit(Token::FloatLit(spelling));
+                    self.emit(Token::FloatLit(spelling.into()));
                 }
             }
         } else if let Some(prefix_len) = self.string_prefix_len() {
@@ -685,11 +757,11 @@ impl Lexer {
                 .collect();
             self.pos = self.past_literal(self.pos);
             let token = match prefix_len {
-                0 => Token::StringLit(value),
-                1 if c == 'u' => Token::Utf16StringLit(value),
-                1 if c == 'U' => Token::Utf32StringLit(value),
-                1 => Token::WideStringLit(value),
-                _ => Token::Utf8StringLit(value),
+                0 => Token::StringLit(value.into()),
+                1 if c == 'u' => Token::Utf16StringLit(value.into()),
+                1 if c == 'U' => Token::Utf32StringLit(value.into()),
+                1 => Token::WideStringLit(value.into()),
+                _ => Token::Utf8StringLit(value.into()),
             };
             self.emit(token);
         } else if let Some(prefix_len) = self.char_prefix_len() {
@@ -698,11 +770,11 @@ impl Lexer {
             let value: String = self.chars[start + 1..literal_close].iter().collect();
             let decoded = Self::decode_escapes(&self.chars, start + 1, literal_close);
             let token = match prefix_len {
-                0 => Token::CharLit(value, decoded),
-                1 if c == 'u' => Token::Utf16CharLit(value, decoded),
-                1 if c == 'U' => Token::Utf32CharLit(value, decoded),
-                1 => Token::WideCharLit(value, decoded),
-                _ => Token::Utf8CharLit(value, decoded),
+                0 => Token::CharLit(value.into(), decoded.into()),
+                1 if c == 'u' => Token::Utf16CharLit(value.into(), decoded.into()),
+                1 if c == 'U' => Token::Utf32CharLit(value.into(), decoded.into()),
+                1 => Token::WideCharLit(value.into(), decoded.into()),
+                _ => Token::Utf8CharLit(value.into(), decoded.into()),
             };
             self.pos = self.past_literal(literal_close);
             self.emit(token);
@@ -711,14 +783,14 @@ impl Lexer {
             let value: String = self.chars[i + 1..literal_close].iter().collect();
             let decoded = Self::decode_escapes(&self.chars, i + 1, literal_close);
             self.pos = self.past_literal(literal_close);
-            self.emit(Token::CharLit(value, decoded));
+            self.emit(Token::CharLit(value.into(), decoded.into()));
         } else if c == '"' {
             let literal_close = self.literal_end(i, '"');
             let value: String = self.chars[i + 1..literal_close.min(self.chars.len())]
                 .iter()
                 .collect();
             self.pos = self.past_literal(literal_close);
-            self.emit(Token::StringLit(value));
+            self.emit(Token::StringLit(value.into()));
         } else if c.is_ascii_alphabetic() || matches!(c, '_' | '$' | '\\') {
             while self.pos < self.chars.len()
                 && (self.chars[self.pos].is_ascii_alphanumeric()
@@ -732,7 +804,7 @@ impl Lexer {
                 }
             }
             let word: String = self.chars[i..self.pos].iter().collect();
-            self.emit(Token::Ident(word));
+            self.emit(Token::Ident(word.into()));
         } else if let Some(token) = self.try_consume_op() {
             self.emit(token);
         } else {
@@ -740,7 +812,7 @@ impl Lexer {
                 .iter()
                 .find(|(ch, _)| *ch == c)
                 .map(|(_, token)| token.clone())
-                .unwrap_or_else(|| Token::Ident(c.to_string()));
+                .unwrap_or_else(|| Token::Ident(c.to_string().into()));
             self.pos += 1;
             self.emit(token);
         }

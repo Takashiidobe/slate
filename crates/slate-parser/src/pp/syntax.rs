@@ -113,7 +113,7 @@ struct LogicalLine {
 
 pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
     match &token.value {
-        Token::Ident(name) => Some(name.clone()),
+        Token::Ident(name) => Some(name.to_string()),
         Token::Keyword(_) | Token::Sizeof | Token::Alignof => src
             .get(token.spelling.offset..token.spelling.offset + token.spelling.length)
             .map(str::to_string),
@@ -146,7 +146,7 @@ fn logical_lines(tokens: Vec<Span<Token>>) -> Vec<LogicalLine> {
             Token::Comment(text) => {
                 current
                     .comments
-                    .push(Span::new(text, token.spelling, token.expansion))
+                    .push(Span::new(text.to_string(), token.spelling, token.expansion))
             }
             _ => current.tokens.push(token),
         }

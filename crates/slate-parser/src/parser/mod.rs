@@ -77,7 +77,7 @@ impl<'p, 'a> TokenCursor<'p, 'a> {
     fn expect_ident(&mut self, message: &str) -> Result<String, ParseError> {
         match self.peek() {
             Some(Token::Ident(name)) => {
-                let name = name.clone();
+                let name = name.to_string();
                 self.pos += 1;
                 Ok(name)
             }

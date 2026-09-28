@@ -1,6 +1,6 @@
 use super::{MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
-use crate::lexer::{Token, TokenSpanExt};
+use crate::lexer::{Token, TokenSpanExt, TokenText};
 use foldhash::HashSet;
 use std::rc::Rc;
 
@@ -54,42 +54,54 @@ impl Preprocessor<'_> {
         match name {
             "__LINE__" => {
                 let (line, _) = self.presumed_location(loc);
-                Some(token.clone().with_value(Token::IntLit(line.to_string())))
+                Some(
+                    token
+                        .clone()
+                        .with_value(Token::IntLit(line.to_string().into())),
+                )
             }
             "__FILE__" => {
                 let (_, file) = self.presumed_location(loc);
-                Some(token.clone().with_value(Token::StringLit(file)))
+                Some(token.clone().with_value(Token::StringLit(file.into())))
             }
             "__FILE_NAME__" => {
                 let (_, file) = self.presumed_location(loc);
                 let name = std::path::Path::new(&file)
                     .file_name()
                     .map_or(file.clone(), |name| name.to_string_lossy().into_owned());
-                Some(token.clone().with_value(Token::StringLit(name)))
+                Some(token.clone().with_value(Token::StringLit(name.into())))
             }
             "__BASE_FILE__" => {
                 let main = self.main_file.unwrap_or(loc.file);
                 let file = crate::files::display_path(self.files.path(main));
-                Some(token.clone().with_value(Token::StringLit(file)))
+                Some(token.clone().with_value(Token::StringLit(file.into())))
             }
             "__INCLUDE_LEVEL__" => {
                 let level = self.open_stack.len().saturating_sub(1);
-                Some(token.clone().with_value(Token::IntLit(level.to_string())))
+                Some(
+                    token
+                        .clone()
+                        .with_value(Token::IntLit(level.to_string().into())),
+                )
             }
             "__COUNTER__" => {
                 let value = self.counter.get();
                 self.counter.set(value + 1);
-                Some(token.clone().with_value(Token::IntLit(value.to_string())))
+                Some(
+                    token
+                        .clone()
+                        .with_value(Token::IntLit(value.to_string().into())),
+                )
             }
             "__DATE__" => Some(
                 token
                     .clone()
-                    .with_value(Token::StringLit(self.build_date())),
+                    .with_value(Token::StringLit(self.build_date().into())),
             ),
             "__TIME__" => Some(
                 token
                     .clone()
-                    .with_value(Token::StringLit(self.build_time())),
+                    .with_value(Token::StringLit(self.build_time().into())),
             ),
             _ => None,
         }
@@ -145,7 +157,7 @@ impl Preprocessor<'_> {
 
     fn may_expand(&self, token: &Span<Token>) -> bool {
         match &token.value {
-            Token::Ident(name) => name.starts_with("__") || self.macros.contains_key(name),
+            Token::Ident(name) => name.starts_with("__") || self.macros.contains_key(name.as_str()),
             _ => false,
         }
     }
@@ -153,7 +165,7 @@ impl Preprocessor<'_> {
     pub(super) fn expand_macros(
         &self,
         tokens: &[Span<Token>],
-        disabled: &mut HashSet<String>,
+        disabled: &mut HashSet<TokenText>,
     ) -> Vec<Span<Token>> {
         self.expand_rescanning(tokens, &[], disabled).0
     }
@@ -165,7 +177,7 @@ impl Preprocessor<'_> {
         &self,
         tokens: &[Span<Token>],
         tail: &[Span<Token>],
-        disabled: &mut HashSet<String>,
+        disabled: &mut HashSet<TokenText>,
     ) -> (Vec<Span<Token>>, usize) {
         let mut expanded = Vec::new();
         let mut i = 0;
@@ -182,7 +194,7 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             }
-            let Some(macro_entry) = self.macros.get(name) else {
+            let Some(macro_entry) = self.macros.get(name.as_str()) else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -277,7 +289,7 @@ impl Preprocessor<'_> {
         replacement: &[Span<Token>],
         rest: &[Span<Token>],
         tail: &[Span<Token>],
-        disabled: &mut HashSet<String>,
+        disabled: &mut HashSet<TokenText>,
     ) -> (Vec<Span<Token>>, usize) {
         let isolated = self.expand_macros(replacement, disabled);
         if (rest.is_empty() && tail.is_empty()) || !self.wants_more(&isolated) {
@@ -304,7 +316,7 @@ impl Preprocessor<'_> {
         match expansion.last().map(|token| &token.value) {
             Some(Token::Ident(name)) => self
                 .macros
-                .get(name)
+                .get(name.as_str())
                 .is_some_and(|entry| entry.definition.parameters.is_some()),
             _ => false,
         }
@@ -557,7 +569,7 @@ impl Preprocessor<'_> {
                     output.push(
                         stamp
                             .apply(token)
-                            .with_value(Token::StringLit(stringized_source(&argument))),
+                            .with_value(Token::StringLit(stringized_source(&argument).into())),
                     );
                     i += 2;
                     continue;

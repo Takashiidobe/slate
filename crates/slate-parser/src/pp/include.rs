@@ -39,7 +39,7 @@ pub(super) fn include_target(
                 value: Token::StringLit(name),
                 ..
             },
-        ] => Some((name.clone(), false)),
+        ] => Some((name.to_string(), false)),
         [open, middle @ .., close]
             if open.value == Token::Less && close.value == Token::Greater =>
         {

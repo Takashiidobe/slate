@@ -464,7 +464,7 @@ impl<'p, 'a> OperandParser<'p, 'a> {
                     };
                     self.pos += 1;
                     let field = span_tokens(
-                        field.clone(),
+                        field.to_string(),
                         &self.tokens[self.pos - 1..self.pos],
                         Some(self.parser),
                     );
@@ -523,7 +523,7 @@ impl<'p, 'a> OperandParser<'p, 'a> {
                 } else if let Some(register) = register(name, &lower) {
                     MsAsmExpr::Register(register)
                 } else {
-                    MsAsmExpr::Name(name.clone())
+                    MsAsmExpr::Name(name.to_string())
                 }
             }
             _ => return Err(self.error("expected `__asm` operand")),

@@ -552,7 +552,7 @@ fn split_fixed_suffix(spelling: &str) -> (Option<FixedPointLiteralSuffix>, Strin
 pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprError> {
     let invalid = || ConstExprError::InvalidFloatLiteral(literal.spelling.clone());
     let (digits, _, _) = split_float_spelling(&literal.spelling);
-    let token = Token::FloatLit(digits.clone());
+    let token = Token::FloatLit(digits.as_str().into());
     let value = match literal.suffix {
         FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => {
             FloatValue::Double(token.float_value_f64().ok_or_else(invalid)?)
@@ -1549,7 +1549,11 @@ impl<'a> Parser<'a> {
                 {
                     let start = self.position;
                     self.position += 2;
-                    designators.push(Designator::Field(self.cover_span(name, start, start + 1)));
+                    designators.push(Designator::Field(self.cover_span(
+                        name.to_string(),
+                        start,
+                        start + 1,
+                    )));
                 } else {
                     break;
                 }
@@ -1679,7 +1683,7 @@ impl<'a> Parser<'a> {
                 let label_start = self.position;
                 return match self.take() {
                     Some(Token::Ident(label)) => {
-                        let label = self.cover_span(label, label_start, self.position);
+                        let label = self.cover_span(label.to_string(), label_start, self.position);
                         Ok(self.node(ExprKind::LabelAddress(label), start))
                     }
                     Some(token) => Err(ConstExprError::UnexpectedToken(token)),
@@ -1762,7 +1766,7 @@ impl<'a> Parser<'a> {
     fn expect_field_name(&mut self) -> Result<Span<String>, ConstExprError> {
         let start = self.position;
         match self.take() {
-            Some(Token::Ident(name)) => Ok(self.cover_span(name, start, self.position)),
+            Some(Token::Ident(name)) => Ok(self.cover_span(name.to_string(), start, self.position)),
             Some(token) => Err(ConstExprError::UnexpectedToken(token)),
             None => Err(ConstExprError::ExpectedIdentifier),
         }
@@ -1838,8 +1842,8 @@ impl<'a> Parser<'a> {
                 };
                 ExprKind::CharLiteral(CharLiteral {
                     encoding,
-                    code_units: code_units.clone(),
-                    spelling: spelling.clone(),
+                    code_units: code_units.to_vec(),
+                    spelling: spelling.to_string(),
                 })
             }
             Some(Token::Ident(value)) if self.directive && value == "defined" => {
@@ -1876,7 +1880,7 @@ impl<'a> Parser<'a> {
             {
                 ExprKind::NullPtrLiteral
             }
-            Some(Token::Ident(value)) => ExprKind::Identifier(value.clone()),
+            Some(Token::Ident(value)) => ExprKind::Identifier(value.to_string()),
             Some(Token::Keyword(keyword)) => ExprKind::Identifier(<&str>::from(*keyword).into()),
             Some(token) => return Err(ConstExprError::UnexpectedToken(token.clone())),
             None => return Err(ConstExprError::ExpectedIntegerExpression),
@@ -1950,7 +1954,7 @@ impl<'a> Parser<'a> {
         let parenthesized = self.consume(&Token::LParen);
         let name_start = self.position;
         let name = match self.take() {
-            Some(Token::Ident(value)) => value,
+            Some(Token::Ident(value)) => value.to_string(),
             Some(token @ Token::Keyword(_)) => String::from(&token),
             Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
             None => return Err(ConstExprError::ExpectedIntegerExpression),

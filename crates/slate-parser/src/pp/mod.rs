@@ -177,7 +177,7 @@ impl<'a> Preprocessor<'a> {
             (Some(version), Some(entry)) => {
                 let replacement = &mut entry.definition.replacement;
                 if let Some(token) = replacement.first_mut() {
-                    token.value = Token::IntLit(format!("{version}L"));
+                    token.value = Token::IntLit(format!("{version}L").into());
                     replacement.truncate(1);
                 }
             }
@@ -278,7 +278,7 @@ impl<'a> Preprocessor<'a> {
     fn scalar_macro_spelling(&self, name: &str) -> Option<String> {
         match self.macros.get(name)?.definition.replacement.as_slice() {
             [only] => match &only.value {
-                Token::IntLit(text) => Some(text.clone()),
+                Token::IntLit(text) => Some(text.to_string()),
                 _ => None,
             },
             _ => None,
@@ -288,7 +288,7 @@ impl<'a> Preprocessor<'a> {
     fn string_macro_text(&self, name: &str) -> Option<String> {
         match self.macros.get(name)?.definition.replacement.as_slice() {
             [only] => match &only.value {
-                Token::StringLit(text) => Some(text.clone()),
+                Token::StringLit(text) => Some(text.to_string()),
                 _ => None,
             },
             _ => None,
@@ -538,7 +538,7 @@ impl<'a> Preprocessor<'a> {
             Some(Span {
                 value: Token::StringLit(name),
                 ..
-            }) => name.clone(),
+            }) => name.to_string(),
             _ => self.presumed_location(directive.loc).1,
         };
         self.push_line_override(directive.loc, presumed_line, presumed_file);
@@ -557,7 +557,7 @@ impl<'a> Preprocessor<'a> {
             Some(Span {
                 value: Token::StringLit(name),
                 ..
-            }) => name.clone(),
+            }) => name.to_string(),
             _ => self.presumed_location(directive.loc).1,
         };
         self.push_line_override(directive.loc, presumed_line, presumed_file);
@@ -759,7 +759,7 @@ impl<'a> Preprocessor<'a> {
                 PPErrorKind::ExpectedEmbedResource,
             ));
         };
-        let include = include::IncludeDirective::Quoted(name.clone());
+        let include = include::IncludeDirective::Quoted(name.to_string());
         let (path, _) = self
             .resolve_include(&include, directive.loc.file)
             .ok_or_else(|| {
@@ -858,7 +858,7 @@ impl<'a> Preprocessor<'a> {
                 tokens.push(Span::new(Token::Comma, loc, loc));
             }
             tokens.push(Span::new(
-                Token::IntLit(i64::from(byte).to_string()),
+                Token::IntLit(i64::from(byte).to_string().into()),
                 loc,
                 loc,
             ));
@@ -943,18 +943,18 @@ impl<'a> Preprocessor<'a> {
         let mut expanded = Vec::with_capacity(tokens.len());
         let mut index = 0;
         while index < tokens.len() {
-            if tokens.value_at(index) == Some(&Token::Ident("__has_embed".to_string()))
+            if tokens.value_at(index) == Some(&Token::Ident("__has_embed".into()))
                 && tokens.value_at(index + 1) == Some(&Token::LParen)
                 && let Some(Token::StringLit(name)) = tokens.value_at(index + 2)
                 && tokens.value_at(index + 3) == Some(&Token::RParen)
             {
                 let found = self
-                    .resolve_include(&include::IncludeDirective::Quoted(name.clone()), from)
+                    .resolve_include(&include::IncludeDirective::Quoted(name.to_string()), from)
                     .is_some();
                 expanded.push(
                     tokens[index]
                         .clone()
-                        .with_value(Token::IntLit((found as i64).to_string())),
+                        .with_value(Token::IntLit((found as i64).to_string().into())),
                 );
                 index += 4;
             } else {
@@ -992,7 +992,7 @@ impl<'a> Preprocessor<'a> {
                 expanded.push(
                     tokens[index]
                         .clone()
-                        .with_value(Token::IntLit((found as i64).to_string())),
+                        .with_value(Token::IntLit((found as i64).to_string().into())),
                 );
                 index = end;
             } else {
@@ -1094,7 +1094,7 @@ enum HeaderName {
 fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName, usize)> {
     if let Some(Token::StringLit(text)) = tokens.value_at(start) {
         return (tokens.value_at(start + 1) == Some(&Token::RParen))
-            .then_some((HeaderName::Quoted(text.clone()), start + 2));
+            .then_some((HeaderName::Quoted(text.to_string()), start + 2));
     }
     if tokens.value_at(start) != Some(&Token::Less) {
         return None;
@@ -1150,7 +1150,7 @@ fn expand_has_checks(
             expanded.push(
                 tokens[index]
                     .clone()
-                    .with_value(Token::IntLit(check(&name).to_string())),
+                    .with_value(Token::IntLit(check(&name).to_string().into())),
             );
             index = end;
         } else {
@@ -1190,7 +1190,7 @@ fn has_check_argument(
     scoped: bool,
 ) -> Option<(String, usize)> {
     let word = |index: usize| match tokens.value_at(index) {
-        Some(Token::Ident(name)) => Some(name.clone()),
+        Some(Token::Ident(name)) => Some(name.to_string()),
         Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword).to_string()),
         _ => None,
     };

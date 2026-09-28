@@ -199,7 +199,7 @@ impl Parser {
     }
 
     pub(super) fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
-        let pos = if tokens.value_at(pos) == Some(&Token::Ident("__extension__".to_string())) {
+        let pos = if tokens.value_at(pos) == Some(&Token::Ident("__extension__".into())) {
             pos + 1
         } else {
             pos
@@ -257,7 +257,7 @@ impl Parser {
             && tokens.value_at(cursor.pos + 1) == Some(&Token::Colon)
         {
             let label = span_tokens(
-                name.clone(),
+                name.to_string(),
                 &tokens[cursor.pos..cursor.pos + 1],
                 Some(self),
             );
@@ -276,7 +276,7 @@ impl Parser {
                 .map(|part| match part {
                     [single] => match &single.value {
                         Token::Ident(name) => Ok(span_tokens(
-                            name.clone(),
+                            name.to_string(),
                             std::slice::from_ref(single),
                             Some(self),
                         )),

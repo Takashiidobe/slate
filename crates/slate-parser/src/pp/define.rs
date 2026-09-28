@@ -104,7 +104,7 @@ fn pragma_macro_name(directive: &Directive) -> Option<String> {
     match directive.arguments.get(1..4)? {
         [open, name, close] if open.value == Token::LParen && close.value == Token::RParen => {
             match &name.value {
-                Token::StringLit(name) => Some(name.clone()),
+                Token::StringLit(name) => Some(name.to_string()),
                 _ => None,
             }
         }
