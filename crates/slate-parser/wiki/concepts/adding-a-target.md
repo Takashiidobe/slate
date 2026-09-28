@@ -14,7 +14,11 @@ A spec holds:
   missing here is rejected at argument parsing. Linux entries give the gcc
   flavor gcc's own `-dM` snapshot and clang/msvc clang's.
 - `profile.sysroot`: `WindowsKits` or `Unix { multiarch }`, the directories
-  `sysroot::include_paths_at` probes under the sysroot.
+  `sysroot::include_paths_at` probes under the sysroot. `multiarch` is the
+  Debian cross-package triplet probed as `usr/<triplet>/include` (what
+  slate-sysroots installs), not the multiarch `usr/include/<triplet>`: i686
+  is `i686-linux-gnu` there, although Debian's multiarch name is
+  `i386-linux-gnu`.
 - `profile.clang_headers`: `AppleFirst` prefers an `apple-clang-*` builtin
   header profile over upstream clang's.
 - `profile.gcc_headers`: the GCC header family (`x86`, `aarch64`, `arm`)

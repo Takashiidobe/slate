@@ -162,9 +162,8 @@ pub const X86_64_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
 
 const I686_LINUX_GNU_PROFILE: TargetProfile = TargetProfile {
     predefines: &[I686_LINUX_GNU, I686_LINUX_GNU_GCC],
-    // debian's multiarch directory keeps the i386 name, and clang searches it for i686
     sysroot: SysrootLayout::Unix {
-        multiarch: Some("i386-linux-gnu"),
+        multiarch: Some("i686-linux-gnu"),
     },
     clang_headers: ClangHeaders::Upstream,
     gcc_headers: Some(GccHeaders::X86),
@@ -187,10 +186,12 @@ const fn clang_unix(
     }
 }
 
-const fn arm32_linux(predefines: &'static [Predefines]) -> TargetProfile {
+const fn arm32_linux(predefines: &'static [Predefines], multiarch: &'static str) -> TargetProfile {
     TargetProfile {
         predefines,
-        sysroot: SysrootLayout::Unix { multiarch: None },
+        sysroot: SysrootLayout::Unix {
+            multiarch: Some(multiarch),
+        },
         clang_headers: ClangHeaders::Upstream,
         gcc_headers: Some(GccHeaders::Arm),
         va_list: VaListKind::ArmAapcs,
@@ -318,30 +319,36 @@ pub const TARGETS: &[TargetSpec] = &[
     TargetSpec {
         triple: "armv7-unknown-linux-gnueabi",
         layout: TargetInfo::arm32_linux_gnueabi,
-        profile: arm32_linux(&[
-            Predefines {
-                flavors: CLANG_AND_MSVC,
-                name: "<clang-armv7-linux-gnueabi-predefines>",
-                source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
-                defaults: ARM32_LINUX_DEFAULTS,
-                gnu_namespace: LINUX_GNU_NAMESPACE,
-            },
-            ARM32_LINUX_GNU_GCC,
-        ]),
+        profile: arm32_linux(
+            &[
+                Predefines {
+                    flavors: CLANG_AND_MSVC,
+                    name: "<clang-armv7-linux-gnueabi-predefines>",
+                    source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
+                    defaults: ARM32_LINUX_DEFAULTS,
+                    gnu_namespace: LINUX_GNU_NAMESPACE,
+                },
+                ARM32_LINUX_GNU_GCC,
+            ],
+            "arm-linux-gnueabi",
+        ),
     },
     TargetSpec {
         triple: "armv7-unknown-linux-gnueabihf",
         layout: TargetInfo::arm32_linux_gnueabihf,
-        profile: arm32_linux(&[
-            Predefines {
-                flavors: CLANG_AND_MSVC,
-                name: "<clang-armv7-linux-gnueabihf-predefines>",
-                source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
-                defaults: ARM32_LINUX_DEFAULTS,
-                gnu_namespace: LINUX_GNU_NAMESPACE,
-            },
-            ARM32_LINUX_GNU_GCC,
-        ]),
+        profile: arm32_linux(
+            &[
+                Predefines {
+                    flavors: CLANG_AND_MSVC,
+                    name: "<clang-armv7-linux-gnueabihf-predefines>",
+                    source: include_str!("predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
+                    defaults: ARM32_LINUX_DEFAULTS,
+                    gnu_namespace: LINUX_GNU_NAMESPACE,
+                },
+                ARM32_LINUX_GNU_GCC,
+            ],
+            "arm-linux-gnueabihf",
+        ),
     },
     TargetSpec {
         triple: "x86_64-pc-windows-msvc",
