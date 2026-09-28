@@ -60,63 +60,33 @@ int invalid(double _Imaginary y, double x) {
 // RELATIONAL: Error:   × semantic analysis failed
 // RELATIONAL: Error:
 // RELATIONAL: × invalid in this context: relational comparison requires real operands
-// RELATIONAL: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:13:1]
-// RELATIONAL: 12 │
-// RELATIONAL: 13 │ ╭─▶ int invalid(double _Imaginary y, double x) {
-// RELATIONAL: 14 │ │   #ifdef RELATIONAL
-// RELATIONAL: 15 │ │       return y < x;
-// RELATIONAL: 16 │ │   #endif
-// RELATIONAL: 17 │ │   #ifdef REMAINDER
-// RELATIONAL: 18 │ │       return y % 2;
-// RELATIONAL: 19 │ │   #endif
-// RELATIONAL: 20 │ │   #ifdef COMPLEMENT
-// RELATIONAL: 21 │ │       return ~y;
-// RELATIONAL: 22 │ │   #endif
-// RELATIONAL: 23 │ │       return 0;
-// RELATIONAL: 24 │ ╰─▶ }
-// RELATIONAL: 25 │
+// RELATIONAL: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:15:12]
+// RELATIONAL: 14 │ #ifdef RELATIONAL
+// RELATIONAL: 15 │     return y < x;
+// RELATIONAL: ·            ─────
+// RELATIONAL: 16 │ #endif
 // RELATIONAL: ╰────
 // SLATE-FILECHECK-END RELATIONAL
 // SLATE-FILECHECK-BEGIN REMAINDER
 // REMAINDER: Error:   × semantic analysis failed
 // REMAINDER: Error:
 // REMAINDER: × invalid in this context: operator requires integer or real operands
-// REMAINDER: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:13:1]
-// REMAINDER: 12 │
-// REMAINDER: 13 │ ╭─▶ int invalid(double _Imaginary y, double x) {
-// REMAINDER: 14 │ │   #ifdef RELATIONAL
-// REMAINDER: 15 │ │       return y < x;
-// REMAINDER: 16 │ │   #endif
-// REMAINDER: 17 │ │   #ifdef REMAINDER
-// REMAINDER: 18 │ │       return y % 2;
-// REMAINDER: 19 │ │   #endif
-// REMAINDER: 20 │ │   #ifdef COMPLEMENT
-// REMAINDER: 21 │ │       return ~y;
-// REMAINDER: 22 │ │   #endif
-// REMAINDER: 23 │ │       return 0;
-// REMAINDER: 24 │ ╰─▶ }
-// REMAINDER: 25 │
+// REMAINDER: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:18:12]
+// REMAINDER: 17 │ #ifdef REMAINDER
+// REMAINDER: 18 │     return y % 2;
+// REMAINDER: ·            ─────
+// REMAINDER: 19 │ #endif
 // REMAINDER: ╰────
 // SLATE-FILECHECK-END REMAINDER
 // SLATE-FILECHECK-BEGIN COMPLEMENT
 // COMPLEMENT: Error:   × semantic analysis failed
 // COMPLEMENT: Error:
 // COMPLEMENT: × invalid in this context: bitwise complement of imaginary operand
-// COMPLEMENT: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:13:1]
-// COMPLEMENT: 12 │
-// COMPLEMENT: 13 │ ╭─▶ int invalid(double _Imaginary y, double x) {
-// COMPLEMENT: 14 │ │   #ifdef RELATIONAL
-// COMPLEMENT: 15 │ │       return y < x;
-// COMPLEMENT: 16 │ │   #endif
-// COMPLEMENT: 17 │ │   #ifdef REMAINDER
-// COMPLEMENT: 18 │ │       return y % 2;
-// COMPLEMENT: 19 │ │   #endif
-// COMPLEMENT: 20 │ │   #ifdef COMPLEMENT
-// COMPLEMENT: 21 │ │       return ~y;
-// COMPLEMENT: 22 │ │   #endif
-// COMPLEMENT: 23 │ │       return 0;
-// COMPLEMENT: 24 │ ╰─▶ }
-// COMPLEMENT: 25 │
+// COMPLEMENT: ╭─[tests/fixtures/sema/ir_imaginary_invalid.c:21:12]
+// COMPLEMENT: 20 │ #ifdef COMPLEMENT
+// COMPLEMENT: 21 │     return ~y;
+// COMPLEMENT: ·            ──
+// COMPLEMENT: 22 │ #endif
 // COMPLEMENT: ╰────
 // SLATE-FILECHECK-END COMPLEMENT
 // SLATE-FILECHECK-BEGIN PREPROCESSOR

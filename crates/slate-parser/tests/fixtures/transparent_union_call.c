@@ -42,14 +42,10 @@ int main(void) {
 // DEFAULT: ╰────
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: conversion between a struct or union and an
-// DEFAULT: ╭─[tests/fixtures/transparent_union_call.c:20:1]
-// DEFAULT: 19 │
-// DEFAULT: 20 │ ╭─▶ int main(void) {
-// DEFAULT: 21 │ │     struct First  first  = {.value = 17};
-// DEFAULT: 22 │ │     struct Second second = {.value = 29};
-// DEFAULT: 23 │ │     printf("%d %d\n", read_value(&first), read_value(&second));
-// DEFAULT: 24 │ │     return 0;
-// DEFAULT: 25 │ ╰─▶ }
-// DEFAULT: 26 │
+// DEFAULT: ╭─[tests/fixtures/transparent_union_call.c:23:21]
+// DEFAULT: 22 │   struct Second second = {.value = 29};
+// DEFAULT: 23 │   printf("%d %d\n", read_value(&first), read_value(&second));
+// DEFAULT: ·                     ──────────────────
+// DEFAULT: 24 │   return 0;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

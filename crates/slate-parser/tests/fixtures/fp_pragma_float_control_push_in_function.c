@@ -10,11 +10,10 @@ double pushed(double a, double b) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: '#pragma float_control push/pop' can only appear
-// DEFAULT: ╭─[tests/fixtures/fp_pragma_float_control_push_in_function.c:1:1]
-// DEFAULT: 1 │ ╭─▶ double pushed(double a, double b) {
-// DEFAULT: 2 │ │   #pragma float_control(precise, on, push)
-// DEFAULT: 3 │ │     return a / b;
-// DEFAULT: 4 │ ╰─▶ }
-// DEFAULT: 5 │
+// DEFAULT: ╭─[tests/fixtures/fp_pragma_float_control_push_in_function.c:2:1]
+// DEFAULT: 1 │ double pushed(double a, double b) {
+// DEFAULT: 2 │ #pragma float_control(precise, on, push)
+// DEFAULT: · ────────────────────────────────────────
+// DEFAULT: 3 │   return a / b;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

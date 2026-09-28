@@ -48,10 +48,10 @@ alias bad;
 // BLOCK: Error:   × semantic analysis failed
 // BLOCK: Error:
 // BLOCK: × invalid in this context: object cannot have type void
-// BLOCK: ╭─[tests/fixtures/error/ir_void_object.c:9:1]
+// BLOCK: ╭─[tests/fixtures/error/ir_void_object.c:9:16]
 // BLOCK: 8 │ #ifdef BLOCK
 // BLOCK: 9 │ void f(void) { void bad; (void)bad; }
-// BLOCK: · ─────────────────────────────────────
+// BLOCK: ·                ─────────
 // BLOCK: 10 │ #endif
 // BLOCK: ╰────
 // SLATE-FILECHECK-END BLOCK

@@ -336,8 +336,14 @@ Both IR-stage passes continue item by item over the top-level declarations:
   bound and `int a = undeclared, b;` does not cascade into errors on `b`. Any
   other names error ends that item and resets the resolver to file scope.
 - `resolve_module` does not lower an item with names errors. A lowering error
-  resets per-function `Lowerer` state and moves on. Lowering errors carry no
-  span yet, so they point at the whole top-level declaration.
+  resets per-function `Lowerer` state and moves on. Raise sites don't carry a
+  span; instead `Lowerer::expr`, `Lowerer::place` and `Lowerer::statements`
+  wrap an error with `ResolveError::at(loc)`, which only sets `Located` when no
+  location is attached yet. The innermost failing expression or statement
+  wins, so the line matches clang's even when clang's caret sits on a token
+  inside it (an operator, a pragma name). Errors outside any expression or
+  statement, such as a file-scope declarator's type, still fall back to the
+  top-level declaration.
 
 Poisoning keeps one bad declaration from causing more errors: the bindings a
 failed item declares are poisoned, and a later item's *lowering* error is

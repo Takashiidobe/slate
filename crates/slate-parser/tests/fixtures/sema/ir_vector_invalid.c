@@ -125,144 +125,55 @@ v4si invalid(v4si a, v2si b, v4sf c) {
 // RESIZE: Error:   × semantic analysis failed
 // RESIZE: Error:
 // RESIZE: × invalid in this context: conversion between vector types of different size
-// RESIZE: ╭─[tests/fixtures/sema/ir_vector_invalid.c:27:1]
-// RESIZE: 26 │
-// RESIZE: 27 │ ╭─▶ v4si invalid(v4si a, v2si b, v4sf c) {
-// RESIZE: 28 │ │   #ifdef RESIZE
-// RESIZE: 29 │ │       return b;
-// RESIZE: 30 │ │   #endif
-// RESIZE: 31 │ │   #ifdef REMAINDER
-// RESIZE: 32 │ │       return c % c;
-// RESIZE: 33 │ │   #endif
-// RESIZE: 34 │ │   #ifdef COMPLEMENT
-// RESIZE: 35 │ │       return ~c;
-// RESIZE: 36 │ │   #endif
-// RESIZE: 37 │ │   #ifdef CONDITION
-// RESIZE: 38 │ │       if (a) {
-// RESIZE: 39 │ │           return a;
-// RESIZE: 40 │ │       }
-// RESIZE: 41 │ │   #endif
-// RESIZE: 42 │ │   #ifdef LOGICAL
-// RESIZE: 43 │ │       return a && a;
-// RESIZE: 44 │ │   #endif
-// RESIZE: 45 │ │       return a;
-// RESIZE: 46 │ ╰─▶ }
-// RESIZE: 47 │
+// RESIZE: ╭─[tests/fixtures/sema/ir_vector_invalid.c:29:5]
+// RESIZE: 28 │ #ifdef RESIZE
+// RESIZE: 29 │     return b;
+// RESIZE: ·     ─────────
+// RESIZE: 30 │ #endif
 // RESIZE: ╰────
 // SLATE-FILECHECK-END RESIZE
 // SLATE-FILECHECK-BEGIN REMAINDER
 // REMAINDER: Error:   × semantic analysis failed
 // REMAINDER: Error:
 // REMAINDER: × invalid in this context: operator requires integer vector elements
-// REMAINDER: ╭─[tests/fixtures/sema/ir_vector_invalid.c:27:1]
-// REMAINDER: 26 │
-// REMAINDER: 27 │ ╭─▶ v4si invalid(v4si a, v2si b, v4sf c) {
-// REMAINDER: 28 │ │   #ifdef RESIZE
-// REMAINDER: 29 │ │       return b;
-// REMAINDER: 30 │ │   #endif
-// REMAINDER: 31 │ │   #ifdef REMAINDER
-// REMAINDER: 32 │ │       return c % c;
-// REMAINDER: 33 │ │   #endif
-// REMAINDER: 34 │ │   #ifdef COMPLEMENT
-// REMAINDER: 35 │ │       return ~c;
-// REMAINDER: 36 │ │   #endif
-// REMAINDER: 37 │ │   #ifdef CONDITION
-// REMAINDER: 38 │ │       if (a) {
-// REMAINDER: 39 │ │           return a;
-// REMAINDER: 40 │ │       }
-// REMAINDER: 41 │ │   #endif
-// REMAINDER: 42 │ │   #ifdef LOGICAL
-// REMAINDER: 43 │ │       return a && a;
-// REMAINDER: 44 │ │   #endif
-// REMAINDER: 45 │ │       return a;
-// REMAINDER: 46 │ ╰─▶ }
-// REMAINDER: 47 │
+// REMAINDER: ╭─[tests/fixtures/sema/ir_vector_invalid.c:32:12]
+// REMAINDER: 31 │ #ifdef REMAINDER
+// REMAINDER: 32 │     return c % c;
+// REMAINDER: ·            ─────
+// REMAINDER: 33 │ #endif
 // REMAINDER: ╰────
 // SLATE-FILECHECK-END REMAINDER
 // SLATE-FILECHECK-BEGIN COMPLEMENT
 // COMPLEMENT: Error:   × semantic analysis failed
 // COMPLEMENT: Error:
 // COMPLEMENT: × invalid in this context: bitwise complement of a floating vector
-// COMPLEMENT: ╭─[tests/fixtures/sema/ir_vector_invalid.c:27:1]
-// COMPLEMENT: 26 │
-// COMPLEMENT: 27 │ ╭─▶ v4si invalid(v4si a, v2si b, v4sf c) {
-// COMPLEMENT: 28 │ │   #ifdef RESIZE
-// COMPLEMENT: 29 │ │       return b;
-// COMPLEMENT: 30 │ │   #endif
-// COMPLEMENT: 31 │ │   #ifdef REMAINDER
-// COMPLEMENT: 32 │ │       return c % c;
-// COMPLEMENT: 33 │ │   #endif
-// COMPLEMENT: 34 │ │   #ifdef COMPLEMENT
-// COMPLEMENT: 35 │ │       return ~c;
-// COMPLEMENT: 36 │ │   #endif
-// COMPLEMENT: 37 │ │   #ifdef CONDITION
-// COMPLEMENT: 38 │ │       if (a) {
-// COMPLEMENT: 39 │ │           return a;
-// COMPLEMENT: 40 │ │       }
-// COMPLEMENT: 41 │ │   #endif
-// COMPLEMENT: 42 │ │   #ifdef LOGICAL
-// COMPLEMENT: 43 │ │       return a && a;
-// COMPLEMENT: 44 │ │   #endif
-// COMPLEMENT: 45 │ │       return a;
-// COMPLEMENT: 46 │ ╰─▶ }
-// COMPLEMENT: 47 │
+// COMPLEMENT: ╭─[tests/fixtures/sema/ir_vector_invalid.c:35:12]
+// COMPLEMENT: 34 │ #ifdef COMPLEMENT
+// COMPLEMENT: 35 │     return ~c;
+// COMPLEMENT: ·            ──
+// COMPLEMENT: 36 │ #endif
 // COMPLEMENT: ╰────
 // SLATE-FILECHECK-END COMPLEMENT
 // SLATE-FILECHECK-BEGIN CONDITION
 // CONDITION: Error:   × semantic analysis failed
 // CONDITION: Error:
 // CONDITION: × unsupported in numeric IR lowering: non-scalar condition
-// CONDITION: ╭─[tests/fixtures/sema/ir_vector_invalid.c:27:1]
-// CONDITION: 26 │
-// CONDITION: 27 │ ╭─▶ v4si invalid(v4si a, v2si b, v4sf c) {
-// CONDITION: 28 │ │   #ifdef RESIZE
-// CONDITION: 29 │ │       return b;
-// CONDITION: 30 │ │   #endif
-// CONDITION: 31 │ │   #ifdef REMAINDER
-// CONDITION: 32 │ │       return c % c;
-// CONDITION: 33 │ │   #endif
-// CONDITION: 34 │ │   #ifdef COMPLEMENT
-// CONDITION: 35 │ │       return ~c;
-// CONDITION: 36 │ │   #endif
-// CONDITION: 37 │ │   #ifdef CONDITION
-// CONDITION: 38 │ │       if (a) {
+// CONDITION: ╭─[tests/fixtures/sema/ir_vector_invalid.c:38:5]
+// CONDITION: 37 │     #ifdef CONDITION
+// CONDITION: 38 │ ╭─▶     if (a) {
 // CONDITION: 39 │ │           return a;
-// CONDITION: 40 │ │       }
-// CONDITION: 41 │ │   #endif
-// CONDITION: 42 │ │   #ifdef LOGICAL
-// CONDITION: 43 │ │       return a && a;
-// CONDITION: 44 │ │   #endif
-// CONDITION: 45 │ │       return a;
-// CONDITION: 46 │ ╰─▶ }
-// CONDITION: 47 │
+// CONDITION: 40 │ ╰─▶     }
+// CONDITION: 41 │     #endif
 // CONDITION: ╰────
 // SLATE-FILECHECK-END CONDITION
 // SLATE-FILECHECK-BEGIN LOGICAL
 // LOGICAL: Error:   × semantic analysis failed
 // LOGICAL: Error:
 // LOGICAL: × unsupported in numeric IR lowering: non-scalar condition
-// LOGICAL: ╭─[tests/fixtures/sema/ir_vector_invalid.c:27:1]
-// LOGICAL: 26 │
-// LOGICAL: 27 │ ╭─▶ v4si invalid(v4si a, v2si b, v4sf c) {
-// LOGICAL: 28 │ │   #ifdef RESIZE
-// LOGICAL: 29 │ │       return b;
-// LOGICAL: 30 │ │   #endif
-// LOGICAL: 31 │ │   #ifdef REMAINDER
-// LOGICAL: 32 │ │       return c % c;
-// LOGICAL: 33 │ │   #endif
-// LOGICAL: 34 │ │   #ifdef COMPLEMENT
-// LOGICAL: 35 │ │       return ~c;
-// LOGICAL: 36 │ │   #endif
-// LOGICAL: 37 │ │   #ifdef CONDITION
-// LOGICAL: 38 │ │       if (a) {
-// LOGICAL: 39 │ │           return a;
-// LOGICAL: 40 │ │       }
-// LOGICAL: 41 │ │   #endif
-// LOGICAL: 42 │ │   #ifdef LOGICAL
-// LOGICAL: 43 │ │       return a && a;
-// LOGICAL: 44 │ │   #endif
-// LOGICAL: 45 │ │       return a;
-// LOGICAL: 46 │ ╰─▶ }
-// LOGICAL: 47 │
+// LOGICAL: ╭─[tests/fixtures/sema/ir_vector_invalid.c:43:12]
+// LOGICAL: 42 │ #ifdef LOGICAL
+// LOGICAL: 43 │     return a && a;
+// LOGICAL: ·            ──────
+// LOGICAL: 44 │ #endif
 // LOGICAL: ╰────
 // SLATE-FILECHECK-END LOGICAL

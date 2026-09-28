@@ -1187,6 +1187,10 @@ impl Lowerer {
     }
 
     pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
+        self.lower_place(e).map_err(|error| error.at(e.expansion))
+    }
+
+    fn lower_place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
             ExprKind::Generic {
@@ -2031,6 +2035,10 @@ impl Lowerer {
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
+        self.lower_expr(e).map_err(|error| error.at(e.expansion))
+    }
+
+    fn lower_expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         if let ExprKind::Call { callee, arguments } = &e.value {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);

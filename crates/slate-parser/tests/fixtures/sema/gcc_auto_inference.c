@@ -33,56 +33,22 @@ void deduce(int *ip) {
 // POINTER: Error:   × semantic analysis failed
 // POINTER: Error:
 // POINTER: × invalid in this context: 'auto' requires a plain identifier as declarator
-// POINTER: ╭─[tests/fixtures/sema/gcc_auto_inference.c:6:1]
-// POINTER: 5 │
-// POINTER: 6 │ ╭─▶ void deduce(int *ip) {
-// POINTER: 7 │ │     __auto_type a1 = ci;
-// POINTER: 8 │ │     _Static_assert(_Generic(&a1, int *: 1, default: 0));
-// POINTER: 9 │ │     const __auto_type a2 = arr;
-// POINTER: 10 │ │     _Static_assert(_Generic(&a2, int *const *: 1, default: 0));
-// POINTER: 11 │ │     auto a3 = ip;
-// POINTER: 12 │ │     _Static_assert(_Generic(&a3, int **: 1, default: 0));
-// POINTER: 13 │ │     static auto a4 = 4;
-// POINTER: 14 │ │     auto a5 = ai;
-// POINTER: 15 │ │     _Static_assert(_Generic(&a5, int *: 1, default: 0));
-// POINTER: 16 │ │     (void)a1, (void)a2, (void)a3, (void)a4, (void)a5;
-// POINTER: 17 │ │
-// POINTER: 18 │ │   #ifdef POINTER
-// POINTER: 19 │ │     auto *p = ip;
-// POINTER: 20 │ │   #endif
-// POINTER: 21 │ │   #ifdef MULTIPLE
-// POINTER: 22 │ │     auto x = 1, y = 2;
-// POINTER: 23 │ │   #endif
-// POINTER: 24 │ ╰─▶ }
-// POINTER: 25 │
+// POINTER: ╭─[tests/fixtures/sema/gcc_auto_inference.c:19:3]
+// POINTER: 18 │ #ifdef POINTER
+// POINTER: 19 │   auto *p = ip;
+// POINTER: ·   ─────────────
+// POINTER: 20 │ #endif
 // POINTER: ╰────
 // SLATE-FILECHECK-END POINTER
 // SLATE-FILECHECK-BEGIN MULTIPLE
 // MULTIPLE: Error:   × semantic analysis failed
 // MULTIPLE: Error:
 // MULTIPLE: × invalid in this context: 'auto' may only be used with a single declarator
-// MULTIPLE: ╭─[tests/fixtures/sema/gcc_auto_inference.c:6:1]
-// MULTIPLE: 5 │
-// MULTIPLE: 6 │ ╭─▶ void deduce(int *ip) {
-// MULTIPLE: 7 │ │     __auto_type a1 = ci;
-// MULTIPLE: 8 │ │     _Static_assert(_Generic(&a1, int *: 1, default: 0));
-// MULTIPLE: 9 │ │     const __auto_type a2 = arr;
-// MULTIPLE: 10 │ │     _Static_assert(_Generic(&a2, int *const *: 1, default: 0));
-// MULTIPLE: 11 │ │     auto a3 = ip;
-// MULTIPLE: 12 │ │     _Static_assert(_Generic(&a3, int **: 1, default: 0));
-// MULTIPLE: 13 │ │     static auto a4 = 4;
-// MULTIPLE: 14 │ │     auto a5 = ai;
-// MULTIPLE: 15 │ │     _Static_assert(_Generic(&a5, int *: 1, default: 0));
-// MULTIPLE: 16 │ │     (void)a1, (void)a2, (void)a3, (void)a4, (void)a5;
-// MULTIPLE: 17 │ │
-// MULTIPLE: 18 │ │   #ifdef POINTER
-// MULTIPLE: 19 │ │     auto *p = ip;
-// MULTIPLE: 20 │ │   #endif
-// MULTIPLE: 21 │ │   #ifdef MULTIPLE
-// MULTIPLE: 22 │ │     auto x = 1, y = 2;
-// MULTIPLE: 23 │ │   #endif
-// MULTIPLE: 24 │ ╰─▶ }
-// MULTIPLE: 25 │
+// MULTIPLE: ╭─[tests/fixtures/sema/gcc_auto_inference.c:22:3]
+// MULTIPLE: 21 │ #ifdef MULTIPLE
+// MULTIPLE: 22 │   auto x = 1, y = 2;
+// MULTIPLE: ·   ──────────────────
+// MULTIPLE: 23 │ #endif
 // MULTIPLE: ╰────
 // SLATE-FILECHECK-END MULTIPLE
 // SLATE-FILECHECK-BEGIN VALID

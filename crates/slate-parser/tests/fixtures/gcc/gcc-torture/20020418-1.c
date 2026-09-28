@@ -26,13 +26,10 @@ double bar (void)
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: non-void function should return a value
-// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020418-1.c:11:1]
-// DEFAULT: 10 │
-// DEFAULT: 11 │ ╭─▶ double foo (void)
-// DEFAULT: 12 │ │   {
-// DEFAULT: 13 │ │     baz ();
-// DEFAULT: 14 │ │     return;
-// DEFAULT: 15 │ ╰─▶ }
-// DEFAULT: 16 │
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020418-1.c:14:3]
+// DEFAULT: 13 │   baz ();
+// DEFAULT: 14 │   return;
+// DEFAULT: ·   ───────
+// DEFAULT: 15 │ }
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

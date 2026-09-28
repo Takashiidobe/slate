@@ -14,13 +14,10 @@ int f(void) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: no such struct or union member in `__asm`
-// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_unknown_member.c:4:1]
-// DEFAULT: 3 │
-// DEFAULT: 4 │ ╭─▶ int f(void) {
-// DEFAULT: 5 │ │     struct s value;
-// DEFAULT: 6 │ │     __asm mov eax, value.missing
-// DEFAULT: 7 │ │     return 0;
-// DEFAULT: 8 │ ╰─▶ }
-// DEFAULT: 9 │
+// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_unknown_member.c:6:3]
+// DEFAULT: 5 │   struct s value;
+// DEFAULT: 6 │   __asm mov eax, value.missing
+// DEFAULT: ·   ────────────────────────────
+// DEFAULT: 7 │   return 0;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

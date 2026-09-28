@@ -30,40 +30,22 @@ void assign(int **source) {
 // INNER_CONST: Error:   × semantic analysis failed
 // INNER_CONST: Error:
 // INNER_CONST: × invalid in this context: cannot assign to a const-qualified lvalue
-// INNER_CONST: ╭─[tests/fixtures/sema/pointer_qualifier_levels.c:11:1]
-// INNER_CONST: 10 │
-// INNER_CONST: 11 │ ╭─▶ void assign(int **source) {
-// INNER_CONST: 12 │ │     inner = source;
-// INNER_CONST: 13 │ │     **outer = 1;
-// INNER_CONST: 14 │ │     *mixed = 0;
-// INNER_CONST: 15 │ │   #ifdef INNER_CONST
-// INNER_CONST: 16 │ │     *inner = 0;
-// INNER_CONST: 17 │ │   #endif
-// INNER_CONST: 18 │ │   #ifdef OUTER_CONST
-// INNER_CONST: 19 │ │     outer = source;
-// INNER_CONST: 20 │ │   #endif
-// INNER_CONST: 21 │ ╰─▶ }
-// INNER_CONST: 22 │
+// INNER_CONST: ╭─[tests/fixtures/sema/pointer_qualifier_levels.c:16:3]
+// INNER_CONST: 15 │ #ifdef INNER_CONST
+// INNER_CONST: 16 │   *inner = 0;
+// INNER_CONST: ·   ──────────
+// INNER_CONST: 17 │ #endif
 // INNER_CONST: ╰────
 // SLATE-FILECHECK-END INNER_CONST
 // SLATE-FILECHECK-BEGIN OUTER_CONST
 // OUTER_CONST: Error:   × semantic analysis failed
 // OUTER_CONST: Error:
 // OUTER_CONST: × invalid in this context: cannot assign to a const-qualified lvalue
-// OUTER_CONST: ╭─[tests/fixtures/sema/pointer_qualifier_levels.c:11:1]
-// OUTER_CONST: 10 │
-// OUTER_CONST: 11 │ ╭─▶ void assign(int **source) {
-// OUTER_CONST: 12 │ │     inner = source;
-// OUTER_CONST: 13 │ │     **outer = 1;
-// OUTER_CONST: 14 │ │     *mixed = 0;
-// OUTER_CONST: 15 │ │   #ifdef INNER_CONST
-// OUTER_CONST: 16 │ │     *inner = 0;
-// OUTER_CONST: 17 │ │   #endif
-// OUTER_CONST: 18 │ │   #ifdef OUTER_CONST
-// OUTER_CONST: 19 │ │     outer = source;
-// OUTER_CONST: 20 │ │   #endif
-// OUTER_CONST: 21 │ ╰─▶ }
-// OUTER_CONST: 22 │
+// OUTER_CONST: ╭─[tests/fixtures/sema/pointer_qualifier_levels.c:19:3]
+// OUTER_CONST: 18 │ #ifdef OUTER_CONST
+// OUTER_CONST: 19 │   outer = source;
+// OUTER_CONST: ·   ──────────────
+// OUTER_CONST: 20 │ #endif
 // OUTER_CONST: ╰────
 // SLATE-FILECHECK-END OUTER_CONST
 // SLATE-FILECHECK-BEGIN VALID

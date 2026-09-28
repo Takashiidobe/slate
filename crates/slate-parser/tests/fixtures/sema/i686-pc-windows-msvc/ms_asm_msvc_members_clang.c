@@ -25,10 +25,10 @@ int type_keyword(void) { __asm mov eax, TYPE int }
 // UNTYPED: Error:   × semantic analysis failed
 // UNTYPED: Error:
 // UNTYPED: × invalid in this context: `__asm` member of an untyped operand
-// UNTYPED: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_clang.c:6:1]
+// UNTYPED: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_clang.c:6:21]
 // UNTYPED: 5 │ #if defined(UNTYPED)
 // UNTYPED: 6 │ int untyped(void) { __asm mov eax, [ebx].last }
-// UNTYPED: · ───────────────────────────────────────────────
+// UNTYPED: ·                     ─────────────────────────
 // UNTYPED: 7 │ #endif
 // UNTYPED: ╰────
 // SLATE-FILECHECK-END UNTYPED
@@ -36,10 +36,10 @@ int type_keyword(void) { __asm mov eax, TYPE int }
 // SCALAR: Error:   × semantic analysis failed
 // SCALAR: Error:
 // SCALAR: × invalid in this context: no such struct or union member in `__asm`
-// SCALAR: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_clang.c:10:1]
+// SCALAR: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_msvc_members_clang.c:10:20]
 // SCALAR: 9 │ #if defined(SCALAR)
 // SCALAR: 10 │ int scalar(void) { __asm mov eax, global.last }
-// SCALAR: · ───────────────────────────────────────────────
+// SCALAR: ·                    ──────────────────────────
 // SCALAR: 11 │ #endif
 // SCALAR: ╰────
 // SLATE-FILECHECK-END SCALAR

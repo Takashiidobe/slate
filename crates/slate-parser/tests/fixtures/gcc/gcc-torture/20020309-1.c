@@ -21,22 +21,14 @@ sub1 (char *p, int i)
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020309-1.c:2:1]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ ╭─▶ int
-// DEFAULT: 3 │ │   sub1 (char *p, int i)
-// DEFAULT: 4 │ │   {
-// DEFAULT: 5 │ │     char j = p[i];
-// DEFAULT: 6 │ │
-// DEFAULT: 7 │ │     {
-// DEFAULT: 8 │ │       void
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20020309-1.c:8:5]
+// DEFAULT: 7 │       {
+// DEFAULT: 8 │ ╭─▶     void
 // DEFAULT: 9 │ │       sub2 ()
 // DEFAULT: 10 │ │         {
 // DEFAULT: 11 │ │       i = 2;
 // DEFAULT: 12 │ │       p = p + 2;
-// DEFAULT: 13 │ │         }
-// DEFAULT: 14 │ │     }
-// DEFAULT: 15 │ ╰─▶ }
-// DEFAULT: 16 │
+// DEFAULT: 13 │ ╰─▶       }
+// DEFAULT: 14 │       }
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

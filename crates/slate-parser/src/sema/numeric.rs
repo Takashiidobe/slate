@@ -2,7 +2,7 @@ use super::pragmas::FloatingRegion;
 use super::validate::{
     bit_int_literal_width, fits_rank, integer_rank_width, select_integer_candidate,
 };
-use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank};
+use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, Loc};
 use crate::const_expr::{
     BinaryOp, ConstExprError, FixedPointLiteralSuffix, FloatLiteral, FloatSuffix, FloatValue,
     IntegerSizeSuffix, ResolvedFloat, UnaryOp, resolve_float,
@@ -47,13 +47,27 @@ pub enum ResolveError {
     Literal(#[from] crate::const_expr::ConstExprError),
     #[error(transparent)]
     Layout(#[from] crate::target_info::LayoutError),
+    #[error("{error}")]
+    Located { loc: Loc, error: Box<ResolveError> },
 }
 
 impl ResolveError {
-    pub fn loc(&self) -> Option<crate::ast::Loc> {
+    pub fn loc(&self) -> Option<Loc> {
         match self {
             Self::Names(error) => Some(error.loc()),
+            Self::Located { loc, .. } => Some(*loc),
             _ => None,
+        }
+    }
+
+    pub fn at(self, loc: Loc) -> Self {
+        if self.loc().is_some() {
+            self
+        } else {
+            Self::Located {
+                loc,
+                error: Box::new(self),
+            }
         }
     }
 }

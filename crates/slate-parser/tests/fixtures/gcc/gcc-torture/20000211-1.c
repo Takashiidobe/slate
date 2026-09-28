@@ -111,44 +111,11 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: conditional operands have incompatible types
-// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20000211-1.c:54:1]
-// DEFAULT: 53 │     extern printf_spec_dynarr *parse_doprnt_spec (Bufbyte *, Bytecount);
-// DEFAULT: 54 │ ╭─▶ static void
-// DEFAULT: 55 │ │   doprnt_1 (Lisp_Object stream, const  Bufbyte *string, Bytecount len,
-// DEFAULT: 56 │ │         Charcount minlen, Charcount maxlen, int minus_flag, int zero_flag)
-// DEFAULT: 57 │ │   {
-// DEFAULT: 58 │ │     Charcount cclen;
-// DEFAULT: 59 │ │     Bufbyte pad;
-// DEFAULT: 60 │ │     Lstream *lstr = ((  struct lstream  *) ((void *)((((    stream    ) & ((1UL << ((4   * 8 )  - 4 ) ) - 1UL) ) ) | 0x40000000 )) )  ;
-// DEFAULT: 61 │ │     cclen = (  len ) ;
-// DEFAULT: 62 │ │     if (zero_flag)
-// DEFAULT: 63 │ │       pad = '0';
-// DEFAULT: 64 │ │     pad = ' ';
-// DEFAULT: 65 │ │   #if 0
-// DEFAULT: 66 │ │     if (minlen > cclen && !minus_flag)
-// DEFAULT: 67 │ │   #endif
-// DEFAULT: 68 │ │       {
-// DEFAULT: 69 │ │         int to_add = minlen - cclen;
-// DEFAULT: 70 │ │         while (to_add > 0)
-// DEFAULT: 71 │ │       {
-// DEFAULT: 72 │ │         (( lstr )->out_buffer_ind >= ( lstr )->out_buffer_size ?  Lstream_fputc ( lstr ,   pad ) :    (( lstr )->out_buffer[( lstr )->out_buffer_ind++] = (unsigned char) (  pad ),   ( lstr )->byte_count++, ( lstr )->buffering == LSTREAM_LINE_BUFFERED && ( lstr )->out_buffer[( lstr )->out_buffer_ind - 1] == '\n' ?    Lstream_flush_out ( lstr ) : 0)) ;
-// DEFAULT: 73 │ │         to_add--;
-// DEFAULT: 74 │ │       }
-// DEFAULT: 75 │ │       }
-// DEFAULT: 76 │ │     if (maxlen >= 0)
-// DEFAULT: 77 │ │       len = (  ((( maxlen ) <= (  cclen )) ? ( maxlen ) : (  cclen ))  ) ;
-// DEFAULT: 78 │ │     Lstream_write (lstr, string, len);
-// DEFAULT: 79 │ │     if (minlen > cclen && minus_flag)
-// DEFAULT: 80 │ │       {
-// DEFAULT: 81 │ │         int to_add = minlen - cclen;
-// DEFAULT: 82 │ │         while (to_add > 0)
-// DEFAULT: 83 │ │       {
-// DEFAULT: 84 │ │         (( lstr )->out_buffer_ind >= ( lstr )->out_buffer_size ?  Lstream_fputc ( lstr ,   pad ) :    (( lstr )->out_buffer[( lstr )->out_buffer_ind++] = (unsigned char) (  pad ),   ( lstr )->byte_count++, ( lstr )->buffering == LSTREAM_LINE_BUFFERED && ( lstr )->out_buffer[( lstr )->out_buffer_ind - 1] == '\n' ?    Lstream_flush_out ( lstr ) : 0)) ;
-// DEFAULT: 85 │ │         to_add--;
-// DEFAULT: 86 │ │       }
-// DEFAULT: 87 │ │       }
-// DEFAULT: 88 │ ╰─▶ }
-// DEFAULT: 89 │     static Bytecount
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20000211-1.c:72:196]
+// DEFAULT: 71 │     {
+// DEFAULT: 72 │       (( lstr )->out_buffer_ind >= ( lstr )->out_buffer_size ?  Lstream_fputc ( lstr ,   pad ) :    (( lstr )->out_buffer[( lstr )->out_buffer_ind++] = (unsigned char) (  pad ),   ( lstr )->byte_count++, ( lstr )->buffering == LSTREAM_LINE_BUFFERED && ( lstr )->out_buffer[( lstr )->out_buffer_ind - 1] == '\n' ?    Lstream_flush_out ( lstr ) : 0)) ;
+// DEFAULT: ·                                                                                                                                                                                                             ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// DEFAULT: 73 │       to_add--;
 // DEFAULT: ╰────
 // DEFAULT: ⚠ pointer conversion discards qualifiers
 // DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20000211-1.c:99:30]

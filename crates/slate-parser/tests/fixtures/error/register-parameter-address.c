@@ -10,11 +10,10 @@ int address_parameter(register int parameter) {
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × invalid in this context: address of register variable requested
-// SEMANTIC: ╭─[tests/fixtures/error/register-parameter-address.c:2:1]
-// SEMANTIC: 1 │
-// SEMANTIC: 2 │ ╭─▶ int address_parameter(register int parameter) {
-// SEMANTIC: 3 │ │       return *(&parameter);
-// SEMANTIC: 4 │ ╰─▶ }
-// SEMANTIC: 5 │
+// SEMANTIC: ╭─[tests/fixtures/error/register-parameter-address.c:3:14]
+// SEMANTIC: 2 │ int address_parameter(register int parameter) {
+// SEMANTIC: 3 │     return *(&parameter);
+// SEMANTIC: ·              ──────────
+// SEMANTIC: 4 │ }
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

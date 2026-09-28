@@ -11,11 +11,10 @@ void f(void) {
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × invalid in this context: address of register variable requested
-// SEMANTIC: ╭─[tests/fixtures/error/asm-memory-register-variable-gcc.c:1:1]
-// SEMANTIC: 1 │ ╭─▶ void f(void) {
-// SEMANTIC: 2 │ │       register int r = 1;
-// SEMANTIC: 3 │ │       asm("# %0" : "=m"(r));
-// SEMANTIC: 4 │ ╰─▶ }
-// SEMANTIC: 5 │
+// SEMANTIC: ╭─[tests/fixtures/error/asm-memory-register-variable-gcc.c:3:5]
+// SEMANTIC: 2 │     register int r = 1;
+// SEMANTIC: 3 │     asm("# %0" : "=m"(r));
+// SEMANTIC: ·     ──────────────────────
+// SEMANTIC: 4 │ }
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

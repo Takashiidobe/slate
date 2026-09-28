@@ -11,12 +11,10 @@ int f(void) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: `TYPE`, `LENGTH` and `SIZE` need a C object or
-// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_type_of_constant.c:2:1]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ ╭─▶ int f(void) {
-// DEFAULT: 3 │ │     __asm mov eax, TYPE 5
-// DEFAULT: 4 │ │     return 0;
-// DEFAULT: 5 │ ╰─▶ }
-// DEFAULT: 6 │
+// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_type_of_constant.c:3:3]
+// DEFAULT: 2 │ int f(void) {
+// DEFAULT: 3 │   __asm mov eax, TYPE 5
+// DEFAULT: ·   ─────────────────────
+// DEFAULT: 4 │   return 0;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

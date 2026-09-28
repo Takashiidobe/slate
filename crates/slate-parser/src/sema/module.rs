@@ -1297,249 +1297,257 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         let mut result = Vec::new();
         for statement in body {
-            match &statement.value {
-                StmtKind::Pragma(pragma) => {
-                    let placement = if self.compound_start {
-                        PragmaPlacement::CompoundStart
-                    } else {
-                        PragmaPlacement::Misplaced
-                    };
-                    self.floating_pragmas.apply(
-                        &mut self.context.region,
-                        &pragma.kind,
-                        placement,
-                    )?;
-                    continue;
-                }
-                StmtKind::Comment(_) => continue,
-                _ => self.compound_start = false,
-            }
-            let mut annotations = Vec::new();
-            let kind = match &statement.value {
-                StmtKind::Comment(_) | StmtKind::StaticAssert(_) | StmtKind::Pragma(_) => continue,
-                StmtKind::Decl(item) => {
-                    result.extend(self.declaration(item, false)?);
-                    continue;
-                }
-                StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?.value),
-                StmtKind::Return(expr) => {
-                    let ty = return_type
-                        .ok_or(ResolveError::Unsupported("value return from void function"))?;
-                    let value = self.expr(expr)?;
-                    Statement::Return(Some(
-                        self.convert_expr(expr, value, ty, ConversionReason::Return)?
-                            .value,
-                    ))
-                }
-                StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
-                StmtKind::If {
-                    condition,
-                    then_branch,
-                    else_branch,
-                } => self.control_scoped(|lower| {
-                    let value = lower.expr(condition)?;
-                    Ok(Statement::If {
-                        condition: lower.condition(value.value, None)?,
-                        then_body: lower.scoped(|lower| {
-                            lower.statements(std::slice::from_ref(then_branch), return_type)
-                        })?,
-                        else_body: else_branch
-                            .as_ref()
-                            .map(|body| {
-                                lower.scoped(|lower| {
-                                    lower.statements(std::slice::from_ref(body), return_type)
-                                })
-                            })
-                            .transpose()?,
-                    })
-                })?,
-                StmtKind::While { condition, body } => self.control_scoped(|lower| {
-                    let id = lower.fresh();
-                    let value = lower.expr(condition)?;
-                    let condition = lower.condition(value.value, None)?;
-                    let body = lower.loop_body(id, body, return_type)?;
-                    Ok(Statement::While {
-                        id,
-                        condition: condition.into(),
-                        body,
-                    })
-                })?,
-                StmtKind::DoWhile { body, condition } => self.control_scoped(|lower| {
-                    let id = lower.fresh();
-                    let body = lower.loop_body(id, body, return_type)?;
-                    let value = lower.expr(condition)?;
-                    Ok(Statement::DoWhile {
-                        id,
-                        body,
-                        condition: lower.condition(value.value, None)?.into(),
-                    })
-                })?,
-                StmtKind::For {
-                    init,
-                    condition,
-                    increment,
-                    body,
-                } => self.scoped(|lower| {
-                    let id = lower.fresh();
-                    let init = match init {
-                        Some(init) => lower.statements(std::slice::from_ref(init), return_type)?,
-                        None => Vec::new(),
-                    };
-                    let condition = condition
-                        .as_ref()
-                        .map(|expr| {
-                            let value = lower.expr(expr)?;
-                            lower.condition(value.value, None)
-                        })
-                        .transpose()?;
-                    let increment = increment
-                        .as_ref()
-                        .map(|expr| lower.expr(expr))
-                        .transpose()?;
-                    let body = lower.loop_body(id, body, return_type)?;
-                    Ok(Statement::For {
-                        id,
-                        init,
-                        condition: condition.map(Into::into),
-                        increment: increment.map(|value| value.value.into()),
-                        body,
-                    })
-                })?,
-                StmtKind::Break => Statement::Break(
-                    *self
-                        .break_targets
-                        .last()
-                        .ok_or(ResolveError::Unsupported("break outside loop or switch"))?,
-                ),
-                StmtKind::Continue => Statement::Continue(
-                    *self
-                        .continue_targets
-                        .last()
-                        .ok_or(ResolveError::Unsupported("continue outside loop"))?,
-                ),
-                StmtKind::Switch { discriminant, body } => self.control_scoped(|lower| {
-                    let value = lower.expr(discriminant)?;
-                    let discriminant = lower.promote(value)?;
-                    if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
-                        return Err(ResolveError::Unsupported("noninteger switch discriminant"));
-                    }
-                    let id = lower.fresh();
-                    lower.break_targets.push(id);
-                    lower.switches.push((id, discriminant.c));
-                    let body = lower
-                        .scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
-                    lower.switches.pop();
-                    lower.break_targets.pop();
-                    Ok(Statement::Switch {
-                        id,
-                        discriminant: discriminant.value,
-                        body: body?,
-                    })
-                })?,
-                StmtKind::SwitchLabel { label, body } => {
-                    let (switch, ty) = self
-                        .switches
-                        .last()
-                        .cloned()
-                        .ok_or(ResolveError::Unsupported("case or default outside switch"))?;
-                    match label {
-                        ast::SwitchLabel::Default => Statement::Default {
-                            switch,
-                            body: self.statements(std::slice::from_ref(body), return_type)?,
-                        },
-                        ast::SwitchLabel::Case(start) => Statement::Case {
-                            switch,
-                            start: self.case_value(start, ty)?,
-                            end: None,
-                            body: self.statements(std::slice::from_ref(body), return_type)?,
-                        },
-                        ast::SwitchLabel::CaseRange { start, end } => Statement::Case {
-                            switch,
-                            start: self.case_value(start, ty)?,
-                            end: Some(self.case_value(end, ty)?),
-                            body: self.statements(std::slice::from_ref(body), return_type)?,
-                        },
-                    }
-                }
-                StmtKind::Null => Statement::Null,
-                StmtKind::Attribute(attributes)
-                    if attributes
-                        .iter()
-                        .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
-                {
-                    if self.switches.is_empty() {
-                        return Err(ResolveError::Unsupported("fallthrough outside switch"));
-                    }
-                    annotations.push(("c_attribute".into(), "fallthrough".into()));
-                    Statement::Null
-                }
-                StmtKind::Attribute(_) => Statement::Null,
-                StmtKind::LocalLabelDecl(_) => continue,
-                StmtKind::ComputedGoto(expr) => {
-                    let value = self.expr(expr)?;
-                    if !matches!(value.ty, Type::Pointer { .. }) {
-                        return Err(ResolveError::Unsupported("nonpointer computed goto"));
-                    }
-                    Statement::ComputedGoto(value.value)
-                }
-                StmtKind::Goto(label) => Statement::Goto(
-                    self.names
-                        .references
-                        .iter()
-                        .find(|r| r.id == label.id)
-                        .map(|r| r.binding)
-                        .ok_or(ResolveError::Unsupported("missing goto binding"))?,
-                ),
-                StmtKind::Labeled { label, body } => Statement::Label {
-                    id: *self
-                        .names
-                        .label_definitions
-                        .get(&label.id)
-                        .ok_or(ResolveError::Unsupported("missing label binding"))?,
-                    name: label.value.clone(),
-                    body: self.statements(std::slice::from_ref(body), return_type)?,
-                },
-                StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm_statement(asm)?)),
-                StmtKind::MsAsm(asm) => Statement::Asm(Box::new(self.ms_asm(asm)?)),
-                StmtKind::Block(body) => {
-                    Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
-                }
-                StmtKind::ReturnVoid => match self.types.flavor {
-                    CompilerFlavor::Msvc => Statement::Return(None),
-                    CompilerFlavor::Gcc if self.types.features.valueless_return_in_nonvoid => {
-                        Statement::Return(None)
-                    }
-                    _ => {
-                        return Err(ResolveError::Invalid(
-                            "non-void function should return a value",
-                        ));
-                    }
-                },
-                StmtKind::Attributed { attributes, body } => {
-                    if self.types.flavor != CompilerFlavor::Gcc
-                        && attributes
-                            .iter()
-                            .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
-                    {
-                        return Err(ResolveError::Invalid(
-                            "fallthrough attribute on a non-empty statement",
-                        ));
-                    }
-                    result.extend(self.statements(std::slice::from_ref(body), return_type)?);
-                    continue;
-                }
-                StmtKind::NestedFunction(_) => {
-                    return Err(if self.types.flavor == CompilerFlavor::Gcc {
-                        ResolveError::Unsupported("GNU nested function")
-                    } else {
-                        ResolveError::Invalid("function definition is not allowed here")
-                    });
-                }
-            };
-            let lowered = statement.derive(kind);
-            self.module.annotate(&lowered, annotations);
-            result.push(lowered);
+            self.statement(statement, return_type, &mut result)
+                .map_err(|error| error.at(statement.expansion))?;
         }
         Ok(result)
+    }
+
+    fn statement(
+        &mut self,
+        statement: &Stmt,
+        return_type: Option<QualType>,
+        result: &mut Vec<Span<Statement>>,
+    ) -> Result<(), ResolveError> {
+        match &statement.value {
+            StmtKind::Pragma(pragma) => {
+                let placement = if self.compound_start {
+                    PragmaPlacement::CompoundStart
+                } else {
+                    PragmaPlacement::Misplaced
+                };
+                self.floating_pragmas
+                    .apply(&mut self.context.region, &pragma.kind, placement)?;
+                return Ok(());
+            }
+            StmtKind::Comment(_) => return Ok(()),
+            _ => self.compound_start = false,
+        }
+        let mut annotations = Vec::new();
+        let kind = match &statement.value {
+            StmtKind::Comment(_) | StmtKind::StaticAssert(_) | StmtKind::Pragma(_) => return Ok(()),
+            StmtKind::Decl(item) => {
+                result.extend(self.declaration(item, false)?);
+                return Ok(());
+            }
+            StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?.value),
+            StmtKind::Return(expr) => {
+                let ty = return_type
+                    .ok_or(ResolveError::Unsupported("value return from void function"))?;
+                let value = self.expr(expr)?;
+                Statement::Return(Some(
+                    self.convert_expr(expr, value, ty, ConversionReason::Return)?
+                        .value,
+                ))
+            }
+            StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
+            StmtKind::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => self.control_scoped(|lower| {
+                let value = lower.expr(condition)?;
+                Ok(Statement::If {
+                    condition: lower.condition(value.value, None)?,
+                    then_body: lower.scoped(|lower| {
+                        lower.statements(std::slice::from_ref(then_branch), return_type)
+                    })?,
+                    else_body: else_branch
+                        .as_ref()
+                        .map(|body| {
+                            lower.scoped(|lower| {
+                                lower.statements(std::slice::from_ref(body), return_type)
+                            })
+                        })
+                        .transpose()?,
+                })
+            })?,
+            StmtKind::While { condition, body } => self.control_scoped(|lower| {
+                let id = lower.fresh();
+                let value = lower.expr(condition)?;
+                let condition = lower.condition(value.value, None)?;
+                let body = lower.loop_body(id, body, return_type)?;
+                Ok(Statement::While {
+                    id,
+                    condition: condition.into(),
+                    body,
+                })
+            })?,
+            StmtKind::DoWhile { body, condition } => self.control_scoped(|lower| {
+                let id = lower.fresh();
+                let body = lower.loop_body(id, body, return_type)?;
+                let value = lower.expr(condition)?;
+                Ok(Statement::DoWhile {
+                    id,
+                    body,
+                    condition: lower.condition(value.value, None)?.into(),
+                })
+            })?,
+            StmtKind::For {
+                init,
+                condition,
+                increment,
+                body,
+            } => self.scoped(|lower| {
+                let id = lower.fresh();
+                let init = match init {
+                    Some(init) => lower.statements(std::slice::from_ref(init), return_type)?,
+                    None => Vec::new(),
+                };
+                let condition = condition
+                    .as_ref()
+                    .map(|expr| {
+                        let value = lower.expr(expr)?;
+                        lower.condition(value.value, None)
+                    })
+                    .transpose()?;
+                let increment = increment
+                    .as_ref()
+                    .map(|expr| lower.expr(expr))
+                    .transpose()?;
+                let body = lower.loop_body(id, body, return_type)?;
+                Ok(Statement::For {
+                    id,
+                    init,
+                    condition: condition.map(Into::into),
+                    increment: increment.map(|value| value.value.into()),
+                    body,
+                })
+            })?,
+            StmtKind::Break => Statement::Break(
+                *self
+                    .break_targets
+                    .last()
+                    .ok_or(ResolveError::Unsupported("break outside loop or switch"))?,
+            ),
+            StmtKind::Continue => Statement::Continue(
+                *self
+                    .continue_targets
+                    .last()
+                    .ok_or(ResolveError::Unsupported("continue outside loop"))?,
+            ),
+            StmtKind::Switch { discriminant, body } => self.control_scoped(|lower| {
+                let value = lower.expr(discriminant)?;
+                let discriminant = lower.promote(value)?;
+                if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
+                    return Err(ResolveError::Unsupported("noninteger switch discriminant"));
+                }
+                let id = lower.fresh();
+                lower.break_targets.push(id);
+                lower.switches.push((id, discriminant.c));
+                let body =
+                    lower.scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
+                lower.switches.pop();
+                lower.break_targets.pop();
+                Ok(Statement::Switch {
+                    id,
+                    discriminant: discriminant.value,
+                    body: body?,
+                })
+            })?,
+            StmtKind::SwitchLabel { label, body } => {
+                let (switch, ty) = self
+                    .switches
+                    .last()
+                    .cloned()
+                    .ok_or(ResolveError::Unsupported("case or default outside switch"))?;
+                match label {
+                    ast::SwitchLabel::Default => Statement::Default {
+                        switch,
+                        body: self.statements(std::slice::from_ref(body), return_type)?,
+                    },
+                    ast::SwitchLabel::Case(start) => Statement::Case {
+                        switch,
+                        start: self.case_value(start, ty)?,
+                        end: None,
+                        body: self.statements(std::slice::from_ref(body), return_type)?,
+                    },
+                    ast::SwitchLabel::CaseRange { start, end } => Statement::Case {
+                        switch,
+                        start: self.case_value(start, ty)?,
+                        end: Some(self.case_value(end, ty)?),
+                        body: self.statements(std::slice::from_ref(body), return_type)?,
+                    },
+                }
+            }
+            StmtKind::Null => Statement::Null,
+            StmtKind::Attribute(attributes)
+                if attributes
+                    .iter()
+                    .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
+            {
+                if self.switches.is_empty() {
+                    return Err(ResolveError::Unsupported("fallthrough outside switch"));
+                }
+                annotations.push(("c_attribute".into(), "fallthrough".into()));
+                Statement::Null
+            }
+            StmtKind::Attribute(_) => Statement::Null,
+            StmtKind::LocalLabelDecl(_) => return Ok(()),
+            StmtKind::ComputedGoto(expr) => {
+                let value = self.expr(expr)?;
+                if !matches!(value.ty, Type::Pointer { .. }) {
+                    return Err(ResolveError::Unsupported("nonpointer computed goto"));
+                }
+                Statement::ComputedGoto(value.value)
+            }
+            StmtKind::Goto(label) => Statement::Goto(
+                self.names
+                    .references
+                    .iter()
+                    .find(|r| r.id == label.id)
+                    .map(|r| r.binding)
+                    .ok_or(ResolveError::Unsupported("missing goto binding"))?,
+            ),
+            StmtKind::Labeled { label, body } => Statement::Label {
+                id: *self
+                    .names
+                    .label_definitions
+                    .get(&label.id)
+                    .ok_or(ResolveError::Unsupported("missing label binding"))?,
+                name: label.value.clone(),
+                body: self.statements(std::slice::from_ref(body), return_type)?,
+            },
+            StmtKind::Asm(asm) => Statement::Asm(Box::new(self.asm_statement(asm)?)),
+            StmtKind::MsAsm(asm) => Statement::Asm(Box::new(self.ms_asm(asm)?)),
+            StmtKind::Block(body) => {
+                Statement::Block(self.compound(|lower| lower.statements(body, return_type))?)
+            }
+            StmtKind::ReturnVoid => match self.types.flavor {
+                CompilerFlavor::Msvc => Statement::Return(None),
+                CompilerFlavor::Gcc if self.types.features.valueless_return_in_nonvoid => {
+                    Statement::Return(None)
+                }
+                _ => {
+                    return Err(ResolveError::Invalid(
+                        "non-void function should return a value",
+                    ));
+                }
+            },
+            StmtKind::Attributed { attributes, body } => {
+                if self.types.flavor != CompilerFlavor::Gcc
+                    && attributes
+                        .iter()
+                        .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
+                {
+                    return Err(ResolveError::Invalid(
+                        "fallthrough attribute on a non-empty statement",
+                    ));
+                }
+                result.extend(self.statements(std::slice::from_ref(body), return_type)?);
+                return Ok(());
+            }
+            StmtKind::NestedFunction(_) => {
+                return Err(if self.types.flavor == CompilerFlavor::Gcc {
+                    ResolveError::Unsupported("GNU nested function")
+                } else {
+                    ResolveError::Invalid("function definition is not allowed here")
+                });
+            }
+        };
+        let lowered = statement.derive(kind);
+        self.module.annotate(&lowered, annotations);
+        result.push(lowered);
+        Ok(())
     }
 }

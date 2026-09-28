@@ -11,12 +11,10 @@ double misplaced(double a, double b) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: floating-point pragma can only appear at file
-// DEFAULT: ╭─[tests/fixtures/fp_pragma_misplaced.c:1:1]
-// DEFAULT: 1 │ ╭─▶ double misplaced(double a, double b) {
-// DEFAULT: 2 │ │     double x = a;
-// DEFAULT: 3 │ │   #pragma STDC FENV_ACCESS ON
-// DEFAULT: 4 │ │     return x / b;
-// DEFAULT: 5 │ ╰─▶ }
-// DEFAULT: 6 │
+// DEFAULT: ╭─[tests/fixtures/fp_pragma_misplaced.c:3:1]
+// DEFAULT: 2 │   double x = a;
+// DEFAULT: 3 │ #pragma STDC FENV_ACCESS ON
+// DEFAULT: · ───────────────────────────
+// DEFAULT: 4 │   return x / b;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

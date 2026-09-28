@@ -11,12 +11,10 @@ int f(void) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: `__asm` division by zero
-// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_division_by_zero.c:2:1]
-// DEFAULT: 1 │
-// DEFAULT: 2 │ ╭─▶ int f(void) {
-// DEFAULT: 3 │ │     __asm mov eax, 5 / 0
-// DEFAULT: 4 │ │     return 0;
-// DEFAULT: 5 │ ╰─▶ }
-// DEFAULT: 6 │
+// DEFAULT: ╭─[tests/fixtures/sema/i686-pc-windows-msvc/ms_asm_division_by_zero.c:3:3]
+// DEFAULT: 2 │ int f(void) {
+// DEFAULT: 3 │   __asm mov eax, 5 / 0
+// DEFAULT: ·   ────────────────────
+// DEFAULT: 4 │   return 0;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

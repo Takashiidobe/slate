@@ -57,13 +57,10 @@ T after_functions;
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × unsupported in numeric IR lowering: invalid attribute
-// DEFAULT: ╭─[tests/fixtures/parser_grammar_transactions.c:34:1]
-// DEFAULT: 33 │
-// DEFAULT: 34 │ ╭─▶ int invalid_attribute(void) {
-// DEFAULT: 35 │ │     __attribute__((alloc_size(sizeof(enum { T = 2 }), +))) int value;
-// DEFAULT: 36 │ │     T after_invalid_attribute;
-// DEFAULT: 37 │ │     return sizeof(T) + sizeof(value) + sizeof(after_invalid_attribute);
-// DEFAULT: 38 │ ╰─▶ }
-// DEFAULT: 39 │
+// DEFAULT: ╭─[tests/fixtures/parser_grammar_transactions.c:35:3]
+// DEFAULT: 34 │ int invalid_attribute(void) {
+// DEFAULT: 35 │   __attribute__((alloc_size(sizeof(enum { T = 2 }), +))) int value;
+// DEFAULT: ·   ─────────────────────────────────────────────────────────────────
+// DEFAULT: 36 │   T after_invalid_attribute;
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

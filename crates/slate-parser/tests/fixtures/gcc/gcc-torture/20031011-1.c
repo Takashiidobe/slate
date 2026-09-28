@@ -28,16 +28,11 @@ void x (A a) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20031011-1.c:15:1]
-// DEFAULT: 14 │
-// DEFAULT: 15 │ ╭─▶ void x (A a) {
-// DEFAULT: 16 │ │     void y () {
+// DEFAULT: ╭─[tests/fixtures/gcc/gcc-torture/20031011-1.c:16:3]
+// DEFAULT: 15 │     void x (A a) {
+// DEFAULT: 16 │ ╭─▶   void y () {
 // DEFAULT: 17 │ │       a.a = 0;
-// DEFAULT: 18 │ │     }
-// DEFAULT: 19 │ │
-// DEFAULT: 20 │ │     b = &a;
-// DEFAULT: 21 │ │     y();
-// DEFAULT: 22 │ ╰─▶ }
-// DEFAULT: 23 │
+// DEFAULT: 18 │ ╰─▶   }
+// DEFAULT: 19 │
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

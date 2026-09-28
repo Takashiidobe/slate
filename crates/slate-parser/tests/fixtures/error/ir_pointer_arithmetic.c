@@ -21,10 +21,10 @@ void bad(struct S *p) { p++; }
 // FLOAT: Error:   × semantic analysis failed
 // FLOAT: Error:
 // FLOAT: × unsupported in numeric IR lowering: noninteger pointer offset
-// FLOAT: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:3:1]
+// FLOAT: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:3:20]
 // FLOAT: 2 │ #ifdef FLOAT
 // FLOAT: 3 │ void bad(int *p) { p + 1.0; }
-// FLOAT: · ─────────────────────────────
+// FLOAT: ·                    ───────
 // FLOAT: 4 │ #endif
 // FLOAT: ╰────
 // SLATE-FILECHECK-END FLOAT
@@ -32,10 +32,10 @@ void bad(struct S *p) { p++; }
 // INCOMPATIBLE: Error:   × semantic analysis failed
 // INCOMPATIBLE: Error:
 // INCOMPATIBLE: × unsupported in numeric IR lowering: incompatible pointer subtraction
-// INCOMPATIBLE: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:6:1]
+// INCOMPATIBLE: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:6:29]
 // INCOMPATIBLE: 5 │ #ifdef INCOMPATIBLE
 // INCOMPATIBLE: 6 │ void bad(int *p, long *q) { p - q; }
-// INCOMPATIBLE: · ────────────────────────────────────
+// INCOMPATIBLE: ·                             ─────
 // INCOMPATIBLE: 7 │ #endif
 // INCOMPATIBLE: ╰────
 // SLATE-FILECHECK-END INCOMPATIBLE
@@ -43,10 +43,10 @@ void bad(struct S *p) { p++; }
 // INCOMPLETE: Error:   × semantic analysis failed
 // INCOMPLETE: Error:
 // INCOMPLETE: × unsupported in numeric IR lowering: incomplete field type
-// INCOMPLETE: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:10:1]
+// INCOMPLETE: ╭─[tests/fixtures/error/ir_pointer_arithmetic.c:10:25]
 // INCOMPLETE: 9 │ struct S;
 // INCOMPLETE: 10 │ void bad(struct S *p) { p++; }
-// INCOMPLETE: · ──────────────────────────────
+// INCOMPLETE: ·                         ───
 // INCOMPLETE: 11 │ #endif
 // INCOMPLETE: ╰────
 // SLATE-FILECHECK-END INCOMPLETE

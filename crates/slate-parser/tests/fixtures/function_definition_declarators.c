@@ -15,11 +15,10 @@ void outer(void) {
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × invalid in this context: function definition is not allowed here
-// DEFAULT: ╭─[tests/fixtures/function_definition_declarators.c:6:1]
-// DEFAULT: 5 │
-// DEFAULT: 6 │ ╭─▶ void outer(void) {
-// DEFAULT: 7 │ │     int (*nested(int x))(char) { return 0; }
-// DEFAULT: 8 │ ╰─▶ }
-// DEFAULT: 9 │
+// DEFAULT: ╭─[tests/fixtures/function_definition_declarators.c:7:3]
+// DEFAULT: 6 │ void outer(void) {
+// DEFAULT: 7 │   int (*nested(int x))(char) { return 0; }
+// DEFAULT: ·   ────────────────────────────────────────
+// DEFAULT: 8 │ }
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT
