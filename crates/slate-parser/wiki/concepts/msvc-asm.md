@@ -18,8 +18,9 @@ Tracked as `slate-parser-25m.6` and its children. Example inputs:
 i686 `winnt.h` (`_M_IX86` branch, line 1064 in the xwin sysroot) defines
 `Int64ShllMod32`, `Int64ShraMod32` and `Int64ShrlMod32` with `__asm { }`
 bodies and `DbgRaiseAssertionFailure` with `__asm int 0x2c`, so
-`#include <windows.h>` on `i686-pc-windows-msvc` fails in both flavors until
-this lands (`slate-parser-g097`). Those functions exercise most of the hard
+`#include <windows.h>` on `i686-pc-windows-msvc` needs this in both flavors.
+`sema/i686-pc-windows-msvc/windows_h_{clang,msvc}.c` pin it, calling
+`Int64ShllMod32` (`slate-parser-g097`). Those functions exercise most of the hard
 semantics at once:
 
 ```c
