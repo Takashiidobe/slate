@@ -50,9 +50,11 @@ impl Paths {
             | Target::X86_64PcWindowsMsvc
             | Target::Aarch64PcWindowsMsvc
             | Target::Thumbv7aPcWindowsMsvc => windows_msvc::validate(&path, target),
-            Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
-                linux_gnu::validate(&path, target)
-            }
+            Target::X86_64UnknownLinuxGnu
+            | Target::Aarch64UnknownLinuxGnu
+            | Target::I686UnknownLinuxGnu
+            | Target::Armv7UnknownLinuxGnueabi
+            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::validate(&path, target),
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::validate(&path, target)
             }
@@ -83,9 +85,11 @@ impl Paths {
             | Target::X86_64PcWindowsMsvc
             | Target::Aarch64PcWindowsMsvc
             | Target::Thumbv7aPcWindowsMsvc => windows_msvc::include_paths(&root),
-            Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
-                linux_gnu::include_paths(&root, target)
-            }
+            Target::X86_64UnknownLinuxGnu
+            | Target::Aarch64UnknownLinuxGnu
+            | Target::I686UnknownLinuxGnu
+            | Target::Armv7UnknownLinuxGnueabi
+            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::include_paths(&root, target),
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::include_paths(&root)
             }
@@ -146,9 +150,11 @@ impl Paths {
             | Target::X86_64PcWindowsMsvc
             | Target::Aarch64PcWindowsMsvc
             | Target::Thumbv7aPcWindowsMsvc => windows_msvc::doctor(&root, target),
-            Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
-                linux_gnu::doctor(&root, target)
-            }
+            Target::X86_64UnknownLinuxGnu
+            | Target::Aarch64UnknownLinuxGnu
+            | Target::I686UnknownLinuxGnu
+            | Target::Armv7UnknownLinuxGnueabi
+            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::doctor(&root, target),
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::doctor(&root, target)
             }
@@ -166,9 +172,11 @@ impl Paths {
             | Target::X86_64PcWindowsMsvc
             | Target::Aarch64PcWindowsMsvc
             | Target::Thumbv7aPcWindowsMsvc => windows_msvc::install(self, target),
-            Target::X86_64UnknownLinuxGnu | Target::Aarch64UnknownLinuxGnu => {
-                linux_gnu::install(self, target)
-            }
+            Target::X86_64UnknownLinuxGnu
+            | Target::Aarch64UnknownLinuxGnu
+            | Target::I686UnknownLinuxGnu
+            | Target::Armv7UnknownLinuxGnueabi
+            | Target::Armv7UnknownLinuxGnueabihf => linux_gnu::install(self, target),
             Target::X86_64UnknownLinuxMusl | Target::Aarch64UnknownLinuxMusl => {
                 linux_musl::install(self, target)
             }

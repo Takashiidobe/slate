@@ -16,6 +16,9 @@ cargo run -- doctor aarch64-pc-windows-msvc
 cargo run -- install thumbv7a-pc-windows-msvc
 cargo run -- install x86_64-unknown-linux-gnu
 cargo run -- install aarch64-unknown-linux-gnu
+cargo run -- install i686-unknown-linux-gnu
+cargo run -- install armv7-unknown-linux-gnueabi
+cargo run -- install armv7-unknown-linux-gnueabihf
 cargo run -- install x86_64-unknown-linux-musl
 cargo run -- install aarch64-unknown-linux-musl
 cargo run -- install x86_64-unknown-freebsd
@@ -90,11 +93,16 @@ are acquired locally for the user and are not distributed with Slate.
 The supported Rust targets are `i686-pc-windows-msvc`,
 `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, and
 `thumbv7a-pc-windows-msvc`, plus x86_64 and
-aarch64 targets for Linux (glibc and musl), FreeBSD, Android, and macOS. Each
-target has its own sysroot.
+aarch64 targets for Linux (glibc and musl), FreeBSD, Android, and macOS, and
+`i686-unknown-linux-gnu`, `armv7-unknown-linux-gnueabi`, and
+`armv7-unknown-linux-gnueabihf`. Each target has its own sysroot.
 
 Linux installations use prebuilt sources. The glibc targets extract pinned
-Debian cross packages and keep their `usr/<Debian triplet>` layout. The musl
+Debian cross packages and keep their `usr/<Debian triplet>` layout: i686 uses
+Debian's i386 packages (`usr/i686-linux-gnu`), and the two armv7 targets use
+armel (`usr/arm-linux-gnueabi`) and armhf (`usr/arm-linux-gnueabihf`). Debian
+no longer builds armel cross packages, so it stays on Bookworm's glibc 2.36
+like aarch64; x86_64, i686 and armhf use Sid's glibc 2.43. The musl
 targets extract the prebuilt sysroot from pinned musl-cross archives. Slate uses
 `Paths::include_paths` to find the C headers in either layout, so no generated
 aliases or linker-script edits are needed for header translation. These Linux

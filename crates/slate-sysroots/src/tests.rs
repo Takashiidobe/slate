@@ -472,6 +472,21 @@ fn linux_targets_resolve_prebuilt_header_layouts() {
             "usr/aarch64-linux-gnu/include",
             "usr/aarch64-linux-gnu/lib",
         ),
+        (
+            Target::I686UnknownLinuxGnu,
+            "usr/i686-linux-gnu/include",
+            "usr/i686-linux-gnu/lib",
+        ),
+        (
+            Target::Armv7UnknownLinuxGnueabi,
+            "usr/arm-linux-gnueabi/include",
+            "usr/arm-linux-gnueabi/lib",
+        ),
+        (
+            Target::Armv7UnknownLinuxGnueabihf,
+            "usr/arm-linux-gnueabihf/include",
+            "usr/arm-linux-gnueabihf/lib",
+        ),
         (Target::X86_64UnknownLinuxMusl, "usr/include", "usr/lib"),
         (Target::Aarch64UnknownLinuxMusl, "usr/include", "usr/lib"),
     ] {

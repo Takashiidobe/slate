@@ -54,6 +54,7 @@ impl GccFamily {
             Target::I686PcWindowsMsvc
             | Target::X86_64PcWindowsMsvc
             | Target::X86_64UnknownLinuxGnu
+            | Target::I686UnknownLinuxGnu
             | Target::X86_64UnknownLinuxMusl
             | Target::X86_64AppleDarwin
             | Target::X86_64UnknownFreebsd
@@ -64,7 +65,9 @@ impl GccFamily {
             | Target::Aarch64AppleDarwin
             | Target::Aarch64UnknownFreebsd
             | Target::Aarch64LinuxAndroid => Self::Aarch64,
-            Target::Thumbv7aPcWindowsMsvc => Self::Arm,
+            Target::Thumbv7aPcWindowsMsvc
+            | Target::Armv7UnknownLinuxGnueabi
+            | Target::Armv7UnknownLinuxGnueabihf => Self::Arm,
         }
     }
 
