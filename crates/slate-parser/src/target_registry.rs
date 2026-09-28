@@ -388,4 +388,24 @@ pub const TARGETS: &[TargetSpec] = &[
             AbiConvention::WinArm64,
         ),
     },
+    TargetSpec {
+        triple: "thumbv7a-pc-windows-msvc",
+        layout: TargetInfo::thumbv7a_windows_msvc,
+        profile: windows_msvc(
+            &[
+                Predefines {
+                    flavors: MSVC,
+                    ..clang_only(
+                        "<msvc-arm-windows-predefines>",
+                        include_str!("predefines/msvc-19.44.35228_arm_windows.h"),
+                    )
+                },
+                clang_only(
+                    "<clang-thumbv7a-windows-msvc-predefines>",
+                    include_str!("predefines/clang-22.1.8_thumbv7a_windows_msvc.h"),
+                ),
+            ],
+            AbiConvention::Aapcs32,
+        ),
+    },
 ];

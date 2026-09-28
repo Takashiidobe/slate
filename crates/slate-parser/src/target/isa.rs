@@ -100,6 +100,13 @@ impl TargetIsa {
                 if request.sve_vector_bits.is_some() {
                     return Err("SVE options are AArch64 options".into());
                 }
+                if environment == TargetEnvironment::Msvc
+                    && request
+                        .float_abi
+                        .is_some_and(|float_abi| float_abi != ArmFloatAbi::Hard)
+                {
+                    return Err("Windows on Arm requires the hard float ABI".into());
+                }
                 let version = match request.march {
                     None => None,
                     Some(March::Arm(march))

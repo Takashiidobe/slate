@@ -343,6 +343,21 @@ impl TargetInfo {
         }
     }
 
+    pub(crate) fn thumbv7a_windows_msvc() -> Self {
+        Self {
+            pointer_width: 32,
+            pointer: StorageLayout {
+                size_bytes: 4,
+                alignment_bytes: 4,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 8,
+                ..TargetAbi::default()
+            },
+            ..Self::windows_msvc(TargetFamily::Arm32)
+        }
+    }
+
     fn windows_msvc(family: TargetFamily) -> Self {
         let mut scalars = ScalarLayouts::for_family(family);
         scalars.entries.remove(&ScalarKey::Float(FloatType::F80));

@@ -31,6 +31,7 @@ pub enum ArmFpu {
     Vfpv4,
     Vfpv4D16,
     Neon,
+    NeonFp16,
     NeonVfpv4,
     FpArmv8,
     NeonFpArmv8,
@@ -48,6 +49,7 @@ impl FromStr for ArmFpu {
             "vfpv4" => Ok(Self::Vfpv4),
             "vfpv4-d16" => Ok(Self::Vfpv4D16),
             "neon" => Ok(Self::Neon),
+            "neon-fp16" => Ok(Self::NeonFp16),
             "neon-vfpv4" => Ok(Self::NeonVfpv4),
             "fp-armv8" => Ok(Self::FpArmv8),
             "neon-fp-armv8" => Ok(Self::NeonFpArmv8),
@@ -61,7 +63,7 @@ impl ArmFpu {
     fn vfp_version(self) -> u8 {
         match self {
             Self::None => 0,
-            Self::Vfpv3 | Self::Vfpv3D16 | Self::Neon => 3,
+            Self::Vfpv3 | Self::Vfpv3D16 | Self::Neon | Self::NeonFp16 => 3,
             Self::Vfpv4 | Self::Vfpv4D16 | Self::NeonVfpv4 => 4,
             Self::FpArmv8 | Self::NeonFpArmv8 | Self::CryptoNeonFpArmv8 => 5,
         }
@@ -70,8 +72,16 @@ impl ArmFpu {
     fn neon(self) -> bool {
         matches!(
             self,
-            Self::Neon | Self::NeonVfpv4 | Self::NeonFpArmv8 | Self::CryptoNeonFpArmv8
+            Self::Neon
+                | Self::NeonFp16
+                | Self::NeonVfpv4
+                | Self::NeonFpArmv8
+                | Self::CryptoNeonFpArmv8
         )
+    }
+
+    fn half_precision(self) -> bool {
+        self == Self::NeonFp16 || self.vfp_version() >= 4
     }
 }
 
@@ -96,12 +106,13 @@ impl ArmIsa {
         thumb: Option<bool>,
     ) -> Self {
         let version = version.unwrap_or(ArmVersion::V7);
-        let default_fpu = if version >= ArmVersion::V8 {
-            ArmFpu::CryptoNeonFpArmv8
-        } else {
-            ArmFpu::Neon
+        let windows = environment == TargetEnvironment::Msvc;
+        let default_fpu = match (version >= ArmVersion::V8, windows) {
+            (true, false) => ArmFpu::CryptoNeonFpArmv8,
+            (false, false) | (true, true) => ArmFpu::Neon,
+            (false, true) => ArmFpu::NeonFp16,
         };
-        let default_float_abi = if environment == TargetEnvironment::GnuEabiHf {
+        let default_float_abi = if windows || environment == TargetEnvironment::GnuEabiHf {
             ArmFloatAbi::Hard
         } else {
             ArmFloatAbi::SoftFp
@@ -110,7 +121,7 @@ impl ArmIsa {
             version,
             fpu: fpu.unwrap_or(default_fpu),
             float_abi: float_abi.unwrap_or(default_float_abi),
-            thumb: thumb.unwrap_or(false),
+            thumb: windows || thumb.unwrap_or(false),
         }
     }
 
@@ -184,13 +195,13 @@ impl ArmIsa {
         if vfp >= 3 {
             defines.push(format!(
                 "__ARM_FP={}",
-                number(if vfp >= 4 { 0xe } else { 0xc })
+                number(if fpu.half_precision() { 0xe } else { 0xc })
             ));
         }
         if fpu.neon() {
             defines.push(format!(
                 "__ARM_NEON_FP={}",
-                number(if vfp >= 4 { 0x6 } else { 0x4 })
+                number(if fpu.half_precision() { 0x6 } else { 0x4 })
             ));
         }
         if gcc && vfp >= 4 {

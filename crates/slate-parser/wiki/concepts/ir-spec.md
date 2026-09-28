@@ -429,12 +429,17 @@ initialization is described under "Objects, lifetime, and initialization".
 Target selection separates CPU family (`TargetFamily`), OS (`TargetOs`), and
 ABI environment (`TargetEnvironment`) from compiler flavor. Existing Linux
 profiles use GNU, GNU EABI, or GNU EABI hard-float environments.
-`x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` and `i686-pc-windows-msvc`
-are experimental Windows MSVC-environment profiles, with 32-bit `long`, binary64
-long double, and unsigned 16-bit wchar_t. On i686 `long long` and `double` are
-8-aligned (4 on i386 Linux), pointers are 4 bytes, the stack alignment is 4,
-and the convention is `x86_win32`. Their target triples do not implicitly select compiler flavor:
-`--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots; the default
+`x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc`, `i686-pc-windows-msvc`
+and `thumbv7a-pc-windows-msvc` are experimental Windows MSVC-environment
+profiles, with 32-bit `long`, binary64 long double, and unsigned 16-bit
+wchar_t. On i686 `long long` and `double` are 8-aligned (4 on i386 Linux),
+pointers are 4 bytes, the stack alignment is 4, and the convention is
+`x86_win32`. thumbv7a has signed `char` (unsigned on Arm32 Linux), 4-byte
+pointers, stack alignment 8, a `char *` va_list, and the same
+`aapcs32_hard_float` convention as armv7 gnueabihf, whose clang signatures it
+matches. Their target triples do not implicitly select compiler flavor:
+`--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots (19.44.35228
+for thumbv7a, the last toolset with Arm32); the default
 Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
 shim defaults. GCC on these Windows profiles is rejected rather than falling
 back to Linux macros.

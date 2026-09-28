@@ -389,14 +389,17 @@ flavor.
   anything slate lowers (GNU vectors, floats, HFAs); SVE only matters for
   sizeless types, which the parser doesn't accept.
 - Arm32 (`src/target/arm_isa.rs`): `-march=armv7-a|armv8-a` (no modifiers),
-  `-mfpu=` (none, vfpv3[-d16], vfpv4[-d16], neon, neon-vfpv4, [neon-|crypto-neon-]fp-armv8),
+  `-mfpu=` (none, vfpv3[-d16], vfpv4[-d16], neon, neon-fp16, neon-vfpv4, [neon-|crypto-neon-]fp-armv8),
   `-mfloat-abi=soft|softfp|hard`, `-mthumb`/`-marm`. The default FPU is neon
   on armv7-a and crypto-neon-fp-armv8 on armv8-a; the default float ABI comes
   from the triple (gnueabihf → hard, gnueabi → softfp). The float ABI picks
   `aapcs32_hard_float` vs `aapcs32` for non-variadic calls; the triple
   environment now only selects the predefine snapshot. `soft` removes every
   FPU macro and defines `__SOFTFP__`, which `-mfpu=none` also does unless the
-  ABI is hard.
+  ABI is hard. On `thumbv7a-pc-windows-msvc`, as in clang, the float ABI is
+  always hard (`soft`/`softfp` are rejected), `-marm` is ignored because the
+  target is Thumb-2 only, and the default FPU is neon-fp16 on armv7-a but
+  plain neon on armv8-a.
 
 The target layout is selected by the supported target triple and is printed in
 the IR module header. GCC's `-mpreferred-stack-boundary` and Clang's
