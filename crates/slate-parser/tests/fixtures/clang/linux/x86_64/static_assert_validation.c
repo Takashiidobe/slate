@@ -228,7 +228,7 @@ void valid(int n) {
 // SLATE-FILECHECK-BEGIN VALID
 // VALID: Error:   × semantic analysis failed
 // VALID: Error:
-// VALID: × static assertion requires an integer constant expression: nonconstant call
+// VALID: × static assertion requires an integer constant expression: not implemented:
 // VALID: ╭─[tests/fixtures/clang/linux/x86_64/static_assert_validation.c:51:15]
 // VALID: 50 │ static_assert(1 ? 1 : opaque());
 // VALID: 51 │ static_assert(sizeof(opaque()) == sizeof(int));

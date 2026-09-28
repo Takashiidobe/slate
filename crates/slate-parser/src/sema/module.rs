@@ -156,7 +156,7 @@ impl Lowerer {
             .bindings
             .iter()
             .find(|binding| binding.value.id == id)
-            .ok_or(ResolveError::Unsupported("missing declaration binding"))?
+            .ok_or(ResolveError::Internal("missing declaration binding"))?
             .clone();
         let ret = self.types.ctypes.int();
         let resolved = self.types.ctypes.qual(CTypeKind::Function {
@@ -243,7 +243,7 @@ fn lower_item(
             let name = function
                 .declarator
                 .name()
-                .ok_or(ResolveError::Unsupported("unnamed function"))?;
+                .ok_or(ResolveError::Internal("unnamed function"))?;
             lower.types.pragmas.apply(name, &mut symbol);
             let id = lower.declaration_id(declaration.id, name)?;
             lower.record_function(id, &function.specifiers, &attributes, true, true)?;
@@ -255,7 +255,7 @@ fn lower_item(
                 .types
                 .ctypes
                 .function_parts(resolved)
-                .ok_or(ResolveError::Unsupported("function definition declarator"))?;
+                .ok_or(ResolveError::Internal("function definition declarator"))?;
             let c_return = lower.types.render(return_c).spelling;
             for definition in &lower.types.definitions[start..] {
                 lower
@@ -264,7 +264,7 @@ fn lower_item(
             }
             let ty = lower.types.object_type(resolved, "void function type")?;
             let Type::Function { return_type, .. } = &ty else {
-                return Err(ResolveError::Unsupported("function definition declarator"));
+                return Err(ResolveError::Internal("function definition declarator"));
             };
             let return_type = return_type.as_ref().map(|ty| (**ty).clone());
             let abi = lower.c_abi_signature(resolved, &ty, None)?;
@@ -280,7 +280,7 @@ fn lower_item(
             let params = function
                 .declarator
                 .function_parameters()
-                .ok_or(ResolveError::Unsupported("missing function parameters"))?;
+                .ok_or(ResolveError::Internal("missing function parameters"))?;
             if matches!(params, ParameterList::IdentifierList { .. }) {
                 lower.warn(
                     Warning::DeprecatedNonPrototype,
@@ -351,7 +351,7 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     match storage {
         StorageClass::Static => Ok(Linkage::Internal),
         StorageClass::None | StorageClass::Extern => Ok(Linkage::External),
-        _ => Err(ResolveError::Unsupported("linkage storage class")),
+        _ => Err(ResolveError::Rejected("linkage storage class")),
     }
 }
 
@@ -380,7 +380,7 @@ fn symbol_attributes<'a>(
                     "hidden" => Visibility::Hidden,
                     "protected" => Visibility::Protected,
                     "internal" => Visibility::Internal,
-                    _ => return Err(ResolveError::Invalid("visibility")),
+                    _ => return Err(ResolveError::Rejected("visibility")),
                 });
             }
             ast::Attribute::TlsModel(name) => {
@@ -389,7 +389,7 @@ fn symbol_attributes<'a>(
                     "local-dynamic" => TlsModel::LocalDynamic,
                     "initial-exec" => TlsModel::InitialExec,
                     "local-exec" => TlsModel::LocalExec,
-                    _ => return Err(ResolveError::Invalid("tls_model")),
+                    _ => return Err(ResolveError::Rejected("tls_model")),
                 });
             }
             ast::Attribute::Weak => symbol.weak = true,
@@ -420,14 +420,14 @@ fn function_symbol<'a>(
         asm_label.map(|label| &label.value),
         Some(ast::AsmLabel::Register(_))
     ) {
-        return Err(ResolveError::Unsupported("register asm label on function"));
+        return Err(ResolveError::Rejected("register asm label on function"));
     }
     if attributes
         .clone()
         .into_iter()
         .any(|attribute| matches!(&attribute.value, ast::Attribute::ThreadLocal))
     {
-        return Err(ResolveError::Invalid("thread-local function"));
+        return Err(ResolveError::Rejected("thread-local function"));
     }
     symbol_attributes(
         attributes.into_iter().filter(|attribute| {
@@ -603,7 +603,7 @@ impl Lowerer {
             .types
             .entities
             .ty(&id)
-            .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
+            .ok_or(ResolveError::Internal("untyped global redeclaration"))?;
         if let Some(message) = self.types.merge_redeclaration(id, previous, declared)? {
             self.warn(Warning::ConflictingTypes, message, &global);
         }
@@ -620,7 +620,7 @@ impl Lowerer {
             .types
             .entities
             .ty(&id)
-            .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
+            .ok_or(ResolveError::Internal("untyped global redeclaration"))?;
         let merged_ty = self.types.ir_type(merged);
         let merged_quals = self.types.ctypes.quals(merged);
         let merged_access = self.types.access_of(merged);
@@ -632,7 +632,7 @@ impl Lowerer {
         existing.variable.access = merged_access;
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
-                return Err(ResolveError::Unsupported("multiple global initializers"));
+                return Err(ResolveError::Rejected("multiple global initializers"));
             }
             existing.variable.initializer = global.variable.initializer;
         }
@@ -871,7 +871,7 @@ impl Lowerer {
             && self.types.compiler_flavor() == CompilerFlavor::Gcc
             && item.declarators.len() > 1
         {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "'auto' may only be used with a single declarator",
             ));
         }
@@ -894,7 +894,7 @@ impl Lowerer {
             let name = declarator
                 .declarator
                 .name()
-                .ok_or(ResolveError::Unsupported("unnamed declaration"))?;
+                .ok_or(ResolveError::Internal("unnamed declaration"))?;
             if !global {
                 let anchor = declarator.derive(());
                 self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
@@ -913,7 +913,7 @@ impl Lowerer {
                     .local_unqualified()
                     .with(canonical.quals.without(item.specifiers.qualifiers.into()));
                 if deduced.is_some_and(|first| first != placeholder) {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "'auto' deduced as different types in one declaration",
                     ));
                 }
@@ -954,14 +954,14 @@ impl Lowerer {
             }
             let qualifiers = self.types.ctypes.quals(resolved);
             if item.specifiers.is_constexpr && declarator.initializer.is_none() {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "constexpr object requires an initializer",
                 ));
             }
             let ty = match self.types.layout(resolved) {
                 Some(ty) => ty,
                 None if storage_class == StorageClass::Extern => self.types.ir_type(resolved),
-                None => return Err(ResolveError::Invalid("object cannot have type void")),
+                None => return Err(ResolveError::Rejected("object cannot have type void")),
             };
             let id = self.declaration_id(declarator.id, name)?;
             let previous =
@@ -977,13 +977,13 @@ impl Lowerer {
             } = &ty
             {
                 if declarator.initializer.is_some() {
-                    return Err(ResolveError::Invalid("function initializer"));
+                    return Err(ResolveError::Rejected("function initializer"));
                 }
                 if thread {
-                    return Err(ResolveError::Invalid("thread-local function"));
+                    return Err(ResolveError::Rejected("thread-local function"));
                 }
                 if !global && storage_class == StorageClass::Static {
-                    return Err(ResolveError::Invalid("block scope static function"));
+                    return Err(ResolveError::Rejected("block scope static function"));
                 }
                 let attributes = super::function::attributes(
                     &item.specifiers,
@@ -1042,7 +1042,7 @@ impl Lowerer {
             let linked = global || storage_class == StorageClass::Extern;
             let storage = if !linked && storage_class != StorageClass::Static {
                 if thread {
-                    return Err(ResolveError::Invalid("thread-local automatic variable"));
+                    return Err(ResolveError::Rejected("thread-local automatic variable"));
                 }
                 StorageDuration::Automatic
             } else if thread {
@@ -1059,7 +1059,7 @@ impl Lowerer {
                 c_entries.push(metadata);
             }
             if !global && linked && declarator.initializer.is_some() {
-                return Err(ResolveError::Invalid("block scope extern initializer"));
+                return Err(ResolveError::Rejected("block scope extern initializer"));
             }
             let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())?;
             self.types.pragmas.apply(name, &mut symbol);
@@ -1082,7 +1082,7 @@ impl Lowerer {
                 None => (ty, None),
                 Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
                     if !matches!(initializer, ast::Initializer::List(items) if items.is_empty()) {
-                        return Err(ResolveError::Invalid("variable length array initializer"));
+                        return Err(ResolveError::Rejected("variable length array initializer"));
                     }
                     let value = Value {
                         ty: ty.clone(),
@@ -1167,7 +1167,7 @@ impl Lowerer {
             if storage != StorageDuration::Automatic
                 && matches!(variable.ty, Type::VariableArray { .. })
             {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "variable length array with static storage duration",
                 ));
             }
@@ -1202,10 +1202,10 @@ impl Lowerer {
                     linkage(storage_class)?
                 };
                 if symbol.weakref.is_some() && !matches!(declared_linkage, Linkage::Internal) {
-                    return Err(ResolveError::Invalid("weakref without internal linkage"));
+                    return Err(ResolveError::Rejected("weakref without internal linkage"));
                 }
                 if symbol.selectany && !matches!(declared_linkage, Linkage::External) {
-                    return Err(ResolveError::Invalid("selectany without external linkage"));
+                    return Err(ResolveError::Rejected("selectany without external linkage"));
                 }
                 let definition = (storage_class != StorageClass::Extern
                     || variable.initializer.is_some()
@@ -1335,7 +1335,7 @@ impl Lowerer {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty, ConversionReason::Promotion)?;
         let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
-            .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
+            .ok_or(ResolveError::Rejected("nonconstant case expression"))?;
         Ok(self.value(
             expr,
             self.types.ir_type(ty),
@@ -1399,8 +1399,8 @@ impl Lowerer {
             }
             StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?.value),
             StmtKind::Return(expr) => {
-                let ty = return_type
-                    .ok_or(ResolveError::Unsupported("value return from void function"))?;
+                let ty =
+                    return_type.ok_or(ResolveError::Rejected("value return from void function"))?;
                 let value = self.expr(expr)?;
                 Statement::Return(Some(
                     self.convert_expr(expr, value, ty, ConversionReason::Return)?
@@ -1485,19 +1485,19 @@ impl Lowerer {
                 *self
                     .break_targets
                     .last()
-                    .ok_or(ResolveError::Unsupported("break outside loop or switch"))?,
+                    .ok_or(ResolveError::Rejected("break outside loop or switch"))?,
             ),
             StmtKind::Continue => Statement::Continue(
                 *self
                     .continue_targets
                     .last()
-                    .ok_or(ResolveError::Unsupported("continue outside loop"))?,
+                    .ok_or(ResolveError::Rejected("continue outside loop"))?,
             ),
             StmtKind::Switch { discriminant, body } => self.control_scoped(|lower| {
                 let value = lower.expr(discriminant)?;
                 let discriminant = lower.promote(value)?;
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
-                    return Err(ResolveError::Unsupported("noninteger switch discriminant"));
+                    return Err(ResolveError::Rejected("noninteger switch discriminant"));
                 }
                 let id = lower.fresh();
                 lower.break_targets.push(id);
@@ -1517,7 +1517,7 @@ impl Lowerer {
                     .switches
                     .last()
                     .cloned()
-                    .ok_or(ResolveError::Unsupported("case or default outside switch"))?;
+                    .ok_or(ResolveError::Rejected("case or default outside switch"))?;
                 match label {
                     ast::SwitchLabel::Default => Statement::Default {
                         switch,
@@ -1544,7 +1544,7 @@ impl Lowerer {
                     .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
             {
                 if self.switches.is_empty() {
-                    return Err(ResolveError::Unsupported("fallthrough outside switch"));
+                    return Err(ResolveError::Rejected("fallthrough outside switch"));
                 }
                 annotations.push(("c_attribute".into(), "fallthrough".into()));
                 Statement::Null
@@ -1554,7 +1554,7 @@ impl Lowerer {
             StmtKind::ComputedGoto(expr) => {
                 let value = self.expr(expr)?;
                 if !matches!(value.ty, Type::Pointer { .. }) {
-                    return Err(ResolveError::Unsupported("nonpointer computed goto"));
+                    return Err(ResolveError::Rejected("nonpointer computed goto"));
                 }
                 Statement::ComputedGoto(value.value)
             }
@@ -1564,14 +1564,14 @@ impl Lowerer {
                     .iter()
                     .find(|r| r.id == label.id)
                     .map(|r| r.binding)
-                    .ok_or(ResolveError::Unsupported("missing goto binding"))?,
+                    .ok_or(ResolveError::Internal("missing goto binding"))?,
             ),
             StmtKind::Labeled { label, body } => Statement::Label {
                 id: *self
                     .names
                     .label_definitions
                     .get(&label.id)
-                    .ok_or(ResolveError::Unsupported("missing label binding"))?,
+                    .ok_or(ResolveError::Internal("missing label binding"))?,
                 name: label.value.clone(),
                 body: self.statements(std::slice::from_ref(body), return_type)?,
             },
@@ -1586,7 +1586,7 @@ impl Lowerer {
                     Statement::Return(None)
                 }
                 _ => {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "non-void function should return a value",
                     ));
                 }
@@ -1597,7 +1597,7 @@ impl Lowerer {
                         .iter()
                         .any(|a| matches!(&a.value, ast::Attribute::Fallthrough))
                 {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "fallthrough attribute on a non-empty statement",
                     ));
                 }
@@ -1606,9 +1606,9 @@ impl Lowerer {
             }
             StmtKind::NestedFunction(_) => {
                 return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
-                    ResolveError::Unsupported("GNU nested function")
+                    ResolveError::Unimplemented("GNU nested function")
                 } else {
-                    ResolveError::Invalid("function definition is not allowed here")
+                    ResolveError::Rejected("function definition is not allowed here")
                 });
             }
         };

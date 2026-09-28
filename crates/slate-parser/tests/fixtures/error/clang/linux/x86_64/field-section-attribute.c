@@ -11,7 +11,7 @@ int size(void) { return sizeof(struct Placed); }
 // SLATE-FILECHECK-BEGIN SEMANTIC
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
-// SEMANTIC: × invalid in this context: 'section' attribute only applies to functions and
+// SEMANTIC: × 'section' attribute only applies to functions and global variables
 // SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/field-section-attribute.c:2:1]
 // SEMANTIC: 1 │
 // SEMANTIC: 2 │ ╭─▶ struct Placed {

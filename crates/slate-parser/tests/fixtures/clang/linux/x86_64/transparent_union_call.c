@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT: 15 │
 // DEFAULT: ╰────
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: conversion between a struct or union and an
+// DEFAULT: × conversion between a struct or union and an unrelated type
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/transparent_union_call.c:23:21]
 // DEFAULT: 22 │   struct Second second = {.value = 29};
 // DEFAULT: 23 │   printf("%d %d\n", read_value(&first), read_value(&second));

@@ -20,8 +20,8 @@ pub(super) enum Use {
         spelling: &'static str,
         applies_to: Option<&'static str>,
     },
-    Unsupported(&'static str),
-    Invalid(&'static str),
+    Rejected(&'static str),
+    Unimplemented(&'static str),
 }
 
 pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
@@ -34,7 +34,7 @@ pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
     let alignment = matches!(attribute, Attribute::Aligned(_) | Attribute::AlignAs(_));
     match (subject, general_use(attribute)) {
         (Subject::Typedef, _) if matches!(attribute, Attribute::AlignAs(_)) => {
-            Use::Invalid("'_Alignas' applied to a typedef")
+            Use::Rejected("'_Alignas' applied to a typedef")
         }
         (Subject::Parameter, _) if alignment || attribute.is_type_attribute() => Use::Layout,
         (Subject::Parameter, Use::Symbol | Use::Layout) => parameter_use(attribute),
@@ -48,20 +48,20 @@ pub(super) fn declaration_use(attribute: &Attribute, subject: Subject) -> Use {
 fn parameter_use(attribute: &Attribute) -> Use {
     let spelling = match attribute {
         Attribute::Section(_) => {
-            return Use::Invalid(
+            return Use::Rejected(
                 "'section' attribute only applies to functions and global variables",
             );
         }
         Attribute::Alias(_) => {
-            return Use::Invalid(
+            return Use::Rejected(
                 "'alias' attribute only applies to functions and global variables",
             );
         }
         Attribute::TlsModel(_) => {
-            return Use::Invalid("'tls_model' attribute only applies to thread-local variables");
+            return Use::Rejected("'tls_model' attribute only applies to thread-local variables");
         }
         Attribute::ThreadLocal => {
-            return Use::Invalid("'__declspec(thread)' variables must have global storage");
+            return Use::Rejected("'__declspec(thread)' variables must have global storage");
         }
         Attribute::Visibility(_) => "visibility",
         Attribute::Weak => "weak",
@@ -71,7 +71,7 @@ fn parameter_use(attribute: &Attribute) -> Use {
         Attribute::SelectAny => "selectany",
         Attribute::Common => "common",
         Attribute::NoCommon => "nocommon",
-        _ => return Use::Unsupported("attribute on a parameter"),
+        _ => return Use::Unimplemented("attribute on a parameter"),
     };
     Use::Inapplicable {
         spelling,
@@ -82,15 +82,15 @@ fn parameter_use(attribute: &Attribute) -> Use {
 fn member_use(attribute: &Attribute, subject: Subject, general: Use) -> Use {
     match attribute {
         Attribute::Section(_) => {
-            Use::Invalid("'section' attribute only applies to functions and global variables")
+            Use::Rejected("'section' attribute only applies to functions and global variables")
         }
         Attribute::Alias(_) => {
-            Use::Invalid("'alias' attribute only applies to functions and global variables")
+            Use::Rejected("'alias' attribute only applies to functions and global variables")
         }
         Attribute::TlsModel(_) => {
-            Use::Invalid("'tls_model' attribute only applies to thread-local variables")
+            Use::Rejected("'tls_model' attribute only applies to thread-local variables")
         }
-        Attribute::Mode(_) if subject != Subject::Field => Use::Invalid(
+        Attribute::Mode(_) if subject != Subject::Field => Use::Rejected(
             "'mode' attribute only applies to variables, enums, typedefs, and non-static data members",
         ),
         _ => general,
@@ -128,9 +128,9 @@ fn general_use(attribute: &Attribute) -> Use {
         Attribute::Cleanup(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Ignored,
         Attribute::TransparentUnion => Use::Ignored,
-        Attribute::Ifunc(_) => Use::Unsupported("ifunc attribute"),
-        Attribute::CodeSeg(_) => Use::Unsupported("code segment attribute"),
-        Attribute::Invalid { .. } => Use::Unsupported("invalid attribute"),
+        Attribute::Ifunc(_) => Use::Unimplemented("ifunc attribute"),
+        Attribute::CodeSeg(_) => Use::Unimplemented("code segment attribute"),
+        Attribute::Invalid { .. } => Use::Rejected("invalid attribute"),
 
         Attribute::PassObjectSize { .. }
         | Attribute::LifetimeBound

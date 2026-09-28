@@ -47,7 +47,7 @@ alias bad;
 // SLATE-FILECHECK-BEGIN BLOCK
 // BLOCK: Error:   × semantic analysis failed
 // BLOCK: Error:
-// BLOCK: × invalid in this context: object cannot have type void
+// BLOCK: × object cannot have type void
 // BLOCK: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:9:16]
 // BLOCK: 8 │ #ifdef BLOCK
 // BLOCK: 9 │ void f(void) { void bad; (void)bad; }
@@ -58,7 +58,7 @@ alias bad;
 // SLATE-FILECHECK-BEGIN TYPEDEF
 // TYPEDEF: Error:   × semantic analysis failed
 // TYPEDEF: Error:
-// TYPEDEF: × invalid in this context: object cannot have type void
+// TYPEDEF: × object cannot have type void
 // TYPEDEF: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:13:1]
 // TYPEDEF: 12 │ typedef void alias;
 // TYPEDEF: 13 │ alias bad;

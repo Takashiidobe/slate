@@ -110,7 +110,7 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: conditional operands have incompatible types
+// DEFAULT: × conditional operands have incompatible types
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20000211-1.c:72:196]
 // DEFAULT: 71 │     {
 // DEFAULT: 72 │       (( lstr )->out_buffer_ind >= ( lstr )->out_buffer_size ?  Lstream_fputc ( lstr ,   pad ) :    (( lstr )->out_buffer[( lstr )->out_buffer_ind++] = (unsigned char) (  pad ),   ( lstr )->byte_count++, ( lstr )->buffering == LSTREAM_LINE_BUFFERED && ( lstr )->out_buffer[( lstr )->out_buffer_ind - 1] == '\n' ?    Lstream_flush_out ( lstr ) : 0)) ;

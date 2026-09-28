@@ -135,23 +135,23 @@ impl Lowerer {
         binding: BindingId,
     ) -> Result<(QualType, QualType), ResolveError> {
         if specifiers.storage == StorageClass::Typedef {
-            return Err(ResolveError::Invalid("'auto' not allowed in typedef"));
+            return Err(ResolveError::Rejected("'auto' not allowed in typedef"));
         }
         let expr = match initializer {
             Some(Initializer::Expr(expr)) => expr,
             Some(Initializer::List(_)) => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "cannot use 'auto' with an initializer list",
                 ));
             }
             None => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "declaration with deduced type requires an initializer",
                 ));
             }
         };
         if self.types.compiler_flavor() == CompilerFlavor::Gcc && !plain_identifier(declarator) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "'auto' requires a plain identifier as declarator",
             ));
         }
@@ -160,16 +160,16 @@ impl Lowerer {
             binding,
         };
         if own.visit_expr(expr).is_err() {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "variable declared with deduced type cannot appear in its own initializer",
             ));
         }
         let (value, bit_field) = self.speculative_type(expr)?;
         if bit_field {
             return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
-                ResolveError::Unsupported("deduced type of a bit-field initializer")
+                ResolveError::Unimplemented("deduced type of a bit-field initializer")
             } else {
-                ResolveError::Invalid("cannot use a bit-field as a deduced-type initializer")
+                ResolveError::Rejected("cannot use a bit-field as a deduced-type initializer")
             });
         }
         self.types.inferred_base(declarator, value)
@@ -194,7 +194,7 @@ impl Lowerer {
         if declared == value || added_pointee_quals {
             Ok(())
         } else {
-            Err(ResolveError::Invalid(
+            Err(ResolveError::Rejected(
                 "initializer does not match the deduced declarator",
             ))
         }
@@ -202,7 +202,7 @@ impl Lowerer {
 
     pub(super) fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         match self.speculative_type(e)? {
-            (_, true) => Err(ResolveError::Invalid("typeof applied to a bit-field")),
+            (_, true) => Err(ResolveError::Rejected("typeof applied to a bit-field")),
             (resolved, false) => Ok(resolved),
         }
     }
@@ -280,7 +280,7 @@ impl TypeResolver {
         declarator: &Declarator,
         target: QualType,
     ) -> Result<QualType, ResolveError> {
-        let mismatch = ResolveError::Invalid("initializer does not match the deduced declarator");
+        let mismatch = ResolveError::Rejected("initializer does not match the deduced declarator");
         match declarator {
             Declarator::Name(_) | Declarator::Abstract => Ok(target),
             Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {

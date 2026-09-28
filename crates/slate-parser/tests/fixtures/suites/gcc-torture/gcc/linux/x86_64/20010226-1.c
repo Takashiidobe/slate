@@ -30,7 +30,7 @@ int foo (void *a, int b)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: GNU nested function
+// DEFAULT: × not implemented: GNU nested function
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010226-1.c:17:7]
 // DEFAULT: 16 │         {
 // DEFAULT: 17 │ ╭─▶       void bar (void *c)

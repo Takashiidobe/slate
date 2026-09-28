@@ -47,7 +47,7 @@ int bad_pp;
 // SLATE-FILECHECK-BEGIN ENUM
 // ENUM: Error:   × semantic analysis failed
 // ENUM: Error:
-// ENUM: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ENUM: × nonconstant or undefined integer expression
 // ENUM: ╭─[tests/fixtures/error/clang/linux/x86_64/constant_arithmetic_rejected.c:3:1]
 // ENUM: 2 │ #ifdef ENUM
 // ENUM: 3 │ enum E { BAD = 1 / 0 };
@@ -58,7 +58,7 @@ int bad_pp;
 // SLATE-FILECHECK-BEGIN BITFIELD
 // BITFIELD: Error:   × semantic analysis failed
 // BITFIELD: Error:
-// BITFIELD: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// BITFIELD: × nonconstant or undefined integer expression
 // BITFIELD: ╭─[tests/fixtures/error/clang/linux/x86_64/constant_arithmetic_rejected.c:7:1]
 // BITFIELD: 6 │ #ifdef BITFIELD
 // BITFIELD: 7 │ struct B { int x : 1 / 0; };
@@ -69,7 +69,7 @@ int bad_pp;
 // SLATE-FILECHECK-BEGIN ARRAY
 // ARRAY: Error:   × semantic analysis failed
 // ARRAY: Error:
-// ARRAY: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// ARRAY: × nonconstant or undefined integer expression
 // ARRAY: ╭─[tests/fixtures/error/clang/linux/x86_64/constant_arithmetic_rejected.c:11:1]
 // ARRAY: 10 │ #ifdef ARRAY
 // ARRAY: 11 │ int bad_array[1 / 0];

@@ -47,11 +47,17 @@ pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, Re
                             expressions.push(expression);
                         }
                         StmtKind::Comment(_) | StmtKind::ReturnVoid => {}
-                        _ => return Err(ResolveError::Unsupported("statement in expression dump")),
+                        _ => {
+                            return Err(ResolveError::Unimplemented("statement in expression dump"));
+                        }
                     }
                 }
             }
-            _ => return Err(ResolveError::Unsupported("declaration in expression dump")),
+            _ => {
+                return Err(ResolveError::Unimplemented(
+                    "declaration in expression dump",
+                ));
+            }
         }
     }
     expressions

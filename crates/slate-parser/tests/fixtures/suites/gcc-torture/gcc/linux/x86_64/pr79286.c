@@ -20,7 +20,7 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: empty initializer for array of unknown
+// DEFAULT: × empty initializer for array of unknown length
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/pr79286.c:2:1]
 // DEFAULT: 1 │ int        a = 0, c = 0;
 // DEFAULT: 2 │ static int d[][8] = {};

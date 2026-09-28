@@ -59,7 +59,7 @@ int invalid(double _Imaginary y, double x) {
 // SLATE-FILECHECK-BEGIN RELATIONAL
 // RELATIONAL: Error:   × semantic analysis failed
 // RELATIONAL: Error:
-// RELATIONAL: × invalid in this context: relational comparison requires real operands
+// RELATIONAL: × relational comparison requires real operands
 // RELATIONAL: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:15:12]
 // RELATIONAL: 14 │ #ifdef RELATIONAL
 // RELATIONAL: 15 │     return y < x;
@@ -70,7 +70,7 @@ int invalid(double _Imaginary y, double x) {
 // SLATE-FILECHECK-BEGIN REMAINDER
 // REMAINDER: Error:   × semantic analysis failed
 // REMAINDER: Error:
-// REMAINDER: × invalid in this context: operator requires integer or real operands
+// REMAINDER: × operator requires integer or real operands
 // REMAINDER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:18:12]
 // REMAINDER: 17 │ #ifdef REMAINDER
 // REMAINDER: 18 │     return y % 2;
@@ -81,7 +81,7 @@ int invalid(double _Imaginary y, double x) {
 // SLATE-FILECHECK-BEGIN COMPLEMENT
 // COMPLEMENT: Error:   × semantic analysis failed
 // COMPLEMENT: Error:
-// COMPLEMENT: × invalid in this context: bitwise complement of imaginary operand
+// COMPLEMENT: × bitwise complement of imaginary operand
 // COMPLEMENT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_imaginary_invalid.c:21:12]
 // COMPLEMENT: 20 │ #ifdef COMPLEMENT
 // COMPLEMENT: 21 │     return ~y;

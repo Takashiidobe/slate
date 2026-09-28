@@ -133,9 +133,7 @@ impl CTypes {
                 signed,
             },
             _ => {
-                return Err(ResolveError::Unsupported(
-                    "unsigned counterpart of noninteger",
-                ));
+                return Err(ResolveError::Internal("unsigned counterpart of noninteger"));
             }
         };
         Ok(self.qual(kind))
@@ -164,14 +162,14 @@ impl CTypes {
         let (fixed, other) = if left.is_some() { (a, b) } else { (b, a) };
         if self.is_floating(other) {
             if !matches!(self.canonical_kind(other), CTypeKind::Float(_)) {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "complex or imaginary operand with a fixed-point operand",
                 ));
             }
             return Ok(self.unqualified(other));
         }
         if !self.is_integer(other) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "operand of a fixed-point operator must be arithmetic",
             ));
         }
@@ -205,7 +203,7 @@ impl CTypes {
         if let (Some(a), Some(b)) = (af, bf)
             && a.is_decimal() != b.is_decimal()
         {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "mixing decimal and binary floating operands",
             ));
         }
@@ -226,10 +224,10 @@ impl CTypes {
         let b = self.integer_promotion(b, None, target);
         let ai = self
             .integer(a, target)
-            .ok_or(ResolveError::Unsupported("non-arithmetic operand"))?;
+            .ok_or(ResolveError::Rejected("non-arithmetic operand"))?;
         let bi = self
             .integer(b, target)
-            .ok_or(ResolveError::Unsupported("non-arithmetic operand"))?;
+            .ok_or(ResolveError::Rejected("non-arithmetic operand"))?;
         let order = if ai.standard && bi.standard {
             ai.rank.cmp(&bi.rank)
         } else {

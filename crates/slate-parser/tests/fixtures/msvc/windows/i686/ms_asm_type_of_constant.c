@@ -9,7 +9,7 @@ int f(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: `TYPE`, `LENGTH` and `SIZE` need a C object or
+// DEFAULT: × `TYPE`, `LENGTH` and `SIZE` need a C object or type in `__asm`
 // DEFAULT: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_type_of_constant.c:3:3]
 // DEFAULT: 2 │ int f(void) {
 // DEFAULT: 3 │   __asm mov eax, TYPE 5

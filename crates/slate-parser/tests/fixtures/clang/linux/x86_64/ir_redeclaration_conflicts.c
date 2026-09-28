@@ -66,7 +66,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN RETURN_KIND
 // RETURN_KIND: Error:   × semantic analysis failed
 // RETURN_KIND: Error:
-// RETURN_KIND: × invalid in this context: conflicting types for function redeclaration
+// RETURN_KIND: × conflicting types for function redeclaration
 // RETURN_KIND: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:4:1]
 // RETURN_KIND: 3 │ int f(int);
 // RETURN_KIND: 4 │ double f(int);
@@ -77,7 +77,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN RETURN_SIZE
 // RETURN_SIZE: Error:   × semantic analysis failed
 // RETURN_SIZE: Error:
-// RETURN_SIZE: × invalid in this context: conflicting types for function redeclaration
+// RETURN_SIZE: × conflicting types for function redeclaration
 // RETURN_SIZE: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:7:1]
 // RETURN_SIZE: 6 │ int f(int);
 // RETURN_SIZE: 7 │ short f(int);
@@ -88,7 +88,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN RETURN_INDIRECTION
 // RETURN_INDIRECTION: Error:   × semantic analysis failed
 // RETURN_INDIRECTION: Error:
-// RETURN_INDIRECTION: × invalid in this context: conflicting types for function redeclaration
+// RETURN_INDIRECTION: × conflicting types for function redeclaration
 // RETURN_INDIRECTION: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:10:1]
 // RETURN_INDIRECTION: 9 │ int f(void);
 // RETURN_INDIRECTION: 10 │ char *f(void);
@@ -99,7 +99,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN STRUCT
 // STRUCT: Error:   × semantic analysis failed
 // STRUCT: Error:
-// STRUCT: × invalid in this context: redefinition of struct, union, or enum tag
+// STRUCT: × redefinition of struct, union, or enum tag
 // STRUCT: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:26:1]
 // STRUCT: 25 │ struct S { int a; };
 // STRUCT: 26 │ struct S { int b; };
@@ -110,7 +110,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN STRUCT_SAME_C17
 // STRUCT_SAME_C17: Error:   × semantic analysis failed
 // STRUCT_SAME_C17: Error:
-// STRUCT_SAME_C17: × invalid in this context: redefinition of struct, union, or enum tag
+// STRUCT_SAME_C17: × redefinition of struct, union, or enum tag
 // STRUCT_SAME_C17: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:29:1]
 // STRUCT_SAME_C17: 28 │ struct S { int a; };
 // STRUCT_SAME_C17: 29 │ struct S { int a; };
@@ -121,7 +121,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN STRUCT_DIFFERENT_C23
 // STRUCT_DIFFERENT_C23: Error:   × semantic analysis failed
 // STRUCT_DIFFERENT_C23: Error:
-// STRUCT_DIFFERENT_C23: × invalid in this context: redefinition of struct, union, or enum tag
+// STRUCT_DIFFERENT_C23: × redefinition of struct, union, or enum tag
 // STRUCT_DIFFERENT_C23: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:32:1]
 // STRUCT_DIFFERENT_C23: 31 │ struct S { int a; };
 // STRUCT_DIFFERENT_C23: 32 │ struct S { long a; };
@@ -132,7 +132,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN UNION
 // UNION: Error:   × semantic analysis failed
 // UNION: Error:
-// UNION: × invalid in this context: redefinition of struct, union, or enum tag
+// UNION: × redefinition of struct, union, or enum tag
 // UNION: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:35:1]
 // UNION: 34 │ union U { int a; };
 // UNION: 35 │ union U { int b; };
@@ -143,7 +143,7 @@ enum E { B };
 // SLATE-FILECHECK-BEGIN ENUM
 // ENUM: Error:   × semantic analysis failed
 // ENUM: Error:
-// ENUM: × invalid in this context: redefinition of struct, union, or enum tag
+// ENUM: × redefinition of struct, union, or enum tag
 // ENUM: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:38:1]
 // ENUM: 37 │ enum E { A };
 // ENUM: 38 │ enum E { B };

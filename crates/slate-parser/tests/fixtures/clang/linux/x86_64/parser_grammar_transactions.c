@@ -56,7 +56,7 @@ T after_functions;
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: invalid attribute
+// DEFAULT: × invalid attribute
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/parser_grammar_transactions.c:35:3]
 // DEFAULT: 34 │ int invalid_attribute(void) {
 // DEFAULT: 35 │   __attribute__((alloc_size(sizeof(enum { T = 2 }), +))) int value;

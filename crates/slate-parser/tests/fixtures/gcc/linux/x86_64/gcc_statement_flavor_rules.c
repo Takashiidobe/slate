@@ -59,7 +59,7 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN C99_RETURN
 // C99_RETURN: Error:   × semantic analysis failed
 // C99_RETURN: Error:
-// C99_RETURN: × invalid in this context: non-void function should return a value
+// C99_RETURN: × non-void function should return a value
 // C99_RETURN: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_statement_flavor_rules.c:22:5]
 // C99_RETURN: 21 │   if (x)
 // C99_RETURN: 22 │     return;
@@ -70,7 +70,7 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN NESTED
 // NESTED: Error:   × semantic analysis failed
 // NESTED: Error:
-// NESTED: × unsupported in numeric IR lowering: GNU nested function
+// NESTED: × not implemented: GNU nested function
 // NESTED: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_statement_flavor_rules.c:41:3]
 // NESTED: 40 │ int outer(int x) {
 // NESTED: 41 │   int inner(int y) { return y + x; }

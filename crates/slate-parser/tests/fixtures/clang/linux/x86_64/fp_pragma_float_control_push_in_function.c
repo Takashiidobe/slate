@@ -9,7 +9,7 @@ double pushed(double a, double b) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: '#pragma float_control push/pop' can only appear
+// DEFAULT: × '#pragma float_control push/pop' can only appear at file scope
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_float_control_push_in_function.c:2:1]
 // DEFAULT: 1 │ double pushed(double a, double b) {
 // DEFAULT: 2 │ #pragma float_control(precise, on, push)

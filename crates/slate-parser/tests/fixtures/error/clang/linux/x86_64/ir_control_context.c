@@ -34,7 +34,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN BREAK
 // BREAK: Error:   × semantic analysis failed
 // BREAK: Error:
-// BREAK: × unsupported in numeric IR lowering: break outside loop or switch
+// BREAK: × break outside loop or switch
 // BREAK: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:3:5]
 // BREAK: 2 │ #if defined(BREAK)
 // BREAK: 3 │     break;
@@ -45,7 +45,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN CONTINUE
 // CONTINUE: Error:   × semantic analysis failed
 // CONTINUE: Error:
-// CONTINUE: × unsupported in numeric IR lowering: continue outside loop
+// CONTINUE: × continue outside loop
 // CONTINUE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:5:27]
 // CONTINUE: 4 │ #elif defined(CONTINUE)
 // CONTINUE: 5 │     switch (x) { default: continue; }
@@ -56,7 +56,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN CASE
 // CASE: Error:   × semantic analysis failed
 // CASE: Error:
-// CASE: × unsupported in numeric IR lowering: case or default outside switch
+// CASE: × case or default outside switch
 // CASE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:7:5]
 // CASE: 6 │ #elif defined(CASE)
 // CASE: 7 │     case 1: ;
@@ -67,7 +67,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: case or default outside switch
+// DEFAULT: × case or default outside switch
 // DEFAULT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:9:5]
 // DEFAULT: 8 │ #elif defined(DEFAULT)
 // DEFAULT: 9 │     default: ;
@@ -78,7 +78,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN FLOAT
 // FLOAT: Error:   × semantic analysis failed
 // FLOAT: Error:
-// FLOAT: × unsupported in numeric IR lowering: noninteger switch discriminant
+// FLOAT: × noninteger switch discriminant
 // FLOAT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:11:5]
 // FLOAT: 10 │ #elif defined(FLOAT)
 // FLOAT: 11 │     switch (1.0) {}
@@ -89,7 +89,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN NONCONSTANT
 // NONCONSTANT: Error:   × semantic analysis failed
 // NONCONSTANT: Error:
-// NONCONSTANT: × unsupported in numeric IR lowering: nonconstant case expression
+// NONCONSTANT: × nonconstant case expression
 // NONCONSTANT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:13:18]
 // NONCONSTANT: 12 │ #elif defined(NONCONSTANT)
 // NONCONSTANT: 13 │     switch (x) { case x: ; }
@@ -100,7 +100,7 @@ void bad(int x) {
 // SLATE-FILECHECK-BEGIN INDIRECT
 // INDIRECT: Error:   × semantic analysis failed
 // INDIRECT: Error:
-// INDIRECT: × unsupported in numeric IR lowering: nonpointer computed goto
+// INDIRECT: × nonpointer computed goto
 // INDIRECT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_control_context.c:15:5]
 // INDIRECT: 14 │ #elif defined(INDIRECT)
 // INDIRECT: 15 │     goto *1;

@@ -36,7 +36,7 @@ void f(__declspec(code_seg("s")) int p);
 // SLATE-FILECHECK-BEGIN ERR_SYMBOL
 // ERR_SYMBOL: Error:   × semantic analysis failed
 // ERR_SYMBOL: Error:
-// ERR_SYMBOL: × invalid in this context: 'section' attribute only applies to functions and
+// ERR_SYMBOL: × 'section' attribute only applies to functions and global variables
 // ERR_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:7:1]
 // ERR_SYMBOL: 6 │ #elif defined(ERR_SYMBOL)
 // ERR_SYMBOL: 7 │ void f(int p __attribute__((section("s"))));
@@ -47,7 +47,7 @@ void f(__declspec(code_seg("s")) int p);
 // SLATE-FILECHECK-BEGIN ERR_UNSUPPORTED
 // ERR_UNSUPPORTED: Error:   × semantic analysis failed
 // ERR_UNSUPPORTED: Error:
-// ERR_UNSUPPORTED: × unsupported in numeric IR lowering: code segment attribute
+// ERR_UNSUPPORTED: × not implemented: code segment attribute
 // ERR_UNSUPPORTED: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:17:1]
 // ERR_UNSUPPORTED: 16 │ #elif defined(ERR_UNSUPPORTED)
 // ERR_UNSUPPORTED: 17 │ void f(__declspec(code_seg("s")) int p);

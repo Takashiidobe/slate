@@ -61,13 +61,13 @@ impl CTypes {
         is_null_pointer_constant: bool,
     ) -> Result<Conversion, ResolveError> {
         if self.is_void(to) {
-            return Err(ResolveError::Invalid("conversion to void"));
+            return Err(ResolveError::Rejected("conversion to void"));
         }
         if self.is_void(from) {
-            return Err(ResolveError::Invalid("conversion from void"));
+            return Err(ResolveError::Rejected("conversion from void"));
         }
         if self.is_function(to) || self.is_array(to) {
-            return Err(ResolveError::Invalid("conversion to a function or array"));
+            return Err(ResolveError::Rejected("conversion to a function or array"));
         }
         let (from_view, to_view) = (self.unqualified_view(from), self.unqualified_view(to));
         let record = matches!(self.canonical_kind(to), CTypeKind::Record { .. });
@@ -81,7 +81,7 @@ impl CTypes {
             }));
         }
         if self.is_record(from) || self.is_record(to) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conversion between a struct or union and an unrelated type",
             ));
         }
@@ -89,7 +89,7 @@ impl CTypes {
             if is_null_pointer_constant {
                 return Ok(Conversion::plain(CastKind::NullPointer));
             }
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conversion to nullptr_t from a type other than nullptr_t",
             ));
         }
@@ -109,7 +109,7 @@ impl CTypes {
             }) {
                 return Ok(Conversion::plain(CastKind::IntToEnum));
             }
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conversion from nullptr_t to a type other than bool or a pointer",
             ));
         }
@@ -119,7 +119,7 @@ impl CTypes {
         if (self.is_fixed_point(from) || self.is_fixed_point(to))
             && (self.is_complex_domain(from) || self.is_complex_domain(to))
         {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conversion between a fixed-point type and a complex or imaginary type",
             ));
         }
@@ -134,12 +134,12 @@ impl CTypes {
         }
         if self.is_pointer(from) {
             if self.is_floating(to) {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "conversion between pointer and floating type",
                 ));
             }
             if !self.is_arithmetic(to) {
-                return Err(ResolveError::Invalid("unsupported pointer conversion"));
+                return Err(ResolveError::Rejected("unsupported pointer conversion"));
             }
             if matches!(self.canonical_kind(to), CTypeKind::Bool) {
                 return Ok(Conversion::plain(CastKind::PtrToBool));
@@ -156,7 +156,7 @@ impl CTypes {
         if self.is_arithmetic(from) && self.is_arithmetic(to) {
             return Ok(Conversion::plain(CastKind::Arithmetic));
         }
-        Err(ResolveError::Unsupported(
+        Err(ResolveError::Rejected(
             "incompatible or unsupported conversion",
         ))
     }
@@ -173,12 +173,12 @@ impl CTypes {
         }
         if !self.is_pointer(from) {
             if self.is_floating(from) {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "conversion between pointer and floating type",
                 ));
             }
             if !self.is_arithmetic(from) {
-                return Err(ResolveError::Invalid("unsupported conversion to pointer"));
+                return Err(ResolveError::Rejected("unsupported conversion to pointer"));
             }
             if context.is_assignment() {
                 return Ok(Conversion::warned(
@@ -194,10 +194,10 @@ impl CTypes {
         }
         let from_pointee = self
             .pointee(from)
-            .ok_or(ResolveError::Unsupported("pointer without a pointee"))?;
+            .ok_or(ResolveError::Internal("pointer without a pointee"))?;
         let to_pointee = self
             .pointee(to)
-            .ok_or(ResolveError::Unsupported("pointer without a pointee"))?;
+            .ok_or(ResolveError::Internal("pointer without a pointee"))?;
         let dropped = self
             .quals(from_pointee)
             .without(self.quals(to_pointee))

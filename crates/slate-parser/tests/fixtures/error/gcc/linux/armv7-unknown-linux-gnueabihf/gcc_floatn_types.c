@@ -47,7 +47,7 @@ _Static_assert(sizeof(_Float64x) == 16, "");
 // SLATE-FILECHECK-BEGIN ARMV7
 // ARMV7: Error:   × semantic analysis failed
 // ARMV7: Error:
-// ARMV7: × invalid in this context: floating type is not supported on this target
+// ARMV7: × floating type is not supported on this target
 // ARMV7: ╭─[tests/fixtures/error/gcc/linux/armv7-unknown-linux-gnueabihf/gcc_floatn_types.c:5:1]
 // ARMV7: 4 │ #elif defined(NO_FLOAT128)
 // ARMV7: 5 │ _Float128 unsupported;

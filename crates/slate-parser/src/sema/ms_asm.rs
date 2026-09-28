@@ -107,14 +107,14 @@ impl Value {
 
     fn add(mut self, other: Value) -> Result<Value, ResolveError> {
         if self.symbol.is_some() && other.symbol.is_some() {
-            return Err(ResolveError::Invalid("two C names in one `__asm` operand"));
+            return Err(ResolveError::Rejected("two C names in one `__asm` operand"));
         }
         self.symbol = self.symbol.or(other.symbol);
         self.ty = self.ty.or(other.ty);
         self.constant = self.constant.wrapping_add(other.constant);
         self.registers.extend(other.registers);
         if self.registers.len() > 2 {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "more than two registers in one `__asm` operand",
             ));
         }
@@ -270,7 +270,7 @@ impl Lowerer {
         match reference.symbol {
             Some(MsAsmSymbol::Label(name)) => {
                 if registers || reference.displacement != 0 {
-                    return Err(ResolveError::Unsupported("`__asm` label with an offset"));
+                    return Err(ResolveError::Unimplemented("`__asm` label with an offset"));
                 }
                 if reference.offset {
                     lowered.text("offset ");
@@ -281,7 +281,9 @@ impl Lowerer {
             }
             Some(MsAsmSymbol::CLabel(binding)) => {
                 if registers || reference.displacement != 0 || reference.offset {
-                    return Err(ResolveError::Unsupported("`__asm` C label with an offset"));
+                    return Err(ResolveError::Unimplemented(
+                        "`__asm` C label with an offset",
+                    ));
                 }
                 let index = match labels.iter().position(|label| *label == binding) {
                     Some(index) => index,
@@ -294,7 +296,9 @@ impl Lowerer {
             }
             Some(MsAsmSymbol::Function(binding)) => {
                 if registers || reference.displacement != 0 {
-                    return Err(ResolveError::Unsupported("`__asm` function with an offset"));
+                    return Err(ResolveError::Unimplemented(
+                        "`__asm` function with an offset",
+                    ));
                 }
                 let index = match lowered.functions.get(&binding) {
                     Some(index) => *index,
@@ -319,7 +323,7 @@ impl Lowerer {
                 anchor,
             }) if reference.offset => {
                 if registers {
-                    return Err(ResolveError::Unsupported(
+                    return Err(ResolveError::Unimplemented(
                         "`__asm` `OFFSET` with a register",
                     ));
                 }
@@ -337,7 +341,7 @@ impl Lowerer {
                 let place = lvalue.place;
                 let binding = match place.kind {
                     PlaceKind::Binding(binding) => binding,
-                    _ => return Err(ResolveError::Unsupported("`__asm` non-variable object")),
+                    _ => return Err(ResolveError::Unimplemented("`__asm` non-variable object")),
                 };
                 let operand = match lowered.objects.get(&binding) {
                     Some(index) => {
@@ -436,7 +440,7 @@ impl Lowerer {
                 ..Value::default()
             },
             MsAsmExpr::SegmentRegister(_) | MsAsmExpr::St(_) => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "segment or x87 register inside an `__asm` expression",
                 ));
             }
@@ -445,7 +449,7 @@ impl Lowerer {
             MsAsmExpr::Member { base, field } => {
                 let mut value = self.ms_asm_value(base)?;
                 let no_such_member =
-                    ResolveError::Invalid("no such struct or union member in `__asm`");
+                    ResolveError::Rejected("no such struct or union member in `__asm`");
                 let (ty, offset) = match value.ty.take().map(|ty| self.unaliased(ty)) {
                     Some(ty)
                         if matches!(self.kind(&ty), Some(TypeDefinitionKind::Record { .. })) =>
@@ -459,7 +463,7 @@ impl Lowerer {
                     }
                     Some(_) => return Err(no_such_member),
                     None => {
-                        return Err(ResolveError::Invalid(
+                        return Err(ResolveError::Rejected(
                             "`__asm` member of an untyped operand",
                         ));
                     }
@@ -488,7 +492,7 @@ impl Lowerer {
                 let value = self.ms_asm_value(operand)?;
                 let constant = value
                     .as_constant()
-                    .ok_or(ResolveError::Invalid("`__asm` negation of a non-constant"))?;
+                    .ok_or(ResolveError::Rejected("`__asm` negation of a non-constant"))?;
                 Value::constant(constant.wrapping_neg())
             }
             MsAsmExpr::Ptr { size, operand } => {
@@ -509,7 +513,7 @@ impl Lowerer {
                 Value::constant(self.ms_asm_keyword_size(keyword)?)
             }
             MsAsmExpr::TypeKeyword(_) => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "C type keyword outside `TYPE` in `__asm`",
                 ));
             }
@@ -518,7 +522,7 @@ impl Lowerer {
                 match operator {
                     MsAsmOperator::Offset => {
                         if value.symbol.is_none() {
-                            return Err(ResolveError::Invalid(
+                            return Err(ResolveError::Rejected(
                                 "`OFFSET` needs a C name or label in `__asm`",
                             ));
                         }
@@ -531,7 +535,7 @@ impl Lowerer {
                         value
                     }
                     MsAsmOperator::Type | MsAsmOperator::Length | MsAsmOperator::Size => {
-                        let ty = value.ty.ok_or(ResolveError::Invalid(
+                        let ty = value.ty.ok_or(ResolveError::Rejected(
                             "`TYPE`, `LENGTH` and `SIZE` need a C object or type in `__asm`",
                         ))?;
                         Value::constant(self.ms_asm_type_operator(*operator, ty)?)
@@ -585,12 +589,12 @@ impl Lowerer {
                 let constant = self.types.constant_integer(&identifier)?;
                 Value::constant(
                     i64::try_from(constant)
-                        .map_err(|_| ResolveError::Invalid("`__asm` enumerator out of range"))?,
+                        .map_err(|_| ResolveError::Rejected("`__asm` enumerator out of range"))?,
                 )
             }
             BindingKind::Typedef => {
                 let Some(Ordinary::Alias(alias)) = self.types.lookup(name) else {
-                    return Err(ResolveError::Unsupported("unknown typedef"));
+                    return Err(ResolveError::Internal("unknown typedef"));
                 };
                 let alias = *alias;
                 Value {
@@ -599,7 +603,7 @@ impl Lowerer {
                 }
             }
             BindingKind::Tag | BindingKind::Label => {
-                return Err(ResolveError::Invalid("name cannot be used in `__asm`"));
+                return Err(ResolveError::Rejected("name cannot be used in `__asm`"));
             }
         })
     }
@@ -635,7 +639,7 @@ impl Lowerer {
             Keyword::Float => 32,
             Keyword::Double | Keyword::Int64 => 64,
             _ => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "`TYPE` of an unsupported C type keyword in `__asm`",
                 ));
             }
@@ -655,7 +659,7 @@ fn binary(op: MsAsmBinaryOp, lhs: Value, rhs: Value) -> Result<Value, ResolveErr
     match op {
         MsAsmBinaryOp::Add => lhs.add(rhs),
         MsAsmBinaryOp::Sub => {
-            let constant = rhs.as_constant().ok_or(ResolveError::Invalid(
+            let constant = rhs.as_constant().ok_or(ResolveError::Rejected(
                 "`__asm` subtraction needs a constant right operand",
             ))?;
             lhs.add(Value::constant(constant.wrapping_neg()))
@@ -664,7 +668,7 @@ fn binary(op: MsAsmBinaryOp, lhs: Value, rhs: Value) -> Result<Value, ResolveErr
             (Some(lhs), Some(rhs)) => Ok(Value::constant(lhs.wrapping_mul(rhs))),
             (Some(scale), None) => scaled(rhs, scale),
             (None, Some(scale)) => scaled(lhs, scale),
-            (None, None) => Err(ResolveError::Invalid(
+            (None, None) => Err(ResolveError::Rejected(
                 "`__asm` multiplication needs a constant operand",
             )),
         },
@@ -672,8 +676,8 @@ fn binary(op: MsAsmBinaryOp, lhs: Value, rhs: Value) -> Result<Value, ResolveErr
             (Some(lhs), Some(rhs)) => lhs
                 .checked_div(rhs)
                 .map(Value::constant)
-                .ok_or(ResolveError::Invalid("`__asm` division by zero")),
-            _ => Err(ResolveError::Invalid(
+                .ok_or(ResolveError::Rejected("`__asm` division by zero")),
+            _ => Err(ResolveError::Rejected(
                 "`__asm` division needs constant operands",
             )),
         },
@@ -686,7 +690,7 @@ fn scaled(mut value: Value, scale: i64) -> Result<Value, ResolveError> {
             *factor = scale;
             Ok(value)
         }
-        _ => Err(ResolveError::Invalid(
+        _ => Err(ResolveError::Rejected(
             "`__asm` can only scale a single register",
         )),
     }
@@ -716,7 +720,7 @@ fn classify(value: Value) -> Result<MsAsmOperand, ResolveError> {
             (Some(base), Some(index))
         }
         (Some(_), Some(_)) => {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "`__asm` operand scales two registers",
             ));
         }

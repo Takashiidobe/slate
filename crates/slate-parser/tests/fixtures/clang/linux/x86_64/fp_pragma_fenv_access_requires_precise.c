@@ -12,7 +12,7 @@ double imprecise(double a, double b) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: '#pragma STDC FENV_ACCESS ON' is illegal when
+// DEFAULT: × '#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/fp_pragma_fenv_access_requires_precise.c:4:1]
 // DEFAULT: 3 │   {
 // DEFAULT: 4 │ #pragma STDC FENV_ACCESS ON

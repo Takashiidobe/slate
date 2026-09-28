@@ -81,8 +81,9 @@ impl Lowerer {
         let Some(low) = registers.first() else {
             return Ok(None);
         };
-        let returned =
-            returned.ok_or(ResolveError::Invalid("MS asm return without a return type"))?;
+        let returned = returned.ok_or(ResolveError::Rejected(
+            "MS asm return without a return type",
+        ))?;
         let declarations = registers.iter().map(|id| {
             anchor.derive(Statement::Temporary {
                 id: *id,

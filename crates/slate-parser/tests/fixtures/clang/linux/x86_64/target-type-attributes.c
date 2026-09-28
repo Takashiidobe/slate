@@ -28,7 +28,7 @@ __attribute__((common, nocommon)) int common_value;
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: ifunc attribute
+// DEFAULT: × not implemented: ifunc attribute
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/target-type-attributes.c:4:1]
 // DEFAULT: 3 │ __attribute__((target_clones("default", "arch=x86-64-v2"))) int cloned(void);
 // DEFAULT: 4 │ __attribute__((ifunc("resolver"))) int indirect(void);

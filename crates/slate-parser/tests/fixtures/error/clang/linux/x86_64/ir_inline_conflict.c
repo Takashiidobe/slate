@@ -8,7 +8,7 @@ __attribute__((noinline)) int conflict(void) { return 0; }
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: conflicting always_inline and noinline attributes
+// DEFAULT: × conflicting always_inline and noinline attributes
 // DEFAULT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_inline_conflict.c:3:1]
 // DEFAULT: 2 │ __attribute__((always_inline)) int conflict(void);
 // DEFAULT: 3 │ __attribute__((noinline)) int conflict(void) { return 0; }

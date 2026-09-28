@@ -118,13 +118,13 @@ impl FloatingPragmas {
             _ => return Ok(()),
         };
         match control {
-            FloatControl::Malformed => Err(ResolveError::Invalid(
+            FloatControl::Malformed => Err(ResolveError::Rejected(
                 "pragma float_control is malformed; use 'float_control({push|pop})' or 'float_control({precise|except}, {on|off} [,push])'",
             )),
             FloatControl::Push | FloatControl::Pop | FloatControl::Set { push: true, .. }
                 if placement != PragmaPlacement::File =>
             {
-                Err(ResolveError::Invalid(
+                Err(ResolveError::Rejected(
                     "'#pragma float_control push/pop' can only appear at file scope",
                 ))
             }
@@ -163,7 +163,7 @@ impl FloatingPragmas {
         match option {
             StdcPragmaOption::FenvAccess => {
                 if on && !region.precise {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "'#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled",
                     ));
                 }
@@ -200,7 +200,7 @@ impl FloatingPragmas {
 }
 
 fn misplaced() -> ResolveError {
-    ResolveError::Invalid(
+    ResolveError::Rejected(
         "floating-point pragma can only appear at file scope or at the start of a compound statement",
     )
 }
@@ -217,7 +217,7 @@ fn float_control(
         }
         (FloatControlOption::Precise, false) => {
             if region.floating.exceptions == Exceptions::Observable {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "'#pragma float_control(precise, off)' is illegal when except is enabled",
                 ));
             }
@@ -226,7 +226,7 @@ fn float_control(
         }
         (FloatControlOption::Except, true) => {
             if !region.precise {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "'#pragma float_control(except, on)' is illegal when precise is disabled",
                 ));
             }

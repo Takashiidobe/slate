@@ -47,7 +47,7 @@ struct Const { unsigned x; };
 // SLATE-FILECHECK-BEGIN INCOMPLETE_ARRAY
 // INCOMPLETE_ARRAY: Error:   × semantic analysis failed
 // INCOMPLETE_ARRAY: Error:
-// INCOMPLETE_ARRAY: × invalid in this context: redefinition of struct, union, or enum tag
+// INCOMPLETE_ARRAY: × redefinition of struct, union, or enum tag
 // INCOMPLETE_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_tag_redefinition_enum_underlying.c:33:1]
 // INCOMPLETE_ARRAY: 32 │ struct Extent { int (*p)[]; };
 // INCOMPLETE_ARRAY: 33 │ struct Extent { int (*p)[3]; };
@@ -58,7 +58,7 @@ struct Const { unsigned x; };
 // SLATE-FILECHECK-BEGIN QUALIFIED
 // QUALIFIED: Error:   × semantic analysis failed
 // QUALIFIED: Error:
-// QUALIFIED: × invalid in this context: redefinition of struct, union, or enum tag
+// QUALIFIED: × redefinition of struct, union, or enum tag
 // QUALIFIED: ╭─[tests/fixtures/clang/linux/x86_64/c23_tag_redefinition_enum_underlying.c:38:1]
 // QUALIFIED: 37 │ struct Const { const enum E x; };
 // QUALIFIED: 38 │ struct Const { unsigned x; };

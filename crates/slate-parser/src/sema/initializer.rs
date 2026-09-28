@@ -75,7 +75,7 @@ fn last_position(target: AggregateTarget) -> AggregateTarget {
 
 fn sized(ty: &Type) -> Result<Type, ResolveError> {
     match ty {
-        Type::Array { length: None, .. } => Err(ResolveError::Unsupported(
+        Type::Array { length: None, .. } => Err(ResolveError::Unimplemented(
             "flexible array member initializer",
         )),
         _ => Ok(ty.clone()),
@@ -99,9 +99,9 @@ fn shape_next_target(shape: &Shape, next: u64) -> Result<Step, ResolveError> {
             .skip(next as usize)
             .find(|(_, field)| initializable(field))
             .map(|(index, field)| (AggregateTarget::Field(index), field.ty.clone()))
-            .ok_or(ResolveError::Unsupported("excess elements in initializer")),
+            .ok_or(ResolveError::Rejected("excess elements in initializer")),
         Shape::Array { element, .. } => Ok((AggregateTarget::Index(next), sized(element)?)),
-        Shape::Scalar => Err(ResolveError::Unsupported("initializer list for scalar")),
+        Shape::Scalar => Err(ResolveError::Rejected("initializer list for scalar")),
     }
 }
 
@@ -218,7 +218,7 @@ impl Builder {
         positions.sort_by_key(|&position| bounds(self.members[position].0).0);
         for &position in &positions {
             if matches!(self.members[position].1, Entry::Leaf(_)) {
-                return Err(ResolveError::Unsupported(
+                return Err(ResolveError::Unimplemented(
                     "designator into initialized scalar or copied aggregate",
                 ));
             }
@@ -263,7 +263,7 @@ impl Builder {
                         .members
                         .last()
                         .map(|(target, _)| bounds(*target).1 + 1)
-                        .ok_or(ResolveError::Unsupported(
+                        .ok_or(ResolveError::Rejected(
                             "empty initializer for array of unknown length",
                         ))?,
                 };
@@ -277,7 +277,7 @@ impl Builder {
                 };
                 (ty, covered < length)
             }
-            Shape::Scalar => return Err(ResolveError::Unsupported("initializer list for scalar")),
+            Shape::Scalar => return Err(ResolveError::Rejected("initializer list for scalar")),
         };
         let mut members = Vec::new();
         for (target, entry) in self.members {
@@ -355,16 +355,14 @@ impl TypeResolver {
                 .get(id)
                 .and_then(|fields| fields.get(index))
                 .copied()
-                .ok_or(ResolveError::Unsupported("missing initializer field type")),
+                .ok_or(ResolveError::Internal("missing initializer field type")),
             (CTypeKind::Vector { element, .. }, _) => Ok(*element),
             (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
                 .ctypes
                 .element(c)
                 .map(|(element, _)| element)
-                .ok_or(ResolveError::Unsupported(
-                    "missing initializer element type",
-                )),
-            _ => Err(ResolveError::Unsupported("invalid initializer subobject")),
+                .ok_or(ResolveError::Internal("missing initializer element type")),
+            _ => Err(ResolveError::Internal("invalid initializer subobject")),
         }
     }
 
@@ -396,9 +394,7 @@ impl TypeResolver {
             Some(TypeDefinitionKind::Record { kind, fields, .. }) => {
                 let fields = fields
                     .as_ref()
-                    .ok_or(ResolveError::Unsupported(
-                        "initializer for incomplete record",
-                    ))?
+                    .ok_or(ResolveError::Rejected("initializer for incomplete record"))?
                     .iter()
                     .map(|field| field.value.clone())
                     .collect();
@@ -416,11 +412,11 @@ impl TypeResolver {
             .constant_integer(expr)
             .ok()
             .and_then(|index| u64::try_from(index).ok())
-            .ok_or(ResolveError::Unsupported(
+            .ok_or(ResolveError::Rejected(
                 "non-constant or negative array designator",
             ))?;
         if length.is_some_and(|length| index >= length) {
-            return Err(ResolveError::Unsupported("array designator out of range"));
+            return Err(ResolveError::Rejected("array designator out of range"));
         }
         Ok(index)
     }
@@ -433,7 +429,7 @@ impl TypeResolver {
         match (shape, designator) {
             (Shape::Struct(fields) | Shape::Union(fields), Designator::Field(name)) => self
                 .field_path(fields, &name.value)
-                .ok_or(ResolveError::Unsupported("unknown field designator")),
+                .ok_or(ResolveError::Rejected("unknown field designator")),
             (
                 Shape::Array {
                     element, length, ..
@@ -452,11 +448,11 @@ impl TypeResolver {
                 let start = self.array_index(start, *length)?;
                 let end = self.array_index(end, *length)?;
                 if end < start {
-                    return Err(ResolveError::Unsupported("empty designated range"));
+                    return Err(ResolveError::Rejected("empty designated range"));
                 }
                 Ok(vec![(cover(start, end), sized(element)?)])
             }
-            _ => Err(ResolveError::Unsupported(
+            _ => Err(ResolveError::Rejected(
                 "designator does not match aggregate type",
             )),
         }
@@ -492,11 +488,11 @@ impl TypeResolver {
             current = resolved
                 .last()
                 .map(|(_, ty)| ty.clone())
-                .ok_or(ResolveError::Unsupported("empty designator path"))?;
+                .ok_or(ResolveError::Internal("empty designator path"))?;
             steps.extend(resolved);
         }
         if steps.is_empty() {
-            return Err(ResolveError::Unsupported("empty designator list"));
+            return Err(ResolveError::Internal("empty designator list"));
         }
         Ok(steps)
     }
@@ -555,13 +551,13 @@ impl TypeResolver {
     ) -> Result<Vec<Step>, ResolveError> {
         let (first, rest) = designators
             .split_first()
-            .ok_or(ResolveError::Unsupported("empty designator list"))?;
+            .ok_or(ResolveError::Internal("empty designator list"))?;
         let mut steps = self.designator_step(&walk.shape, first)?;
         if !rest.is_empty() {
             let current = steps
                 .last()
                 .map(|(_, ty)| ty.clone())
-                .ok_or(ResolveError::Unsupported("empty designator path"))?;
+                .ok_or(ResolveError::Internal("empty designator path"))?;
             steps.extend(self.designator_steps(&current, rest)?);
         }
         Ok(steps)
@@ -577,7 +573,7 @@ impl TypeResolver {
         let (target, _) = steps
             .first()
             .cloned()
-            .ok_or(ResolveError::Unsupported("empty designator path"))?;
+            .ok_or(ResolveError::Internal("empty designator path"))?;
         let c = self.subobject_type(walk.c, target)?;
         if steps.len() == 1 {
             *index = self.consumed(c, items, *index)?;
@@ -609,7 +605,7 @@ impl TypeResolver {
                 {
                     return Ok(index + 1);
                 }
-                let length = length.ok_or(ResolveError::Unsupported(
+                let length = length.ok_or(ResolveError::Unimplemented(
                     "flexible array member initializer",
                 ))?;
                 (0..length).map(AggregateTarget::Index).collect()
@@ -666,7 +662,7 @@ impl Lowerer {
     fn builder(&self, c: QualType) -> Result<Builder, ResolveError> {
         let ty = self.types.ir_type(c);
         match self.types.shape(&ty)? {
-            Shape::Scalar => Err(ResolveError::Unsupported(
+            Shape::Scalar => Err(ResolveError::Rejected(
                 "braced initializer or designator for scalar",
             )),
             shape => Ok(Builder {
@@ -711,7 +707,7 @@ impl Lowerer {
             let mut members = Vec::new();
             for (index, item) in [real, imaginary].into_iter().enumerate() {
                 let Entry::Leaf(value) = self.init_initializer(component, &item.value)? else {
-                    return Err(ResolveError::Unsupported(
+                    return Err(ResolveError::Rejected(
                         "braced initializer for complex component",
                     ));
                 };
@@ -732,7 +728,7 @@ impl Lowerer {
         if matches!(shape, Shape::Scalar) {
             return match items {
                 [item] if item.designators.is_empty() => self.init_initializer(c, &item.value),
-                _ => Err(ResolveError::Unsupported(
+                _ => Err(ResolveError::Rejected(
                     "scalar initializer list must hold exactly one element",
                 )),
             };
@@ -775,7 +771,7 @@ impl Lowerer {
                 self.designate(builder, &steps, cursor)?;
                 self.resume(builder, &steps, cursor)?;
                 if cursor.index == start {
-                    return Err(ResolveError::Unsupported(
+                    return Err(ResolveError::Internal(
                         "designated initializer consumed nothing",
                     ));
                 }
@@ -817,7 +813,7 @@ impl Lowerer {
             cursor.index = saved;
             cursor.pending = pending.clone();
             let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unsupported(
+                return Err(ResolveError::Unimplemented(
                     "designator into initialized scalar or copied aggregate",
                 ));
             };
@@ -877,7 +873,7 @@ impl Lowerer {
     ) -> Result<(), ResolveError> {
         let (target, _) = *steps
             .first()
-            .ok_or(ResolveError::Unsupported("empty designator path"))?;
+            .ok_or(ResolveError::Internal("empty designator path"))?;
         if steps.len() == 1 {
             return self.init_into(builder, target, cursor);
         }
@@ -888,7 +884,7 @@ impl Lowerer {
         for position in builder.partitions(target, &fresh, true)? {
             cursor.index = saved;
             let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unsupported(
+                return Err(ResolveError::Unimplemented(
                     "designator into initialized scalar or copied aggregate",
                 ));
             };
@@ -907,7 +903,7 @@ impl Lowerer {
     ) -> Result<(), ResolveError> {
         let (target, _) = *steps
             .first()
-            .ok_or(ResolveError::Unsupported("empty designator path"))?;
+            .ok_or(ResolveError::Internal("empty designator path"))?;
         if steps.len() > 1 {
             let last = last_position(target);
             let c = self.types.subobject_type(builder.c, last)?;
@@ -915,9 +911,9 @@ impl Lowerer {
             let positions = builder.partitions(last, &fresh, false)?;
             let position = *positions
                 .last()
-                .ok_or(ResolveError::Unsupported("empty designator path"))?;
+                .ok_or(ResolveError::Internal("empty designator path"))?;
             let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unsupported(
+                return Err(ResolveError::Unimplemented(
                     "designator into initialized scalar or copied aggregate",
                 ));
             };
@@ -954,7 +950,7 @@ impl Lowerer {
             ..
         } = &literal_ty
         else {
-            return Err(ResolveError::Unsupported("string literal type"));
+            return Err(ResolveError::Internal("string literal type"));
         };
         let any_signedness = matches!(literal.encoding, Encoding::Plain | Encoding::Utf8);
         let compatible = matches!(
@@ -966,7 +962,7 @@ impl Lowerer {
             }) if width == literal_width && (any_signedness || signed == literal_signed)
         );
         if !compatible {
-            return Err(ResolveError::Unsupported(
+            return Err(ResolveError::Rejected(
                 "string literal initializer for incompatible array element",
             ));
         }

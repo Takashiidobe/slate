@@ -25,7 +25,7 @@ double bar (void)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: non-void function should return a value
+// DEFAULT: × non-void function should return a value
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20020418-1.c:14:3]
 // DEFAULT: 13 │   baz ();
 // DEFAULT: 14 │   return;

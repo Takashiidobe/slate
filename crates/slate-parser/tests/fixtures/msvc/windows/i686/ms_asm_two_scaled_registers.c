@@ -9,7 +9,7 @@ int f(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: `__asm` operand scales two registers
+// DEFAULT: × `__asm` operand scales two registers
 // DEFAULT: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_two_scaled_registers.c:3:3]
 // DEFAULT: 2 │ int f(void) {
 // DEFAULT: 3 │   __asm mov eax, [eax * 2 + ebx * 4]

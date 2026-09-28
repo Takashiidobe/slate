@@ -25,7 +25,7 @@ struct MS L { char c; long double d; };
 // SLATE-FILECHECK-BEGIN NPOT
 // NPOT: Error:   × semantic analysis failed
 // NPOT: Error:
-// NPOT: × invalid in this context: ms_struct layout of a fundamental type whose size
+// NPOT: × ms_struct layout of a fundamental type whose size is not a power of two
 // NPOT: ╭─[tests/fixtures/clang/linux/i686/ms_struct_layout.c:16:1]
 // NPOT: 15 │ #ifdef NPOT
 // NPOT: 16 │ struct MS L { char c; long double d; };

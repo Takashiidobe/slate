@@ -121,7 +121,7 @@ impl Lowerer {
                     ..
                 }) = lowered.operands.get(output)
                 else {
-                    return Err(ResolveError::Unsupported("asm input tied to a non-output"));
+                    return Err(ResolveError::Rejected("asm input tied to a non-output"));
                 };
                 // x86 prints a tied input at its own width, not its output's.
                 let view = match input_width {
@@ -185,7 +185,7 @@ impl Lowerer {
                     .iter()
                     .find(|reference| reference.id == label.id)
                     .map(|reference| reference.binding)
-                    .ok_or(ResolveError::Unsupported("missing asm label binding"))?,
+                    .ok_or(ResolveError::Internal("missing asm label binding"))?,
             );
         }
         Ok(lowered)
@@ -283,7 +283,7 @@ impl Lowerer {
         let lvalue = match self.place(expr) {
             Ok(lvalue) => lvalue,
             Err(_) if memory_only => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "asm input with a memory-only constraint is not an lvalue",
                 ));
             }
@@ -402,14 +402,14 @@ impl Lowerer {
     fn memory_place(&self, place: &Place, memory_only: bool) -> Result<bool, ResolveError> {
         match &place.kind {
             PlaceKind::Field { bits: Some(_), .. } if memory_only => {
-                Err(ResolveError::Invalid("address of a bit-field"))
+                Err(ResolveError::Rejected("address of a bit-field"))
             }
             PlaceKind::Binding(id)
                 if memory_only
                     && self.types.compiler_flavor() == CompilerFlavor::Gcc
                     && self.types.entities.is_register(id) =>
             {
-                Err(ResolveError::Invalid(
+                Err(ResolveError::Rejected(
                     "address of register variable requested",
                 ))
             }

@@ -20,7 +20,7 @@ sub1 (char *p, int i)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: GNU nested function
+// DEFAULT: × not implemented: GNU nested function
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20020309-1.c:8:5]
 // DEFAULT: 7 │       {
 // DEFAULT: 8 │ ╭─▶     void

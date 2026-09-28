@@ -66,7 +66,7 @@ impl<'a> AbiClassifier<'a> {
             ..
         } = signature
         else {
-            return Err(ResolveError::Unsupported("ABI of non-function type"));
+            return Err(ResolveError::Internal("ABI of non-function type"));
         };
         let c_parts = c_signature.and_then(|q| self.types.ctypes.function_parts(q));
         let atomic_result = c_parts.is_some_and(|(ret, ..)| self.types.ctypes.quals(ret).is_atomic);
@@ -386,10 +386,10 @@ impl<'a> AbiClassifier<'a> {
                     };
                     self.record_abi(&record, result, convention)
                 }
-                _ => Err(ResolveError::Unsupported("incomplete ABI type")),
+                _ => Err(ResolveError::Rejected("incomplete ABI type")),
             },
             Type::Array { .. } | Type::VariableArray { .. } | Type::Function { .. } => {
-                Err(ResolveError::Unsupported("unadjusted ABI parameter type"))
+                Err(ResolveError::Internal("unadjusted ABI parameter type"))
             }
         }
     }
@@ -713,7 +713,7 @@ impl<'a> AbiClassifier<'a> {
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
         let Type::Vector { element, .. } = operand.ty else {
-            return Err(ResolveError::Unsupported("vector ABI of non-vector type"));
+            return Err(ResolveError::Internal("vector ABI of non-vector type"));
         };
         let layout = self.layout(operand)?;
         let size = layout.size_bytes;

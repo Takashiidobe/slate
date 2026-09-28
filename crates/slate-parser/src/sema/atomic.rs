@@ -478,7 +478,7 @@ impl Lowerer {
                     },
                 ))
             }
-            _ => Err(ResolveError::Unsupported("atomic builtin argument count")),
+            _ => Err(ResolveError::Rejected("atomic builtin argument count")),
         }
     }
 
@@ -486,7 +486,7 @@ impl Lowerer {
         let pointer = self.expr(object)?;
         let place = self.deref(pointer)?;
         if matches!(place.ty, Type::Void | Type::Function { .. }) {
-            return Err(ResolveError::Unsupported(
+            return Err(ResolveError::Rejected(
                 "atomic builtin on non-object pointer",
             ));
         }
@@ -725,7 +725,7 @@ impl Lowerer {
                     scope: FenceScope::Thread,
                 },
             )),
-            _ => Err(ResolveError::Unsupported("atomic builtin argument count")),
+            _ => Err(ResolveError::Rejected("atomic builtin argument count")),
         }
     }
 
@@ -741,7 +741,7 @@ impl Lowerer {
             (LockFreeQuery::Always | LockFreeQuery::Runtime, [size, pointer]) => {
                 (size, Some(pointer))
             }
-            _ => return Err(ResolveError::Unsupported("atomic builtin argument count")),
+            _ => return Err(ResolveError::Rejected("atomic builtin argument count")),
         };
         let size = self.expr(size)?;
         let pointer = pointer.map(|pointer| self.expr(pointer)).transpose()?;
@@ -823,7 +823,7 @@ impl Lowerer {
             return Ok(function.value.id);
         }
         let Type::Function { parameters, .. } = signature else {
-            return Err(ResolveError::Unsupported("libatomic signature"));
+            return Err(ResolveError::Rejected("libatomic signature"));
         };
         let fixed = parameters
             .iter()
@@ -882,15 +882,13 @@ impl Lowerer {
                 FetchOp::Add => false,
                 FetchOp::Sub => true,
                 _ => {
-                    return Err(ResolveError::Unsupported(
+                    return Err(ResolveError::Rejected(
                         "atomic bitwise operation on pointer",
                     ));
                 }
             };
             if !matches!(operand.ty, Type::Numeric(NumericType::Integer { .. })) {
-                return Err(ResolveError::Unsupported(
-                    "noninteger atomic pointer offset",
-                ));
+                return Err(ResolveError::Rejected("noninteger atomic pointer offset"));
             }
             let element = if byte_offsets {
                 Type::integer(8, false)
@@ -920,15 +918,13 @@ impl Lowerer {
                 | FetchOp::FloatExtremum(_),
             ) => true,
             (_, FetchOp::FloatExtremum(_)) => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "atomic floating extremum on a non-floating object",
                 ));
             }
             (Type::Numeric(NumericType::Integer { .. }), _) => false,
             _ => {
-                return Err(ResolveError::Unsupported(
-                    "atomic arithmetic on non-integer",
-                ));
+                return Err(ResolveError::Rejected("atomic arithmetic on non-integer"));
             }
         };
         // the builtin's value parameter has the object's declared type, so a

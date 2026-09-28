@@ -8,7 +8,7 @@ void g(void) {}
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: conflicting types for function redeclaration
+// DEFAULT: × conflicting types for function redeclaration
 // DEFAULT: ╭─[tests/fixtures/error/msvc/windows/i686/implicit_function_declaration_conflict.c:2:1]
 // DEFAULT: 1 │ void f(void) { g(4); }
 // DEFAULT: 2 │ void g(void) {}

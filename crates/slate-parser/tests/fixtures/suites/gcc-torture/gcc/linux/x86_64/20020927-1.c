@@ -33,7 +33,7 @@ bar ()
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: non-void function should return a value
+// DEFAULT: × non-void function should return a value
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20020927-1.c:27:5]
 // DEFAULT: 26 │   if (foo ())
 // DEFAULT: 27 │     return;

@@ -20,10 +20,12 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ResolveError {
-    #[error("unsupported in numeric IR lowering: {0}")]
-    Unsupported(&'static str),
-    #[error("invalid in this context: {0}")]
-    Invalid(&'static str),
+    #[error("{0}")]
+    Rejected(&'static str),
+    #[error("not implemented: {0}")]
+    Unimplemented(&'static str),
+    #[error("internal error: {0}")]
+    Internal(&'static str),
     #[error("integer literal `{0}` has no supported target type")]
     IntegerLiteral(String),
     #[error("missing expression binding for `{0}`")]
@@ -222,7 +224,7 @@ impl Context {
                 }
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
-            _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
+            _ => return Err(ResolveError::Internal(UNSUPPORTED_EXPRESSION)),
         };
         Ok(Value {
             ty,
@@ -362,7 +364,7 @@ impl Context {
         };
         if let Type::Vector { element, .. } = operand.ty {
             if arith == UnaryArithOp::Not && matches!(element, NumericType::Float(_)) {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "bitwise complement of a floating vector",
                 ));
             }
@@ -385,7 +387,7 @@ impl Context {
         }
         if let Type::FixedPoint(fixed) = operand.ty {
             if arith != UnaryArithOp::Neg {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "bitwise complement of a fixed-point operand",
                 ));
             }
@@ -401,7 +403,7 @@ impl Context {
         }
         if let Type::Imaginary(_) = operand.ty {
             if arith != UnaryArithOp::Neg {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "bitwise complement of imaginary operand",
                 ));
             }
@@ -470,7 +472,7 @@ impl Context {
     ) -> Result<Resolved, ResolveError> {
         let (left, right) = self.vector_operands(left, right)?;
         let Type::Vector { element, lanes } = left.ty else {
-            return Err(ResolveError::Unsupported("vector arithmetic conversion"));
+            return Err(ResolveError::Internal("vector arithmetic conversion"));
         };
         let compare = match op {
             BinaryOp::Equal => Some(CompareOp::Eq),
@@ -509,7 +511,7 @@ impl Context {
             BinaryOp::BitXor => ArithOp::Xor,
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
-            _ => return Err(ResolveError::Unsupported("vector operator")),
+            _ => return Err(ResolveError::Rejected("vector operator")),
         };
         // clang emits no nsw for vector arithmetic, so signed lanes wrap
         let semantics = match (element, arith) {
@@ -517,7 +519,7 @@ impl Context {
                 self.floating_arith()
             }
             (NumericType::Float(_), _) => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "operator requires integer vector elements",
                 ));
             }
@@ -529,7 +531,7 @@ impl Context {
                 | ArithOp::Maximum
                 | ArithOp::MinimumNum
                 | ArithOp::MaximumNum,
-            ) => return Err(ResolveError::Unsupported("vector operator")),
+            ) => return Err(ResolveError::Unimplemented("vector operator")),
             (NumericType::Integer { .. }, ArithOp::Add | ArithOp::Sub | ArithOp::Mul) => {
                 ArithSema::Integer {
                     overflow: Overflow::Wrap,
@@ -588,16 +590,16 @@ impl Context {
                 let left = self.splat(left, ty)?;
                 Ok((left, right))
             }
-            _ => Err(ResolveError::Unsupported("vector arithmetic conversion")),
+            _ => Err(ResolveError::Rejected("vector arithmetic conversion")),
         }
     }
 
     fn splat(&self, value: Value, to: Type) -> Result<Value, ResolveError> {
         let Type::Vector { element, .. } = to else {
-            return Err(ResolveError::Unsupported("vector arithmetic conversion"));
+            return Err(ResolveError::Internal("vector arithmetic conversion"));
         };
         if !matches!(value.ty, Type::Numeric(_) | Type::Bool) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "vector operand must be a vector or a scalar",
             ));
         }
@@ -627,7 +629,7 @@ impl Context {
         let from_bytes = self.target.storage_of(value.ty.clone())?.size_bytes;
         let to_bytes = self.target.storage_of(to.clone())?.size_bytes;
         if from_bytes != to_bytes {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conversion between vector types of different size",
             ));
         }
@@ -642,12 +644,12 @@ impl Context {
 
     fn element_bits(&self, element: NumericType) -> Result<u32, ResolveError> {
         let bytes = self.target.storage_of(Type::Numeric(element))?.size_bytes;
-        u32::try_from(bytes * 8).map_err(|_| ResolveError::Unsupported("vector element width"))
+        u32::try_from(bytes * 8).map_err(|_| ResolveError::Internal("vector element width"))
     }
 
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
         if has_imaginary(&left, &right) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "relational comparison requires real operands",
             ));
         }
@@ -672,19 +674,17 @@ impl Context {
     ) -> Result<Resolved, ResolveError> {
         let shift = matches!(op, BinaryOp::ShiftLeft | BinaryOp::ShiftRight);
         let Type::FixedPoint(fixed) = &left.ty else {
-            return Err(ResolveError::Unsupported("unconverted fixed-point operand"));
+            return Err(ResolveError::Internal("unconverted fixed-point operand"));
         };
         let fixed = *fixed;
         if shift {
             if !matches!(right.ty, Type::Numeric(NumericType::Integer { .. })) {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "fixed-point shift amount must be an integer",
                 ));
             }
         } else if left.ty != right.ty {
-            return Err(ResolveError::Unsupported(
-                "unconverted fixed-point operands",
-            ));
+            return Err(ResolveError::Internal("unconverted fixed-point operands"));
         }
         let compare = match op {
             BinaryOp::Equal => Some(CompareOp::Eq),
@@ -715,7 +715,7 @@ impl Context {
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
             _ => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "operator requires integer or real operands",
                 ));
             }
@@ -760,11 +760,11 @@ impl Context {
             | (Type::Complex(a), Type::Numeric(b))
             | (Type::Numeric(a), Type::Complex(b)) => {
                 if a != b {
-                    return Err(ResolveError::Unsupported("unconverted complex components"));
+                    return Err(ResolveError::Internal("unconverted complex components"));
                 }
                 *a
             }
-            _ => return Err(ResolveError::Unsupported("complex arithmetic conversion")),
+            _ => return Err(ResolveError::Internal("complex arithmetic conversion")),
         };
         let result_ty = Type::Complex(component);
         let left_to = if matches!(left.ty, Type::Complex(_)) {
@@ -802,7 +802,7 @@ impl Context {
             BinaryOp::Sub => ArithOp::Sub,
             BinaryOp::Mul => ArithOp::Mul,
             BinaryOp::Div => ArithOp::Div,
-            _ => return Err(ResolveError::Unsupported("complex operator")),
+            _ => return Err(ResolveError::Rejected("complex operator")),
         };
         let semantics = match component {
             NumericType::Float(_) => self.complex_floating_arith(),
@@ -838,21 +838,19 @@ impl Context {
             _ => None,
         };
         let (Some(a), Some(b)) = (component(&left.ty), component(&right.ty)) else {
-            return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
+            return Err(ResolveError::Internal("imaginary arithmetic conversion"));
         };
         if a != b {
-            return Err(ResolveError::Unsupported(
-                "unconverted imaginary components",
-            ));
+            return Err(ResolveError::Internal("unconverted imaginary components"));
         }
         let NumericType::Float(format) = a else {
-            return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
+            return Err(ResolveError::Internal("imaginary arithmetic conversion"));
         };
         if [a, b]
             .iter()
             .any(|ty| matches!(ty, NumericType::Float(format) if format.is_decimal()))
         {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "decimal floating operand with imaginary operand",
             ));
         }
@@ -888,7 +886,7 @@ impl Context {
             BinaryOp::Mul => ArithOp::Mul,
             BinaryOp::Div => ArithOp::Div,
             _ => {
-                return Err(ResolveError::Invalid(
+                return Err(ResolveError::Rejected(
                     "operator requires integer or real operands",
                 ));
             }
@@ -1263,7 +1261,7 @@ impl Context {
         // an unhandled type pair would otherwise leave the operand at its source
         // type while the caller treats it as converted
         if converted.ty != expected {
-            return Err(ResolveError::Unsupported("arithmetic conversion"));
+            return Err(ResolveError::Unimplemented("arithmetic conversion"));
         }
         Ok(converted)
     }
@@ -1388,7 +1386,7 @@ fn fixed_conversion_sema(
 fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
     match value.ty {
         Type::Numeric(ty) => Ok(ty),
-        Type::Bool => Err(ResolveError::Unsupported("unpromoted boolean operand")),
+        Type::Bool => Err(ResolveError::Internal("unpromoted boolean operand")),
         Type::Defined(_)
         | Type::Complex(_)
         | Type::Imaginary(_)
@@ -1399,7 +1397,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         | Type::Array { .. }
         | Type::VariableArray { .. }
         | Type::Function { .. }
-        | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
+        | Type::Void => Err(ResolveError::Rejected("non-numeric operand")),
     }
 }
 
@@ -1515,7 +1513,7 @@ fn per_lane(converted: Value, operand: Value, lanes: u32) -> Result<Value, Resol
         return Ok(operand);
     };
     let Type::Numeric(element) = converted.ty else {
-        return Err(ResolveError::Unsupported("elementwise conversion"));
+        return Err(ResolveError::Internal("elementwise conversion"));
     };
     let inner = per_lane(*inner, operand, lanes)?;
     Ok(Value {

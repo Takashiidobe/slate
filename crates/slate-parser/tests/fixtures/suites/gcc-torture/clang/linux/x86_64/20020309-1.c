@@ -20,7 +20,7 @@ sub1 (char *p, int i)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: function definition is not allowed here
+// DEFAULT: × function definition is not allowed here
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20020309-1.c:8:5]
 // DEFAULT: 7 │       {
 // DEFAULT: 8 │ ╭─▶     void

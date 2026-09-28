@@ -26,7 +26,7 @@ struct Pointer { unsigned *p; };
 // SLATE-FILECHECK-BEGIN DIRECT
 // DIRECT: Error:   × semantic analysis failed
 // DIRECT: Error:
-// DIRECT: × invalid in this context: redefinition of struct, union, or enum tag
+// DIRECT: × redefinition of struct, union, or enum tag
 // DIRECT: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_c23_tag_redefinition_enum_underlying.c:12:1]
 // DIRECT: 11 │ struct Direct { enum E x; };
 // DIRECT: 12 │ struct Direct { unsigned x; };
@@ -37,7 +37,7 @@ struct Pointer { unsigned *p; };
 // SLATE-FILECHECK-BEGIN POINTER
 // POINTER: Error:   × semantic analysis failed
 // POINTER: Error:
-// POINTER: × invalid in this context: redefinition of struct, union, or enum tag
+// POINTER: × redefinition of struct, union, or enum tag
 // POINTER: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_c23_tag_redefinition_enum_underlying.c:17:1]
 // POINTER: 16 │ struct Pointer { enum E *p; };
 // POINTER: 17 │ struct Pointer { unsigned *p; };

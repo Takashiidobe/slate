@@ -20,7 +20,7 @@ void bar (void)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: linkage storage class
+// DEFAULT: × linkage storage class
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20011023-1.c:8:3]
 // DEFAULT: 7 │ {
 // DEFAULT: 8 │   auto void baz (void);

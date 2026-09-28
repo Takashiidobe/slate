@@ -30,7 +30,7 @@ int foo (void *a, int b)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: function definition is not allowed here
+// DEFAULT: × function definition is not allowed here
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20010226-1.c:17:7]
 // DEFAULT: 16 │         {
 // DEFAULT: 17 │ ╭─▶       void bar (void *c)

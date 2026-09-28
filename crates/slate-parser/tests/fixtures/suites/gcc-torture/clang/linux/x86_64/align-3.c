@@ -20,7 +20,7 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: incomplete field type
+// DEFAULT: × incomplete field type
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/align-3.c:10:7]
 // DEFAULT: 9 │ int main() {
 // DEFAULT: 10 │   if (__alignof__(func) != 256)

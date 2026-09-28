@@ -62,17 +62,17 @@ void post_decrement(int x) {
 // FLOAT_SHIFT: Error:   × invalid operands to binary expression: i32 << f64
 // SLATE-FILECHECK-END FLOAT_SHIFT
 // SLATE-FILECHECK-BEGIN COMPOUND_ASSIGN
-// COMPOUND_ASSIGN: Error:   × unsupported in numeric IR lowering: nonliteral numeric expression
+// COMPOUND_ASSIGN: Error:   × nonliteral numeric expression
 // SLATE-FILECHECK-END COMPOUND_ASSIGN
 // SLATE-FILECHECK-BEGIN FLOAT_BITNOT
 // FLOAT_BITNOT: Error:   × invalid argument type to unary expression: ~f64
 // SLATE-FILECHECK-END FLOAT_BITNOT
 // SLATE-FILECHECK-BEGIN PRE_INCREMENT
-// PRE_INCREMENT: Error:   × unsupported in numeric IR lowering: nonconstant or unknown identifier
+// PRE_INCREMENT: Error:   × nonconstant or unknown identifier
 // SLATE-FILECHECK-END PRE_INCREMENT
 // SLATE-FILECHECK-BEGIN POST_DECREMENT
-// POST_DECREMENT: Error:   × unsupported in numeric IR lowering: nonliteral numeric expression
+// POST_DECREMENT: Error:   × nonliteral numeric expression
 // SLATE-FILECHECK-END POST_DECREMENT
 // SLATE-FILECHECK-BEGIN BUILTIN
-// BUILTIN: Error:   × unsupported in numeric IR lowering: nonliteral numeric expression
+// BUILTIN: Error:   × nonliteral numeric expression
 // SLATE-FILECHECK-END BUILTIN

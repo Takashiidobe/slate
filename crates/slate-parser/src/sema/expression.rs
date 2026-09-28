@@ -51,7 +51,7 @@ impl Lowerer {
             .types
             .ctypes
             .function_parts(signature)
-            .ok_or(ResolveError::Unsupported("non-function callee"))?;
+            .ok_or(ResolveError::Rejected("non-function callee"))?;
         let params = params.to_vec();
         let ty = self.types.ir_type(signature);
         let Type::Function {
@@ -61,13 +61,13 @@ impl Lowerer {
             ..
         } = &ty
         else {
-            return Err(ResolveError::Unsupported("non-function callee"));
+            return Err(ResolveError::Rejected("non-function callee"));
         };
         if *prototyped
             && (arguments.len() < parameters.len()
                 || (!*variadic && arguments.len() != parameters.len()))
         {
-            return Err(ResolveError::Unsupported("call argument count"));
+            return Err(ResolveError::Rejected("call argument count"));
         }
         let mut lowered = Vec::new();
         for (index, argument) in arguments.iter().enumerate() {
@@ -159,7 +159,7 @@ impl Lowerer {
             ..
         } = &ty
         else {
-            return Err(ResolveError::Unsupported("non-function builtin"));
+            return Err(ResolveError::Internal("non-function builtin"));
         };
         let fixed = parameters
             .iter()
@@ -259,7 +259,7 @@ impl Lowerer {
             CustomBuiltin::Overflow(op) => self.overflow_builtin(e, op, arguments),
             CustomBuiltin::FloatClass(test) => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Unsupported("float class builtin arity"));
+                    return Err(ResolveError::Rejected("float class builtin arity"));
                 };
                 let operand = self.real_floating_operand(operand)?;
                 Ok(self.truth(
@@ -297,7 +297,7 @@ impl Lowerer {
             }
             CustomBuiltin::InfSign => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Unsupported("float class builtin arity"));
+                    return Err(ResolveError::Rejected("float class builtin arity"));
                 };
                 let operand = self.real_floating_operand(operand)?;
                 let c = self.types.ctypes.int();
@@ -372,7 +372,7 @@ impl Lowerer {
             }
             CustomBuiltin::FloatClassify => {
                 let [nan, infinite, normal, subnormal, zero, value] = arguments else {
-                    return Err(ResolveError::Invalid("classification builtin arity"));
+                    return Err(ResolveError::Rejected("classification builtin arity"));
                 };
                 let value = self.real_floating_operand(value)?;
                 let c = self.types.ctypes.int();
@@ -411,26 +411,26 @@ impl Lowerer {
             CustomBuiltin::Shuffle => self.shuffle_builtin(e, arguments),
             CustomBuiltin::AddressOf => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Invalid("addressof builtin arity"));
+                    return Err(ResolveError::Rejected("addressof builtin arity"));
                 };
                 let place = self.place(operand)?;
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
-                    return Err(ResolveError::Invalid("address of a bit-field"));
+                    return Err(ResolveError::Rejected("address of a bit-field"));
                 }
                 if temporary_rooted(&place.place) {
-                    return Err(ResolveError::Invalid("address of a temporary"));
+                    return Err(ResolveError::Rejected("address of a temporary"));
                 }
                 let c = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
             CustomBuiltin::ClassifyType => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Invalid("classify builtin arity"));
+                    return Err(ResolveError::Rejected("classify builtin arity"));
                 };
                 let (resolved, _) = self.speculative_type(operand)?;
                 let resolved = self.types.ctypes.lvalue_conversion(resolved);
                 let class = type_class(&self.types.ctypes, resolved)
-                    .ok_or(ResolveError::Unsupported("classify builtin operand"))?;
+                    .ok_or(ResolveError::Unimplemented("classify builtin operand"))?;
                 let c = self.types.ctypes.int();
                 let number = match u32::try_from(class) {
                     Ok(class) => Number::Integer(class.into()),
@@ -451,21 +451,21 @@ impl Lowerer {
             DerivedSignature::Declared => {
                 let prototype = builtin
                     .prototype
-                    .ok_or(ResolveError::Unsupported("builtin prototype"))?;
+                    .ok_or(ResolveError::Internal("builtin prototype"))?;
                 self.types
                     .declared_signature(prototype)
-                    .ok_or(ResolveError::Unsupported("builtin prototype"))
+                    .ok_or(ResolveError::Internal("builtin prototype"))
             }
             DerivedSignature::Uniform { least, most, class } => {
                 if arguments.len() < least || arguments.len() > most {
-                    return Err(ResolveError::Invalid("elementwise builtin arity"));
+                    return Err(ResolveError::Rejected("elementwise builtin arity"));
                 }
                 let operand = self.classified_operand_type(&arguments[0], class)?;
                 Ok(self.function_type(operand, vec![operand; arguments.len()]))
             }
             DerivedSignature::Scaled => {
                 let [value, _] = arguments else {
-                    return Err(ResolveError::Invalid("elementwise builtin arity"));
+                    return Err(ResolveError::Rejected("elementwise builtin arity"));
                 };
                 let operand = self.classified_operand_type(value, OperandClass::Floating)?;
                 let exponent = self.types.ctypes.int();
@@ -473,10 +473,10 @@ impl Lowerer {
             }
             DerivedSignature::BitCount => {
                 let Some((value, fallback)) = arguments.split_first() else {
-                    return Err(ResolveError::Invalid("bit-counting builtin arity"));
+                    return Err(ResolveError::Rejected("bit-counting builtin arity"));
                 };
                 if fallback.len() > 1 {
-                    return Err(ResolveError::Invalid("bit-counting builtin arity"));
+                    return Err(ResolveError::Rejected("bit-counting builtin arity"));
                 }
                 let operand = self.classified_operand_type(value, OperandClass::Integer)?;
                 let count = self.types.ctypes.int();
@@ -506,7 +506,7 @@ impl Lowerer {
             OperandClass::Any => true,
         };
         if !accepted {
-            return Err(ResolveError::Invalid("elementwise builtin operand type"));
+            return Err(ResolveError::Rejected("elementwise builtin operand type"));
         }
         Ok(operand)
     }
@@ -527,7 +527,7 @@ impl Lowerer {
         arguments: &'e [Expr],
     ) -> Result<&'e Expr, ResolveError> {
         let (condition, when_true, when_false) = choose_expr_operands(callee, arguments)
-            .ok_or(ResolveError::Unsupported("__builtin_choose_expr"))?;
+            .ok_or(ResolveError::Internal("__builtin_choose_expr"))?;
         let taken = self.types.constant_integer(condition)?;
         Ok(if taken.sign() == num_bigint::Sign::NoSign {
             when_false
@@ -548,14 +548,14 @@ impl Lowerer {
                 let (line, column) = self
                     .files
                     .position(file, callee.spelling.offset)
-                    .ok_or(ResolveError::Unsupported("unknown source position"))?;
+                    .ok_or(ResolveError::Internal("unknown source position"))?;
                 let n = match builtin {
                     SourceLocationBuiltin::Line => line,
                     _ => column,
                 };
                 let c = self.types.ctypes.int();
                 let value = i64::try_from(n.saturating_add(1))
-                    .map_err(|_| ResolveError::Unsupported("source location out of range"))?;
+                    .map_err(|_| ResolveError::Internal("source location out of range"))?;
                 Ok(self.operand(
                     e,
                     c,
@@ -573,7 +573,7 @@ impl Lowerer {
                         let path = self
                             .files
                             .get_path(file)
-                            .ok_or(ResolveError::Unsupported("unknown source file"))?;
+                            .ok_or(ResolveError::Internal("unknown source file"))?;
                         path.file_name().map_or_else(
                             || crate::files::display_path(path),
                             |name| name.to_string_lossy().into_owned(),
@@ -583,7 +583,7 @@ impl Lowerer {
                         let path = self
                             .files
                             .get_path(file)
-                            .ok_or(ResolveError::Unsupported("unknown source file"))?;
+                            .ok_or(ResolveError::Internal("unknown source file"))?;
                         crate::files::display_path(path)
                     }
                 };
@@ -641,7 +641,7 @@ impl Lowerer {
         arguments: &[Expr],
     ) -> Result<Operand, ResolveError> {
         let [left, right, result] = arguments else {
-            return Err(ResolveError::Unsupported("overflow builtin argument count"));
+            return Err(ResolveError::Rejected("overflow builtin argument count"));
         };
         let left = self.expr(left)?;
         let right = self.expr(right)?;
@@ -651,7 +651,7 @@ impl Lowerer {
             || !self.types.ctypes.is_integer(right.c)
             || !self.types.ctypes.is_integer(result.c)
         {
-            return Err(ResolveError::Invalid("overflow builtin operand type"));
+            return Err(ResolveError::Rejected("overflow builtin operand type"));
         }
         let c = self.types.ctypes.qual(CTypeKind::Bool);
         Ok(self.operand(
@@ -728,7 +728,7 @@ impl Lowerer {
         let operand = self.expr(argument)?;
         let c = self.types.ctypes.arithmetic_component(operand.c);
         if !self.types.ctypes.is_floating(c) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "floating classification builtin operand",
             ));
         }
@@ -740,7 +740,7 @@ impl Lowerer {
         arguments: &[Expr],
     ) -> Result<(Operand, Operand), ResolveError> {
         let [left, right] = arguments else {
-            return Err(ResolveError::Unsupported("float class builtin arity"));
+            return Err(ResolveError::Rejected("float class builtin arity"));
         };
         let left = self.real_floating_operand(left)?;
         let right = self.real_floating_operand(right)?;
@@ -935,7 +935,7 @@ impl Lowerer {
                     .types
                     .ctypes
                     .enum_underlying(to)
-                    .ok_or(ResolveError::Unsupported("enum without an underlying type"))?;
+                    .ok_or(ResolveError::Rejected("enum without an underlying type"))?;
                 let value = self.emit_convert_to(value, underlying, reason)?;
                 let node = value.node.clone();
                 Ok(self.value(
@@ -1045,7 +1045,7 @@ impl Lowerer {
             .find(|b| b.id == node && b.name == name)
             .or_else(|| self.names.bindings.iter().find(|b| b.name == name))
             .map(|b| b.value.id)
-            .ok_or(ResolveError::Unsupported("missing declaration binding"))
+            .ok_or(ResolveError::Internal("missing declaration binding"))
     }
 
     pub(super) fn reference(&self, e: &Expr) -> Result<BindingId, ResolveError> {
@@ -1063,7 +1063,7 @@ impl Lowerer {
     pub(super) fn pointee(&self, ty: &Type) -> Result<Type, ResolveError> {
         match ty {
             Type::Pointer { pointee, .. } => Ok((**pointee).clone()),
-            _ => Err(ResolveError::Unsupported("expected pointer")),
+            _ => Err(ResolveError::Internal("expected pointer")),
         }
     }
 
@@ -1072,13 +1072,13 @@ impl Lowerer {
             pointee, access, ..
         } = &pointer.ty
         else {
-            return Err(ResolveError::Unsupported("expected pointer"));
+            return Err(ResolveError::Internal("expected pointer"));
         };
         let c = self
             .types
             .ctypes
             .pointee(pointer.c)
-            .ok_or(ResolveError::Unsupported("expected C pointer"))?;
+            .ok_or(ResolveError::Internal("expected C pointer"))?;
         Ok(Lvalue {
             c,
             place: Place {
@@ -1153,7 +1153,7 @@ impl Lowerer {
                     },
                 )
             }
-            _ => return Err(ResolveError::Unsupported("non-scalar condition")),
+            _ => return Err(ResolveError::Rejected("non-scalar condition")),
         };
         if let ValueKind::Compare { reason: why, .. } = &mut result.node.value {
             *why = reason;
@@ -1189,13 +1189,13 @@ impl Lowerer {
     pub(super) fn addressable(&self, place: &Place) -> Result<(), ResolveError> {
         match &place.kind {
             PlaceKind::Binding(id) if self.types.entities.is_register(id) => Err(
-                ResolveError::Invalid("address of register variable requested"),
+                ResolveError::Rejected("address of register variable requested"),
             ),
             PlaceKind::Field { bits: Some(_), .. } => {
-                Err(ResolveError::Invalid("address of a bit-field"))
+                Err(ResolveError::Rejected("address of a bit-field"))
             }
-            PlaceKind::Lane { .. } => Err(ResolveError::Invalid("address of a vector element")),
-            _ if temporary_rooted(place) => Err(ResolveError::Invalid("address of a temporary")),
+            PlaceKind::Lane { .. } => Err(ResolveError::Rejected("address of a vector element")),
+            _ if temporary_rooted(place) => Err(ResolveError::Rejected("address of a temporary")),
             _ => Ok(()),
         }
     }
@@ -1222,7 +1222,7 @@ impl Lowerer {
                 } else {
                     self.function_name.clone()
                 }
-                .ok_or(ResolveError::Invalid("predefined name outside a function"))?;
+                .ok_or(ResolveError::Rejected("predefined name outside a function"))?;
                 self.string_global(e, &text)
             }
             ExprKind::Identifier(_) => {
@@ -1231,7 +1231,7 @@ impl Lowerer {
                     .types
                     .entities
                     .ty(&id)
-                    .ok_or(ResolveError::Unsupported("untyped binding"))?;
+                    .ok_or(ResolveError::Internal("untyped binding"))?;
                 Ok(Lvalue {
                     c: ty,
                     place: Place {
@@ -1288,7 +1288,7 @@ impl Lowerer {
             } => {
                 let base = self.place(operand)?;
                 let Type::Complex(component) = base.ty else {
-                    return Err(ResolveError::Unsupported(
+                    return Err(ResolveError::Unimplemented(
                         "complex component of non-complex place",
                     ));
                 };
@@ -1317,19 +1317,19 @@ impl Lowerer {
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
                 Projection::Place(place) => Ok(place),
-                Projection::Value(_) => Err(ResolveError::Invalid(
+                Projection::Value(_) => Err(ResolveError::Rejected(
                     "vector element of a value is not a place",
                 )),
             },
             ExprKind::Member { base, field, arrow } => {
                 match self.member(e, base, &field.value, *arrow)? {
                     Projection::Place(place) => Ok(place),
-                    Projection::Value(_) => Err(ResolveError::Invalid(
+                    Projection::Value(_) => Err(ResolveError::Rejected(
                         "vector components of a value are not a place",
                     )),
                 }
             }
-            _ => Err(ResolveError::Unsupported(
+            _ => Err(ResolveError::Rejected(
                 "expression is not a supported place",
             )),
         }
@@ -1368,13 +1368,13 @@ impl Lowerer {
     fn vector_parts(&mut self, vector: QualType) -> Result<(QualType, u32), ResolveError> {
         match self.types.ctypes.canonical_kind(vector) {
             CTypeKind::Vector { element, lanes, .. } => Ok((*element, *lanes)),
-            _ => Err(ResolveError::Invalid("expected a vector operand")),
+            _ => Err(ResolveError::Rejected("expected a vector operand")),
         }
     }
 
     fn shuffle_builtin(&mut self, e: &Expr, arguments: &[Expr]) -> Result<Operand, ResolveError> {
         let Some((left, rest)) = arguments.split_first() else {
-            return Err(ResolveError::Invalid("shuffle builtin arity"));
+            return Err(ResolveError::Rejected("shuffle builtin arity"));
         };
         let left = self.expr(left)?;
         let CTypeKind::Vector {
@@ -1383,10 +1383,10 @@ impl Lowerer {
             bytes,
         } = *self.types.ctypes.canonical_kind(left.c)
         else {
-            return Err(ResolveError::Invalid("shuffle builtin operand type"));
+            return Err(ResolveError::Rejected("shuffle builtin operand type"));
         };
         let Some((right, indices)) = rest.split_first() else {
-            return Err(ResolveError::Invalid("shuffle builtin arity"));
+            return Err(ResolveError::Rejected("shuffle builtin arity"));
         };
         let right = self.expr(right)?;
         if indices.is_empty() {
@@ -1396,10 +1396,10 @@ impl Lowerer {
                 ..
             } = *self.types.ctypes.canonical_kind(right.c)
             else {
-                return Err(ResolveError::Invalid("shuffle builtin mask type"));
+                return Err(ResolveError::Rejected("shuffle builtin mask type"));
             };
             if !self.types.ctypes.is_integer(mask_element) || mask_lanes != lanes {
-                return Err(ResolveError::Invalid("shuffle builtin mask type"));
+                return Err(ResolveError::Rejected("shuffle builtin mask type"));
             }
             return Ok(self.operand(
                 e,
@@ -1412,19 +1412,19 @@ impl Lowerer {
             ));
         }
         if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
-            return Err(ResolveError::Invalid("shuffle builtin operand types"));
+            return Err(ResolveError::Rejected("shuffle builtin operand types"));
         }
         let mut mask = Vec::with_capacity(indices.len());
         for index in indices {
             let index = self.types.constant_integer(index)?;
             let lane = u32::try_from(&index).ok();
             if index != BigInt::from(-1) && !lane.is_some_and(|lane| lane < lanes * 2) {
-                return Err(ResolveError::Invalid("shuffle builtin lane index"));
+                return Err(ResolveError::Rejected("shuffle builtin lane index"));
             }
             mask.push(lane);
         }
         let width = u32::try_from(mask.len())
-            .map_err(|_| ResolveError::Invalid("shuffle builtin lane count"))?;
+            .map_err(|_| ResolveError::Rejected("shuffle builtin lane count"))?;
         let c = self.types.ctypes.qual(CTypeKind::Vector {
             element,
             lanes: width,
@@ -1496,7 +1496,7 @@ impl Lowerer {
             return self
                 .project(object, field)?
                 .map(Projection::Place)
-                .ok_or(ResolveError::Unsupported("unknown member"));
+                .ok_or(ResolveError::Rejected("unknown member"));
         }
         let (c, mask) = self.swizzle(object.c, field)?;
         let lanes: Option<Vec<u32>> = mask.iter().copied().collect();
@@ -1553,12 +1553,12 @@ impl Lowerer {
             bytes,
         } = *self.types.ctypes.canonical_kind(vector)
         else {
-            return Err(ResolveError::Unsupported("expected vector"));
+            return Err(ResolveError::Internal("expected vector"));
         };
         let mask = swizzle_lanes(field, lanes)
-            .ok_or(ResolveError::Invalid("illegal vector component name"))?;
+            .ok_or(ResolveError::Rejected("illegal vector component name"))?;
         let width = u32::try_from(mask.len())
-            .map_err(|_| ResolveError::Invalid("illegal vector component name"))?;
+            .map_err(|_| ResolveError::Rejected("illegal vector component name"))?;
         let c = if width == 1 {
             element
         } else {
@@ -1593,11 +1593,11 @@ impl Lowerer {
         index: &Operand,
     ) -> Result<QualType, ResolveError> {
         if !self.types.ctypes.is_integer(index.c) {
-            return Err(ResolveError::Invalid("vector index is not an integer"));
+            return Err(ResolveError::Rejected("vector index is not an integer"));
         }
         match self.types.ctypes.canonical_kind(vector) {
             CTypeKind::Vector { element, .. } => Ok(*element),
-            _ => Err(ResolveError::Unsupported("expected vector")),
+            _ => Err(ResolveError::Internal("expected vector")),
         }
     }
 
@@ -1626,24 +1626,24 @@ impl Lowerer {
         let bits = match field.bit_width {
             Some(width) if width != 0 => {
                 let layout =
-                    layout.ok_or(ResolveError::Unsupported("bit-field in unlaid-out record"))?;
+                    layout.ok_or(ResolveError::Internal("bit-field in unlaid-out record"))?;
                 let unit = layout
                     .field_units
                     .get(index)
                     .copied()
                     .flatten()
-                    .ok_or(ResolveError::Unsupported("bit-field without storage unit"))?;
+                    .ok_or(ResolveError::Internal("bit-field without storage unit"))?;
                 let position = layout
                     .bit_offsets
                     .get(index)
                     .copied()
                     .flatten()
-                    .ok_or(ResolveError::Unsupported("bit-field without bit offset"))?;
+                    .ok_or(ResolveError::Internal("bit-field without bit offset"))?;
                 let unit = layout
                     .bit_units
                     .get(unit)
                     .map(|storage| (unit, storage))
-                    .ok_or(ResolveError::Unsupported("bit-field without storage unit"))?;
+                    .ok_or(ResolveError::Internal("bit-field without storage unit"))?;
                 Some(BitFieldAccess {
                     unit: unit.0,
                     unit_offset: unit.1.offset,
@@ -1652,11 +1652,11 @@ impl Lowerer {
                     width,
                 })
             }
-            Some(_) => return Err(ResolveError::Unsupported("zero-width bit-field access")),
+            Some(_) => return Err(ResolveError::Internal("zero-width bit-field access")),
             None => None,
         };
         let CTypeKind::Record { id, .. } = self.types.ctypes.canonical_kind(base.c) else {
-            return Err(ResolveError::Unsupported("field of non-record C type"));
+            return Err(ResolveError::Internal("field of non-record C type"));
         };
         let c = self
             .types
@@ -1664,7 +1664,7 @@ impl Lowerer {
             .get(id)
             .and_then(|fields| fields.get(index))
             .copied()
-            .ok_or(ResolveError::Unsupported("missing field C type"))?
+            .ok_or(ResolveError::Internal("missing field C type"))?
             .with(self.types.ctypes.quals(base.c));
         Ok(Lvalue {
             c,
@@ -1682,9 +1682,7 @@ impl Lowerer {
 
     fn project(&self, base: Lvalue, name: &str) -> Result<Option<Lvalue>, ResolveError> {
         let Some((fields, layout)) = self.record_body(&base.ty) else {
-            return Err(ResolveError::Unsupported(
-                "member of incomplete or non-record",
-            ));
+            return Err(ResolveError::Rejected("member of incomplete or non-record"));
         };
         if let Some((index, field)) = fields
             .iter()
@@ -1745,9 +1743,9 @@ impl Lowerer {
             .types
             .ctypes
             .pointee(value.c)
-            .ok_or(ResolveError::Unsupported("non-function callee"))?;
+            .ok_or(ResolveError::Rejected("non-function callee"))?;
         if !self.types.ctypes.is_function(signature) {
-            return Err(ResolveError::Unsupported("non-function callee"));
+            return Err(ResolveError::Rejected("non-function callee"));
         }
         if let ValueKind::FunctionDecay {
             place:
@@ -1813,9 +1811,7 @@ impl Lowerer {
                 let a = self.types.ctypes.canonical(element).local_unqualified();
                 let b = self.types.ctypes.canonical(other).local_unqualified();
                 if !self.types.ctypes.compatible(a, b) {
-                    return Err(ResolveError::Unsupported(
-                        "incompatible pointer subtraction",
-                    ));
+                    return Err(ResolveError::Rejected("incompatible pointer subtraction"));
                 }
                 let element = self.types.ir_type(element);
                 self.types.require_pointer_element(&element)?;
@@ -1852,7 +1848,7 @@ impl Lowerer {
         self.types.require_pointer_element(&element)?;
         let amount = self.promote(amount)?;
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
-            return Err(ResolveError::Unsupported("noninteger pointer offset"));
+            return Err(ResolveError::Rejected("noninteger pointer offset"));
         }
         Ok(self.operand(
             e,
@@ -1882,7 +1878,7 @@ impl Lowerer {
         let place = self.place(target)?;
         self.types.require_modifiable_lvalue(place.c)?;
         if temporary_rooted(&place.place) {
-            return Err(ResolveError::Invalid("expression is not assignable"));
+            return Err(ResolveError::Rejected("expression is not assignable"));
         }
         let c = self.types.ctypes.unqualified(place.c);
         let old = self.operand(target, c, ValueKind::OldValue);
@@ -1932,7 +1928,7 @@ impl Lowerer {
                         ..
                     },
                 ..
-            }) => Err(ResolveError::Invalid(
+            }) => Err(ResolveError::Rejected(
                 "application of sizeof or alignof to a bit-field",
             )),
             Ok(lvalue) => {
@@ -2018,7 +2014,7 @@ impl Lowerer {
             return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size.into()))));
         };
         let VariableExtent::Captured(extent) = *extent else {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "size of an unspecified variable length array",
             ));
         };
@@ -2074,14 +2070,14 @@ impl Lowerer {
                     .bindings
                     .iter()
                     .find(|b| b.value.id == binding)
-                    .ok_or(ResolveError::Unsupported("missing enumerator binding"))?
+                    .ok_or(ResolveError::Internal("missing enumerator binding"))?
                     .id;
                 let value = self
                     .types
                     .enumerators
                     .get(&node)
                     .cloned()
-                    .ok_or(ResolveError::Unsupported("unresolved enumerator constant"))?;
+                    .ok_or(ResolveError::Internal("unresolved enumerator constant"))?;
                 Ok(self.operand(e, value.c, value.value.node.value))
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
@@ -2113,7 +2109,7 @@ impl Lowerer {
                     .iter()
                     .find(|r| r.id == label.id)
                     .map(|r| r.binding)
-                    .ok_or(ResolveError::Unsupported("missing label address binding"))?;
+                    .ok_or(ResolveError::Internal("missing label address binding"))?;
                 let void = self.types.ctypes.qual(CTypeKind::Void);
                 let ty = self.types.ctypes.pointer(void);
                 Ok(self.operand(e, ty, ValueKind::LabelAddress(id)))
@@ -2283,7 +2279,7 @@ impl Lowerer {
                             value.ty,
                             Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
                         ) {
-                            return Err(ResolveError::Unsupported("non-numeric unary plus"));
+                            return Err(ResolveError::Rejected("non-numeric unary plus"));
                         }
                         self.promote(value)
                     }
@@ -2301,7 +2297,7 @@ impl Lowerer {
                     UnaryOp::Minus | UnaryOp::BitNot => {
                         self.types.unary_operand(&self.context, e, *op, value)
                     }
-                    _ => Err(ResolveError::Unsupported("advanced unary operator")),
+                    _ => Err(ResolveError::Internal("advanced unary operator")),
                 }
             }
             ExprKind::Binary { op, left, right } => {
@@ -2398,7 +2394,7 @@ impl Lowerer {
                     let place = self.place(target)?;
                     self.types.require_modifiable_lvalue(place.c)?;
                     if temporary_rooted(&place.place) {
-                        return Err(ResolveError::Invalid("expression is not assignable"));
+                        return Err(ResolveError::Rejected("expression is not assignable"));
                     }
                     let value =
                         self.convert_expr(value_expr, value, place.c, ConversionReason::Assign)?;
@@ -2487,7 +2483,7 @@ impl Lowerer {
                         self.types
                             .ctypes
                             .merge_pointer(left.c, right.c, rules)
-                            .ok_or(ResolveError::Invalid(
+                            .ok_or(ResolveError::Rejected(
                                 "conditional operands are pointers to incompatible types",
                             ))?
                     };
@@ -2503,7 +2499,7 @@ impl Lowerer {
                         self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
                 }
                 if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "conditional operands have incompatible types",
                     ));
                 }
@@ -2542,14 +2538,14 @@ impl Lowerer {
                 arguments,
             } if super::atomic::atomic_builtin(builtin).is_some() => {
                 let atomic = super::atomic::atomic_builtin(builtin)
-                    .ok_or(ResolveError::Unsupported("atomic builtin"))?;
+                    .ok_or(ResolveError::Internal("atomic builtin"))?;
                 self.atomic_builtin(e, builtin, atomic, arguments)
             }
             ExprKind::Call { callee, arguments }
                 if constant_p_operand(callee, arguments).is_some() =>
             {
                 let operand = constant_p_operand(callee, arguments)
-                    .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
+                    .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
                 let constant = super::types::is_folded(&self.expr(operand)?.value);
                 let c = self.types.ctypes.int();
                 let value = self.operand(
@@ -2567,7 +2563,7 @@ impl Lowerer {
                 if arguments.is_empty() && source_location_builtin(callee).is_some() =>
             {
                 let builtin = source_location_builtin(callee)
-                    .ok_or(ResolveError::Unsupported("source location builtin"))?;
+                    .ok_or(ResolveError::Internal("source location builtin"))?;
                 self.source_location(e, callee, builtin)
             }
             ExprKind::Call { callee, arguments }
@@ -2577,7 +2573,7 @@ impl Lowerer {
                 self.expr(chosen)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
-                let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;
+                let builtin = va_builtin(callee).ok_or(ResolveError::Internal("va builtin"))?;
                 self.va_builtin(e, builtin, arguments)
             }
             ExprKind::Call { callee, arguments } => {
@@ -2697,15 +2693,15 @@ impl Lowerer {
                 let ty = self
                     .types
                     .layout(resolved)
-                    .ok_or(ResolveError::Invalid("bit cast to void"))?;
+                    .ok_or(ResolveError::Rejected("bit cast to void"))?;
                 if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
-                    return Err(ResolveError::Invalid("bit cast to an array type"));
+                    return Err(ResolveError::Rejected("bit cast to an array type"));
                 }
                 let value = self.expr(value)?;
                 if self.types.storage(ty.clone())?.size_bytes
                     != self.types.storage(value.ty.clone())?.size_bytes
                 {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "bit cast between types of different sizes",
                     ));
                 }
@@ -2722,7 +2718,7 @@ impl Lowerer {
             }
             ExprKind::StatementExpression(body) => {
                 if !self.in_function {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "statement expression outside a function",
                     ));
                 }
@@ -2774,7 +2770,7 @@ impl Lowerer {
                 let (element, lanes) = self.vector_parts(value.c)?;
                 let (target, target_lanes) = self.vector_parts(resolved)?;
                 if lanes != target_lanes {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "convertvector operands differ in lane count",
                     ));
                 }
@@ -2795,7 +2791,7 @@ impl Lowerer {
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
                 if !self.types.is_va_list(&list.ty) {
-                    return Err(ResolveError::Unsupported("va_arg of non-va_list"));
+                    return Err(ResolveError::Rejected("va_arg of non-va_list"));
                 }
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
@@ -2825,8 +2821,8 @@ fn labeled_result(statement: &crate::ast::Stmt) -> Option<(crate::ast::Stmt, &Ex
 
 fn sizeof_error(error: ResolveError) -> ResolveError {
     match error {
-        ResolveError::Unsupported("incomplete field type") => {
-            ResolveError::Unsupported("sizeof of incomplete type")
+        ResolveError::Rejected("incomplete field type") => {
+            ResolveError::Rejected("sizeof of incomplete type")
         }
         error => error,
     }
@@ -2929,7 +2925,7 @@ impl Lowerer {
     fn va_list_place(&mut self, argument: &Expr) -> Result<Place, ResolveError> {
         let place = self.place(argument)?;
         if !self.types.is_va_list(&place.ty) {
-            return Err(ResolveError::Unsupported("va builtin on non-va_list"));
+            return Err(ResolveError::Rejected("va builtin on non-va_list"));
         }
         Ok(place.place)
     }
@@ -2951,7 +2947,7 @@ impl Lowerer {
                 destination: self.va_list_place(destination)?,
                 source: self.va_list_place(source)?,
             },
-            _ => return Err(ResolveError::Unsupported("va builtin argument count")),
+            _ => return Err(ResolveError::Rejected("va builtin argument count")),
         };
         let c = self.types.ctypes.qual(CTypeKind::Void);
         Ok(self.operand(e, c, kind))
@@ -2984,7 +2980,7 @@ fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
         AssignOp::BitXorAssign => BinaryOp::BitXor,
         AssignOp::ShiftLeftAssign => BinaryOp::ShiftLeft,
         AssignOp::ShiftRightAssign => BinaryOp::ShiftRight,
-        AssignOp::Assign => return Err(ResolveError::Unsupported("non-compound assignment")),
+        AssignOp::Assign => return Err(ResolveError::Internal("non-compound assignment")),
     })
 }
 

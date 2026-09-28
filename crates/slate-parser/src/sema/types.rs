@@ -110,7 +110,7 @@ impl TypeResolver {
     }
 
     pub fn object_type(&self, q: QualType, reason: &'static str) -> Result<Type, ResolveError> {
-        self.layout(q).ok_or(ResolveError::Unsupported(reason))
+        self.layout(q).ok_or(ResolveError::Rejected(reason))
     }
 
     pub fn render(&self, q: QualType) -> CTypeMetadata {
@@ -163,8 +163,8 @@ impl TypeResolver {
     ) -> Result<(), ResolveError> {
         for attribute in attributes {
             match super::attributes::declaration_use(&attribute.value, subject) {
-                Use::Unsupported(reason) => return Err(ResolveError::Unsupported(reason)),
-                Use::Invalid(reason) => return Err(ResolveError::Invalid(reason)),
+                Use::Unimplemented(reason) => return Err(ResolveError::Unimplemented(reason)),
+                Use::Rejected(reason) => return Err(ResolveError::Rejected(reason)),
                 Use::Inapplicable {
                     spelling,
                     applies_to,
@@ -226,7 +226,7 @@ impl TypeResolver {
         let value = self.constant_integer(expression)?;
         match u64::try_from(value) {
             Ok(count) if count != 0 => Ok(count),
-            _ => Err(ResolveError::Invalid(invalid)),
+            _ => Err(ResolveError::Rejected(invalid)),
         }
     }
 
@@ -236,18 +236,18 @@ impl TypeResolver {
             .and_then(|name| name.strip_suffix("__"))
             .unwrap_or(mode);
         let mismatch =
-            ResolveError::Invalid("type of machine mode does not match type of base type");
+            ResolveError::Rejected("type of machine mode does not match type of base type");
         let kind = match self.ctypes.canonical_kind(base).clone() {
             CTypeKind::Vector { element, bytes, .. } => {
                 let element = self.machine_mode(element, mode)?;
                 let element_bytes = self.storage(self.ir_type(element))?.size_bytes;
                 if bytes % element_bytes != 0 {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "vector size is not a multiple of the machine mode size",
                     ));
                 }
                 let lanes = u32::try_from(bytes / element_bytes)
-                    .map_err(|_| ResolveError::Invalid("vector lane count is too large"))?;
+                    .map_err(|_| ResolveError::Rejected("vector lane count is too large"))?;
                 CTypeKind::Vector {
                     element,
                     lanes,
@@ -263,12 +263,12 @@ impl TypeResolver {
                     "TF" if long_double == LongDoubleFormat::Binary128 => FloatKind::LongDouble,
                     "TF" if self.dialect.target().has_float128() => FloatKind::Float128,
                     "XF" | "TF" => {
-                        return Err(ResolveError::Invalid("unsupported machine mode"));
+                        return Err(ResolveError::Rejected("unsupported machine mode"));
                     }
                     "QI" | "HI" | "SI" | "DI" | "TI" | "byte" | "word" | "pointer" => {
                         return Err(mismatch);
                     }
-                    _ => return Err(ResolveError::Unsupported("machine mode")),
+                    _ => return Err(ResolveError::Rejected("machine mode")),
                 })
             }
             kind => {
@@ -278,17 +278,17 @@ impl TypeResolver {
                     CTypeKind::Char => self.dialect.target().char_signed,
                     CTypeKind::Int { signed, .. } => signed,
                     CTypeKind::Complex(_) => {
-                        return Err(ResolveError::Unsupported("complex machine mode"));
+                        return Err(ResolveError::Unimplemented("complex machine mode"));
                     }
                     CTypeKind::Enum(_) => {
                         let underlying = self
                             .ctypes
                             .enum_underlying(base)
-                            .ok_or(ResolveError::Invalid("incomplete enum type"))?;
+                            .ok_or(ResolveError::Rejected("incomplete enum type"))?;
                         return self.machine_mode(underlying.with(base.quals), mode);
                     }
                     _ => {
-                        return Err(ResolveError::Invalid(
+                        return Err(ResolveError::Rejected(
                             "mode attribute only supported for integer and floating-point types",
                         ));
                     }
@@ -301,7 +301,7 @@ impl TypeResolver {
                     "TI" => 128,
                     "word" | "pointer" => self.dialect.target().pointer_width,
                     "SF" | "DF" | "XF" | "TF" => return Err(mismatch),
-                    _ => return Err(ResolveError::Unsupported("machine mode")),
+                    _ => return Err(ResolveError::Rejected("machine mode")),
                 };
                 self.integer_of_width(width, signed)?
             }
@@ -329,7 +329,7 @@ impl TypeResolver {
         } else if width == 128 {
             IntRank::Int128
         } else {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "no integer type of the machine mode's width",
             ));
         };
@@ -341,9 +341,9 @@ impl TypeResolver {
         e: &crate::ast::Expr,
     ) -> Result<BigInt, ResolveError> {
         let value = self.constant_value(e)?;
-        super::fold::integer_constant(&value, self.dialect.flavor()).ok_or(
-            ResolveError::Unsupported("nonconstant or undefined integer expression"),
-        )
+        super::fold::integer_constant(&value, self.dialect.flavor()).ok_or(ResolveError::Rejected(
+            "nonconstant or undefined integer expression",
+        ))
     }
 
     pub(super) fn push_scope(&mut self) {
@@ -412,9 +412,7 @@ impl TypeResolver {
             ExprKind::Identifier(name) => {
                 return match self.lookup(name) {
                     Some(Ordinary::Constant(value)) => Ok(value.clone()),
-                    _ => Err(ResolveError::Unsupported(
-                        "nonconstant or unknown identifier",
-                    )),
+                    _ => Err(ResolveError::Rejected("nonconstant or unknown identifier")),
                 };
             }
             ExprKind::CharLiteral(literal) => {
@@ -436,10 +434,10 @@ impl TypeResolver {
                 let layout = self
                     .qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
                     .map_err(|error| match error {
-                        ResolveError::Unsupported("incomplete field type")
+                        ResolveError::Rejected("incomplete field type")
                             if matches!(e.value, ExprKind::SizeOfExpr(_)) =>
                         {
-                            ResolveError::Unsupported("sizeof of incomplete type")
+                            ResolveError::Rejected("sizeof of incomplete type")
                         }
                         error => error,
                     })?;
@@ -486,7 +484,7 @@ impl TypeResolver {
             {
                 let (condition, when_true, when_false) =
                     super::expression::choose_expr_operands(callee, arguments)
-                        .ok_or(ResolveError::Unsupported("__builtin_choose_expr"))?;
+                        .ok_or(ResolveError::Internal("__builtin_choose_expr"))?;
                 let taken = self.constant_integer(condition)?;
                 let chosen = if taken.sign() == num_bigint::Sign::NoSign {
                     when_false
@@ -499,7 +497,7 @@ impl TypeResolver {
                 if super::expression::constant_p_operand(callee, arguments).is_some() =>
             {
                 let operand = super::expression::constant_p_operand(callee, arguments)
-                    .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
+                    .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
                 (
                     self.ctypes.int(),
                     ValueKind::Constant(Number::SignedInteger(
@@ -514,8 +512,8 @@ impl TypeResolver {
                 let layout = self
                     .sizeof_storage(ty, atomic)
                     .map_err(|error| match error {
-                        ResolveError::Unsupported("incomplete field type") => {
-                            ResolveError::Unsupported("sizeof of incomplete type")
+                        ResolveError::Rejected("incomplete field type") => {
+                            ResolveError::Rejected("sizeof of incomplete type")
                         }
                         error => error,
                     })?;
@@ -566,7 +564,7 @@ impl TypeResolver {
                         }
                         (operand.c, ValueKind::Constant(Number::Integer(0u8.into())))
                     }
-                    _ => return Err(ResolveError::Unsupported("nonconstant unary expression")),
+                    _ => return Err(ResolveError::Rejected("nonconstant unary expression")),
                 }
             }
             ExprKind::Comma { left, right } => {
@@ -688,7 +686,7 @@ impl TypeResolver {
                     let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
                     if self.ctypes.compatible(ty, controlling) {
                         if selected.is_some() {
-                            return Err(ResolveError::Invalid("ambiguous generic selection"));
+                            return Err(ResolveError::Rejected("ambiguous generic selection"));
                         }
                         selected = Some(value);
                     }
@@ -697,7 +695,7 @@ impl TypeResolver {
         }
         selected
             .or(fallback)
-            .ok_or(ResolveError::Unsupported("unselected generic association"))
+            .ok_or(ResolveError::Rejected("unselected generic association"))
     }
 
     pub(super) fn assertion_operand_type(
@@ -718,15 +716,15 @@ impl TypeResolver {
                 ExprKind::Identifier(name) if builtin_result_type(name).is_some() => {
                     Ok(self.ctypes.qual(CTypeKind::Bool))
                 }
-                _ => Err(ResolveError::Unsupported("nonconstant call expression")),
+                _ => Err(ResolveError::Unimplemented("nonconstant call expression")),
             },
             ExprKind::Identifier(_) if self.object(e).is_some() => self
                 .object(e)
-                .ok_or(ResolveError::Unsupported("untyped binding")),
+                .ok_or(ResolveError::Internal("untyped binding")),
             ExprKind::Identifier(name) => match self.lookup(name) {
                 Some(Ordinary::Object { ty, .. }) => Ok(*ty),
                 Some(Ordinary::Constant(value)) => Ok(value.c),
-                _ => Err(ResolveError::Unsupported(
+                _ => Err(ResolveError::Unimplemented(
                     "unknown or unsupported sizeof operand type",
                 )),
             },
@@ -755,9 +753,7 @@ impl TypeResolver {
                 let pointer = self.assertion_operand_type(operand)?;
                 self.ctypes
                     .pointee(pointer)
-                    .ok_or(ResolveError::Unsupported(
-                        "sizeof dereference of nonpointer",
-                    ))
+                    .ok_or(ResolveError::Rejected("sizeof dereference of nonpointer"))
             }
             ExprKind::Index { base, .. } => {
                 let base = self.assertion_operand_type(base)?;
@@ -765,7 +761,7 @@ impl TypeResolver {
                     .element(base)
                     .map(|(element, _)| element)
                     .or_else(|| self.ctypes.pointee(base))
-                    .ok_or(ResolveError::Unsupported("sizeof index of nonarray"))
+                    .ok_or(ResolveError::Rejected("sizeof index of nonarray"))
             }
             ExprKind::Comma { right, .. } => {
                 let right = self.assertion_operand_type(right)?;
@@ -783,12 +779,12 @@ impl TypeResolver {
                 let base = if *arrow {
                     self.ctypes
                         .pointee(base)
-                        .ok_or(ResolveError::Unsupported("sizeof member of nonpointer"))?
+                        .ok_or(ResolveError::Rejected("sizeof member of nonpointer"))?
                 } else {
                     base
                 };
                 self.field_of(base, &field.value)
-                    .ok_or(ResolveError::Unsupported("sizeof of unknown member"))
+                    .ok_or(ResolveError::Rejected("sizeof of unknown member"))
             }
             ExprKind::Conditional {
                 condition,
@@ -856,7 +852,7 @@ impl TypeResolver {
             && self.ctypes.function_convention(previous)
                 != self.ctypes.function_convention(declared)
         {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "function redeclared with a different calling convention",
             ));
         }
@@ -877,27 +873,29 @@ impl TypeResolver {
                     "function redeclared with a different integer return type of the same size",
                 );
             }
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "conflicting types for function redeclaration",
             ));
         }
         if same_layout(&self.ir_type(previous), &self.ir_type(declared)) {
             return Ok("redeclaration with a different integer type of the same size");
         }
-        Err(ResolveError::Invalid("conflicting types for redeclaration"))
+        Err(ResolveError::Rejected(
+            "conflicting types for redeclaration",
+        ))
     }
 
     pub(super) fn require_modifiable_lvalue(&self, q: QualType) -> Result<(), ResolveError> {
         if self.ctypes.is_array(q) {
-            return Err(ResolveError::Invalid("cannot assign to an array type"));
+            return Err(ResolveError::Rejected("cannot assign to an array type"));
         }
         if self.ctypes.quals(q).is_const {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "cannot assign to a const-qualified lvalue",
             ));
         }
         if self.has_const_member(q, &mut Vec::new()) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "cannot assign to a variable with a const-qualified member",
             ));
         }
@@ -1018,7 +1016,7 @@ impl TypeResolver {
             ..
         } = &self.definitions[id.0 as usize].kind
         else {
-            return Err(ResolveError::Invalid("cast to incomplete union type"));
+            return Err(ResolveError::Rejected("cast to incomplete union type"));
         };
         let from = self.ctypes.unqualified_view(from);
         fields
@@ -1028,7 +1026,7 @@ impl TypeResolver {
                 field.name.is_some() && self.ctypes.unqualified_view(*member) == from
             })
             .map(Some)
-            .ok_or(ResolveError::Invalid(
+            .ok_or(ResolveError::Rejected(
                 "cast to union type from type not present in union",
             ))
     }
@@ -1052,24 +1050,24 @@ impl TypeResolver {
                     ty,
                     offset
                         .checked_add(field_offset)
-                        .ok_or(ResolveError::Unsupported("offsetof overflow"))?,
+                        .ok_or(ResolveError::Rejected("offsetof overflow"))?,
                 ))
             }
             ExprKind::Index { base, index } => {
                 let (ty, offset) = self.offsetof_member(root, base)?;
                 let Type::Array { element, .. } = ty else {
-                    return Err(ResolveError::Unsupported("offsetof index of non-array"));
+                    return Err(ResolveError::Rejected("offsetof index of non-array"));
                 };
                 let index = u64::try_from(self.constant_integer(index)?)
-                    .map_err(|_| ResolveError::Unsupported("invalid offsetof index"))?;
+                    .map_err(|_| ResolveError::Unimplemented("invalid offsetof index"))?;
                 let size = self.storage((*element).clone())?.size_bytes;
                 let offset = size
                     .checked_mul(index)
                     .and_then(|n| offset.checked_add(n))
-                    .ok_or(ResolveError::Unsupported("offsetof overflow"))?;
+                    .ok_or(ResolveError::Rejected("offsetof overflow"))?;
                 Ok((*element, offset))
             }
-            _ => Err(ResolveError::Unsupported("offsetof member path")),
+            _ => Err(ResolveError::Rejected("offsetof member path")),
         }
     }
 
@@ -1093,7 +1091,7 @@ impl TypeResolver {
 
     pub(super) fn offsetof_field(&self, ty: Type, name: &str) -> Result<(Type, u64), ResolveError> {
         let Type::Defined(id) = ty else {
-            return Err(ResolveError::Unsupported("offsetof field of non-record"));
+            return Err(ResolveError::Rejected("offsetof field of non-record"));
         };
         let Some(TypeDefinition {
             kind:
@@ -1105,22 +1103,20 @@ impl TypeResolver {
             ..
         }) = self.definitions.get(id.0 as usize)
         else {
-            return Err(ResolveError::Unsupported(
-                "offsetof incomplete or non-record",
-            ));
+            return Err(ResolveError::Rejected("offsetof incomplete or non-record"));
         };
         let (index, field) = fields
             .iter()
             .enumerate()
             .find(|(_, f)| f.name.as_deref() == Some(name))
-            .ok_or(ResolveError::Unsupported("unknown offsetof member"))?;
+            .ok_or(ResolveError::Rejected("unknown offsetof member"))?;
         if field.bit_width.is_some() {
-            return Err(ResolveError::Unsupported("offsetof bit-field"));
+            return Err(ResolveError::Rejected("offsetof bit-field"));
         }
         let offset = *layout
             .offsets
             .get(index)
-            .ok_or(ResolveError::Unsupported("missing field offset"))?;
+            .ok_or(ResolveError::Internal("missing field offset"))?;
         Ok((field.ty.clone(), offset))
     }
 
@@ -1139,10 +1135,10 @@ impl TypeResolver {
             .filter_map(|id| self.flattened_field(id, name));
         match (hits.next(), hits.next()) {
             (Some(hit), None) => Ok(hit),
-            (None, _) => Err(ResolveError::Invalid(
+            (None, _) => Err(ResolveError::Rejected(
                 "illegal struct/union member in `__asm`",
             )),
-            (Some(_), Some(_)) => Err(ResolveError::Invalid("ambiguous member name in `__asm`")),
+            (Some(_), Some(_)) => Err(ResolveError::Rejected("ambiguous member name in `__asm`")),
         }
     }
 
@@ -1295,7 +1291,7 @@ impl TypeResolver {
     ) -> Result<QualType, ResolveError> {
         // the parser folds `mode` into the specifier, but clang applies it to the declared type
         if declarator.is_derived() && has_machine_mode(&specifiers.ty) {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "mode attribute only supported for integer and floating-point types",
             ));
         }
@@ -1326,7 +1322,7 @@ impl TypeResolver {
         let kind = match specifier {
             TypeSpecifier::Void => CTypeKind::Void,
             TypeSpecifier::Inferred => {
-                return self.inferred.take().ok_or(ResolveError::Invalid(
+                return self.inferred.take().ok_or(ResolveError::Rejected(
                     "'auto' type inference is not allowed here",
                 ));
             }
@@ -1357,7 +1353,7 @@ impl TypeResolver {
             }
             TypeSpecifier::Named(name) => {
                 let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
-                    return Err(ResolveError::Unsupported("unknown typedef"));
+                    return Err(ResolveError::Internal("unknown typedef"));
                 };
                 return Ok(*alias);
             }
@@ -1367,7 +1363,7 @@ impl TypeResolver {
                     .iter()
                     .find(|tag| tag.value.id == *id)
                     .cloned()
-                    .ok_or(ResolveError::Unsupported("unknown tag definition"))?;
+                    .ok_or(ResolveError::Internal("unknown tag definition"))?;
                 let id = self.define_tag(&tag.value)?;
                 tag_kind(tag.kind, id)
             }
@@ -1421,7 +1417,7 @@ impl TypeResolver {
                         | CTypeKind::BitInt { .. }
                         | CTypeKind::Float(_)
                 ) {
-                    return Err(ResolveError::Unsupported("complex component type"));
+                    return Err(ResolveError::Rejected("complex component type"));
                 }
                 CTypeKind::Complex(component)
             }
@@ -1430,7 +1426,7 @@ impl TypeResolver {
                 match self.ctypes.canonical_kind(component) {
                     CTypeKind::Float(kind) if !kind.is_decimal() => CTypeKind::Imaginary(*kind),
                     _ => {
-                        return Err(ResolveError::Invalid(
+                        return Err(ResolveError::Rejected(
                             "imaginary component must be a real floating type",
                         ));
                     }
@@ -1453,10 +1449,10 @@ impl TypeResolver {
             },
             TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
                 let width = u32::try_from(self.constant_integer(width)?)
-                    .map_err(|_| ResolveError::Unsupported("invalid _BitInt width"))?;
+                    .map_err(|_| ResolveError::Rejected("invalid _BitInt width"))?;
                 if width < if *signed { 2 } else { 1 } || width > super::validate::BIT_INT_MAX_WIDTH
                 {
-                    return Err(ResolveError::Unsupported("invalid _BitInt width"));
+                    return Err(ResolveError::Rejected("invalid _BitInt width"));
                 }
                 CTypeKind::BitInt {
                     width,
@@ -1489,7 +1485,7 @@ impl TypeResolver {
                 FloatingType::Decimal64 => FloatKind::Decimal64,
                 FloatingType::Decimal128 => FloatKind::Decimal128,
                 FloatingType::Float64x | FloatingType::Float128 | FloatingType::Float80 => {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "floating type is not supported on this target",
                     ));
                 }
@@ -1509,7 +1505,7 @@ impl TypeResolver {
                     _ => false,
                 };
                 if !valid {
-                    return Err(ResolveError::Invalid(
+                    return Err(ResolveError::Rejected(
                         "vector element must be an integer or real floating type",
                     ));
                 }
@@ -1519,7 +1515,7 @@ impl TypeResolver {
                         let bytes = self
                             .vector_count(expression, "vector_size must be a positive constant")?;
                         if bytes % element_bytes != 0 {
-                            return Err(ResolveError::Invalid(
+                            return Err(ResolveError::Rejected(
                                 "vector_size must be a multiple of the element size",
                             ));
                         }
@@ -1534,7 +1530,7 @@ impl TypeResolver {
                     }
                 };
                 let lanes = u32::try_from(lanes)
-                    .map_err(|_| ResolveError::Invalid("vector lane count is too large"))?;
+                    .map_err(|_| ResolveError::Rejected("vector lane count is too large"))?;
                 CTypeKind::Vector {
                     element: self.ctypes.canonical(element).local_unqualified(),
                     lanes,
@@ -1559,7 +1555,7 @@ impl TypeResolver {
                 return Ok(self.ctypes.va_list_type(self.dialect.target()));
             }
             TypeSpecifier::TargetBuiltin(_) => {
-                return Err(ResolveError::Unsupported("target builtin type"));
+                return Err(ResolveError::Unimplemented("target builtin type"));
             }
         };
         Ok(self.ctypes.qual(kind))
@@ -1612,7 +1608,7 @@ impl TypeResolver {
                             None => match self.constant_integer(expr) {
                                 Ok(length) => {
                                     Extent::Fixed(u64::try_from(length).map_err(|_| {
-                                        ResolveError::Unsupported("invalid array length")
+                                        ResolveError::Rejected("invalid array length")
                                     })?)
                                 }
                                 Err(_) if self.prototype_scope => Extent::Variable(None),
@@ -1625,14 +1621,14 @@ impl TypeResolver {
                 let (core, mut q) = self.apply_pointers(core, q)?;
                 for extent in extents {
                     if self.ctypes.is_void(q) {
-                        return Err(ResolveError::Unsupported("void array element"));
+                        return Err(ResolveError::Rejected("void array element"));
                     }
                     if self.ctypes.typedef_alignment(q).is_some()
                         && let Ok(natural) = self.storage(self.ir_type(q))
                     {
                         let storage = self.typedef_storage(q, natural)?;
                         if storage.size_bytes % u64::from(storage.alignment_bytes) != 0 {
-                            return Err(ResolveError::Invalid(
+                            return Err(ResolveError::Rejected(
                                 "array element size is not a multiple of its alignment",
                             ));
                         }
@@ -1648,7 +1644,7 @@ impl TypeResolver {
                         let resolved =
                             this.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
                         if this.ctypes.is_void(resolved) {
-                            return Err(ResolveError::Unsupported("void parameter"));
+                            return Err(ResolveError::Rejected("void parameter"));
                         }
                         params.push(match parameters {
                             ParameterList::IdentifierList { .. } => {
@@ -1775,7 +1771,7 @@ impl TypeResolver {
         }
         self.ctypes
             .pointer_in(q, space)
-            .ok_or(ResolveError::Invalid(
+            .ok_or(ResolveError::Rejected(
                 "__ptr32, __ptr64, __sptr and __uptr only apply to pointers",
             ))
     }
@@ -1795,12 +1791,12 @@ impl TypeResolver {
             return Ok(None);
         }
         if is_ptr32 && is_ptr64 {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "'__ptr32' and '__ptr64' attributes are not compatible",
             ));
         }
         if is_sptr && is_uptr {
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "'__sptr' and '__uptr' attributes are not compatible",
             ));
         }
@@ -1939,9 +1935,8 @@ impl TypeResolver {
                             .as_ref()
                             .map(|expr| {
                                 let value = self.constant_integer(expr)?;
-                                u32::try_from(value).map_err(|_| {
-                                    ResolveError::Unsupported("invalid bit-field width")
-                                })
+                                u32::try_from(value)
+                                    .map_err(|_| ResolveError::Rejected("invalid bit-field width"))
                             })
                             .transpose()?;
                         fields.push(declarator.derive(Field {
@@ -1990,7 +1985,7 @@ impl TypeResolver {
                     kind: match tag.kind {
                         TagKind::Struct => RecordKind::Struct,
                         TagKind::Union => RecordKind::Union,
-                        TagKind::Enum => return Err(ResolveError::Unsupported("enum record body")),
+                        TagKind::Enum => return Err(ResolveError::Internal("enum record body")),
                     },
                     fields: Some(fields),
                     layout: Some(layout),
@@ -2037,7 +2032,7 @@ impl TypeResolver {
                                 &operand.value,
                                 self.dialect.flavor(),
                             )
-                            .ok_or(ResolveError::Unsupported(
+                            .ok_or(ResolveError::Rejected(
                                 "nonconstant or undefined integer expression",
                             ))?;
                             let own = self.ctypes.integer_promotion(
@@ -2054,7 +2049,7 @@ impl TypeResolver {
                     let c = match fixed_member {
                         Some(member) => {
                             if !self.integer_fits(&value, member) {
-                                return Err(ResolveError::Invalid(
+                                return Err(ResolveError::Rejected(
                                     "enumerator value outside the range of the fixed underlying type",
                                 ));
                             }
@@ -2066,7 +2061,7 @@ impl TypeResolver {
                             .wider_integers(own)
                             .into_iter()
                             .find(|wider| self.integer_fits(&value, *wider))
-                            .ok_or(ResolveError::Unsupported(
+                            .ok_or(ResolveError::Rejected(
                                 "enumerator value overflows every integer type",
                             ))?,
                     };
@@ -2107,7 +2102,7 @@ impl TypeResolver {
                                 .iter()
                                 .all(|(_, _, value)| self.integer_fits(value, candidate))
                         })
-                        .ok_or(ResolveError::Unsupported(
+                        .ok_or(ResolveError::Rejected(
                             "enumerator values fit no underlying integer type",
                         ))?
                 };
@@ -2159,7 +2154,7 @@ impl TypeResolver {
                             layout.alignment_bytes =
                                 u32::try_from(u64::from(layout.alignment_bytes).max(alignment))
                                     .map_err(|_| {
-                                        ResolveError::Unsupported("enum alignment overflow")
+                                        ResolveError::Rejected("enum alignment overflow")
                                     })?;
                         }
                         layout
@@ -2179,7 +2174,7 @@ impl TypeResolver {
             {
                 return Ok(id);
             }
-            return Err(ResolveError::Invalid(
+            return Err(ResolveError::Rejected(
                 "redefinition of struct, union, or enum tag",
             ));
         }
@@ -2361,7 +2356,7 @@ impl TypeResolver {
         let alignment = self.declared_alignment(requested, u64::from(layout.alignment_bytes));
         Ok(StorageLayout {
             alignment_bytes: u32::try_from(alignment)
-                .map_err(|_| ResolveError::Unsupported("typedef alignment overflow"))?,
+                .map_err(|_| ResolveError::Rejected("typedef alignment overflow"))?,
             ..layout
         })
     }
@@ -2409,7 +2404,7 @@ impl TypeResolver {
                 } => Ok(promote(StorageLayout {
                     size_bytes: layout.size,
                     alignment_bytes: u32::try_from(layout.align)
-                        .map_err(|_| ResolveError::Unsupported("record alignment overflow"))?,
+                        .map_err(|_| ResolveError::Rejected("record alignment overflow"))?,
                 })),
                 TypeDefinitionKind::Enum {
                     layout: Some(layout),
@@ -2419,7 +2414,7 @@ impl TypeResolver {
                     underlying: Some(underlying),
                     ..
                 } => self.qualified_storage(underlying.clone(), atomic),
-                _ => Err(ResolveError::Unsupported("incomplete field type")),
+                _ => Err(ResolveError::Rejected("incomplete field type")),
             },
             Type::Pointer { space, .. } => {
                 Ok(promote(self.dialect.target().pointer_storage(space)))
@@ -2432,12 +2427,12 @@ impl TypeResolver {
                 Ok(StorageLayout {
                     size_bytes: align_up(element.size_bytes, u64::from(element.alignment_bytes))?
                         .checked_mul(length)
-                        .ok_or(ResolveError::Unsupported("array size overflow"))?,
+                        .ok_or(ResolveError::Rejected("array size overflow"))?,
                     alignment_bytes: element.alignment_bytes,
                 })
             }
             Type::Array { length: None, .. } | Type::Function { .. } => {
-                Err(ResolveError::Unsupported("incomplete field type"))
+                Err(ResolveError::Rejected("incomplete field type"))
             }
             _ => Ok(promote(self.dialect.target().storage_of(ty)?)),
         }
@@ -2460,7 +2455,7 @@ impl TypeResolver {
                 if size.is_power_of_two() {
                     Ok(Some(size))
                 } else {
-                    Err(ResolveError::Invalid(
+                    Err(ResolveError::Rejected(
                         "ms_struct layout of a fundamental type whose size is not a power of two",
                     ))
                 }
@@ -2553,7 +2548,7 @@ impl TypeResolver {
                             end_bits,
                             natural
                                 .checked_mul(8)
-                                .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+                                .ok_or(ResolveError::Rejected("field alignment overflow"))?,
                         )?
                     };
                     end_bits = end_bits.max(position);
@@ -2570,11 +2565,11 @@ impl TypeResolver {
                         end_bits,
                         align
                             .checked_mul(8)
-                            .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+                            .ok_or(ResolveError::Rejected("field alignment overflow"))?,
                     )?;
                     let last_bit = end_bits
                         .checked_add(u64::from(width) - 1)
-                        .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                        .ok_or(ResolveError::Rejected("record size overflow"))?;
                     if end_bits == 0 || end_bits / unit_bits != last_bit / unit_bits {
                         boundary
                     } else {
@@ -2583,7 +2578,7 @@ impl TypeResolver {
                 };
                 let used = position
                     .checked_add(u64::from(width))
-                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                    .ok_or(ResolveError::Rejected("record size overflow"))?;
                 end_bits = end_bits.max(if kind == TagKind::Union && !(packed || field_packed) {
                     unit_bits
                 } else {
@@ -2600,7 +2595,7 @@ impl TypeResolver {
                 let end = position
                     .checked_add(storage.size_bytes)
                     .and_then(|bytes| bytes.checked_mul(8))
-                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                    .ok_or(ResolveError::Rejected("record size overflow"))?;
                 end_bits = end_bits.max(end);
                 offsets.push(position);
                 bit_offsets.push(None);
@@ -2713,7 +2708,7 @@ impl TypeResolver {
                     size = size.max(
                         offset
                             .checked_add(storage.size_bytes)
-                            .ok_or(ResolveError::Unsupported("record size overflow"))?,
+                            .ok_or(ResolveError::Rejected("record size overflow"))?,
                     );
                     offsets.push(offset);
                     bit_offsets.push(None);
@@ -2757,7 +2752,7 @@ impl TypeResolver {
                         let offset = align_up(size, field_alignment)?;
                         size = offset
                             .checked_add(storage.size_bytes)
-                            .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                            .ok_or(ResolveError::Rejected("record size overflow"))?;
                         alignment = alignment.max(field_alignment);
                         remaining_bits = unit_bits - u64::from(width);
                         offset * 8
@@ -2867,7 +2862,7 @@ impl MsUnit {
                 position,
                 align
                     .checked_mul(8)
-                    .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+                    .ok_or(ResolveError::Rejected("field alignment overflow"))?,
             )?;
             self.unfilled = 0;
         }
@@ -2878,7 +2873,7 @@ impl MsUnit {
             if self.unfilled == 0 {
                 *end_bits = position
                     .checked_add(unit_bits)
-                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                    .ok_or(ResolveError::Rejected("record size overflow"))?;
                 self.unfilled = unit_bits;
             }
             self.unfilled -= width;
@@ -2969,13 +2964,13 @@ fn checked_bit_width(field: &Field, storage: StorageLayout) -> Result<u64, Resol
     let unit_bits = storage
         .size_bytes
         .checked_mul(8)
-        .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
+        .ok_or(ResolveError::Rejected("bit-field unit overflow"))?;
     if let Some(width) = field.bit_width {
         if u64::from(width) > unit_bits {
-            return Err(ResolveError::Unsupported("bit-field wider than its type"));
+            return Err(ResolveError::Rejected("bit-field wider than its type"));
         }
         if width == 0 && field.name.is_some() {
-            return Err(ResolveError::Unsupported("named zero-width bit-field"));
+            return Err(ResolveError::Rejected("named zero-width bit-field"));
         }
     }
     Ok(unit_bits)
@@ -3031,12 +3026,12 @@ fn bit_field_units(
 
 fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {
     if alignment == 0 || !alignment.is_power_of_two() {
-        return Err(ResolveError::Unsupported("invalid alignment"));
+        return Err(ResolveError::Rejected("invalid alignment"));
     }
     value
         .checked_add(alignment - 1)
         .map(|sum| sum & !(alignment - 1))
-        .ok_or(ResolveError::Unsupported("record size overflow"))
+        .ok_or(ResolveError::Rejected("record size overflow"))
 }
 
 pub(super) fn requested_alignment<'a>(
@@ -3048,7 +3043,7 @@ pub(super) fn requested_alignment<'a>(
         let value = match &attribute.value {
             Attribute::Aligned(expr) | Attribute::AlignAs(AlignAsOperand::Expr(expr)) => {
                 u64::try_from(resolver.constant_integer(expr)?)
-                    .map_err(|_| ResolveError::Unsupported("invalid alignment"))?
+                    .map_err(|_| ResolveError::Rejected("invalid alignment"))?
             }
             Attribute::AlignAs(AlignAsOperand::Type { ty }) => {
                 let resolved = resolver.resolve(&ty.specifiers, &ty.declarator)?;
@@ -3198,7 +3193,7 @@ pub fn resolve_type_module(
                     let name = declarator
                         .declarator
                         .name()
-                        .ok_or(ResolveError::Unsupported("anonymous typedef"))?
+                        .ok_or(ResolveError::Unimplemented("anonymous typedef"))?
                         .to_owned();
                     let resolved = resolver.resolve_declarator(
                         &item.specifiers,
@@ -3227,11 +3222,11 @@ pub fn resolve_type_module(
                 let signature = function
                     .declarator
                     .function_parameters()
-                    .ok_or(ResolveError::Unsupported("function declarator"))?;
+                    .ok_or(ResolveError::Internal("function declarator"))?;
                 let name = function
                     .declarator
                     .name()
-                    .ok_or(ResolveError::Unsupported("function name"))?;
+                    .ok_or(ResolveError::Internal("function name"))?;
                 let return_c = resolver.resolve(
                     &without_conventions(&function.specifiers),
                     &Declarator::Abstract,
@@ -3286,12 +3281,12 @@ pub fn resolve_type_module(
             DeclKind::Declaration(item) => {
                 for declarator in &item.declarators {
                     let signature = declarator.declarator.function_parameters().ok_or(
-                        ResolveError::Unsupported("non-function declaration in type view"),
+                        ResolveError::Unimplemented("non-function declaration in type view"),
                     )?;
                     let name = declarator
                         .declarator
                         .name()
-                        .ok_or(ResolveError::Unsupported("function name"))?;
+                        .ok_or(ResolveError::Internal("function name"))?;
                     let return_c = resolver.resolve(
                         &without_conventions(&item.specifiers),
                         &Declarator::Abstract,
@@ -3348,7 +3343,7 @@ pub fn resolve_type_module(
                     next_binding += 1;
                 }
             }
-            _ => return Err(ResolveError::Unsupported("declaration in type view")),
+            _ => return Err(ResolveError::Unimplemented("declaration in type view")),
         }
     }
     for definition in &resolver.definitions {

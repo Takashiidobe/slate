@@ -32,7 +32,7 @@ void deduce(int *ip) {
 // SLATE-FILECHECK-BEGIN POINTER
 // POINTER: Error:   × semantic analysis failed
 // POINTER: Error:
-// POINTER: × invalid in this context: 'auto' requires a plain identifier as declarator
+// POINTER: × 'auto' requires a plain identifier as declarator
 // POINTER: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:19:3]
 // POINTER: 18 │ #ifdef POINTER
 // POINTER: 19 │   auto *p = ip;
@@ -43,7 +43,7 @@ void deduce(int *ip) {
 // SLATE-FILECHECK-BEGIN MULTIPLE
 // MULTIPLE: Error:   × semantic analysis failed
 // MULTIPLE: Error:
-// MULTIPLE: × invalid in this context: 'auto' may only be used with a single declarator
+// MULTIPLE: × 'auto' may only be used with a single declarator
 // MULTIPLE: ╭─[tests/fixtures/gcc/linux/x86_64/gcc_auto_inference.c:22:3]
 // MULTIPLE: 21 │ #ifdef MULTIPLE
 // MULTIPLE: 22 │   auto x = 1, y = 2;

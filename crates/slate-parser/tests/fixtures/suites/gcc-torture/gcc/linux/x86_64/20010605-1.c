@@ -21,7 +21,7 @@ main (int argc, char **argv)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: nonconstant or unknown identifier
+// DEFAULT: × nonconstant or unknown identifier
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010605-1.c:7:3]
 // DEFAULT: 6 │
 // DEFAULT: 7 │ ╭─▶   typedef struct {

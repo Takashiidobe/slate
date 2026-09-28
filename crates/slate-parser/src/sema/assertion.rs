@@ -53,15 +53,12 @@ impl Checker<'_> {
             .and_then(|value| match value.ty {
                 Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
                     super::fold::integer_constant(&value, self.unit.dialect.flavor()).ok_or(
-                        ResolveError::Unsupported("nonconstant or undefined integer expression"),
+                        ResolveError::Rejected("nonconstant or undefined integer expression"),
                     )
                 }
-                _ => Err(ResolveError::Unsupported("non-integer constant expression")),
+                _ => Err(ResolveError::Rejected("non-integer constant expression")),
             })
-            .map_err(|error| match error {
-                ResolveError::Unsupported(reason) => reason.to_owned(),
-                error => error.to_string(),
-            });
+            .map_err(|error| error.to_string());
         let message = match result {
             Ok(value) if value.sign() != Sign::NoSign => return,
             Ok(_) => assertion.message.as_ref().map_or_else(

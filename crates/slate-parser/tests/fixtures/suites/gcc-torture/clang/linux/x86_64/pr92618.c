@@ -69,7 +69,7 @@ int main() {
 // DEFAULT: 10 │   static int cnt;
 // DEFAULT: ╰────
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: target builtin type
+// DEFAULT: × not implemented: target builtin type
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/pr92618.c:9:1]
 // DEFAULT: 8 │
 // DEFAULT: 9 │ ╭─▶ __attribute__((noipa)) __m128i bar(void) {
@@ -87,7 +87,7 @@ int main() {
 // DEFAULT: 20 │   static double cnt;
 // DEFAULT: ╰────
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: target builtin type
+// DEFAULT: × not implemented: target builtin type
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/pr92618.c:19:1]
 // DEFAULT: 18 │
 // DEFAULT: 19 │ ╭─▶ __attribute__((noipa)) __m128i qux(void) {

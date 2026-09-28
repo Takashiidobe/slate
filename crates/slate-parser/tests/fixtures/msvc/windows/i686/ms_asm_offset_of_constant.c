@@ -9,7 +9,7 @@ int f(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: `OFFSET` needs a C name or label in `__asm`
+// DEFAULT: × `OFFSET` needs a C name or label in `__asm`
 // DEFAULT: ╭─[tests/fixtures/msvc/windows/i686/ms_asm_offset_of_constant.c:3:3]
 // DEFAULT: 2 │ int f(void) {
 // DEFAULT: 3 │   __asm mov eax, offset 5

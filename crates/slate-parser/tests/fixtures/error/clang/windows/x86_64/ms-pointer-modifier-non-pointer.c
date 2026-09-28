@@ -6,7 +6,7 @@ int __ptr32 not_a_pointer;
 // SLATE-FILECHECK-BEGIN SEMANTIC
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
-// SEMANTIC: × invalid in this context: __ptr32, __ptr64, __sptr and __uptr only apply to
+// SEMANTIC: × __ptr32, __ptr64, __sptr and __uptr only apply to pointers
 // SEMANTIC: ╭─[tests/fixtures/error/clang/windows/x86_64/ms-pointer-modifier-non-pointer.c:1:1]
 // SEMANTIC: 1 │ int __ptr32 not_a_pointer;
 // SEMANTIC: · ──────────────────────────

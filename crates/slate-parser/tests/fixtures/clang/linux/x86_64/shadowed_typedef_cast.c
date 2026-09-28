@@ -16,7 +16,7 @@ int unshadowed(int *x) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unsupported in numeric IR lowering: non-arithmetic operand
+// DEFAULT: × non-arithmetic operand
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/shadowed_typedef_cast.c:5:10]
 // DEFAULT: 4 │   int T = 1;
 // DEFAULT: 5 │   return (T) * x + sizeof(T) + _Generic(T, int: 1, default: 0);

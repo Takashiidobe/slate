@@ -86,9 +86,10 @@ impl Entities {
         id: BindingId,
         later: ObjectRequest,
     ) -> Result<(), ResolveError> {
-        let entity = self.entities.get_mut(&id).ok_or(ResolveError::Unsupported(
-            "attribute on an undeclared object",
-        ))?;
+        let entity = self
+            .entities
+            .get_mut(&id)
+            .ok_or(ResolveError::Internal("attribute on an undeclared object"))?;
         entity.request.merge(later);
         Ok(())
     }

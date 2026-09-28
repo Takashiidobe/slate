@@ -20,7 +20,7 @@ void nested_outer(int n) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: function definition is not allowed here
+// DEFAULT: × function definition is not allowed here
 // DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/nested-function-definition.c:7:3]
 // DEFAULT: 6 │     #else
 // DEFAULT: 7 │ ╭─▶   int inner(int x) {
@@ -32,7 +32,7 @@ void nested_outer(int n) {
 // SLATE-FILECHECK-BEGIN DOUBLED
 // DOUBLED: Error:   × semantic analysis failed
 // DOUBLED: Error:
-// DOUBLED: × invalid in this context: function definition is not allowed here
+// DOUBLED: × function definition is not allowed here
 // DOUBLED: ╭─[tests/fixtures/clang/linux/x86_64/nested-function-definition.c:3:3]
 // DOUBLED: 2 │     #ifdef DOUBLE_INNER
 // DOUBLED: 3 │ ╭─▶   int inner(int x) {

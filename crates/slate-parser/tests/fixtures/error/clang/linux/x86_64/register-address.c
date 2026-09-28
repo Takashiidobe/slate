@@ -10,7 +10,7 @@ int address_local(void) {
 // SLATE-FILECHECK-BEGIN SEMANTIC
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
-// SEMANTIC: × invalid in this context: address of register variable requested
+// SEMANTIC: × address of register variable requested
 // SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/register-address.c:4:14]
 // SEMANTIC: 3 │     register int local;
 // SEMANTIC: 4 │     return *(&local);

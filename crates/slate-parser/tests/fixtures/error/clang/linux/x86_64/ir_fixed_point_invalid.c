@@ -41,7 +41,7 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SLATE-FILECHECK-BEGIN REMAINDER
 // REMAINDER: Error:   × semantic analysis failed
 // REMAINDER: Error:
-// REMAINDER: × invalid in this context: operator requires integer or real operands
+// REMAINDER: × operator requires integer or real operands
 // REMAINDER: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_fixed_point_invalid.c:8:12]
 // REMAINDER: 7 │ #ifdef REMAINDER
 // REMAINDER: 8 │     return a % b;
@@ -52,7 +52,7 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SLATE-FILECHECK-BEGIN BITWISE
 // BITWISE: Error:   × semantic analysis failed
 // BITWISE: Error:
-// BITWISE: × invalid in this context: operator requires integer or real operands
+// BITWISE: × operator requires integer or real operands
 // BITWISE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_fixed_point_invalid.c:11:12]
 // BITWISE: 10 │ #ifdef BITWISE
 // BITWISE: 11 │     return a & b;
@@ -63,7 +63,7 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SLATE-FILECHECK-BEGIN COMPLEMENT
 // COMPLEMENT: Error:   × semantic analysis failed
 // COMPLEMENT: Error:
-// COMPLEMENT: × invalid in this context: bitwise complement of a fixed-point operand
+// COMPLEMENT: × bitwise complement of a fixed-point operand
 // COMPLEMENT: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_fixed_point_invalid.c:14:12]
 // COMPLEMENT: 13 │ #ifdef COMPLEMENT
 // COMPLEMENT: 14 │     return ~a;
@@ -74,7 +74,7 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SLATE-FILECHECK-BEGIN COMPLEX
 // COMPLEX: Error:   × semantic analysis failed
 // COMPLEX: Error:
-// COMPLEX: × invalid in this context: complex or imaginary operand with a fixed-point
+// COMPLEX: × complex or imaginary operand with a fixed-point operand
 // COMPLEX: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_fixed_point_invalid.c:17:12]
 // COMPLEX: 16 │ #ifdef COMPLEX
 // COMPLEX: 17 │     return a + z;
@@ -85,7 +85,7 @@ int invalid(_Accum a, _Accum b, double _Complex z) {
 // SLATE-FILECHECK-BEGIN SWITCH
 // SWITCH: Error:   × semantic analysis failed
 // SWITCH: Error:
-// SWITCH: × unsupported in numeric IR lowering: noninteger switch discriminant
+// SWITCH: × noninteger switch discriminant
 // SWITCH: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_fixed_point_invalid.c:20:5]
 // SWITCH: 19 │     #ifdef SWITCH
 // SWITCH: 20 │ ╭─▶     switch (a) {

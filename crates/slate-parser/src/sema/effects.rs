@@ -466,7 +466,7 @@ impl Hoister {
                     .old
                     .last()
                     .cloned()
-                    .ok_or(ResolveError::Unsupported("old value outside update"));
+                    .ok_or(ResolveError::Internal("old value outside update"));
             }
             ValueKind::Sequence { left, right } => {
                 self.discard(*left, None, out)?;

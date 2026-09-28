@@ -23,7 +23,7 @@ int type_keyword(void) { __asm mov eax, TYPE int }
 // SLATE-FILECHECK-BEGIN UNTYPED
 // UNTYPED: Error:   × semantic analysis failed
 // UNTYPED: Error:
-// UNTYPED: × invalid in this context: `__asm` member of an untyped operand
+// UNTYPED: × `__asm` member of an untyped operand
 // UNTYPED: ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:6:21]
 // UNTYPED: 5 │ #if defined(UNTYPED)
 // UNTYPED: 6 │ int untyped(void) { __asm mov eax, [ebx].last }
@@ -34,7 +34,7 @@ int type_keyword(void) { __asm mov eax, TYPE int }
 // SLATE-FILECHECK-BEGIN SCALAR
 // SCALAR: Error:   × semantic analysis failed
 // SCALAR: Error:
-// SCALAR: × invalid in this context: no such struct or union member in `__asm`
+// SCALAR: × no such struct or union member in `__asm`
 // SCALAR: ╭─[tests/fixtures/clang/windows/i686/ms_asm_msvc_members.c:10:20]
 // SCALAR: 9 │ #if defined(SCALAR)
 // SCALAR: 10 │ int scalar(void) { __asm mov eax, global.last }

@@ -15,7 +15,7 @@ int negative_shift_initializer = 1 << -1;
 // SLATE-FILECHECK-BEGIN NEGATIVE
 // NEGATIVE: Error:   × semantic analysis failed
 // NEGATIVE: Error:
-// NEGATIVE: × unsupported in numeric IR lowering: nonconstant or undefined integer
+// NEGATIVE: × nonconstant or undefined integer expression
 // NEGATIVE: ╭─[tests/fixtures/error/gcc/linux/x86_64/constant_arithmetic_gcc_invalid.c:3:1]
 // NEGATIVE: 2 │ #ifdef NEGATIVE
 // NEGATIVE: 3 │ enum GccConstants { SHIFT_NEGATIVE = 1 << -1 };

@@ -54,6 +54,21 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 - `src/ir/` — typed node definitions, required semantic properties, source
   spans, and text printing. Does not interpret AST nodes or compiler flags.
 
+### Lowering failures
+
+`sema::numeric::ResolveError` separates three kinds of failure, so a sweep
+can triage by variant instead of by message:
+
+- `Rejected` — the C is ill-formed. Printed as the bare message. If an oracle
+  compiler accepts the same input, that is a fidelity bug.
+- `Unimplemented` — valid C that slate-parser cannot lower yet. Printed as
+  `not implemented: …`; each one is a feature gap.
+- `Internal` — an invariant that sema itself should guarantee (a missing
+  binding, an operand left unconverted). Printed as `internal error: …`; any
+  input that reaches one is a slate bug.
+
+`tools/corpus_sweep.py` tags each slate-ir failure group with its kind.
+
 ### Implemented module lowering
 
 `slate-parser ir <source.c>` (also `parse <source.c> --dump-ir`) invokes
@@ -542,8 +557,8 @@ compound-assignment old value promotes the same way before the operator runs.
 Zero-width bit-fields have no storage and are not addressable members. A
 bit-field is not an object with its own address or layout, so `&f->low`,
 `sizeof(f->low)`, `_Alignof(f->low)`, and `offsetof` on one are rejected as
-`ResolveError::Invalid` — a distinct variant from `Unsupported`, because these
-are invalid C rather than unimplemented lowering. Named zero-width bit-fields
+`ResolveError::Rejected` — a distinct variant from `Unimplemented`, because
+these are invalid C rather than unimplemented lowering. Named zero-width bit-fields
 are already rejected at layout.
 
 The width-based promotion is an rvalue rule, so unevaluated contexts do not
@@ -2126,7 +2141,7 @@ floating type.
 by `TypeResolver::require_modifiable_lvalue` (`src/sema/types.rs`), which runs
 on the C type of the place. An array, a `const`-qualified lvalue, or a
 struct/union with a (recursively) `const`-qualified member is
-`ResolveError::Invalid`. All three compilers reject these, so they are errors
+`ResolveError::Rejected`. All three compilers reject these, so they are errors
 rather than warnings. Fixture:
 `tests/fixtures/error/clang/linux/x86_64/ir_modifiable_lvalue.c`.
 
@@ -2349,7 +2364,7 @@ Conversions follow C23 6.3.2.4 as gcc and clang enforce them. `nullptr_t`
 converts implicitly to any pointer (`pointer_cast` from an object,
 `null<ptr<T>>` from `nullptr`) and to `bool` (`ne(n, null)`); a null pointer
 constant converts to `nullptr_t`; every other conversion to or from it is
-`ResolveError::Invalid`, cast or not. Equality between `nullptr_t` and a
+`ResolveError::Rejected`, cast or not. Equality between `nullptr_t` and a
 pointer converts to the pointer's type and never warns; relational
 comparison and arithmetic are rejected. A `nullptr_t` variadic argument is
 passed as `ptr<void>`, and `__builtin_classify_type` of one is -1, as in

@@ -333,6 +333,14 @@ def msvc_batches(corpus: list[Job], msvc: str, batch_size: int = 32) -> list[lis
     ]
 
 
+def slate_failure_kind(root: str) -> str:
+    if "not implemented: " in root:
+        return "unimplemented"
+    if "internal error: " in root:
+        return "internal"
+    return "rejected"
+
+
 def write_report(path: Path, results: list[Result], expected_errors: int, versions: dict[str, str]) -> None:
     groups: dict[tuple[str, str], list[Result]] = defaultdict(list)
     for result in results:
@@ -376,6 +384,15 @@ def write_report(path: Path, results: list[Result], expected_errors: int, versio
                 f"- Clang accepts / {tool} rejects: "
                 + str(sum(indexed[(fixture, prefix, "clang")].accepted and not indexed[(fixture, prefix, tool)].accepted for fixture, prefix in pairs))
             )
+    kinds: dict[str, int] = defaultdict(int)
+    for result in results:
+        if result.tool == "slate-ir" and not result.accepted:
+            kinds[slate_failure_kind(result.root)] += 1
+    if kinds:
+        lines.append(
+            "- Slate IR failures by kind: "
+            + ", ".join(f"{kind} {kinds[kind]}" for kind in ("rejected", "unimplemented", "internal"))
+        )
     lines.append(f"- expected-error configurations skipped: {expected_errors}")
     for tool, version in sorted(versions.items()):
         lines.append(f"- {tool} version: `{version}`")
@@ -392,7 +409,8 @@ def write_report(path: Path, results: list[Result], expected_errors: int, versio
                 f"- `{fixture}` ({prefix}): slate={','.join(slate) or '-'}; clang={','.join(clang) or '-'}"
             )
     for (tool, root), members in sorted(groups.items(), key=lambda item: (-len(item[1]), item[0])):
-        lines.extend(["", f"## {tool}: {root} ({len(members)})", ""])
+        kind = f" [{slate_failure_kind(root)}]" if tool == "slate-ir" else ""
+        lines.extend(["", f"## {tool}{kind}: {root} ({len(members)})", ""])
         lines.extend(f"- `{member.fixture}` ({member.prefix})" for member in members)
     path.write_text("\n".join(lines) + "\n")
 

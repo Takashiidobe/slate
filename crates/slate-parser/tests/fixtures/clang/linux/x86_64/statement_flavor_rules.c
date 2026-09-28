@@ -58,7 +58,7 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN RETURN
 // RETURN: Error:   × semantic analysis failed
 // RETURN: Error:
-// RETURN: × invalid in this context: non-void function should return a value
+// RETURN: × non-void function should return a value
 // RETURN: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:22:5]
 // RETURN: 21 │   if (x)
 // RETURN: 22 │     return;
@@ -69,7 +69,7 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN FALLTHROUGH
 // FALLTHROUGH: Error:   × semantic analysis failed
 // FALLTHROUGH: Error:
-// FALLTHROUGH: × invalid in this context: fallthrough attribute on a non-empty statement
+// FALLTHROUGH: × fallthrough attribute on a non-empty statement
 // FALLTHROUGH: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:31:5]
 // FALLTHROUGH: 30 │   case 1:
 // FALLTHROUGH: 31 │     {{\[\[}}fallthrough]] x++;
@@ -80,7 +80,7 @@ int outer(int x) {
 // SLATE-FILECHECK-BEGIN NESTED
 // NESTED: Error:   × semantic analysis failed
 // NESTED: Error:
-// NESTED: × invalid in this context: function definition is not allowed here
+// NESTED: × function definition is not allowed here
 // NESTED: ╭─[tests/fixtures/clang/linux/x86_64/statement_flavor_rules.c:41:3]
 // NESTED: 40 │ int outer(int x) {
 // NESTED: 41 │   int inner(int y) { return y + x; }

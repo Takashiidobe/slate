@@ -22,7 +22,7 @@ void foo(int i)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × invalid in this context: function definition is not allowed here
+// DEFAULT: × function definition is not allowed here
 // DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030418-1.c:14:3]
 // DEFAULT: 13 │
 // DEFAULT: 14 │   void bar() { int x=j, y=i; }

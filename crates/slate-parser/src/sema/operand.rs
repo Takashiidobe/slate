@@ -170,7 +170,7 @@ impl TypeResolver {
                             FloatKind::Float64x
                         }
                         FloatSuffix::F64x => {
-                            return Err(ResolveError::Invalid(
+                            return Err(ResolveError::Rejected(
                                 "floating type is not supported on this target",
                             ));
                         }
@@ -188,7 +188,7 @@ impl TypeResolver {
                 }
             }
             ExprKind::BoolLiteral(_) => CTypeKind::Bool,
-            _ => return Err(ResolveError::Unsupported("nonliteral numeric expression")),
+            _ => return Err(ResolveError::Rejected("nonliteral numeric expression")),
         };
         let c = self.ctypes.qual(kind);
         Ok(Operand {
@@ -288,7 +288,7 @@ impl TypeResolver {
             2 => self.ctypes.qual(CTypeKind::Complex(component.ty)),
             1 => {
                 let CTypeKind::Float(kind) = self.ctypes.canonical_kind(component) else {
-                    return Err(ResolveError::Unsupported("imaginary component"));
+                    return Err(ResolveError::Internal("imaginary component"));
                 };
                 self.ctypes.qual(CTypeKind::Imaginary(*kind))
             }
@@ -347,7 +347,7 @@ impl TypeResolver {
                     bytes,
                 } = self.ctypes.canonical_kind(c).clone()
                 else {
-                    return Err(ResolveError::Unsupported("comparison mask of nonvector"));
+                    return Err(ResolveError::Internal("comparison mask of nonvector"));
                 };
                 let element = match self.ctypes.canonical_kind(element) {
                     CTypeKind::Float(_) => {
