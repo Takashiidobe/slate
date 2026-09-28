@@ -534,10 +534,11 @@ impl TypeResolver {
                 continue;
             }
             if shape_full(&walk.shape, walk.next, 0) {
-                if braced {
-                    return Err(ResolveError::Unsupported("excess elements in initializer"));
+                if !braced {
+                    break;
                 }
-                break;
+                *index += 1;
+                continue;
             }
             let (target, _) = shape_next_target(&walk.shape, walk.next)?;
             let c = self.subobject_type(walk.c, target)?;
@@ -635,6 +636,9 @@ impl TypeResolver {
                     .collect()
             }
         };
+        if children.is_empty() {
+            return Ok(index + 1);
+        }
         let mut index = index;
         for (position, child) in children.into_iter().enumerate() {
             if position > 0 && (index >= items.len() || !items[index].designators.is_empty()) {
@@ -778,10 +782,12 @@ impl Lowerer {
                 continue;
             }
             if builder.full() {
-                if braced {
-                    return Err(ResolveError::Unsupported("excess elements in initializer"));
+                if !braced {
+                    break;
                 }
-                break;
+                cursor.index += 1;
+                cursor.pending = None;
+                continue;
             }
             let (target, _) = builder.next_target()?;
             self.init_into(builder, target, cursor)?;
@@ -804,6 +810,9 @@ impl Lowerer {
         let saved = cursor.index;
         let mut reached = saved;
         let fresh = self.builder(c)?;
+        if fresh.full() {
+            reached += 1;
+        }
         for position in builder.partitions(target, &fresh, false)? {
             cursor.index = saved;
             cursor.pending = pending.clone();
@@ -814,7 +823,7 @@ impl Lowerer {
             };
             sub.next = 0;
             self.fill(sub, cursor, false)?;
-            reached = cursor.index;
+            reached = reached.max(cursor.index);
         }
         cursor.index = reached;
         cursor.pending = None;

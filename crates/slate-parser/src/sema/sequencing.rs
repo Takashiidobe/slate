@@ -246,18 +246,23 @@ fn constant_index(value: &Value) -> Option<i128> {
 }
 
 /// Peels the subscripts a `base[index]` chain lowered to, pushing one step per
-/// level, and returns the object the innermost pointer names.
-fn offset_root(value: &Value, path: &mut Vec<Step>, found: &mut Touches) -> Option<Root> {
+/// level and collecting each level's index, and returns the object the
+/// innermost pointer names.
+fn offset_root<'a>(
+    value: &'a Value,
+    path: &mut Vec<Step>,
+    amounts: &mut Vec<&'a Value>,
+) -> Option<Root> {
     match &value.node.value {
         ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
-            offset_root(operand, path, found)
+            offset_root(operand, path, amounts)
         }
         ValueKind::PointerOffset {
             pointer, amount, ..
         } => {
-            walk(amount, found);
+            amounts.push(amount);
             path.push(Step::Element(constant_index(amount)));
-            offset_root(pointer, path, found)
+            offset_root(pointer, path, amounts)
         }
         _ => pointee(value),
     }
@@ -268,7 +273,7 @@ fn walk_path(place: &Place, write: bool, path: &mut Vec<Step>, found: &mut Touch
         PlaceKind::Binding(id) => record(Root::Binding(*id), write, path, found),
         PlaceKind::Deref(value) => {
             walk(value, found);
-            if let Some(root) = offset_root(value, path, found) {
+            if let Some(root) = offset_root(value, path, &mut Vec::new()) {
                 record(root, write, path, found);
             }
         }
@@ -285,7 +290,9 @@ fn walk_path(place: &Place, write: bool, path: &mut Vec<Step>, found: &mut Touch
         PlaceKind::Index { base, index } => {
             walk(index, found);
             path.push(Step::Element(constant_index(index)));
-            if let Some(root) = offset_root(base, path, found) {
+            let mut amounts = Vec::new();
+            if let Some(root) = offset_root(base, path, &mut amounts) {
+                amounts.into_iter().for_each(|amount| walk(amount, found));
                 record(root, write, path, found);
             } else {
                 walk(base, found);

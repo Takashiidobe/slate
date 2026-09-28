@@ -1959,6 +1959,14 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
   `[1][0], [1][1], [2][0]`. A range designation replays the whole remaining
   path over every part of the range — each element merging with what it
   already holds — but the continuation lands only in the range's last element.
+- Excess elements are dropped, as gcc and clang do with a warning: an item
+  past the end of a braced list is discarded, and an unbraced item that
+  brace elision aims at a zero-length aggregate (`int[0]`, `struct {}`) is
+  consumed and discarded as that subobject's whole initializer, so
+  `int a[][0] = {1, 2}` is `array<array<i32, 0>, 2>`. When the element type
+  itself has size zero (`int[][0][2]`, `struct {}[][0]`), gcc's inferred
+  length follows internal quirks (`{1}` gives 2) that are visible only via
+  `typeof`; slate keeps the one-item rule there.
 - `T a[] = ...` completes the array length from the last initialized
   element. `char`-like arrays from string literals (also `{"..."}`) stay
   `CodeUnits` on the declared array type, zero-padded or truncated to length.
