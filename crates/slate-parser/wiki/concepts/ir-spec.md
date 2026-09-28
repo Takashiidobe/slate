@@ -1839,7 +1839,13 @@ lays a `aligned(1) int` out at 4 but reports 1, which is why
 `TypeResolver::declared_alignment` exists alongside `effective_alignment`
 rather than reusing it. Both rules read the same request, held once per
 `BindingId` on the sema entity — see the
-[declared-entity model](entity-model.md).
+[declared-entity model](entity-model.md). `_Static_assert` is checked before
+lowering, without entities, so its resolver carries the same merged request on
+`Ordinary::Object`. `__alignof__` of a member (`s.m`, `p->m`) reports the
+field's laid-out alignment, which `layout_record` returns per field: `packed`
+gives 1, `packed, aligned(2)` gives 2, `aligned(16)` gives 16 (gcc and clang
+agree). A typedef redeclared in the same scope keeps the largest `aligned` of
+all its declarations.
 
 Fixtures: `sema/ir_object_attributes.c`, `sema/ir_object_attributes_fcommon.c`,
 `sema/ir_object_alignment_gcc.c`, `sema/ir_object_alignment_sites.c`,

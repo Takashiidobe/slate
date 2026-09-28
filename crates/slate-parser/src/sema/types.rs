@@ -52,6 +52,7 @@ pub struct TypeResolver {
     pub(super) inferred: Option<QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
+    field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
     diagnostic_options: DiagnosticOptions,
@@ -63,7 +64,10 @@ pub(super) enum Ordinary {
     Declared,
     Alias(QualType),
     Constant(Operand),
-    Object(QualType),
+    Object {
+        ty: QualType,
+        alignment: Option<u64>,
+    },
 }
 
 impl TypeResolver {
@@ -90,6 +94,7 @@ impl TypeResolver {
             inferred: None,
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
+            field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
             diagnostic_options: DiagnosticOptions::default(),
@@ -380,6 +385,10 @@ impl TypeResolver {
         self.ordinary.iter().rev().find_map(|scope| scope.get(name))
     }
 
+    pub(super) fn lookup_local(&self, name: &str) -> Option<&Ordinary> {
+        self.ordinary.last().and_then(|scope| scope.get(name))
+    }
+
     fn declare_tag(&mut self, key: (TagKind, String), id: TypeId) {
         if let Some(scope) = self.tag_names.last_mut() {
             scope.insert(key, id);
@@ -615,15 +624,32 @@ impl TypeResolver {
         Ok(operand)
     }
 
-    pub(super) fn object_alignment(&self, e: &crate::ast::Expr, natural: u64) -> u64 {
+    pub(super) fn object_alignment(&mut self, e: &crate::ast::Expr, natural: u64) -> u64 {
         let mut operand = e;
         while let crate::ast::ExprKind::Paren(inner) = &operand.value {
             operand = inner;
         }
-        let Some(id) = self.references.get(&operand.id) else {
-            return natural;
+        if let crate::ast::ExprKind::Member { base, field, arrow } = &operand.value {
+            let record = self.assertion_operand_type(base).ok().and_then(|base| {
+                if *arrow {
+                    self.ctypes.pointee(base)
+                } else {
+                    Some(base)
+                }
+            });
+            return record
+                .and_then(|record| self.field_alignment(record, &field.value))
+                .unwrap_or(natural);
+        }
+        let requested = match (self.references.get(&operand.id), &operand.value) {
+            (Some(id), _) => self.entities.request(id).alignment,
+            (None, crate::ast::ExprKind::Identifier(name)) => match self.lookup(name) {
+                Some(Ordinary::Object { alignment, .. }) => *alignment,
+                _ => None,
+            },
+            (None, _) => None,
         };
-        let Some(requested) = self.entities.request(id).alignment else {
+        let Some(requested) = requested else {
             return natural;
         };
         self.declared_alignment(requested, natural)
@@ -706,7 +732,7 @@ impl TypeResolver {
                 .object(e)
                 .ok_or(ResolveError::Unsupported("untyped binding")),
             ExprKind::Identifier(name) => match self.lookup(name) {
-                Some(Ordinary::Object(q)) => Ok(*q),
+                Some(Ordinary::Object { ty, .. }) => Ok(*ty),
                 Some(Ordinary::Constant(value)) => Ok(value.c),
                 _ => Err(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
@@ -907,6 +933,32 @@ impl TypeResolver {
         None
     }
 
+    fn field_alignment(&self, q: QualType, name: &str) -> Option<u64> {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(q) else {
+            return None;
+        };
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.definitions[id.0 as usize].kind
+        else {
+            return None;
+        };
+        let types = self.record_fields.get(id)?;
+        let alignments = self.field_alignments.get(id)?;
+        for (index, field) in fields.iter().enumerate() {
+            if field.name.as_deref() == Some(name) {
+                return alignments.get(index).copied();
+            }
+            if field.name.is_none()
+                && let Some(found) = self.field_alignment(*types.get(index)?, name)
+            {
+                return Some(found);
+            }
+        }
+        None
+    }
+
     pub(super) fn union_cast_member(
         &self,
         to: QualType,
@@ -1100,7 +1152,11 @@ impl TypeResolver {
         resolved: QualType,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
     ) -> Result<(), ResolveError> {
-        let alignment = requested_alignment(self, attributes)?;
+        let previous = match self.lookup_local(&name) {
+            Some(Ordinary::Alias(previous)) => self.ctypes.typedef_alignment(*previous),
+            _ => None,
+        };
+        let alignment = requested_alignment(self, attributes)?.max(previous);
         let ty = self.ir_type(resolved);
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
@@ -1865,7 +1921,7 @@ impl TypeResolver {
                     || (self.pragmas.is_ms_struct(tag.id) && !has(&Attribute::GccStruct));
                 let max_field_alignment = self.pragmas.max_field_alignment(tag.id);
                 let alignment = requested_alignment(self, &tag.attributes)?;
-                let layout = self.layout_record(
+                let (layout, field_alignments) = self.layout_record(
                     tag.kind,
                     &fields,
                     &field_types,
@@ -1878,6 +1934,7 @@ impl TypeResolver {
                     alignment,
                 )?;
                 self.record_fields.insert(id, field_types);
+                self.field_alignments.insert(id, field_alignments);
                 TypeDefinitionKind::Record {
                     kind: match tag.kind {
                         TagKind::Struct => RecordKind::Struct,
@@ -2321,7 +2378,7 @@ impl TypeResolver {
         requests: &[(bool, Option<u64>)],
         rules: RecordRules,
         requested: Option<u64>,
-    ) -> Result<RecordLayout, ResolveError> {
+    ) -> Result<(RecordLayout, Vec<u64>), ResolveError> {
         if self.target.environment == TargetEnvironment::Msvc {
             return self.layout_microsoft_record(
                 kind,
@@ -2343,6 +2400,7 @@ impl TypeResolver {
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
+        let mut field_alignments = Vec::new();
         let mut ms_unit = MsUnit::default();
         for (position, ((field, &c), &(field_packed, field_aligned))) in
             fields.iter().zip(field_types).zip(requests).enumerate()
@@ -2370,6 +2428,7 @@ impl TypeResolver {
                     max_field_alignment,
                 )?;
                 aggregate_align = aggregate_align.max(align);
+                field_alignments.push(align);
                 offsets.push(position / 8);
                 bit_offsets.push(Some(position));
                 continue;
@@ -2378,6 +2437,7 @@ impl TypeResolver {
             let align = (if packed || field_packed { 1 } else { natural })
                 .max(field_aligned.unwrap_or(1))
                 .min(max_field_alignment.unwrap_or(u64::MAX));
+            field_alignments.push(align);
             if field.bit_width == Some(0) && self.target.abi.zero_width_bitfield_aligns_record {
                 aggregate_align = aggregate_align.max(natural);
             } else if field.bit_width != Some(0) {
@@ -2448,15 +2508,18 @@ impl TypeResolver {
         let size = align_up(end_bits.div_ceil(8), aggregate_align)?;
         let (bit_units, field_units) =
             bit_field_units(kind, fields, &bit_offsets, &unit_sizes, ms_struct);
-        Ok(RecordLayout {
-            size,
-            align: aggregate_align,
-            required_align,
-            offsets,
-            bit_offsets,
-            bit_units,
-            field_units,
-        })
+        Ok((
+            RecordLayout {
+                size,
+                align: aggregate_align,
+                required_align,
+                offsets,
+                bit_offsets,
+                bit_units,
+                field_units,
+            },
+            field_alignments,
+        ))
     }
 
     fn member_storage(
@@ -2489,7 +2552,7 @@ impl TypeResolver {
         requests: &[(bool, Option<u64>)],
         rules: RecordRules,
         requested: Option<u64>,
-    ) -> Result<RecordLayout, ResolveError> {
+    ) -> Result<(RecordLayout, Vec<u64>), ResolveError> {
         let union = kind == TagKind::Union;
         let max_field_alignment = if rules.packed {
             Some(1)
@@ -2507,6 +2570,7 @@ impl TypeResolver {
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
+        let mut field_alignments = Vec::new();
         for (position, ((field, &c), &(field_packed, field_aligned))) in
             fields.iter().zip(field_types).zip(requests).enumerate()
         {
@@ -2535,6 +2599,7 @@ impl TypeResolver {
                 field_alignment = 1;
             }
             let field_alignment = field_alignment.max(field_required.unwrap_or(1));
+            field_alignments.push(field_alignment);
             let bit_offset = match field.bit_width {
                 None => {
                     after_bit_field = false;
@@ -2617,15 +2682,18 @@ impl TypeResolver {
         }
         let (bit_units, field_units) =
             bit_field_units(kind, fields, &bit_offsets, &unit_sizes, true);
-        Ok(RecordLayout {
-            size,
-            align: alignment,
-            required_align: required,
-            offsets,
-            bit_offsets,
-            bit_units,
-            field_units,
-        })
+        Ok((
+            RecordLayout {
+                size,
+                align: alignment,
+                required_align: required,
+                offsets,
+                bit_offsets,
+                bit_units,
+                field_units,
+            },
+            field_alignments,
+        ))
     }
 
     pub(super) fn required_alignment(&self, ty: &Type) -> Option<u64> {

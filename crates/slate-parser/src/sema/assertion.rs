@@ -95,7 +95,13 @@ impl Checker<'_> {
                     let adjusted = self
                         .types
                         .adjusted_parameter(resolved, super::ctype::Qualifiers::NONE);
-                    self.types.declare(name, Ordinary::Object(adjusted));
+                    self.types.declare(
+                        name,
+                        Ordinary::Object {
+                            ty: adjusted,
+                            alignment: None,
+                        },
+                    );
                 }
             }
         }
@@ -158,20 +164,45 @@ impl Checker<'_> {
                 &declarator.attributes,
             );
             self.types.inferred = None;
-            self.types.declare(name, Ordinary::Declared);
+            let previous = match self.types.lookup_local(name) {
+                Some(Ordinary::Object { alignment, .. }) => *alignment,
+                _ => None,
+            };
+            let typedef = declaration.specifiers.storage == StorageClass::Typedef;
+            if !typedef || resolved.is_err() {
+                self.types.declare(name, Ordinary::Declared);
+            }
             if let Ok(resolved) = resolved {
-                if declaration.specifiers.storage == StorageClass::Typedef {
+                if typedef {
                     let attributes = declaration
                         .specifiers
                         .attributes
                         .iter()
                         .chain(&declarator.attributes);
-                    let _ = self
+                    if self
                         .types
-                        .define_alias(name.to_owned(), resolved, attributes);
+                        .define_alias(name.to_owned(), resolved, attributes)
+                        .is_err()
+                    {
+                        self.types.declare(name, Ordinary::Declared);
+                    }
                 } else if !self.types.ctypes.is_void(resolved) {
                     let completed = self.completed_array(resolved, declarator.initializer.as_ref());
-                    self.types.declare(name, Ordinary::Object(completed));
+                    let attributes = declaration
+                        .specifiers
+                        .attributes
+                        .iter()
+                        .chain(&declarator.attributes);
+                    let requested = super::types::requested_alignment(&mut self.types, attributes)
+                        .ok()
+                        .flatten();
+                    self.types.declare(
+                        name,
+                        Ordinary::Object {
+                            ty: completed,
+                            alignment: previous.max(requested),
+                        },
+                    );
                     if declaration.specifiers.is_constexpr
                         && let Some(Initializer::Expr(expr)) = &declarator.initializer
                         && ice_shape(&mut self.types, expr).is_constant()
