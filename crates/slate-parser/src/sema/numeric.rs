@@ -18,7 +18,7 @@ use crate::target_info::TargetInfo;
 use num_bigint::BigUint;
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Clone, Error)]
 pub enum ResolveError {
     #[error("{0}")]
     Rejected(&'static str),

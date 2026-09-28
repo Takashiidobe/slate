@@ -458,7 +458,12 @@ impl Lowerer {
                             .map_err(|_| no_such_member)?
                     }
                     _ if self.types.compiler_flavor() == CompilerFlavor::Msvc => {
-                        self.types.ms_asm_field(&field.value)?
+                        let declared_before = *self
+                            .names
+                            .ms_asm_members
+                            .get(&field.id)
+                            .ok_or(ResolveError::Internal("unresolved `__asm` member"))?;
+                        self.types.ms_asm_field(&field.value, declared_before)?
                     }
                     Some(_) => return Err(no_such_member),
                     None => {

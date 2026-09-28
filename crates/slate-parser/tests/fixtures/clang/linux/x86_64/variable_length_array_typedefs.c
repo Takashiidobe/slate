@@ -45,8 +45,8 @@ T g(int n) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     type @type0 T = i64;
-// IR-NEXT:     type @type1 T = vla<i32, %11>;
-// IR-NEXT:     type @type2 T = i8;
+// IR-NEXT:     type @type1 T = i8;
+// IR-NEXT:     type @type2 T = vla<i32, %11>;
 // IR-NEXT:     fn %1 @f(%2 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %11: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%2)));
 // IR-NEXT:         let %13: i32 [synthetic] = read<i32>(%2);

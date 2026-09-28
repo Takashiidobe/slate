@@ -112,7 +112,7 @@ fn run() -> miette::Result<()> {
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
-    let sema = slate_parser::sema::Sema::new(&ast);
+    let mut sema = slate_parser::sema::Sema::new(&ast);
     for warning in sema.analyze(&files)? {
         eprintln!("{:?}", miette::Report::new(warning));
     }

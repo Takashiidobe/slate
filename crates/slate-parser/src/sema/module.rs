@@ -24,7 +24,7 @@ impl super::Sema<'_> {
         self,
         files: &crate::files::Files,
     ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
-        resolve_module(self.unit, self.names, self.items, files)
+        resolve_module(self.unit, self.names, self.items, self.types, files)
     }
 }
 
@@ -32,6 +32,7 @@ fn resolve_module(
     unit: &TranslationUnit,
     names: NameResolution,
     items: Vec<super::names::ItemResolution>,
+    mut types: TypeResolver,
     files: &crate::files::Files,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let context = Context::for_dialect(&unit.dialect);
@@ -41,14 +42,14 @@ fn resolve_module(
         .map(|b| b.value.id.0 + 1)
         .max()
         .unwrap_or(0);
-    let types = TypeResolver::with_names(unit, &names);
+    types.entities = super::entity::Entities::default();
     let mut lower = Lowerer {
         types,
         module: Module::new(context.target.clone()),
         names,
         function_declarations: HashMap::new(),
         builtin_declarations: HashMap::new(),
-        type_spans: HashMap::new(),
+        alias_annotations: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
@@ -66,6 +67,9 @@ fn resolve_module(
     let mut poisoned = HashSet::new();
     let mut error_count = 0;
     for (declaration, item) in unit.decls.iter().zip(items) {
+        if let Some(diagnostics) = lower.types.item_diagnostics.remove(&declaration.id) {
+            lower.types.diagnostics.extend(diagnostics);
+        }
         let errors: Vec<ResolveError> = if item.errors.is_empty() {
             let Err(error) = lower
                 .declare_implicit_functions(item.declared.clone())
@@ -94,16 +98,19 @@ fn resolve_module(
         with_sources(std::mem::take(&mut lower.types.diagnostics), files)?;
     }
     for definition in &lower.types.definitions {
-        if let Some(span) = lower.type_spans.get(&definition.id) {
-            lower.module.types.push(span.clone());
+        let span = if let Some(owner) = lower.types.owners.get(&definition.id) {
+            owner.derive(definition.clone())
         } else if let Some(tag) = lower.types.tag_span(definition.id, unit) {
-            lower.module.types.push(tag.derive(definition.clone()));
+            tag.derive(definition.clone())
         } else if let Some(declaration) = unit.decls.first() {
-            lower
-                .module
-                .types
-                .push(declaration.derive(definition.clone()));
+            declaration.derive(definition.clone())
+        } else {
+            continue;
+        };
+        if let Some(entries) = lower.alias_annotations.remove(&definition.id) {
+            lower.module.annotate(&span, entries);
         }
+        lower.module.types.push(span);
     }
     for global in &mut lower.module.globals {
         if global.definition
@@ -211,6 +218,7 @@ impl Lowerer {
         self.types.function_names = None;
         self.return_type = None;
         self.compound_start = false;
+        self.types.owner = None;
     }
 }
 
@@ -252,7 +260,7 @@ fn lower_item(
             lower.types.pragmas.apply(name, &mut symbol);
             let id = lower.declaration_id(declaration.id, name)?;
             lower.record_function(id, &function.specifiers, &attributes, true, true)?;
-            let start = lower.types.definitions.len();
+            let owner = lower.types.owner.replace(declaration.derive(()));
             let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
             let resolved = lower.types.apply_convention(resolved, &function.attributes);
             let resolved = lower.types.inherit_convention(id, resolved);
@@ -262,11 +270,7 @@ fn lower_item(
                 .function_parts(resolved)
                 .ok_or(ResolveError::Internal("function definition declarator"))?;
             let c_return = lower.types.render(return_c).spelling;
-            for definition in &lower.types.definitions[start..] {
-                lower
-                    .type_spans
-                    .insert(definition.id, declaration.derive(definition.clone()));
-            }
+            lower.types.owner = owner;
             let ty = lower.types.object_type(resolved, "void function type")?;
             let Type::Function { return_type, .. } = &ty else {
                 return Err(ResolveError::Internal("function definition declarator"));
@@ -745,7 +749,7 @@ impl Lowerer {
                     prologue,
                 )?;
             }
-            let start = self.types.definitions.len();
+            let owner = self.types.owner.replace(parameter.derive(()));
             let resolved =
                 self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
             let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
@@ -768,10 +772,7 @@ impl Lowerer {
                     common: None,
                 },
             )?;
-            for definition in &self.types.definitions[start..] {
-                self.type_spans
-                    .insert(definition.id, parameter.derive(definition.clone()));
-            }
+            self.types.owner = owner;
             let promoted = matches!(params, ParameterList::IdentifierList { .. })
                 .then(|| self.types.promoted_parameter(resolved))
                 .filter(|promoted| {
@@ -913,7 +914,7 @@ impl Lowerer {
                     &mut statements,
                 )?;
             }
-            let start = self.types.definitions.len();
+            let owner = self.types.owner.replace(declarator.derive(()));
             let value = if inferred {
                 let binding = self.declaration_id(declarator.id, name)?;
                 let (base, value) = self.infer_type(
@@ -951,25 +952,17 @@ impl Lowerer {
             }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
-                self.types.define_alias(
+                let alias = self.types.define_alias(
                     declarator.id,
                     name.into(),
                     resolved,
                     attributes.clone(),
                 )?;
-                for definition in &self.types.definitions[start..] {
-                    let span = declarator.derive(definition.clone());
-                    if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
-                        self.module.annotate(&span, c_entries.clone());
-                    }
-                    self.type_spans.insert(definition.id, span);
-                }
+                self.types.owner = owner;
+                self.alias_annotations.insert(alias, c_entries);
                 continue;
             }
-            for definition in &self.types.definitions[start..] {
-                self.type_spans
-                    .insert(definition.id, declarator.derive(definition.clone()));
-            }
+            self.types.owner = owner;
             let qualifiers = self.types.ctypes.quals(resolved);
             if item.specifiers.is_constexpr && declarator.initializer.is_none() {
                 return Err(ResolveError::Rejected(

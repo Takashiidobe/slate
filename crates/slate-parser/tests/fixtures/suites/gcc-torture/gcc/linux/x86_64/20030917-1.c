@@ -44,9 +44,13 @@ register STR **strp;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 string = struct incomplete;
+// DEFAULT-NEXT:     type @type0 string = struct {
+// DEFAULT-NEXT:         field0 str_pok: u8;
+// DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 STR = @type0;
-// DEFAULT-NEXT:     type @type2 atbl = struct incomplete;
+// DEFAULT-NEXT:     type @type2 atbl = struct {
+// DEFAULT-NEXT:         field0 ary_fill: i32;
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type3 ARRAY = @type2;
 // DEFAULT-NEXT:     fn %4 @blah(%5 size: i32, %6 strp: ptr<ptr<@type0>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %7 ar: ptr<@type2> [storage=automatic];

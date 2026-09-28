@@ -51,7 +51,12 @@ int main()
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 A = ptr<i32>;
-// DEFAULT-NEXT:     type @type1 E = enum incomplete;
+// DEFAULT-NEXT:     type @type1 E = enum : i32 {
+// DEFAULT-NEXT:         %0 E1 = const<i32>(-1);
+// DEFAULT-NEXT:         %1 E2 = const<i32>(0);
+// DEFAULT-NEXT:         %2 E3 = const<i32>(1);
+// DEFAULT-NEXT:         %3 MAX = const<i32>(2147483647);
+// DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type2 B = ptr<@type1>;
 // DEFAULT-NEXT:     fn %1 @foo(%2 a: ptr<void>, %3 b: ptr<void>, %4 c: ptr<void>, %5 d: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<ptr<ptr<i32>>>(deref(pointer_cast<ptr<ptr<ptr<i32>>>, reason=explicit>(read<ptr<void>>(%2))), pointer_cast<ptr<ptr<i32>>, reason=assign>(read<ptr<void>>(%4)));

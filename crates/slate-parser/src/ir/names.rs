@@ -39,6 +39,7 @@ pub struct NameResolution {
     pub declarations: std::collections::HashMap<crate::ast::NodeId, BindingId>,
     pub tags: std::collections::HashMap<crate::ast::TagId, BindingId>,
     pub implicit_functions: std::collections::HashSet<BindingId>,
+    pub ms_asm_members: std::collections::HashMap<crate::ast::NodeId, BindingId>,
 }
 
 impl fmt::Display for NameResolution {

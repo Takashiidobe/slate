@@ -109,7 +109,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 PgHdr = struct incomplete;
+// DEFAULT-NEXT:     type @type0 PgHdr = struct {
+// DEFAULT-NEXT:         field0 pgno: u32;
+// DEFAULT-NEXT:         field1 pNextHash: ptr<@type0>;
+// DEFAULT-NEXT:         field2 pPrevHash: ptr<@type0>;
+// DEFAULT-NEXT:         field3 pNextFree: ptr<@type0>;
+// DEFAULT-NEXT:         field4 pPrevFree: ptr<@type0>;
+// DEFAULT-NEXT:         field5 pNextAll: ptr<@type0>;
+// DEFAULT-NEXT:         field6 inJournal: u8;
+// DEFAULT-NEXT:         field7 nRef: i16;
+// DEFAULT-NEXT:         field8 pDirty: ptr<@type0>;
+// DEFAULT-NEXT:         field9 pPrevDirty: ptr<@type0>;
+// DEFAULT-NEXT:         field10 notUsed: u32;
+// DEFAULT-NEXT:     } [size=80, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 50, 56, 64, 72]];
 // DEFAULT-NEXT:     type @type1 PgHdr = @type0;
 // DEFAULT-NEXT:     type @type2 u8 = u8;
 // DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];

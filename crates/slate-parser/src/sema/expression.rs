@@ -22,7 +22,7 @@ pub(super) struct Lowerer {
     pub names: NameResolution,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub builtin_declarations: HashMap<&'static str, BindingId>,
-    pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
+    pub alias_annotations: HashMap<TypeId, Vec<(String, String)>>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,

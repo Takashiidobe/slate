@@ -8,7 +8,7 @@ use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::visit::Visitor;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ResolveError {
     #[error("unresolved {namespace} name `{name}`")]
     Unresolved {
@@ -979,7 +979,12 @@ impl Resolver {
             | MsAsmExpr::St(_)
             | MsAsmExpr::Number(_)
             | MsAsmExpr::TypeKeyword(_) => Ok(()),
-            MsAsmExpr::Member { base, .. } => self.ms_asm_expr(base),
+            MsAsmExpr::Member { base, field } => {
+                self.resolution
+                    .ms_asm_members
+                    .insert(field.id, BindingId(self.next_id));
+                self.ms_asm_expr(base)
+            }
             MsAsmExpr::Index { base, index } => {
                 self.ms_asm_expr(base)?;
                 self.ms_asm_expr(index)

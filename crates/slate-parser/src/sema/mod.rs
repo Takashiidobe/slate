@@ -37,12 +37,19 @@ pub struct Sema<'u> {
     unit: &'u TranslationUnit,
     names: NameResolution,
     items: Vec<names::ItemResolution>,
+    types: types::TypeResolver,
 }
 
 impl<'u> Sema<'u> {
     pub fn new(unit: &'u TranslationUnit) -> Self {
         let (names, items) = names::resolve_items(unit);
-        Self { unit, names, items }
+        let types = types::TypeResolver::with_names(unit, &names);
+        Self {
+            unit,
+            names,
+            items,
+            types,
+        }
     }
 
     pub fn names(&self) -> Result<&NameResolution, &names::ResolveError> {

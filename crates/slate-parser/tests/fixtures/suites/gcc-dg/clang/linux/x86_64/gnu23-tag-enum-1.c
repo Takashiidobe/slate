@@ -52,7 +52,9 @@ void g(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ee = enum incomplete;
+// DEFAULT-NEXT:     type @type0 ee = enum : u32 {
+// DEFAULT-NEXT:         %0 F = const<i32>(2);
+// DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type1 A = enum : u32 {
 // DEFAULT-NEXT:         %0 B = const<i32>(7);
 // DEFAULT-NEXT:     } [size=4, align=4];

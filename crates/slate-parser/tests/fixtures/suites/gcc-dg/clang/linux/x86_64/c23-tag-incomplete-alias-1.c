@@ -63,7 +63,9 @@ int main()
 // DEFAULT-NEXT:     type @type0 foo = struct {
 // DEFAULT-NEXT:         field0 f: ptr<@type1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 bar = struct incomplete;
+// DEFAULT-NEXT:     type @type1 bar = struct {
+// DEFAULT-NEXT:         field0 x: i64;
+// DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type2 bar = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];

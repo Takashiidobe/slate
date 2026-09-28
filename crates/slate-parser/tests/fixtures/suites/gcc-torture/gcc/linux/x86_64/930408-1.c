@@ -50,7 +50,10 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = enum incomplete;
+// DEFAULT-NEXT:     type @type0 foo = enum : u32 {
+// DEFAULT-NEXT:         %0 e0 = const<i32>(0);
+// DEFAULT-NEXT:         %1 e1 = const<i32>(1);
+// DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type1 E = @type0;
 // DEFAULT-NEXT:     type @type2 = struct {
 // DEFAULT-NEXT:         field0 eval: @type0;

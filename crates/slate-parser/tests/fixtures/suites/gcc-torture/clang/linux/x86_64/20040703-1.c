@@ -155,7 +155,12 @@ int main() {
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type0 cpp_num_part = u32;
-// DEFAULT-NEXT:     type @type1 cpp_num = struct incomplete;
+// DEFAULT-NEXT:     type @type1 cpp_num = struct {
+// DEFAULT-NEXT:         field0 high: u32;
+// DEFAULT-NEXT:         field1 low: u32;
+// DEFAULT-NEXT:         field2 unsignedp: i32;
+// DEFAULT-NEXT:         field3 overflow: i32;
+// DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
 // DEFAULT-NEXT:     type @type2 cpp_num = @type1;
 // DEFAULT-NEXT:     global %24 precision: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(64)) [linkage=external];
 // DEFAULT-NEXT:     global %25 n: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(16)) [linkage=external];

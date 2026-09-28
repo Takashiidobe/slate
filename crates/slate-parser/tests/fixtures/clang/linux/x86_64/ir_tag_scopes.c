@@ -76,7 +76,9 @@ struct Outer2 outer2_object;
 // IR-NEXT:     type @type3 Outer = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type4 Implicit = struct incomplete;
+// IR-NEXT:     type @type4 Implicit = struct {
+// IR-NEXT:         field0 z: i32;
+// IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     type @type5 Holder = struct {
 // IR-NEXT:         field0 m: ptr<@type6>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];

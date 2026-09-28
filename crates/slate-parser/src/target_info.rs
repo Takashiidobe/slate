@@ -267,7 +267,7 @@ impl ScalarLayouts {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum LayoutError {
     #[error("unsupported scalar storage layout for {0}")]
     UnsupportedScalar(Type),

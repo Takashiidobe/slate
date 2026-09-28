@@ -162,7 +162,12 @@ int main() {
 // DEFAULT-NEXT:         field1 heads: ptr<@type1>;
 // DEFAULT-NEXT:         field2 obstack: @type0;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type6 bitmap_element_def = struct incomplete;
+// DEFAULT-NEXT:     type @type6 bitmap_element_def = struct {
+// DEFAULT-NEXT:         field0 next: ptr<@type6>;
+// DEFAULT-NEXT:         field1 prev: ptr<@type6>;
+// DEFAULT-NEXT:         field2 indx: u32;
+// DEFAULT-NEXT:         field3 bits: array<u64, 2>;
+// DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24]];
 // DEFAULT-NEXT:     type @type7 bitmap_obstack = @type5;
 // DEFAULT-NEXT:     type @type8 bitmap_element = @type6;
 // DEFAULT-NEXT:     type @type9 bitmap_descriptor = struct incomplete;

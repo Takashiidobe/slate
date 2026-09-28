@@ -49,7 +49,6 @@ pub struct TypeResolver {
     tag_definitions: HashMap<TagId, BindingId>,
     aliases: HashMap<BindingId, QualType>,
     pub definitions: Vec<TypeDefinition>,
-    pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) function_references: HashSet<crate::ast::NodeId>,
@@ -65,8 +64,13 @@ pub struct TypeResolver {
     field_alignments: HashMap<TypeId, Vec<u64>>,
     pub(super) pragmas: super::pragmas::Pragmas,
     pub(super) diagnostics: Vec<super::SemaError>,
+    pub(super) item_diagnostics: HashMap<crate::ast::NodeId, Vec<super::SemaError>>,
     prototype_scope: bool,
     pub(super) provisional_extents: bool,
+    pub(super) owner: Option<Span<()>>,
+    pub(super) owners: HashMap<TypeId, Span<()>>,
+    alias_definitions: HashMap<crate::ast::NodeId, (TypeId, QualType)>,
+    tag_failures: HashMap<TagId, ResolveError>,
 }
 
 impl TypeResolver {
@@ -84,7 +88,6 @@ impl TypeResolver {
             tag_definitions: HashMap::new(),
             aliases: HashMap::new(),
             definitions: Vec::new(),
-            assertion_scope: false,
             extents: HashMap::new(),
             references: HashMap::new(),
             function_references: HashSet::new(),
@@ -100,8 +103,13 @@ impl TypeResolver {
             field_alignments: HashMap::new(),
             pragmas: super::pragmas::Pragmas::default(),
             diagnostics: Vec::new(),
+            item_diagnostics: HashMap::new(),
             prototype_scope: false,
             provisional_extents: false,
+            owner: None,
+            owners: HashMap::new(),
+            alias_definitions: HashMap::new(),
+            tag_failures: HashMap::new(),
         }
     }
 
@@ -1004,8 +1012,16 @@ impl TypeResolver {
         Ok((field.ty.clone(), offset))
     }
 
-    pub(super) fn ms_asm_field(&self, name: &str) -> Result<(Type, u64), ResolveError> {
-        let mut tags = self.tag_bindings.iter().collect::<Vec<_>>();
+    pub(super) fn ms_asm_field(
+        &self,
+        name: &str,
+        declared_before: BindingId,
+    ) -> Result<(Type, u64), ResolveError> {
+        let mut tags = self
+            .tag_bindings
+            .iter()
+            .filter(|(binding, _)| binding.0 < declared_before.0)
+            .collect::<Vec<_>>();
         tags.sort_by_key(|(binding, _)| std::cmp::Reverse(binding.0));
         let mut shadowed = HashSet::new();
         let mut records = Vec::new();
@@ -1079,11 +1095,15 @@ impl TypeResolver {
         name: String,
         resolved: QualType,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
-    ) -> Result<(), ResolveError> {
+    ) -> Result<TypeId, ResolveError> {
         let binding = *self
             .declarations
             .get(&node)
             .ok_or(ResolveError::Internal("unresolved typedef declaration"))?;
+        if let Some((id, alias)) = self.alias_definitions.get(&node).copied() {
+            self.aliases.insert(binding, alias);
+            return Ok(id);
+        }
         let previous = self
             .alias(binding)
             .and_then(|previous| self.ctypes.typedef_alignment(previous));
@@ -1097,7 +1117,8 @@ impl TypeResolver {
             alignment,
         });
         self.aliases.insert(binding, alias);
-        Ok(())
+        self.alias_definitions.insert(node, (id, alias));
+        Ok(id)
     }
 
     // declarator-position type attributes change only their own declarator's base type
@@ -1266,26 +1287,31 @@ impl TypeResolver {
                 fixed_type,
             }) => {
                 let id = self.referenced_tag(*kind, name)?;
-                if let Some(fixed_type) = fixed_type
-                    && matches!(
-                        self.definitions[id.0 as usize].kind,
+                let unfixed = |types: &Self| {
+                    matches!(
+                        types.definitions[id.0 as usize].kind,
                         TypeDefinitionKind::Enum {
                             underlying: None,
                             ..
                         }
                     )
+                };
+                if let Some(fixed_type) = fixed_type
+                    && unfixed(self)
                 {
                     let underlying =
                         self.resolve(&fixed_type.specifiers, &fixed_type.declarator)?;
                     let underlying_ty =
                         self.object_type(underlying, "void enum underlying type")?;
                     let layout = self.storage(underlying_ty.clone())?;
-                    self.ctypes.set_enum_underlying(id, underlying);
-                    self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
-                        underlying: Some(underlying_ty),
-                        enumerators: None,
-                        layout: Some(layout),
-                    };
+                    if unfixed(self) {
+                        self.ctypes.set_enum_underlying(id, underlying);
+                        self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
+                            underlying: Some(underlying_ty),
+                            enumerators: None,
+                            layout: Some(layout),
+                        };
+                    }
                 }
                 tag_kind(*kind, id)
             }
@@ -1715,9 +1741,20 @@ impl TypeResolver {
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
+        if let Some(error) = self.tag_failures.get(&tag.id) {
+            return Err(error.clone());
+        }
         if let Some(id) = self.tag_ids.get(&tag.id).copied() {
             return Ok(id);
         }
+        let defined = self.define_new_tag(tag);
+        if let Err(error) = &defined {
+            self.tag_failures.insert(tag.id, error.clone());
+        }
+        defined
+    }
+
+    fn define_new_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
         let binding = *self
             .tag_definitions
             .get(&tag.id)
@@ -2667,6 +2704,9 @@ impl TypeResolver {
             name: None,
             kind,
         });
+        if let Some(owner) = &self.owner {
+            self.owners.insert(id, owner.clone());
+        }
         id
     }
 }

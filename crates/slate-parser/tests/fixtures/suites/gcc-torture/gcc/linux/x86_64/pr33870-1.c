@@ -116,7 +116,10 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 PgHdr = struct incomplete;
+// DEFAULT-NEXT:     type @type0 PgHdr = struct {
+// DEFAULT-NEXT:         field0 y: i32;
+// DEFAULT-NEXT:         field1 x: @type3;
+// DEFAULT-NEXT:     } [size=88, align=8, offsets=[0, 8]];
 // DEFAULT-NEXT:     type @type1 PgHdr = @type0;
 // DEFAULT-NEXT:     type @type2 u8 = u8;
 // DEFAULT-NEXT:     type @type3 = struct {

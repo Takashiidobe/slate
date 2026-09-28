@@ -35,7 +35,9 @@ int xyzzy()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = struct incomplete;
+// DEFAULT-NEXT:     type @type0 x = struct {
+// DEFAULT-NEXT:         field0 bar: ptr<fn(i32) -> ptr<i8>>;
+// DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type1 x = @type0;
 // DEFAULT-NEXT:     fn %2 @baz(%5 <unnamed>: ptr<i8>) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %3 @foo() -> ptr<ptr<@type0>> [linkage=internal] [fallthrough=ub_if_used] {

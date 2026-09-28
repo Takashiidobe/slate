@@ -137,9 +137,12 @@ prototype is `array=4` (the enumerator) while `T after_prototype` is still
 
 ## Identifier lookup
 
-Every `TypeResolver` (lowering, the static-assertion checker, the type and
-expression dumps) is built by `TypeResolver::with_names` from the one
-`NameResolution` in `Sema`, which gives it `references` (identifier expression
+`Sema` builds one `TypeResolver` (`TypeResolver::with_names`, from the one
+`NameResolution`); the static-assertion checker walks the unit over it in
+`analyze`, and `lower` takes it over, so lowering starts from the checker's
+tags, aliases, constants and memoized expression types (slate-parser-cc94.6).
+Lowering resets only `entities`, which it redeclares in order. The type and
+expression dumps still build their own. `with_names` gives a resolver `references` (identifier expression
 id -> `BindingId`) and `declarations` (declaring node id -> `BindingId`). An
 identifier's type is `entities.ty(binding)`; its constant value, for an
 enumerator or a folded `constexpr` object, is `constants[binding]`. The
@@ -149,6 +152,26 @@ lowering does (slate-parser-evdx). A typedef name (`TypeSpecifier::Named`)
 and a tag reference (`TagSpecifier::Reference`) carry their name as a
 `Span<String>`, whose `NodeId` is the reference key, so typedef aliases are
 `aliases[binding]` and tags `tag_bindings[binding]` (slate-parser-cc94.3).
+
+Sharing works because every definition is memoized by its AST node, so the
+second walk finds rather than recreates it: `define_tag` by `TagId` (a failure
+too, in `tag_failures`, since a failed body leaves a half-built `TypeId`),
+`define_alias` by declarator `NodeId` (returning the alias `TypeId`, which
+lowering annotates). A definition's span is its `owner`, the declarator,
+parameter or function definition being resolved when `push` created it,
+whichever walk that was; the checker sets the same owners as lowering, and a
+tag with no owner falls back to its body's span. The module prints each
+definition's final state, so a tag completed after its first use prints
+complete. The checker's resolver warnings are kept per item
+(`item_diagnostics`) and replayed when lowering reaches that item, so the
+warning order is unchanged. The checker walks in source order and resolves
+the type names inside expressions (casts, `sizeof`, compound literals,
+`_Generic`), so `TypeId`s are numbered in source order; a VLA typedef, which
+the checker cannot resolve without extent bindings, is numbered when lowering
+reaches it. Anything that scans all tags must bound itself by position:
+`__asm` member lookup only sees tag bindings below the watermark names.rs
+records for it (`NameResolution.ms_asm_members`), because the checker has
+already defined later tags.
 
 Name resolution binds prototype parameters in their prototype scope and
 visits their declarators, so `int a[COUNT]` and `int a[n]` in a prototype
@@ -179,8 +202,9 @@ completeness, layout) live in `TypeResolver.definitions`:
   and its later definition are one binding and one `TypeId`.
 - Names are not keyed by kind, so `struct S` after `union S` in the same scope
   is the same binding; `same_tag_kind` rejects it, as clang and gcc do.
-- The MS inline-asm member lookup (`ms_asm_field`) scans every tag binding,
-  newest first, rather than only the visible ones: permissive.
+- The MS inline-asm member lookup (`ms_asm_field`) scans every tag binding
+  declared before the `__asm` (by the names.rs watermark), newest first,
+  rather than only the visible ones: permissive.
 
 Fixtures: `sema/ir_tag_scopes.c`, `typedef_tag_binding_scopes.c`,
 `error/.../tag_kind_mismatch.c`.

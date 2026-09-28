@@ -53,7 +53,14 @@ repeat:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 tux_req_struct = struct incomplete;
+// DEFAULT-NEXT:     type @type0 tux_req_struct = struct {
+// DEFAULT-NEXT:         field0 sock: ptr<@type2>;
+// DEFAULT-NEXT:         field1 usermode: i8;
+// DEFAULT-NEXT:         field2 userbuf: ptr<i8>;
+// DEFAULT-NEXT:         field3 userlen: u32;
+// DEFAULT-NEXT:         field4 error: i8;
+// DEFAULT-NEXT:         field5 private: ptr<void>;
+// DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24, 28, 32]];
 // DEFAULT-NEXT:     type @type1 tux_req_t = @type0;
 // DEFAULT-NEXT:     type @type2 socket = struct incomplete;
 // DEFAULT-NEXT:     fn %4 @add_output_space_event(%14 req: ptr<@type0>, %15 <unnamed>: ptr<@type2>) -> i32 [linkage=external];
