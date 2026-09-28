@@ -5,6 +5,7 @@ mod declarator;
 mod input;
 mod ms_asm;
 mod stmt;
+mod undo;
 
 use crate::ast::*;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
@@ -132,14 +133,25 @@ enum NameBinding {
     Ordinary,
 }
 
+enum NameChange {
+    Entered,
+    Exited(HashMap<String, NameBinding>),
+    Bound {
+        name: String,
+        previous: Option<NameBinding>,
+    },
+}
+
 struct NameEnvironment {
     scopes: RefCell<Vec<HashMap<String, NameBinding>>>,
+    undo: RefCell<undo::UndoLog<NameChange>>,
 }
 
 impl Default for NameEnvironment {
     fn default() -> Self {
         Self {
             scopes: RefCell::new(vec![HashMap::new()]),
+            undo: RefCell::default(),
         }
     }
 }
@@ -150,7 +162,12 @@ pub(super) struct ScopeGuard<'a> {
 
 impl Drop for ScopeGuard<'_> {
     fn drop(&mut self) {
-        self.names.scopes.borrow_mut().pop();
+        if let Some(scope) = self.names.scopes.borrow_mut().pop() {
+            self.names
+                .undo
+                .borrow_mut()
+                .record(|| NameChange::Exited(scope));
+        }
     }
 }
 
@@ -168,12 +185,13 @@ impl NameEnvironment {
 
     fn enter(&self) -> ScopeGuard<'_> {
         self.scopes.borrow_mut().push(HashMap::new());
+        self.undo.borrow_mut().record(|| NameChange::Entered);
         ScopeGuard { names: self }
     }
 
     fn bind(&self, name: &str, is_typedef: bool) {
         if let Some(scope) = self.scopes.borrow_mut().last_mut() {
-            scope.insert(
+            let previous = scope.insert(
                 name.to_string(),
                 if is_typedef {
                     NameBinding::Typedef
@@ -181,29 +199,58 @@ impl NameEnvironment {
                     NameBinding::Ordinary
                 },
             );
+            self.undo.borrow_mut().record(|| NameChange::Bound {
+                name: name.to_string(),
+                previous,
+            });
+        }
+    }
+
+    fn rollback(&self, mark: usize) {
+        let undone = self.undo.borrow_mut().rollback(mark);
+        let mut scopes = self.scopes.borrow_mut();
+        for change in undone {
+            match change {
+                NameChange::Entered => {
+                    scopes.pop();
+                }
+                NameChange::Exited(scope) => scopes.push(scope),
+                NameChange::Bound { name, previous } => {
+                    if let Some(scope) = scopes.last_mut() {
+                        match previous {
+                            Some(binding) => scope.insert(name, binding),
+                            None => scope.remove(&name),
+                        };
+                    }
+                }
+            }
         }
     }
 }
 
 pub(crate) struct ParseCheckpoint<'a> {
     parser: &'a Parser,
-    scopes: Option<Vec<HashMap<String, NameBinding>>>,
+    names: usize,
     tags: usize,
-    annotations: input::Annotations,
+    annotations: usize,
+    committed: bool,
 }
 
 impl ParseCheckpoint<'_> {
     pub(crate) fn commit(mut self) {
-        self.scopes = None;
+        self.committed = true;
     }
 }
 
 impl Drop for ParseCheckpoint<'_> {
     fn drop(&mut self) {
-        if let Some(scopes) = self.scopes.take() {
-            *self.parser.names.scopes.borrow_mut() = scopes;
+        if self.committed {
+            self.parser.names.undo.borrow_mut().commit();
+            self.parser.input.commit_annotations();
+        } else {
+            self.parser.names.rollback(self.names);
             self.parser.tags.borrow_mut().truncate(self.tags);
-            *self.parser.input.annotations.borrow_mut() = std::mem::take(&mut self.annotations);
+            self.parser.input.rollback_annotations(self.annotations);
         }
     }
 }
@@ -235,9 +282,10 @@ impl Parser {
     pub(crate) fn checkpoint(&self) -> ParseCheckpoint<'_> {
         ParseCheckpoint {
             parser: self,
-            scopes: Some(self.names.scopes.borrow().clone()),
+            names: self.names.undo.borrow_mut().mark(),
             tags: self.tags.borrow().len(),
-            annotations: self.input.annotations.borrow().clone(),
+            annotations: self.input.mark_annotations(),
+            committed: false,
         }
     }
 

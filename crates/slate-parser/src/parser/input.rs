@@ -1,3 +1,4 @@
+use super::undo::UndoLog;
 use crate::ast::{Comment, CommentGroup, Span, SpanRangeIndex};
 use crate::lexer::Token;
 use crate::pp::{PPNode, PPNodeKind};
@@ -16,6 +17,7 @@ pub(super) type Annotations = BTreeMap<usize, Vec<Span<Annotation>>>;
 pub(super) struct ParserInput {
     pub tokens: Vec<Span<Token>>,
     pub(super) annotations: RefCell<Annotations>,
+    annotation_undo: RefCell<UndoLog<(usize, Vec<Span<Annotation>>)>>,
     span_ranges: SpanRangeIndex,
 }
 
@@ -127,15 +129,16 @@ impl ParserInput {
             return Vec::new();
         }
         let mut annotations = self.annotations.borrow_mut();
+        let mut undo = self.annotation_undo.borrow_mut();
         let positions: Vec<_> = annotations
             .range(start..=end)
             .map(|(position, _)| *position)
             .collect();
         let mut result = Vec::new();
         for position in positions {
-            let (taken, remaining): (Vec<_>, Vec<_>) = annotations
-                .remove(&position)
-                .unwrap_or_default()
+            let original = annotations.remove(&position).unwrap_or_default();
+            undo.record(|| (position, original.clone()));
+            let (taken, remaining): (Vec<_>, Vec<_>) = original
                 .into_iter()
                 .partition(|annotation| matches(&annotation.value));
             result.extend(taken);
@@ -144,6 +147,22 @@ impl ParserInput {
             }
         }
         result
+    }
+
+    pub fn mark_annotations(&self) -> usize {
+        self.annotation_undo.borrow_mut().mark()
+    }
+
+    pub fn commit_annotations(&self) {
+        self.annotation_undo.borrow_mut().commit();
+    }
+
+    pub fn rollback_annotations(&self, mark: usize) {
+        let undone = self.annotation_undo.borrow_mut().rollback(mark);
+        let mut annotations = self.annotations.borrow_mut();
+        for (position, original) in undone {
+            annotations.insert(position, original);
+        }
     }
 
     pub fn replace_tokens(&mut self, tokens: Vec<Span<Token>>, positions: &[usize]) {
