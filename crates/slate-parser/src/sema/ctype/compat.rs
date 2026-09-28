@@ -1,4 +1,4 @@
-use super::{CTypeKind, CTypes, Extent, QualType};
+use super::{CTypeKind, CTypes, Extent, QualType, Qualifiers};
 use crate::ir::PointerSpace;
 
 impl CTypes {
@@ -228,11 +228,22 @@ impl CTypes {
         }))
     }
 
-    pub fn merge_pointer(&mut self, a: QualType, b: QualType) -> Option<QualType> {
+    pub fn merge_pointer(
+        &mut self,
+        a: QualType,
+        b: QualType,
+        rules: PointerMerge,
+    ) -> Option<QualType> {
         let a_pointee = self.pointee(a)?;
         let b_pointee = self.pointee(b)?;
         let quals = self.quals(a_pointee).union(self.quals(b_pointee));
         let pointee = if self.is_void(a_pointee) || self.is_void(b_pointee) {
+            let mut quals = self
+                .merged_quals(a_pointee, rules)
+                .union(self.merged_quals(b_pointee, rules));
+            if !rules.atomic {
+                quals = quals.without(Qualifiers::ATOMIC);
+            }
             let void = self.qual(CTypeKind::Void);
             void.with(quals)
         } else {
@@ -242,6 +253,27 @@ impl CTypes {
         };
         Some(self.pointer(pointee))
     }
+
+    fn merged_quals(&self, pointee: QualType, rules: PointerMerge) -> Qualifiers {
+        if !rules.array_element_quals && self.is_array(pointee) {
+            Qualifiers::NONE
+        } else {
+            self.quals(pointee)
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PointerMerge {
+    pub array_element_quals: bool,
+    pub atomic: bool,
+}
+
+impl PointerMerge {
+    pub const EXACT: Self = Self {
+        array_element_quals: true,
+        atomic: true,
+    };
 }
 
 fn compatible_extents(a: Extent, b: Extent) -> bool {

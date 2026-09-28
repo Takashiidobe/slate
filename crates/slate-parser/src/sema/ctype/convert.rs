@@ -104,6 +104,11 @@ impl CTypes {
             if matches!(self.canonical_kind(to), CTypeKind::Bool) {
                 return Ok(Conversion::plain(CastKind::PtrToBool));
             }
+            if self.enum_underlying(to).is_some_and(|underlying| {
+                matches!(self.canonical_kind(underlying), CTypeKind::Bool)
+            }) {
+                return Ok(Conversion::plain(CastKind::IntToEnum));
+            }
             return Err(ResolveError::Invalid(
                 "conversion from nullptr_t to a type other than bool or a pointer",
             ));

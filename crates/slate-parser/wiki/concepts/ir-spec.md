@@ -494,15 +494,27 @@ that is a speed choice no other unit can rely on and is not modeled.
 
 Unnamed members and zero-width bit-fields remain in the field list. Enum
 values are evaluated in declaration order, each enumerator entering the ordinary scope
-as an `int` constant the moment its value is known, so a later enumerator
+as a constant the moment its value is known, so a later enumerator
 sees it with its type (`enum { A = 1, B = sizeof(A) }`) rather than as a
-substituted literal;
+substituted literal. While the enum is open its type follows C23 6.7.2.2
+(gcc and clang apply it in every mode): `int` when the value fits, else the
+promoted type of its value expression; an implicit `previous + 1` keeps the
+previous constant's type and moves to the next wider type of the same
+signedness on overflow (`INT_MAX, B` makes `B` a `long`; `UINT_MAX, B` an
+`unsigned long`). With a fixed underlying type every constant has the enum
+type (the fixed type before C23), must fit it, and the enum is complete —
+`sizeof(enum E)` works — before its first enumerator. Values are arbitrary
+precision;
 the underlying integer type is selected from the represented range unless
-the source fixes it: with a negative value `int`, else `long`; with none,
-`unsigned int` (so `enum { A, B }` is `u32`), else `unsigned long`. Values
+the source fixes it: signed if any value is negative, as the first of `int`,
+`long`, `long long` that holds every value, so `enum { A, B }` is `u32` and
+`{ A = -1, B = 1ll << 40 }` is `i64`. Values
 outside `int`, a fixed underlying type and a trailing comma are only
-extension warnings in clang before C23, so no mode rejects them. Enum storage retains size and alignment separately so
+extension warnings in clang before C23, so no mode rejects them. A block-scope
+`enum E : T;` declares a new `E` there, shadowing an outer one, as `struct S;`
+does. Enum storage retains size and alignment separately so
 alignment attributes need not change the underlying integer type.
+Fixtures: `suites/gcc-dg/*/linux/x86_64/c23-enum-1.c`, `.../gcc/.../c23-enum-6.c`.
 `tools/check_record_layout.py` compares each target directory's generated
 layout fixture with clang's target-specific record layout dump. The fixture
 runner and expectation generator derive the target triple from that directory.
@@ -2137,6 +2149,14 @@ type carrying the union of both pointee qualifier sets, with `void *` winning
 over an object pointer. `(void *)0` is a null pointer constant, so
 `c ? (int *)0 : (void *)0` is `int *`, not `void *` — verified against clang
 22 and gcc 16. Fixture: `tests/fixtures/clang/linux/x86_64/ir_conditional_composite.c`.
+When one side points to `void`, the result points to `void` qualified with
+both pointees' qualifiers, with two gcc-only exceptions
+(`StandardFeatures::conditional_pointers`): gcc drops `_Atomic`, and before
+C23 a pointer to an array of `const` elements contributes nothing, because the
+array type itself is unqualified until C23. So under gcc
+`1 ? (const int (*)[1])u : (void *)v` is `void *` in C11 and `const void *` in
+C23; clang keeps `const` in both (fixtures
+`suites/gcc-dg/gcc/.../c11-qual-1.c`, `c23-qual-7.c`).
 
 The GNU omitted-middle form `a ?: b` evaluates `a` once and uses it as both
 the truth test and the then-operand. It lowers to a `capture<%id>` around the

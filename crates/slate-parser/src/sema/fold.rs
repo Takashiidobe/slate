@@ -263,6 +263,11 @@ fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
             operand,
             ..
         } => float_to_integer(floating(operand, depth, env)?, width, signed, env.flavor)?,
+        ValueKind::Convert {
+            kind: ConversionKind::EnumToInt,
+            operand,
+            ..
+        } => enumerated(operand, depth, env)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
                 ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
@@ -532,6 +537,20 @@ fn truncated(value: Quad, bits: usize) -> Option<BigInt> {
     } else {
         magnitude
     })
+}
+
+fn enumerated(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
+    match &value.node.value {
+        ValueKind::Constant(Number::Integer(value)) => Some(BigInt::from(value.clone())),
+        ValueKind::Constant(Number::SignedInteger(value)) => Some(value.clone()),
+        ValueKind::Constant(Number::Bool(value)) => Some(BigInt::from(u8::from(*value))),
+        ValueKind::Convert {
+            kind: ConversionKind::IntToEnum,
+            operand,
+            ..
+        } => evaluate(operand, depth, env),
+        _ => None,
+    }
 }
 
 fn integer_type(ty: &Type) -> Option<(u32, bool)> {

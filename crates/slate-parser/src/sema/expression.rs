@@ -843,7 +843,12 @@ impl Lowerer {
                 if self.types.ctypes.is_void(a) || self.types.ctypes.is_void(b) {
                     return;
                 }
-                if self.types.ctypes.merge_pointer(a, b).is_none() {
+                if self
+                    .types
+                    .ctypes
+                    .merge_pointer(a, b, super::PointerMerge::EXACT)
+                    .is_none()
+                {
                     self.warn(
                         Warning::CompareDistinctPointerTypes,
                         "comparison of distinct pointer types",
@@ -2478,11 +2483,13 @@ impl Lowerer {
                     } else if self.is_null_pointer_constant(Some(then_value), &left) {
                         right.c
                     } else {
-                        self.types.ctypes.merge_pointer(left.c, right.c).ok_or(
-                            ResolveError::Invalid(
+                        let rules = self.types.features.conditional_pointers;
+                        self.types
+                            .ctypes
+                            .merge_pointer(left.c, right.c, rules)
+                            .ok_or(ResolveError::Invalid(
                                 "conditional operands are pointers to incompatible types",
-                            ),
-                        )?
+                            ))?
                     };
                     left =
                         self.convert_expr(then_value, left, merged, ConversionReason::UsualArith)?;

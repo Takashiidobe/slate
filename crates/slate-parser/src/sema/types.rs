@@ -16,7 +16,7 @@ use crate::ir::{
 use crate::target_info::{
     LongDoubleFormat, StorageLayout, TargetEnvironment, TargetFamily, TargetInfo,
 };
-use num_bigint::{BigInt, BigUint};
+use num_bigint::{BigInt, Sign};
 
 use super::attributes::{Subject, Use};
 use super::ctype::{
@@ -739,6 +739,10 @@ impl TypeResolver {
                 )),
             },
             ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
+            ExprKind::Cast { ty, .. } => {
+                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                Ok(self.ctypes.unqualified(ty))
+            }
             ExprKind::NullPtrLiteral => Ok(self.ctypes.qual(CTypeKind::NullPtr)),
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
@@ -797,7 +801,7 @@ impl TypeResolver {
             ExprKind::Conditional {
                 condition,
                 then_value,
-                ..
+                else_value,
             } => {
                 let left = match then_value {
                     Some(then_value) => self.assertion_operand_type(then_value)?,
@@ -806,7 +810,25 @@ impl TypeResolver {
                 if self.ctypes.is_record(left) {
                     return Ok(left);
                 }
-                self.constant_value(e).map(|value| value.c)
+                let constant = self.constant_value(e).map(|value| value.c);
+                if constant.is_ok() {
+                    return constant;
+                }
+                let left = self.ctypes.lvalue_conversion(left);
+                let right = self.assertion_operand_type(else_value)?;
+                let right = self.ctypes.lvalue_conversion(right);
+                match (self.ctypes.is_pointer(left), self.ctypes.is_pointer(right)) {
+                    (true, true) => {
+                        let rules = self.features.conditional_pointers;
+                        Ok(self
+                            .ctypes
+                            .merge_pointer(left, right, rules)
+                            .unwrap_or(left))
+                    }
+                    (true, false) => Ok(left),
+                    (false, true) => Ok(right),
+                    (false, false) => constant,
+                }
             }
             _ => self.constant_value(e).map(|value| value.c),
         }
@@ -931,6 +953,35 @@ impl TypeResolver {
             }
         }
         None
+    }
+
+    fn integer_fits(&self, value: &BigInt, q: QualType) -> bool {
+        let q = self.ctypes.enum_underlying(q).unwrap_or(q);
+        let (width, signed) = match self.ir_type(q) {
+            Type::Bool => (1, false),
+            Type::Numeric(NumericType::Integer { width, signed, .. }) => (width, signed),
+            _ => return false,
+        };
+        let limit = BigInt::from(1u8) << (width - u32::from(signed));
+        let min = if signed { -&limit } else { BigInt::ZERO };
+        *value >= min && *value < limit
+    }
+
+    fn wider_integers(&mut self, q: QualType) -> Vec<QualType> {
+        let q = self.ctypes.enum_underlying(q).unwrap_or(q);
+        let Type::Numeric(NumericType::Integer { width, signed, .. }) = self.ir_type(q) else {
+            return Vec::new();
+        };
+        let candidates: Vec<QualType> = [IntRank::Int, IntRank::Long, IntRank::LongLong]
+            .into_iter()
+            .map(|rank| self.ctypes.qual(CTypeKind::Int { rank, signed }))
+            .collect();
+        candidates
+            .into_iter()
+            .filter(|&wider| {
+                matches!(self.ir_type(wider), Type::Numeric(NumericType::Integer { width: w, .. }) if w > width)
+            })
+            .collect()
     }
 
     fn field_alignment(&self, q: QualType, name: &str) -> Option<u64> {
@@ -1770,23 +1821,25 @@ impl TypeResolver {
         let TypeSpecifier::Tag(TagSpecifier::Reference {
             kind,
             name,
-            fixed_type: None,
+            fixed_type,
         }) = &specifiers.ty
         else {
             return false;
         };
         let key = (*kind, name.to_owned());
-        if self
+        let declared_here = self
             .tag_names
             .last()
-            .is_some_and(|scope| scope.contains_key(&key))
-        {
-            return true;
+            .is_some_and(|scope| scope.contains_key(&key));
+        // `enum E : T;` names a new type in this scope like `struct S;`, but the caller
+        // still resolves it so T (which may define E itself) is lowered normally
+        let shadows = fixed_type.is_some() && self.lookup_tag(&key).is_some();
+        if !declared_here && (fixed_type.is_none() || shadows) {
+            let id = self.push(incomplete_tag(*kind));
+            self.definitions[id.0 as usize].name = Some(name.to_owned());
+            self.declare_tag(key, id);
         }
-        let id = self.push(incomplete_tag(*kind));
-        self.definitions[id.0 as usize].name = Some(name.to_owned());
-        self.declare_tag(key, id);
-        true
+        fixed_type.is_none()
     }
 
     fn redeclare_tag_names(&mut self, tag: &TagDefinition, id: TypeId) {
@@ -1952,66 +2005,106 @@ impl TypeResolver {
                 let fixed_underlying = fixed_type
                     .as_ref()
                     .map(|fixed_type| self.resolve(&fixed_type.specifiers, &fixed_type.declarator))
-                    .transpose()?;
+                    .transpose()?
+                    .map(|fixed| self.ctypes.unqualified(fixed));
+                let fixed_member = match fixed_underlying {
+                    Some(fixed) => {
+                        let underlying = self.object_type(fixed, "void enum underlying type")?;
+                        let layout = self.storage(underlying.clone())?;
+                        self.ctypes.set_enum_underlying(id, fixed);
+                        self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
+                            underlying: Some(underlying),
+                            enumerators: None,
+                            layout: Some(layout),
+                        };
+                        Some(if self.features.enumerators_have_enum_type {
+                            self.ctypes.qual(CTypeKind::Enum(id))
+                        } else {
+                            fixed
+                        })
+                    }
+                    None => None,
+                };
+                let int_ty = self.ctypes.int();
                 let mut values = Vec::new();
-                let mut previous = -1i64;
-                let mut prior = HashMap::new();
+                let mut previous: Option<(BigInt, QualType)> = None;
                 for item in enumerators {
                     let EnumItemKind::Enumerator(enumerator) = &item.value else {
                         continue;
                     };
-                    let value = if let Some(expr) = &enumerator.value {
-                        i64::try_from(self.constant_integer(expr)?).map_err(|_| {
-                            ResolveError::Unsupported("enum value outside supported i64 range")
-                        })?
-                    } else {
-                        previous
-                            .checked_add(1)
-                            .ok_or(ResolveError::Unsupported("enum value overflow"))?
+                    let (value, own) = match (&enumerator.value, previous.take()) {
+                        (Some(expr), _) => {
+                            let operand = self.constant_value(expr)?;
+                            let value = super::fold::integer_constant(&operand.value, self.flavor)
+                                .ok_or(ResolveError::Unsupported(
+                                    "nonconstant or undefined integer expression",
+                                ))?;
+                            let own = self.ctypes.integer_promotion(operand.c, None, &self.target);
+                            (value, own)
+                        }
+                        (None, Some((previous, own))) => (previous + 1, own),
+                        (None, None) => (BigInt::ZERO, int_ty),
                     };
-                    previous = value;
-                    prior.insert(enumerator.name.clone(), value);
-                    let int_ty = self.ctypes.int();
-                    let ty = self.ir_type(int_ty);
+                    // c23 6.7.2.2: while the enum is open each constant keeps its own type
+                    let c = match fixed_member {
+                        Some(member) => {
+                            if !self.integer_fits(&value, member) {
+                                return Err(ResolveError::Invalid(
+                                    "enumerator value outside the range of the fixed underlying type",
+                                ));
+                            }
+                            member
+                        }
+                        None if self.integer_fits(&value, int_ty) => int_ty,
+                        None if self.integer_fits(&value, own) => own,
+                        None => self
+                            .wider_integers(own)
+                            .into_iter()
+                            .find(|wider| self.integer_fits(&value, *wider))
+                            .ok_or(ResolveError::Unsupported(
+                                "enumerator value overflows every integer type",
+                            ))?,
+                    };
+                    let value_c = self.ir_type(c);
+                    let number = super::fold::integer_number(&value_c, value.clone());
                     self.declare(
                         &enumerator.name,
                         Ordinary::Constant(Operand {
                             value: Value {
-                                ty,
-                                node: item.derive(ValueKind::Constant(Number::SignedInteger(
-                                    BigInt::from(value),
-                                ))),
+                                ty: value_c,
+                                node: item.derive(ValueKind::Constant(number)),
                             },
-                            c: int_ty,
+                            c,
                         }),
                     );
+                    previous = Some((value.clone(), c));
                     values.push((item, enumerator, value));
                 }
                 let is_fixed = fixed_underlying.is_some();
                 let fits_int = values
                     .iter()
-                    .all(|(_, _, value)| i32::try_from(*value).is_ok());
+                    .all(|(_, _, value)| self.integer_fits(value, int_ty));
                 let underlying_c = if let Some(fixed_underlying) = fixed_underlying {
                     fixed_underlying
                 } else {
-                    let (rank, signed) = if values.iter().any(|(_, _, value)| *value < 0) {
-                        (
-                            if fits_int {
-                                IntRank::Int
-                            } else {
-                                IntRank::Long
-                            },
-                            true,
-                        )
-                    } else if values
+                    let signed = values
                         .iter()
-                        .all(|(_, _, value)| u32::try_from(*value).is_ok())
-                    {
-                        (IntRank::Int, false)
-                    } else {
-                        (IntRank::Long, false)
-                    };
-                    self.ctypes.qual(CTypeKind::Int { rank, signed })
+                        .any(|(_, _, value)| value.sign() == Sign::Minus);
+                    let candidates: Vec<QualType> =
+                        [IntRank::Int, IntRank::Long, IntRank::LongLong]
+                            .into_iter()
+                            .map(|rank| self.ctypes.qual(CTypeKind::Int { rank, signed }))
+                            .collect();
+                    candidates
+                        .into_iter()
+                        .find(|&candidate| {
+                            values
+                                .iter()
+                                .all(|(_, _, value)| self.integer_fits(value, candidate))
+                        })
+                        .ok_or(ResolveError::Unsupported(
+                            "enumerator values fit no underlying integer type",
+                        ))?
                 };
                 let underlying = self.object_type(underlying_c, "void enum underlying type")?;
                 self.ctypes.set_enum_underlying(id, underlying_c);
@@ -2027,11 +2120,10 @@ impl TypeResolver {
                 for (item, enumerator, value) in values {
                     let value = Value {
                         ty: enumerator_type.clone(),
-                        node: item.derive(ValueKind::Constant(if value < 0 {
-                            Number::SignedInteger(BigInt::from(value))
-                        } else {
-                            Number::Integer(BigUint::from(value as u64))
-                        })),
+                        node: item.derive(ValueKind::Constant(super::fold::integer_number(
+                            &enumerator_type,
+                            value,
+                        ))),
                     };
                     self.declare(
                         &enumerator.name,

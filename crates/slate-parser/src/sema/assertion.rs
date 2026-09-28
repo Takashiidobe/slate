@@ -142,8 +142,16 @@ impl Checker<'_> {
 
     fn declaration(&mut self, declaration: &Declaration, global: bool) {
         if declaration.declarators.is_empty()
-            && self.types.declare_forward_tag(&declaration.specifiers)
+            && matches!(
+                declaration.specifiers.ty,
+                TypeSpecifier::Tag(TagSpecifier::Reference { .. })
+            )
         {
+            if !self.types.declare_forward_tag(&declaration.specifiers) {
+                let _ = self
+                    .types
+                    .resolve(&declaration.specifiers, &Declarator::Abstract);
+            }
             return;
         }
         self.tag(&declaration.specifiers.ty);
