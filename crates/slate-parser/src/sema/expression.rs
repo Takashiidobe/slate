@@ -1701,13 +1701,11 @@ impl Lowerer {
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e Expr, ResolveError> {
         let controlling = match controlling {
-            crate::ast::GenericControl::Type { ty } => {
-                let resolved = self.resolve_type_name(ty)?;
-                self.types
-                    .object_type(resolved, "void generic controlling type")?;
-                resolved
+            crate::ast::GenericControl::Type { ty } => self.resolve_type_name(ty)?,
+            crate::ast::GenericControl::Expr(expr) => {
+                let ty = self.unevaluated(expr)?;
+                self.types.ctypes.lvalue_conversion(ty)
             }
-            crate::ast::GenericControl::Expr(expr) => self.unevaluated(expr)?,
         };
         for association in associations {
             if let crate::ast::GenericAssociation::Type { ty, .. } = association {

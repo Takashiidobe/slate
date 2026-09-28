@@ -644,24 +644,22 @@ impl TypeResolver {
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
         use crate::ast::GenericControl;
         let controlling = match controlling {
-            GenericControl::Type { ty } => {
-                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                self.object_type(ty, "void generic controlling type")?;
-                ty
+            GenericControl::Type { ty } => self.resolve(&ty.specifiers, &ty.declarator)?,
+            GenericControl::Expr(expr) => {
+                let ty = self.assertion_operand_type(expr)?;
+                self.ctypes.lvalue_conversion(ty)
             }
-            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?,
         };
         self.select_association(controlling, associations)
     }
 
-    // The controlling operand is lvalue-converted, so array and function associations never match.
+    // c2y matches a type-name operand as written; only an expression operand is lvalue-converted.
     pub(super) fn select_association<'e>(
         &mut self,
         controlling: QualType,
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
         use crate::ast::GenericAssociation;
-        let controlling = self.ctypes.lvalue_conversion(controlling);
         let mut selected = None;
         let mut fallback = None;
         for association in associations {
@@ -669,7 +667,6 @@ impl TypeResolver {
                 GenericAssociation::Default(value) => fallback = Some(value),
                 GenericAssociation::Type { ty, value } => {
                     let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                    self.object_type(ty, "void generic association type")?;
                     if self.ctypes.compatible(ty, controlling) {
                         if selected.is_some() {
                             return Err(ResolveError::Invalid("ambiguous generic selection"));

@@ -573,10 +573,13 @@ GenericAssociation = Type { ty: TypeName, value: Expr } | Default(Expr)
 MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 ```
 
-The AST keeps every `_Generic` association; sema picks one. The controlling
-operand is lvalue-converted first (array and function types decay to pointers,
-top-level qualifiers drop), so an association of array type can never be
-selected, matching clang's `-Wunreachable-code-generic-assoc`.
+The AST keeps every `_Generic` association; sema picks one. An expression
+controlling operand is lvalue-converted first (array and function types decay
+to pointers, top-level qualifiers drop), so an association of array type can
+never be selected by one, matching clang's `-Wunreachable-code-generic-assoc`.
+A type-name controlling operand (C2y, accepted by gcc and clang in earlier
+modes) is matched as written: `_Generic(const int, int: 1, const int: 2)` is
+2, and `void`, function and array types can be selected.
 
 Whether an identifier in `_Generic`, `sizeof(x)` or `(x)(y)` is a type is
 decided by the typedef-name set, the same as everywhere else in C parsing.
