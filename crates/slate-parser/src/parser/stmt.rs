@@ -163,7 +163,7 @@ impl Parser {
     }
 
     pub(super) fn parse_body(&self, cursor: &mut TokenCursor) -> Result<Box<Stmt>, ParseError> {
-        let _scope = (self.features.control_statement_scopes
+        let _scope = (self.features().control_statement_scopes
             && cursor.peek() != Some(&Token::LBrace))
         .then(|| self.enter_scope());
         let start = cursor.pos;
@@ -418,7 +418,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::If)) => {
                 let _scope = self
-                    .features
+                    .features()
                     .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
@@ -448,7 +448,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::While)) => {
                 let _scope = self
-                    .features
+                    .features()
                     .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
@@ -468,7 +468,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Do)) => {
                 let _scope = self
-                    .features
+                    .features()
                     .control_statement_scopes
                     .then(|| self.enter_scope());
                 cursor.pos += 1;
@@ -503,7 +503,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::For)) => {
                 let _scope = self
-                    .features
+                    .features()
                     .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
@@ -564,7 +564,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Switch)) => {
                 let _scope = self
-                    .features
+                    .features()
                     .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;

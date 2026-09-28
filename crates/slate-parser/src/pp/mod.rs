@@ -9,9 +9,9 @@ use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
+use crate::dialect::Dialect;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
-use crate::standard_features::StandardFeatures;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
@@ -89,28 +89,21 @@ pub struct Preprocessor<'a> {
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
     build_time: SystemTime,
-    standard: LanguageStandard,
-    flavor: CompilerFlavor,
-    features: StandardFeatures,
-    target: crate::target_info::TargetInfo,
+    dialect: &'a Dialect,
 }
 
 impl<'a> Preprocessor<'a> {
     fn lex(&self, src: &str) -> Vec<Token> {
         Lexer::new(FileId(0), src)
-            .with_features(self.features)
+            .with_features(self.dialect.features())
             .tokenize()
             .into_iter()
             .map(|span| span.value)
             .collect()
     }
 
-    pub fn new(
-        search: &'a SearchPaths,
-        standard: LanguageStandard,
-        features: StandardFeatures,
-    ) -> Self {
-        Preprocessor {
+    pub fn new(search: &'a SearchPaths, dialect: &'a Dialect) -> Result<Self, PPError> {
+        let mut preprocessor = Preprocessor {
             files: Files::new(),
             macros: foldhash::HashMap::default(),
             main_file: None,
@@ -125,11 +118,10 @@ impl<'a> Preprocessor<'a> {
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
             build_time: SystemTime::now(),
-            standard,
-            flavor: CompilerFlavor::default(),
-            features,
-            target: crate::target_info::TargetInfo::default(),
-        }
+            dialect,
+        };
+        preprocessor.configure()?;
+        Ok(preprocessor)
     }
 
     fn seed_builtin_macros(
@@ -145,7 +137,7 @@ impl<'a> Preprocessor<'a> {
                 )))),
             );
         };
-        let gnu_namespace = if self.standard.is_gnu() {
+        let gnu_namespace = if self.dialect.standard().is_gnu() {
             predefines.gnu_namespace
         } else {
             ""
@@ -171,7 +163,7 @@ impl<'a> Preprocessor<'a> {
 
     fn seed_standard_predefines(&mut self) -> Result<(), PPError> {
         match (
-            self.standard.stdc_version(),
+            self.dialect.standard().stdc_version(),
             self.macros.get_mut("__STDC_VERSION__"),
         ) {
             (Some(version), Some(entry)) => {
@@ -189,10 +181,10 @@ impl<'a> Preprocessor<'a> {
 
         let mut defines = Vec::new();
         if self.macros.contains_key("__GNUC__") {
-            if !self.standard.is_gnu() {
+            if !self.dialect.standard().is_gnu() {
                 defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
             }
-            let inline_semantics = if self.standard.stdc_version() >= Some(199901) {
+            let inline_semantics = if self.dialect.standard().stdc_version() >= Some(199901) {
                 "__GNUC_STDC_INLINE__"
             } else {
                 "__GNUC_GNU_INLINE__"
@@ -200,7 +192,8 @@ impl<'a> Preprocessor<'a> {
             defines.push((inline_semantics.to_string(), "1".to_string()));
         }
         if self
-            .standard
+            .dialect
+            .standard()
             .stdc_version()
             .is_some_and(|version| version >= 202311)
         {
@@ -350,19 +343,13 @@ impl<'a> Preprocessor<'a> {
         Ok((included, nodes))
     }
 
-    pub fn configure(
-        &mut self,
-        target: crate::target_info::TargetInfo,
-        options: &crate::compiler_options::CompilerOptions,
-        flavor: CompilerFlavor,
-    ) -> Result<(), PPError> {
-        self.target = target.clone();
-        self.flavor = flavor;
-        self.features = StandardFeatures::for_compiler(self.standard, flavor, &target);
-        self.seed_builtin_macros(&target, flavor)?;
+    fn configure(&mut self) -> Result<(), PPError> {
+        let dialect = self.dialect;
+        let (target, options, flavor) = (dialect.target(), dialect.options(), dialect.flavor());
+        self.seed_builtin_macros(target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;
-            let (selected, other) = match options.effective_inline_semantics(self.standard) {
+            let (selected, other) = match dialect.inline_semantics() {
                 InlineSemantics::SupressDef => ("__GNUC_GNU_INLINE__", "__GNUC_STDC_INLINE__"),
                 InlineSemantics::ProvideDef => ("__GNUC_STDC_INLINE__", "__GNUC_GNU_INLINE__"),
             };
@@ -376,11 +363,11 @@ impl<'a> Preprocessor<'a> {
             Vec::new()
         } else {
             let mut defines = target.long_double.predefines();
-            defines.extend(
-                target
-                    .isa
-                    .predefines(target.family, flavor, !self.standard.is_gnu()),
-            );
+            defines.extend(target.isa.predefines(
+                target.family,
+                flavor,
+                !self.dialect.standard().is_gnu(),
+            ));
             defines
         };
         if flavor == CompilerFlavor::Gcc
@@ -390,7 +377,7 @@ impl<'a> Preprocessor<'a> {
         }
         if flavor == CompilerFlavor::Msvc
             && options.explicit_standard
-            && let Some(version) = self.standard.stdc_version()
+            && let Some(version) = self.dialect.standard().stdc_version()
         {
             let version = if version == 202311 { 202312 } else { version };
             defines.push(format!("__STDC_VERSION__={version}L"));
@@ -449,7 +436,7 @@ impl<'a> Preprocessor<'a> {
         self.line_starts.insert(file, starts);
         let tokens = Lexer::new(file, src)
             .with_newlines()
-            .with_features(self.features)
+            .with_features(self.dialect.features())
             .tokenize();
         let items = syntax::parse(src, tokens)?;
         self.walk_group(&items)
@@ -719,7 +706,7 @@ impl<'a> Preprocessor<'a> {
                     .collect();
                 Some((pragma_tokens, index + 4))
             }
-            "__pragma" if self.features.microsoft_extensions => {
+            "__pragma" if self.dialect.features().microsoft_extensions => {
                 let mut depth = 0usize;
                 let close = (index + 1..tokens.len()).find(|&at| {
                     match tokens[at].value {
@@ -891,7 +878,7 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn is_defined(&self, name: &str) -> bool {
-        self.macros.contains_key(name) || is_defined_operator(name, self.flavor)
+        self.macros.contains_key(name) || is_defined_operator(name, self.dialect.flavor())
     }
 
     fn evaluate_condition(
@@ -902,11 +889,16 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_condition(&directive.arguments);
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
-        let expanded = expand_has_checks(&expanded, self.flavor, self.standard, &self.target);
+        let expanded = expand_has_checks(
+            &expanded,
+            self.dialect.flavor(),
+            self.dialect.standard(),
+            self.dialect.target(),
+        );
         const_expr::Parser::evaluate_with_defined(
             &expanded,
-            &self.target,
-            self.flavor,
+            self.dialect.target(),
+            self.dialect.flavor(),
             &|macro_name| self.is_defined(macro_name),
         )
         .map(|value| value != 0)
@@ -1048,7 +1040,7 @@ impl<'a> Preprocessor<'a> {
 
     fn classify_keyword(&self, token: Span<Token>) -> Span<Token> {
         match &token.value {
-            Token::Ident(word) => match keyword_token(word, &self.features) {
+            Token::Ident(word) => match keyword_token(word, &self.dialect.features()) {
                 Some(keyword) => token.with_value(keyword),
                 None => token,
             },

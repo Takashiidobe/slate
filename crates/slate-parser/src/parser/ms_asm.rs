@@ -54,10 +54,12 @@ fn instruction_end(tokens: &[Span<Token>], start: usize) -> usize {
 impl Parser {
     fn ms_asm_enabled(&self) -> bool {
         match self.flavor() {
-            CompilerFlavor::Msvc => self.target.family == TargetFamily::X86,
+            CompilerFlavor::Msvc => self.dialect().target().family == TargetFamily::X86,
             CompilerFlavor::Clang => {
-                matches!(self.target.family, TargetFamily::X86 | TargetFamily::X86_64)
-                    && self.target.environment == TargetEnvironment::Msvc
+                matches!(
+                    self.dialect().target().family,
+                    TargetFamily::X86 | TargetFamily::X86_64
+                ) && self.dialect().target().environment == TargetEnvironment::Msvc
             }
             CompilerFlavor::Gcc => false,
         }

@@ -301,15 +301,14 @@ impl Parser {
         for annotation in input.take_remaining() {
             decls.push(self.declaration_annotation(annotation)?);
         }
-        let options = self.effective_options();
         Ok(filter_translation_unit(
             &TranslationUnit {
                 standard: self.standard(),
-                options: options.clone(),
+                options: self.dialect().options().clone(),
                 decls,
                 tags: self.tags.take(),
                 flavor: self.flavor(),
-                target: options.effective_target(self.target.clone()),
+                target: self.dialect().target().clone(),
             },
             root_file,
             &self.forced_roots,

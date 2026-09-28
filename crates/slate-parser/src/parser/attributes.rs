@@ -588,20 +588,21 @@ fn c23_attribute_name(name: &str) -> Option<&str> {
 }
 
 fn gnu_registered(name: &str, context: Option<&Parser>) -> bool {
-    context
-        .is_none_or(|parser| attribute_support::gnu_registered(name, parser.flavor, &parser.target))
+    context.is_none_or(|parser| {
+        attribute_support::gnu_registered(name, parser.flavor(), parser.dialect().target())
+    })
 }
 
 fn declspec_registered(name: &str, context: Option<&Parser>) -> bool {
     context.is_none_or(|parser| {
-        attribute_support::declspec_registered(name, parser.flavor, &parser.target)
+        attribute_support::declspec_registered(name, parser.flavor(), parser.dialect().target())
     })
 }
 
 fn c23_registered(name: &str, context: Option<&Parser>) -> bool {
     !name.contains("::")
         || context.is_none_or(|parser| {
-            attribute_support::spelling_registered(name, parser.flavor, &parser.target)
+            attribute_support::spelling_registered(name, parser.flavor(), parser.dialect().target())
         })
 }
 

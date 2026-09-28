@@ -243,7 +243,10 @@ impl Parser {
         names.extend(operand_names(&inputs));
         let operand_count = names.len();
         names.extend(labels.iter().map(|label| Some(label.value.as_str())));
-        let dialects = matches!(self.target.family, TargetFamily::X86 | TargetFamily::X86_64);
+        let dialects = matches!(
+            self.dialect().target().family,
+            TargetFamily::X86 | TargetFamily::X86_64
+        );
         let pieces = analyze_template(&template.value, &names, operand_count, dialects)
             .map_err(|error| self.error_at_tokens(tokens, template_pos, error))?;
         let constraint_error = |operand: &RawOperand, message: String| {

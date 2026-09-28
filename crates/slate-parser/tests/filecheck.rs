@@ -4,6 +4,7 @@ use slate_parser::ast::*;
 use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::compiler_headers;
 use slate_parser::const_expr::Parser as ConstExprParser;
+use slate_parser::dialect::Dialect;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
 use slate_parser::sysroot;
@@ -708,14 +709,11 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
         system,
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search)
-        .with_defines(
-            defines
-                .iter()
-                .map(|define| define.trim_start_matches("-D").to_string()),
-        )
-        .with_target(target)
-        .with_flavor(flavor);
+    let mut parser = Parser::new(search, Dialect::for_flavor(flavor, target)).with_defines(
+        defines
+            .iter()
+            .map(|define| define.trim_start_matches("-D").to_string()),
+    );
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let ours = summarize_evaluated(&ast);
     let theirs = summarize_clang(&run_clang_ast(fixture, defines, isystem));

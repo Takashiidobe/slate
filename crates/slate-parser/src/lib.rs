@@ -5,6 +5,7 @@ pub mod compiler_headers;
 pub mod compiler_options;
 pub mod const_expr;
 pub mod diagnostics;
+pub mod dialect;
 pub mod error;
 pub mod files;
 pub mod ir;

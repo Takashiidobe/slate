@@ -10,6 +10,7 @@ mod undo;
 use crate::ast::*;
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
+use crate::dialect::Dialect;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::Token;
@@ -17,7 +18,6 @@ use crate::pp::{
     DirectiveDiagnostic, MacroEntry, MacroOption, PPNode, Preprocessor, PreprocessorInputs,
 };
 use crate::standard_features::StandardFeatures;
-use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, builtin_integer_typedef, is_target_builtin_name};
 use input::{Annotation, ParserInput};
@@ -117,11 +117,7 @@ pub struct Parser {
     preprocessor_inputs: PreprocessorInputs,
     forced_roots: Vec<FileId>,
     biggest_alignment: i64,
-    flavor: CompilerFlavor,
-    standard: LanguageStandard,
-    features: StandardFeatures,
-    target: TargetInfo,
-    options: Option<crate::compiler_options::CompilerOptions>,
+    dialect: Dialect,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
     nesting: Cell<u32>,
@@ -301,7 +297,7 @@ impl Parser {
         &self.nesting
     }
 
-    pub fn new(search: SearchPaths) -> Self {
+    pub fn new(search: SearchPaths, dialect: Dialect) -> Self {
         Self {
             search,
             source_name: "<source>".into(),
@@ -314,11 +310,7 @@ impl Parser {
             preprocessor_inputs: PreprocessorInputs::default(),
             forced_roots: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
-            flavor: CompilerFlavor::default(),
-            standard: LanguageStandard::default(),
-            features: StandardFeatures::default(),
-            target: TargetInfo::default(),
-            options: None,
+            dialect,
             tags: Rc::default(),
             line_starts: HashMap::new(),
             nesting: Cell::new(0),
@@ -361,43 +353,20 @@ impl Parser {
         Ok(nodes)
     }
 
-    pub fn with_flavor(mut self, flavor: CompilerFlavor) -> Self {
-        self.flavor = flavor;
-        self
+    pub fn dialect(&self) -> &Dialect {
+        &self.dialect
     }
 
     pub fn flavor(&self) -> CompilerFlavor {
-        self.flavor
-    }
-
-    pub fn with_standard(mut self, standard: LanguageStandard) -> Self {
-        self.standard = standard;
-        self.features = StandardFeatures::new(standard);
-        self
+        self.dialect.flavor()
     }
 
     pub fn standard(&self) -> LanguageStandard {
-        self.standard
+        self.dialect.standard()
     }
 
     pub fn features(&self) -> StandardFeatures {
-        self.features
-    }
-
-    pub fn with_target(mut self, target: TargetInfo) -> Self {
-        self.target = target;
-        self
-    }
-
-    pub fn with_options(mut self, options: crate::compiler_options::CompilerOptions) -> Self {
-        self.options = Some(options);
-        self
-    }
-
-    fn effective_options(&self) -> crate::compiler_options::CompilerOptions {
-        self.options
-            .clone()
-            .unwrap_or_else(|| crate::compiler_options::CompilerOptions::for_flavor(self.flavor))
+        self.dialect.features()
     }
 
     pub fn directive_diagnostics(&self) -> &[DirectiveDiagnostic] {
@@ -408,14 +377,8 @@ impl Parser {
         self.source_name = "<main>".into();
         self.source = src.into();
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search, self.standard, self.features);
-        let options = self.effective_options();
-        pp.configure(
-            options.effective_target(self.target.clone()),
-            &options,
-            self.flavor,
-        )
-        .map_err(FrontendError::PP)?;
+        let dialect = self.dialect.clone();
+        let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
         let mut nodes = self.prepare_preprocessor(&mut pp)?;
         nodes.extend(pp.parse_str("<main>", src).map_err(FrontendError::PP)?);
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
@@ -449,14 +412,8 @@ impl Parser {
             })
             .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search, self.standard, self.features);
-        let options = self.effective_options();
-        pp.configure(
-            options.effective_target(self.target.clone()),
-            &options,
-            self.flavor,
-        )
-        .map_err(FrontendError::PP)?;
+        let dialect = self.dialect.clone();
+        let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
         let mut nodes = self.prepare_preprocessor(&mut pp)?;
         nodes.extend(pp.parse_file(path).map_err(FrontendError::PP)?);
         self.files = pp.files.clone();

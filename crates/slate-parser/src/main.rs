@@ -1,5 +1,6 @@
 use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
+use slate_parser::dialect::Dialect;
 use slate_parser::parser::Parser;
 use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors};
 use slate_parser::render::Renderer;
@@ -100,12 +101,14 @@ fn run() -> miette::Result<()> {
     }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let search = compiler_args.search_paths();
-    let mut parser = Parser::new(search)
-        .with_preprocessor_inputs(compiler_args.preprocessor_inputs)
-        .with_target(compiler_args.target)
-        .with_flavor(compiler_args.flavor)
-        .with_options(compiler_args.options)
-        .with_standard(compiler_args.standard);
+    let dialect = Dialect::new(
+        compiler_args.flavor,
+        compiler_args.standard,
+        compiler_args.target,
+        compiler_args.options,
+    );
+    let mut parser =
+        Parser::new(search, dialect).with_preprocessor_inputs(compiler_args.preprocessor_inputs);
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
