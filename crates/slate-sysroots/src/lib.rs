@@ -9,7 +9,7 @@ mod linux_musl;
 mod target;
 mod windows_msvc;
 
-pub use compiler_headers::{CLANG_VERSION, CompilerHeaders, GCC_VERSION};
+pub use compiler_headers::{CLANG_VERSION, CompilerHeaders, GCC_VERSION, GccFamily};
 pub use target::Target;
 
 use directories::ProjectDirs;
@@ -110,6 +110,14 @@ impl Paths {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "MSVC compiler headers must match the target sysroot",
+            ));
+        }
+        if let CompilerHeaders::Gcc(family) = compiler
+            && family != GccFamily::of(target)
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "GCC compiler headers must match the target architecture",
             ));
         }
         if compiler == CompilerHeaders::AppleClang

@@ -1,4 +1,4 @@
-use slate_sysroots::{CompilerHeaders, Paths, Target};
+use slate_sysroots::{CompilerHeaders, GccFamily, Paths, Target};
 use std::env;
 use std::path::Path;
 use std::process::ExitCode;
@@ -9,7 +9,7 @@ fn run() -> std::io::Result<ExitCode> {
     let command = args.next();
     let subject = args.next();
     let usage = format!(
-        "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang|gcc|msvc> [MSVC target triple]"
+        "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang>\n       {program} <install|path|doctor> compiler-headers gcc [x86|aarch64|arm]\n       {program} <install|path|doctor> compiler-headers msvc [MSVC target triple]"
     );
     if !matches!(
         command.as_deref(),
@@ -46,7 +46,10 @@ fn run() -> std::io::Result<ExitCode> {
         let specs = match compiler.as_str() {
             "clang" if target.is_none() => vec![CompilerHeaders::Clang],
             "apple-clang" if target.is_none() => vec![CompilerHeaders::AppleClang],
-            "gcc" if target.is_none() => vec![CompilerHeaders::Gcc],
+            "gcc" => match target {
+                Some(family) => vec![CompilerHeaders::Gcc(family.parse::<GccFamily>()?)],
+                None => GccFamily::ALL.map(CompilerHeaders::Gcc).to_vec(),
+            },
             "msvc" => match target {
                 Some(target) => vec![CompilerHeaders::Msvc(target.parse::<Target>()?)],
                 None => vec![
@@ -59,7 +62,7 @@ fn run() -> std::io::Result<ExitCode> {
             _ => {
                 return Err(std::io::Error::new(
                     std::io::ErrorKind::InvalidInput,
-                    "expected clang, apple-clang, or gcc without a target, or msvc with an optional Windows MSVC target",
+                    "expected clang or apple-clang without a target, gcc with an optional header family, or msvc with an optional Windows MSVC target",
                 ));
             }
         };

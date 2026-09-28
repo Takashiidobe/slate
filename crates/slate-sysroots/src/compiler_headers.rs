@@ -1,6 +1,6 @@
 use crate::install::{install_staged_at, staging_path};
 use crate::{DoctorCheck, Paths, Target};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::env;
 use std::ffi::OsStr;
 use std::fs::{self, File};
@@ -16,7 +16,7 @@ const GCC_SHA256: &str = "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192
 pub enum CompilerHeaders {
     Clang,
     AppleClang,
-    Gcc,
+    Gcc(GccFamily),
     Msvc(Target),
 }
 
@@ -25,9 +25,123 @@ impl CompilerHeaders {
         match self {
             Self::Clang => "clang",
             Self::AppleClang => "apple-clang",
-            Self::Gcc => "gcc",
+            Self::Gcc(_) => "gcc",
             Self::Msvc(_) => "msvc",
         }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum GccFamily {
+    X86,
+    Aarch64,
+    Arm,
+}
+
+impl GccFamily {
+    pub const ALL: [Self; 3] = [Self::X86, Self::Aarch64, Self::Arm];
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::X86 => "x86",
+            Self::Aarch64 => "aarch64",
+            Self::Arm => "arm",
+        }
+    }
+
+    pub fn of(target: Target) -> Self {
+        match target {
+            Target::I686PcWindowsMsvc
+            | Target::X86_64PcWindowsMsvc
+            | Target::X86_64UnknownLinuxGnu
+            | Target::X86_64UnknownLinuxMusl
+            | Target::X86_64AppleDarwin
+            | Target::X86_64UnknownFreebsd
+            | Target::X86_64LinuxAndroid => Self::X86,
+            Target::Aarch64PcWindowsMsvc
+            | Target::Aarch64UnknownLinuxGnu
+            | Target::Aarch64UnknownLinuxMusl
+            | Target::Aarch64AppleDarwin
+            | Target::Aarch64UnknownFreebsd
+            | Target::Aarch64LinuxAndroid => Self::Aarch64,
+            Target::Thumbv7aPcWindowsMsvc => Self::Arm,
+        }
+    }
+
+    fn config_dir(self) -> &'static str {
+        match self {
+            Self::X86 => "gcc/config/i386",
+            Self::Aarch64 => "gcc/config/aarch64",
+            Self::Arm => "gcc/config/arm",
+        }
+    }
+
+    fn extra_headers(self) -> &'static [&'static str] {
+        match self {
+            Self::X86 => GCC_X86_HEADERS,
+            Self::Aarch64 => GCC_AARCH64_HEADERS,
+            Self::Arm => GCC_ARM_HEADERS,
+        }
+    }
+
+    fn assembled_headers(self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            Self::X86 => &[
+                ("unwind.h", "libgcc/unwind-generic.h"),
+                ("mm_malloc.h", "gcc/config/i386/pmm_malloc.h"),
+            ],
+            Self::Aarch64 => &[("unwind.h", "libgcc/unwind-generic.h")],
+            Self::Arm => &[
+                ("unwind.h", "libgcc/config/arm/unwind-arm.h"),
+                ("unwind-arm-common.h", "gcc/ginclude/unwind-arm-common.h"),
+            ],
+        }
+    }
+
+    fn required_headers(self) -> &'static [&'static str] {
+        match self {
+            Self::X86 => &["immintrin.h", "cpuid.h", "mm_malloc.h"],
+            Self::Aarch64 => &["arm_neon.h", "arm_sve.h"],
+            Self::Arm => &["arm_neon.h", "unwind-arm-common.h"],
+        }
+    }
+
+    fn outputs(self) -> Vec<(&'static str, Vec<String>)> {
+        GCC_COMMON_HEADERS
+            .iter()
+            .map(|(output, sources)| {
+                (
+                    *output,
+                    sources.iter().map(|source| source.to_string()).collect(),
+                )
+            })
+            .chain(
+                self.extra_headers()
+                    .iter()
+                    .map(|header| (*header, vec![format!("{}/{header}", self.config_dir())])),
+            )
+            .chain(
+                self.assembled_headers()
+                    .iter()
+                    .map(|(output, source)| (*output, vec![source.to_string()])),
+            )
+            .collect()
+    }
+}
+
+impl std::str::FromStr for GccFamily {
+    type Err = io::Error;
+
+    fn from_str(value: &str) -> io::Result<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|family| family.name() == value)
+            .ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    format!("unsupported GCC header family: {value}"),
+                )
+            })
     }
 }
 
@@ -42,13 +156,17 @@ impl Paths {
             CompilerHeaders::AppleClang => self
                 .data
                 .join("compiler-headers/apple-clang-current/include"),
-            CompilerHeaders::Gcc => self
-                .data
-                .join("compiler-headers")
-                .join(format!("gcc-{GCC_VERSION}"))
-                .join("include"),
+            CompilerHeaders::Gcc(family) => {
+                self.gcc_bundle_path().join(family.name()).join("include")
+            }
             CompilerHeaders::Msvc(target) => self.sysroot_path(target).join("crt/include"),
         }
+    }
+
+    fn gcc_bundle_path(&self) -> PathBuf {
+        self.data
+            .join("compiler-headers")
+            .join(format!("gcc-{GCC_VERSION}"))
     }
 
     pub fn resolve_compiler_headers(&self, compiler: CompilerHeaders) -> io::Result<PathBuf> {
@@ -76,19 +194,30 @@ impl Paths {
             CompilerHeaders::AppleClang => {
                 install_apple_clang(self, env::consts::OS, OsStr::new("xcrun"))
             }
-            CompilerHeaders::Clang | CompilerHeaders::Gcc => {
+            CompilerHeaders::Clang => {
                 let include = self.compiler_header_path(compiler);
                 let output = include.parent().expect("compiler header path has a parent");
                 install_staged_at(
                     output,
                     |root| validate(compiler, &root.join("include")),
-                    |root| match compiler {
-                        CompilerHeaders::Clang => install_clang(root),
-                        CompilerHeaders::Gcc => install_gcc(&self.cache, root),
-                        CompilerHeaders::AppleClang | CompilerHeaders::Msvc(_) => unreachable!(),
-                    },
+                    install_clang,
                 )?;
                 Ok(include)
+            }
+            CompilerHeaders::Gcc(_) => {
+                install_staged_at(
+                    &self.gcc_bundle_path(),
+                    |root| {
+                        GccFamily::ALL.into_iter().try_for_each(|family| {
+                            validate(
+                                CompilerHeaders::Gcc(family),
+                                &root.join(family.name()).join("include"),
+                            )
+                        })
+                    },
+                    |root| install_gcc(&self.cache, root),
+                )?;
+                Ok(self.compiler_header_path(compiler))
             }
         }
     }
@@ -114,8 +243,12 @@ fn checks(compiler: CompilerHeaders, path: PathBuf) -> Vec<DoctorCheck> {
             "Apple Clang resource headers",
             &["stdarg.h", "stddef.h", "immintrin.h"],
         ),
-        CompilerHeaders::Gcc => (
-            "GCC compiler headers",
+        CompilerHeaders::Gcc(family) => (
+            match family {
+                GccFamily::X86 => "GCC x86 compiler headers",
+                GccFamily::Aarch64 => "GCC aarch64 compiler headers",
+                GccFamily::Arm => "GCC arm compiler headers",
+            },
             &[
                 "stdarg.h",
                 "stddef.h",
@@ -127,18 +260,28 @@ fn checks(compiler: CompilerHeaders, path: PathBuf) -> Vec<DoctorCheck> {
         ),
         CompilerHeaders::Msvc(_) => ("MSVC compiler headers", &["vcruntime.h", "yvals_core.h"]),
     };
+    let family_files = match compiler {
+        CompilerHeaders::Gcc(family) => family.required_headers(),
+        _ => &[],
+    };
     let license_files: &[&str] = match compiler {
         CompilerHeaders::Clang => &["LICENSE.TXT"],
         CompilerHeaders::AppleClang => &["COMPILER-HEADERS-MANIFEST.txt"],
-        CompilerHeaders::Gcc => &["COPYING3", "COPYING.RUNTIME"],
+        CompilerHeaders::Gcc(_) => &["COPYING3", "COPYING.RUNTIME"],
         CompilerHeaders::Msvc(_) => &[],
     };
+    let license_dir = match compiler {
+        CompilerHeaders::Gcc(_) => path.parent().and_then(Path::parent),
+        _ => path.parent(),
+    };
     let present = path.is_dir()
-        && files.iter().all(|file| path.join(file).is_file())
-        && license_files.iter().all(|file| {
-            path.parent()
-                .is_some_and(|parent| parent.join(file).is_file())
-        });
+        && files
+            .iter()
+            .chain(family_files)
+            .all(|file| path.join(file).is_file())
+        && license_files
+            .iter()
+            .all(|file| license_dir.is_some_and(|parent| parent.join(file).is_file()));
     vec![DoctorCheck {
         label,
         path,
@@ -382,29 +525,173 @@ fn copy_link(source: &Path, target: &Path) -> io::Result<()> {
     }
 }
 
-const GCC_OUTPUTS: &[(&str, &[&str])] = &[
-    ("include/float.h", &["gcc/ginclude/float.h"]),
-    ("include/iso646.h", &["gcc/ginclude/iso646.h"]),
-    ("include/stdarg.h", &["gcc/ginclude/stdarg.h"]),
-    ("include/stdbool.h", &["gcc/ginclude/stdbool.h"]),
-    ("include/stddef.h", &["gcc/ginclude/stddef.h"]),
-    ("include/varargs.h", &["gcc/ginclude/varargs.h"]),
-    ("include/stdfix.h", &["gcc/ginclude/stdfix.h"]),
-    ("include/stdnoreturn.h", &["gcc/ginclude/stdnoreturn.h"]),
-    ("include/stdalign.h", &["gcc/ginclude/stdalign.h"]),
-    ("include/stdatomic.h", &["gcc/ginclude/stdatomic.h"]),
-    ("include/stdckdint.h", &["gcc/ginclude/stdckdint.h"]),
-    ("include/stdcountof.h", &["gcc/ginclude/stdcountof.h"]),
-    ("include/stdint-gcc.h", &["gcc/ginclude/stdint-gcc.h"]),
-    ("include/stdint.h", &["gcc/ginclude/stdint-wrap.h"]),
+const GCC_COMMON_HEADERS: &[(&str, &[&str])] = &[
+    ("float.h", &["gcc/ginclude/float.h"]),
+    ("iso646.h", &["gcc/ginclude/iso646.h"]),
+    ("stdarg.h", &["gcc/ginclude/stdarg.h"]),
+    ("stdbool.h", &["gcc/ginclude/stdbool.h"]),
+    ("stddef.h", &["gcc/ginclude/stddef.h"]),
+    ("varargs.h", &["gcc/ginclude/varargs.h"]),
+    ("stdfix.h", &["gcc/ginclude/stdfix.h"]),
+    ("stdnoreturn.h", &["gcc/ginclude/stdnoreturn.h"]),
+    ("stdalign.h", &["gcc/ginclude/stdalign.h"]),
+    ("stdatomic.h", &["gcc/ginclude/stdatomic.h"]),
+    ("stdckdint.h", &["gcc/ginclude/stdckdint.h"]),
+    ("stdcountof.h", &["gcc/ginclude/stdcountof.h"]),
+    ("stdint-gcc.h", &["gcc/ginclude/stdint-gcc.h"]),
+    ("stdint.h", &["gcc/ginclude/stdint-wrap.h"]),
     (
-        "include/limits.h",
+        "limits.h",
         &["gcc/limitx.h", "gcc/glimits.h", "gcc/limity.h"],
     ),
-    ("include/syslimits.h", &["gcc/gsyslimits.h"]),
-    ("include/unwind.h", &["libgcc/unwind-generic.h"]),
-    ("COPYING3", &["COPYING3"]),
-    ("COPYING.RUNTIME", &["COPYING.RUNTIME"]),
+    ("syslimits.h", &["gcc/gsyslimits.h"]),
+];
+
+const GCC_LICENSES: &[&str] = &["COPYING3", "COPYING.RUNTIME"];
+
+const GCC_X86_HEADERS: &[&str] = &[
+    "cpuid.h",
+    "mmintrin.h",
+    "mm3dnow.h",
+    "xmmintrin.h",
+    "emmintrin.h",
+    "pmmintrin.h",
+    "tmmintrin.h",
+    "ammintrin.h",
+    "smmintrin.h",
+    "nmmintrin.h",
+    "bmmintrin.h",
+    "fma4intrin.h",
+    "wmmintrin.h",
+    "immintrin.h",
+    "x86intrin.h",
+    "avxintrin.h",
+    "xopintrin.h",
+    "ia32intrin.h",
+    "cross-stdarg.h",
+    "lwpintrin.h",
+    "popcntintrin.h",
+    "lzcntintrin.h",
+    "bmiintrin.h",
+    "bmi2intrin.h",
+    "tbmintrin.h",
+    "avx2intrin.h",
+    "avx512fintrin.h",
+    "fmaintrin.h",
+    "f16cintrin.h",
+    "rtmintrin.h",
+    "xtestintrin.h",
+    "rdseedintrin.h",
+    "prfchwintrin.h",
+    "adxintrin.h",
+    "fxsrintrin.h",
+    "xsaveintrin.h",
+    "xsaveoptintrin.h",
+    "avx512cdintrin.h",
+    "shaintrin.h",
+    "clflushoptintrin.h",
+    "xsavecintrin.h",
+    "xsavesintrin.h",
+    "avx512dqintrin.h",
+    "avx512bwintrin.h",
+    "avx512vlintrin.h",
+    "avx512vlbwintrin.h",
+    "avx512vldqintrin.h",
+    "avx512ifmaintrin.h",
+    "avx512ifmavlintrin.h",
+    "avx512vbmiintrin.h",
+    "avx512vbmivlintrin.h",
+    "avx512vpopcntdqintrin.h",
+    "clwbintrin.h",
+    "mwaitxintrin.h",
+    "clzerointrin.h",
+    "pkuintrin.h",
+    "sgxintrin.h",
+    "cetintrin.h",
+    "gfniintrin.h",
+    "cet.h",
+    "avx512vbmi2intrin.h",
+    "avx512vbmi2vlintrin.h",
+    "avx512vnniintrin.h",
+    "avx512vnnivlintrin.h",
+    "vaesintrin.h",
+    "vpclmulqdqintrin.h",
+    "avx512vpopcntdqvlintrin.h",
+    "avx512bitalgintrin.h",
+    "avx512bitalgvlintrin.h",
+    "pconfigintrin.h",
+    "wbnoinvdintrin.h",
+    "movdirintrin.h",
+    "waitpkgintrin.h",
+    "cldemoteintrin.h",
+    "avx512bf16vlintrin.h",
+    "avx512bf16intrin.h",
+    "enqcmdintrin.h",
+    "serializeintrin.h",
+    "avx512vp2intersectintrin.h",
+    "avx512vp2intersectvlintrin.h",
+    "tsxldtrkintrin.h",
+    "amxtileintrin.h",
+    "amxint8intrin.h",
+    "amxbf16intrin.h",
+    "x86gprintrin.h",
+    "uintrintrin.h",
+    "hresetintrin.h",
+    "keylockerintrin.h",
+    "avxvnniintrin.h",
+    "mwaitintrin.h",
+    "avx512fp16intrin.h",
+    "avx512fp16vlintrin.h",
+    "avxifmaintrin.h",
+    "avxvnniint8intrin.h",
+    "avxneconvertintrin.h",
+    "cmpccxaddintrin.h",
+    "amxfp16intrin.h",
+    "prfchiintrin.h",
+    "raointintrin.h",
+    "amxcomplexintrin.h",
+    "avxvnniint16intrin.h",
+    "sm3intrin.h",
+    "sha512intrin.h",
+    "sm4intrin.h",
+    "usermsrintrin.h",
+    "avx10_2mediaintrin.h",
+    "avx10_2convertintrin.h",
+    "avx10_2bf16intrin.h",
+    "avx10_2satcvtintrin.h",
+    "avx10_2minmaxintrin.h",
+    "avx10_2copyintrin.h",
+    "amxavx512intrin.h",
+    "amxtf32intrin.h",
+    "amxfp8intrin.h",
+    "movrsintrin.h",
+    "amxmovrsintrin.h",
+    "avx512bmmintrin.h",
+    "avx512bmmvlintrin.h",
+];
+
+const GCC_AARCH64_HEADERS: &[&str] = &[
+    "arm_fp16.h",
+    "arm_neon.h",
+    "arm_bf16.h",
+    "arm_acle.h",
+    "arm_sve.h",
+    "arm_sme.h",
+    "arm_neon_sve_bridge.h",
+    "arm_private_fp8.h",
+    "arm_private_neon_types.h",
+];
+
+const GCC_ARM_HEADERS: &[&str] = &[
+    "mmintrin.h",
+    "arm_neon.h",
+    "arm_acle.h",
+    "arm_fp16.h",
+    "arm_cmse.h",
+    "arm_bf16.h",
+    "arm_mve_types.h",
+    "arm_mve.h",
+    "arm_cde.h",
 ];
 
 fn install_gcc(cache: &Path, root: &Path) -> io::Result<()> {
@@ -412,11 +699,24 @@ fn install_gcc(cache: &Path, root: &Path) -> io::Result<()> {
     let url = format!("https://ftp.gnu.org/gnu/gcc/gcc-{GCC_VERSION}/{filename}");
     let archive =
         crate::download::fetch(&cache.join("compiler-headers"), &filename, &url, GCC_SHA256)?;
+    let family_outputs: Vec<_> = GccFamily::ALL
+        .into_iter()
+        .map(|family| (family, family.outputs()))
+        .collect();
+    let wanted: HashSet<String> = family_outputs
+        .iter()
+        .flat_map(|(_, outputs)| {
+            outputs
+                .iter()
+                .flat_map(|(_, sources)| sources.iter().cloned())
+        })
+        .chain(GCC_LICENSES.iter().map(|license| license.to_string()))
+        .collect();
     let file = File::open(archive)?;
     let decoder = xz2::read::XzDecoder::new(file);
     let mut archive = tar::Archive::new(decoder);
     let prefix = format!("gcc-{GCC_VERSION}/");
-    let mut sources: HashMap<&str, Vec<u8>> = HashMap::new();
+    let mut sources: HashMap<String, Vec<u8>> = HashMap::new();
     for entry in archive.entries()? {
         let mut entry = entry?;
         if !entry.header().entry_type().is_file() {
@@ -427,39 +727,41 @@ fn install_gcc(cache: &Path, root: &Path) -> io::Result<()> {
             .strip_prefix(&prefix)
             .ok()
             .and_then(|relative| relative.to_str())
-        else {
-            continue;
-        };
-        let Some(&source) = GCC_OUTPUTS
-            .iter()
-            .flat_map(|(_, sources)| sources.iter())
-            .find(|source| **source == relative)
+            .filter(|relative| wanted.contains(*relative))
+            .map(str::to_owned)
         else {
             continue;
         };
         let mut contents = Vec::new();
         entry.read_to_end(&mut contents)?;
-        sources.insert(source, contents);
+        sources.insert(relative, contents);
     }
-    for (output, inputs) in GCC_OUTPUTS {
-        let mut contents = Vec::new();
-        for input in *inputs {
-            let source = sources.get(input).ok_or_else(|| {
-                io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    format!("GCC archive is missing {input}"),
-                )
-            })?;
-            contents.extend_from_slice(source);
+    let source = |name: &str| {
+        sources.get(name).ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("GCC archive is missing {name}"),
+            )
+        })
+    };
+    for (family, outputs) in &family_outputs {
+        let include = root.join(family.name()).join("include");
+        fs::create_dir_all(&include)?;
+        for (output, inputs) in outputs {
+            let mut contents = Vec::new();
+            for input in inputs {
+                contents.extend_from_slice(source(input)?);
+            }
+            fs::write(include.join(output), contents)?;
         }
-        let output = root.join(output);
-        fs::create_dir_all(output.parent().expect("GCC output has a parent"))?;
-        fs::write(output, contents)?;
+    }
+    for license in GCC_LICENSES {
+        fs::write(root.join(license), source(license)?)?;
     }
     fs::write(
         root.join("COMPILER-HEADERS-MANIFEST.txt"),
         format!(
-            "Compiler: GCC\nVersion: {GCC_VERSION}\nSource URL: {url}\nAssembly: stmp-int-hdrs from gcc/Makefile.in for a use_gcc_stdint=wrap target; limits.h is limitx.h + glimits.h + limity.h, stdint.h is ginclude/stdint-wrap.h, unwind.h is libgcc/unwind-generic.h\nScope: target-independent compiler headers; target extra_headers omitted\n"
+            "Compiler: GCC\nVersion: {GCC_VERSION}\nSource URL: {url}\nAssembly: stmp-int-hdrs from gcc/Makefile.in for a use_gcc_stdint=wrap Linux target, once per header family; limits.h is limitx.h + glimits.h + limity.h, stdint.h is ginclude/stdint-wrap.h\nFamilies: x86 (i[34567]86 and x86_64 extra_headers from gcc/config/i386, mm_malloc.h from pmm_malloc.h, unwind.h from libgcc/unwind-generic.h); aarch64 (extra_headers from gcc/config/aarch64, unwind.h from libgcc/unwind-generic.h); arm (extra_headers from gcc/config/arm, unwind.h from libgcc/config/arm/unwind-arm.h, ginclude/unwind-arm-common.h)\n"
         ),
     )?;
     Ok(())

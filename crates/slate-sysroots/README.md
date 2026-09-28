@@ -62,16 +62,22 @@ sysroot alongside the Windows SDK headers; the installer does not duplicate
 them under `compiler-headers`.
 
 Compiler headers are installed under `compiler-headers/clang-22.1.8/include`
-and `compiler-headers/gcc-16.2.0/include` in the same data directory. The
-Clang installer requires `git` and copies the upstream release's resource
-headers. The GCC installer downloads the release archive into Slate's cache,
-checks its SHA-256, and assembles the headers GCC's `stmp-int-hdrs` step would
-install for a `use_gcc_stdint=wrap` target such as Linux: the `ginclude`
-headers, `limits.h` as `limitx.h` + `glimits.h` + `limity.h`, `syslimits.h`
-from `gsyslimits.h`, `stdint.h` from `stdint-wrap.h`, and `unwind.h` from
-libgcc's `unwind-generic.h`. For x86_64 Linux the result is byte-identical to
-an installed GCC 16.2's headers. Target `extra_headers` such as the x86
-intrinsics are not installed yet. `install compiler-headers msvc` installs all supported Windows
+and `compiler-headers/gcc-16.2.0/<family>/include` in the same data directory.
+The Clang installer requires `git` and copies the upstream release's resource
+headers. GCC's headers differ by target, so the GCC installer writes one
+include directory per header family: `x86` (i686 and x86_64), `aarch64` and
+`arm`. It downloads the release archive into Slate's cache, checks its
+SHA-256, and assembles what GCC's `stmp-int-hdrs` step would install for a
+Linux target of each family: the `ginclude` headers, `limits.h` as
+`limitx.h` + `glimits.h` + `limity.h`, `syslimits.h` from `gsyslimits.h`,
+`stdint.h` from `stdint-wrap.h`, the family's `extra_headers` from
+`gcc/config.gcc` (x86 also gets `mm_malloc.h` from `pmm_malloc.h`), and
+`unwind.h` from libgcc's `unwind-generic.h`, or `config/arm/unwind-arm.h`
+plus `unwind-arm-common.h` for arm. The x86 and arm families are
+byte-identical to installed GCC 16.2 compilers for those architectures, minus
+the runtime-library headers (`omp.h`, `gcov.h`, `sanitizer/`, ...). `install compiler-headers gcc`
+installs every family; add `x86`, `aarch64` or `arm` to print or inspect one.
+`install compiler-headers msvc` installs all supported Windows
 MSVC sysroots and returns their existing CRT header paths. Add a Windows MSVC
 target triple to install or inspect one architecture only.
 

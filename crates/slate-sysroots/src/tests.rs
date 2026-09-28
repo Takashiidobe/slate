@@ -1,5 +1,5 @@
 use crate::install::staging_path;
-use crate::{CompilerHeaders, Paths, Target, windows_msvc};
+use crate::{CompilerHeaders, GccFamily, Paths, Target, windows_msvc};
 use std::env;
 use std::fs;
 use std::io::Write;
@@ -142,7 +142,7 @@ fn compiler_header_bundles_resolve_with_target_includes() {
             &["stdarg.h", "stddef.h", "immintrin.h"] as &[&str],
         ),
         (
-            CompilerHeaders::Gcc,
+            CompilerHeaders::Gcc(GccFamily::X86),
             &[
                 "stdarg.h",
                 "stddef.h",
@@ -150,6 +150,9 @@ fn compiler_header_bundles_resolve_with_target_includes() {
                 "limits.h",
                 "syslimits.h",
                 "unwind.h",
+                "immintrin.h",
+                "cpuid.h",
+                "mm_malloc.h",
             ],
         ),
     ] {
@@ -159,14 +162,16 @@ fn compiler_header_bundles_resolve_with_target_includes() {
         for name in files {
             fs::write(include.join(name), "").unwrap();
         }
-        let licenses: &[&str] = match compiler {
-            CompilerHeaders::Clang => &["LICENSE.TXT"],
-            CompilerHeaders::AppleClang => unreachable!(),
-            CompilerHeaders::Gcc => &["COPYING3", "COPYING.RUNTIME"],
-            CompilerHeaders::Msvc(_) => unreachable!(),
+        let (licenses, license_dir): (&[&str], _) = match compiler {
+            CompilerHeaders::Clang => (&["LICENSE.TXT"], include.parent().unwrap()),
+            CompilerHeaders::Gcc(_) => (
+                &["COPYING3", "COPYING.RUNTIME"],
+                include.parent().unwrap().parent().unwrap(),
+            ),
+            CompilerHeaders::AppleClang | CompilerHeaders::Msvc(_) => unreachable!(),
         };
         for license in licenses {
-            fs::write(include.parent().unwrap().join(license), "").unwrap();
+            fs::write(license_dir.join(license), "").unwrap();
         }
         assert!(paths.doctor_compiler_headers(compiler)[0].present);
         assert_eq!(paths.resolve_compiler_headers(compiler).unwrap(), include);
@@ -184,6 +189,11 @@ fn compiler_header_bundles_resolve_with_target_includes() {
                 target,
                 CompilerHeaders::Msvc(Target::Aarch64PcWindowsMsvc)
             )
+            .is_err()
+    );
+    assert!(
+        paths
+            .include_paths_with_compiler(target, CompilerHeaders::Gcc(GccFamily::Aarch64))
             .is_err()
     );
     assert!(
