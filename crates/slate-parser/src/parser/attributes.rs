@@ -1,4 +1,4 @@
-use super::Parser;
+use super::{Parser, string_literal_content};
 use crate::ast::*;
 use crate::attribute_support;
 use crate::const_expr;
@@ -269,12 +269,14 @@ fn parse_attribute_value(
     let parse_expression =
         |arguments: &[Span<Token>]| parse_attribute_expression(arguments, context);
     let canonical_name = unwrapped_attribute_name(name);
-    let single_string = || match arguments {
-        [single] => match &single.value {
-            Token::StringLit(value) => Some(value.to_string()),
-            _ => None,
-        },
-        _ => None,
+    let string_argument = || {
+        let pieces: Option<Vec<&str>> = arguments
+            .iter()
+            .map(|piece| string_literal_content(&piece.value))
+            .collect();
+        pieces
+            .filter(|pieces| !pieces.is_empty())
+            .map(|pieces| pieces.concat())
     };
     let single_ident = || match arguments {
         [single] => match &single.value {
@@ -326,7 +328,7 @@ fn parse_attribute_value(
         "noalias" if arguments.is_empty() => Ok(Attribute::NoAlias),
         "restrict" if arguments.is_empty() => Ok(Attribute::RestrictReturn),
         "optnone" if arguments.is_empty() => Ok(Attribute::OptimizeNone),
-        "code_seg" => Ok(single_string()
+        "code_seg" => Ok(string_argument()
             .map(Attribute::CodeSeg)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "aligned" => Ok(match single_int() {
@@ -344,22 +346,22 @@ fn parse_attribute_value(
         "mode" => Ok(single_ident()
             .map(Attribute::Mode)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "visibility" => Ok(single_string()
+        "visibility" => Ok(string_argument()
             .map(Attribute::Visibility)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "section" => Ok(single_string()
+        "section" => Ok(string_argument()
             .map(Attribute::Section)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "annotate" => Ok(single_string()
+        "annotate" => Ok(string_argument()
             .map(Attribute::Annotate)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "target" => Ok(single_string()
+        "target" => Ok(string_argument()
             .map(Attribute::Target)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "alias" => Ok(single_string()
+        "alias" => Ok(string_argument()
             .map(Attribute::Alias)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "weakref" => Ok(single_string()
+        "weakref" => Ok(string_argument()
             .map(Attribute::WeakRef)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "nonnull" if arguments.is_empty() => Ok(Attribute::NonNull(Vec::new())),
@@ -440,13 +442,13 @@ fn parse_attribute_value(
         "cpu_dispatch" => Ok(Attribute::CpuDispatch(attribute_arguments(arguments))),
         "cpu_specific" => Ok(Attribute::CpuSpecific(attribute_arguments(arguments))),
         "target_clones" => Ok(Attribute::TargetClones(attribute_arguments(arguments))),
-        "ifunc" => Ok(single_string()
+        "ifunc" => Ok(string_argument()
             .map(Attribute::Ifunc)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "dllimport" if arguments.is_empty() => Ok(Attribute::DllImport),
         "dllexport" if arguments.is_empty() => Ok(Attribute::DllExport),
         "weak_import" if arguments.is_empty() => Ok(Attribute::WeakImport),
-        "tls_model" => Ok(single_string()
+        "tls_model" => Ok(string_argument()
             .map(Attribute::TlsModel)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
@@ -472,7 +474,7 @@ fn parse_attribute_value(
             Ok(value) => Attribute::CallingConvention(CallingConvention::RegParm(value)),
             Err(_) => invalid_attribute(name, arguments),
         }),
-        "pcs" => Ok(match single_string().as_deref() {
+        "pcs" => Ok(match string_argument().as_deref() {
             Some("aapcs") => {
                 Attribute::CallingConvention(CallingConvention::Pcs(PcsConvention::Aapcs))
             }
@@ -487,7 +489,7 @@ fn parse_attribute_value(
             Ok(value) => Attribute::ExtVectorType(value),
             Err(_) => invalid_attribute(name, arguments),
         }),
-        "scalar_storage_order" => Ok(single_string()
+        "scalar_storage_order" => Ok(string_argument()
             .map(Attribute::ScalarStorageOrder)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "transparent_union" if arguments.is_empty() => Ok(Attribute::TransparentUnion),
@@ -500,11 +502,11 @@ fn parse_attribute_value(
         "const" if arguments.is_empty() => Ok(Attribute::Const),
         "may_alias" if arguments.is_empty() => Ok(Attribute::MayAlias),
         "deprecated" if arguments.is_empty() => Ok(Attribute::Deprecated(None)),
-        "deprecated" => Ok(single_string()
+        "deprecated" => Ok(string_argument()
             .map(|value| Attribute::Deprecated(Some(value)))
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "nodiscard" if arguments.is_empty() => Ok(Attribute::NoDiscard(None)),
-        "nodiscard" => Ok(single_string()
+        "nodiscard" => Ok(string_argument()
             .map(|value| Attribute::NoDiscard(Some(value)))
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "maybe_unused" | "unused" if arguments.is_empty() => Ok(Attribute::MaybeUnused),
