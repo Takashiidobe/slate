@@ -4,8 +4,8 @@ int value;
 // SLATE-FILECHECK-ERROR PARSE
 
 // SLATE-FILECHECK-BEGIN PARSE
-// PARSE: Error:   × include cycle detected: tests/fixtures/error/include-cycle.h
-// PARSE: ╰─▶ include cycle detected: tests/fixtures/error/include-cycle.h
+// PARSE: Error:   × #include nested too deeply
+// PARSE: ╰─▶ #include nested too deeply
 // PARSE: ╭─[tests/fixtures/error/include-cycle.h:1:10]
 // PARSE: 1 │ #include "include-cycle.h"
 // PARSE: ·          ─────────────────

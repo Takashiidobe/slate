@@ -7,6 +7,9 @@ use crate::lexer::Token;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
+// clang and gcc both stop at 200; they detect cycles only by hitting this limit
+const MAX_INCLUDE_DEPTH: usize = 200;
+
 pub(super) enum IncludeDirective {
     Angled(String),
     Quoted(String),
@@ -95,27 +98,11 @@ impl Preprocessor<'_> {
         if self.pragma_once.contains(&once_key) {
             return Ok(Vec::new());
         }
-        let macro_state = self.macro_state();
-        if self
-            .open_macro_states
-            .iter()
-            .any(|(path, state)| path == &once_key && state == &macro_state)
-        {
-            if self
-                .include_guards
-                .get(&once_key)
-                .is_some_and(|guard| self.macros.contains_key(guard))
-            {
-                return Ok(Vec::new());
-            }
-            return Err(PPFailure::at(
-                directive,
-                PPErrorKind::IncludeCycle(display_path(&resolved)),
-            ));
+        if self.open_stack.len() >= MAX_INCLUDE_DEPTH {
+            return Err(PPFailure::at(directive, PPErrorKind::IncludeTooDeep));
         }
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
-        self.open_macro_states.push((once_key.clone(), macro_state));
         self.open_stack.push(once_key);
         let enclosing_system_header = self.outermost_system_header;
         if kind == HeaderKind::System {
@@ -124,7 +111,6 @@ impl Preprocessor<'_> {
         let nodes = self.parse_source(&src, file);
         self.outermost_system_header = enclosing_system_header;
         self.open_stack.pop();
-        self.open_macro_states.pop();
         nodes
     }
 

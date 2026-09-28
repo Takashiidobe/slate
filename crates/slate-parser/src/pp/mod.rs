@@ -82,11 +82,9 @@ pub struct Preprocessor<'a> {
     outermost_system_header: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
-    open_macro_states: Vec<(PathBuf, Vec<String>)>,
     sources: HashMap<FileId, String>,
     pub(crate) line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashSet<PathBuf>,
-    include_guards: HashMap<PathBuf, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
@@ -120,11 +118,9 @@ impl<'a> Preprocessor<'a> {
             outermost_system_header: None,
             search,
             open_stack: Vec::new(),
-            open_macro_states: Vec::new(),
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashSet::new(),
-            include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
@@ -442,25 +438,12 @@ impl<'a> Preprocessor<'a> {
             read_source(&canon).map_err(|kind| self.render_error(PPFailure::unlocated(kind)))?;
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.main_file = Some(file);
-        self.open_macro_states
-            .push((canon.clone(), self.macro_state()));
         self.open_stack.push(canon);
         let nodes = self
             .parse_source(&src, file)
             .map_err(|failure| self.render_error(failure))?;
         self.open_stack.pop();
-        self.open_macro_states.pop();
         Ok(nodes)
-    }
-
-    pub(super) fn macro_state(&self) -> Vec<String> {
-        let mut state = self
-            .macros
-            .iter()
-            .map(|(name, entry)| format!("{name}:{:?}", entry.definition))
-            .collect::<Vec<_>>();
-        state.sort();
-        state
     }
 
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {
@@ -482,11 +465,6 @@ impl<'a> Preprocessor<'a> {
             .with_features(self.features)
             .tokenize();
         let items = syntax::parse(src, tokens)?;
-        if let Some(guard) = include_guard(src, &items) {
-            let path = self.files.path(file);
-            let key = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-            self.include_guards.insert(key, guard);
-        }
         self.walk_group(&items)
     }
 
@@ -1113,36 +1091,6 @@ fn microsoft_extensions_enabled(
         CompilerFlavor::Clang => target.environment == crate::target_info::TargetEnvironment::Msvc,
         CompilerFlavor::Gcc => false,
     }
-}
-
-fn include_guard(src: &str, items: &[Item]) -> Option<String> {
-    let mut items = items
-        .iter()
-        .filter(|item| !matches!(item, Item::Comment(_)));
-    let Item::Conditional(section) = items.next()? else {
-        return None;
-    };
-    if items.next().is_some() || section.branches.len() != 1 {
-        return None;
-    }
-    let branch = &section.branches[0];
-    if branch.directive.name != DirectiveName::Ifndef {
-        return None;
-    }
-    let guard = identifier(src, branch.directive.arguments.first()?)?;
-    let define = branch
-        .body
-        .iter()
-        .find(|item| !matches!(item, Item::Comment(_)))?;
-    let Item::Directive(define) = define else {
-        return None;
-    };
-    if define.name != DirectiveName::Define
-        || identifier(src, define.arguments.first()?).as_deref() != Some(&guard)
-    {
-        return None;
-    }
-    Some(guard)
 }
 
 enum HeaderName {

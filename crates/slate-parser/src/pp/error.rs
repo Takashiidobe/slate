@@ -75,8 +75,8 @@ pub(super) enum PPErrorKind {
     UnsupportedDirective,
     #[error("header not found in search path: {0}")]
     HeaderNotFound(String),
-    #[error("include cycle detected: {0}")]
-    IncludeCycle(String),
+    #[error("#include nested too deeply")]
+    IncludeTooDeep,
     #[error("failed to read {path}: {message}")]
     ReadFailed { path: String, message: String },
 }
