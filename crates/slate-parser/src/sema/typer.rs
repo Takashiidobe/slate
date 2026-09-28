@@ -1,15 +1,18 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
-use super::ctype::{CTypeKind, QualType};
+use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::{
     SourceLocationBuiltin, choose_expr_operands, constant_p_operand, source_location_builtin,
     va_builtin,
 };
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, TypeName};
+use crate::ast::{
+    DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, Stmt, StmtKind,
+    StorageClass, TypeName, TypeSpecifier,
+};
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
-use crate::ir::{Number, NumericType, Type, TypeDefinitionKind, ValueKind};
+use crate::ir::{NumericType, Type, TypeDefinitionKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Typed {
@@ -35,6 +38,8 @@ impl Typed {
         }
     }
 }
+
+pub(super) type Lanes = Vec<Option<u32>>;
 
 const UNTYPED: ResolveError = ResolveError::Unimplemented("expression without a typing rule");
 
@@ -117,9 +122,174 @@ impl TypeResolver {
         None
     }
 
+    pub(super) fn declarator_type(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &InitDeclarator,
+    ) -> Result<QualType, ResolveError> {
+        if matches!(specifiers.ty, TypeSpecifier::Inferred)
+            && let Some(Initializer::Expr(expr)) = &declarator.initializer
+            && let Ok(value) = self.expression_type(expr)
+            && let Ok((base, _)) = self.inferred_base(&declarator.declarator, value)
+        {
+            self.inferred = Some(base);
+        }
+        let resolved =
+            self.resolve_declarator(specifiers, &declarator.declarator, &declarator.attributes);
+        self.inferred = None;
+        resolved
+    }
+
+    pub(super) fn completed_array(
+        &mut self,
+        resolved: QualType,
+        initializer: Option<&Initializer>,
+    ) -> QualType {
+        let Some((element, Extent::Incomplete)) = self.ctypes.element(resolved) else {
+            return resolved;
+        };
+        let length = match initializer {
+            Some(Initializer::Expr(expr)) => match self.expression_type(expr) {
+                Ok(c) => match self.ctypes.element(c) {
+                    Some((_, Extent::Fixed(length))) => Some(length),
+                    _ => None,
+                },
+                _ => None,
+            },
+            Some(Initializer::List(items)) => self.inferred_array_length(element, items).ok(),
+            None => None,
+        };
+        match length {
+            Some(length) => self.ctypes.qual(CTypeKind::Array {
+                element,
+                extent: Extent::Fixed(length),
+            }),
+            None => resolved,
+        }
+    }
+
+    // lowering declares these only as it walks the body, after typeof or sizeof asked
+    fn declare_statement_locals(&mut self, statements: &[Stmt]) {
+        for statement in statements {
+            let StmtKind::Decl(declaration) = &statement.value else {
+                continue;
+            };
+            if declaration.specifiers.storage == StorageClass::Typedef {
+                continue;
+            }
+            for declarator in &declaration.declarators {
+                let Some(&binding) = self.declarations.get(&declarator.id) else {
+                    continue;
+                };
+                if self.entities.ty(&binding).is_some() || self.locals.contains_key(&binding) {
+                    continue;
+                }
+                let Ok(resolved) = self.declarator_type(&declaration.specifiers, declarator) else {
+                    continue;
+                };
+                let completed = self.completed_array(resolved, declarator.initializer.as_ref());
+                self.locals.insert(binding, completed);
+            }
+        }
+    }
+
+    pub(super) fn swizzle(
+        &mut self,
+        vector: QualType,
+        field: &str,
+    ) -> Result<(QualType, Lanes), ResolveError> {
+        let CTypeKind::Vector {
+            element,
+            lanes,
+            bytes,
+        } = *self.ctypes.canonical_kind(vector)
+        else {
+            return Err(ResolveError::Internal("expected vector"));
+        };
+        let mask = super::expression::swizzle_lanes(field, lanes)
+            .ok_or(ResolveError::Rejected("illegal vector component name"))?;
+        let width = u32::try_from(mask.len())
+            .map_err(|_| ResolveError::Rejected("illegal vector component name"))?;
+        let c = if width == 1 {
+            element
+        } else {
+            self.ctypes.qual(CTypeKind::Vector {
+                element,
+                lanes: width,
+                bytes: bytes / u64::from(lanes) * u64::from(width),
+            })
+        };
+        Ok((c.with(self.ctypes.quals(vector)), mask))
+    }
+
+    pub(super) fn shuffle(
+        &mut self,
+        left: QualType,
+        right: QualType,
+        indices: &[Expr],
+    ) -> Result<(QualType, Option<Lanes>), ResolveError> {
+        let CTypeKind::Vector {
+            element,
+            lanes,
+            bytes,
+        } = *self.ctypes.canonical_kind(left)
+        else {
+            return Err(ResolveError::Rejected("shuffle builtin operand type"));
+        };
+        if indices.is_empty() {
+            let CTypeKind::Vector {
+                element: mask_element,
+                lanes: mask_lanes,
+                ..
+            } = *self.ctypes.canonical_kind(right)
+            else {
+                return Err(ResolveError::Rejected("shuffle builtin mask type"));
+            };
+            if !self.ctypes.is_integer(mask_element) || mask_lanes != lanes {
+                return Err(ResolveError::Rejected("shuffle builtin mask type"));
+            }
+            return Ok((left, None));
+        }
+        if !self.ctypes.compatible_unqualified(left, right) {
+            return Err(ResolveError::Rejected("shuffle builtin operand types"));
+        }
+        let mut mask = Vec::with_capacity(indices.len());
+        for index in indices {
+            let index = self.constant_integer(index)?;
+            let lane = u32::try_from(&index).ok();
+            if index != num_bigint::BigInt::from(-1) && !lane.is_some_and(|lane| lane < lanes * 2) {
+                return Err(ResolveError::Rejected("shuffle builtin lane index"));
+            }
+            mask.push(lane);
+        }
+        let width = u32::try_from(mask.len())
+            .map_err(|_| ResolveError::Rejected("shuffle builtin lane count"))?;
+        let c = self.ctypes.qual(CTypeKind::Vector {
+            element,
+            lanes: width,
+            bytes: bytes / u64::from(lanes) * u64::from(width),
+        });
+        Ok((c, Some(mask)))
+    }
+
+    fn vector_element(&self, vector: QualType) -> Option<QualType> {
+        match self.ctypes.canonical_kind(vector) {
+            CTypeKind::Vector { element, .. } => Some(*element),
+            _ => None,
+        }
+    }
+
     fn type_expression(&mut self, e: &Expr) -> Result<Typed, ResolveError> {
         Ok(match &e.value {
             ExprKind::Paren(inner) => self.typed(inner)?,
+            ExprKind::Identifier(name) if super::expression::predefined_function_name(name) => {
+                let length = self.predefined_name(name).ok_or(UNTYPED)?.len() as u64 + 1;
+                let element = self.ctypes.qual(CTypeKind::Char);
+                Typed::lvalue(self.ctypes.qual(CTypeKind::Array {
+                    element,
+                    extent: Extent::Fixed(length),
+                }))
+            }
             ExprKind::Identifier(_) => match self.object(e) {
                 Some(c) => Typed::lvalue(c),
                 None => Typed::rvalue(self.constant(e).ok_or(UNTYPED)?.c),
@@ -168,8 +338,17 @@ impl TypeResolver {
                 operand,
             } => {
                 let c = self.operand_type(operand)?;
+                if *op != UnaryOp::Plus
+                    && let Some(element) = self.vector_element(c)
+                {
+                    if *op == UnaryOp::BitNot && self.ctypes.is_floating(element) {
+                        return Err(UNTYPED);
+                    }
+                    return Ok(Typed::rvalue(c));
+                }
                 let accepted = if *op == UnaryOp::BitNot {
                     self.ctypes.is_integer(c)
+                        || matches!(self.ctypes.canonical_kind(c), CTypeKind::Complex(_))
                 } else {
                     self.ctypes.is_arithmetic(c)
                 };
@@ -202,7 +381,7 @@ impl TypeResolver {
                     }
                     self.require_modifiable_lvalue(typed.c)?;
                     Typed::rvalue(self.ctypes.unqualified(typed.c))
-                } else if self.ctypes.is_arithmetic(value) {
+                } else if self.ctypes.is_arithmetic(value) || self.ctypes.is_vector(value) {
                     self.updated(target)?
                 } else {
                     return Err(UNTYPED);
@@ -220,11 +399,11 @@ impl TypeResolver {
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.type_name(ty)?;
                 let c = match self.ctypes.element(resolved) {
-                    Some((element, super::ctype::Extent::Incomplete)) => {
+                    Some((element, Extent::Incomplete)) => {
                         let length = self.inferred_array_length(element, initializer)?;
                         self.ctypes.qual(CTypeKind::Array {
                             element,
-                            extent: super::ctype::Extent::Fixed(length),
+                            extent: Extent::Fixed(length),
                         })
                     }
                     _ => resolved,
@@ -232,7 +411,19 @@ impl TypeResolver {
                 Typed::lvalue(c)
             }
             ExprKind::Index { base, index } => {
-                let base = self.operand_type(base)?;
+                let typed = self.typed(base)?;
+                if let Some(element) = self.vector_element(typed.c) {
+                    let index = self.operand_type(index)?;
+                    if !self.ctypes.is_integer(index) {
+                        return Err(UNTYPED);
+                    }
+                    return Ok(if typed.lvalue {
+                        Typed::lvalue(element.with(self.ctypes.quals(typed.c)))
+                    } else {
+                        Typed::rvalue(element)
+                    });
+                }
+                let base = self.rvalue_type(typed);
                 let index = self.operand_type(index)?;
                 let (pointer, index) = if self.ctypes.is_pointer(base) {
                     (base, index)
@@ -252,6 +443,22 @@ impl TypeResolver {
                     let typed = self.typed(base)?;
                     (typed.c, typed.lvalue)
                 };
+                if self.vector_element(record).is_some() {
+                    let (c, mask) = self.swizzle(record, &field.value)?;
+                    let mut seen = Vec::with_capacity(mask.len());
+                    let assignable = mask.iter().all(|lane| match lane {
+                        Some(lane) if !seen.contains(lane) => {
+                            seen.push(*lane);
+                            true
+                        }
+                        _ => false,
+                    });
+                    return Ok(Typed {
+                        c,
+                        lvalue: lvalue && assignable,
+                        bits: None,
+                    });
+                }
                 let (c, bits) = self.member_type(record, &field.value).ok_or(UNTYPED)?;
                 Typed { c, lvalue, bits }
             }
@@ -352,9 +559,12 @@ impl TypeResolver {
                 }
             }
             ExprKind::StatementExpression(body) => {
-                match super::expression::statement_expression_parts(body).2 {
-                    Some(result) => Typed::rvalue(self.operand_type(result)?),
-                    None => Typed::rvalue(self.ctypes.qual(CTypeKind::Void)),
+                match super::expression::statement_expression_parts(body) {
+                    (statements, _, Some(result)) => {
+                        self.declare_statement_locals(statements);
+                        Typed::rvalue(self.operand_type(result)?)
+                    }
+                    _ => Typed::rvalue(self.ctypes.qual(CTypeKind::Void)),
                 }
             }
         })
@@ -498,7 +708,14 @@ impl TypeResolver {
                 let common = self.ctypes.usual_real_type(real, imaginary, &target)?;
                 self.complex_of(common)
             }
-            CustomBuiltin::Shuffle => return Err(UNTYPED),
+            CustomBuiltin::Shuffle => {
+                let [left, right, indices @ ..] = arguments else {
+                    return Err(UNTYPED);
+                };
+                let left = self.operand_type(left)?;
+                let right = self.operand_type(right)?;
+                self.shuffle(left, right, indices)?.0
+            }
         }))
     }
 
@@ -529,7 +746,7 @@ impl TypeResolver {
             ExprKind::Cast { value, .. } => {
                 let from = self.operand_type(value)?;
                 if self.ctypes.is_integer(from) {
-                    self.integer_zero(value)
+                    Some(self.integer_constant_zero(value))
                 } else if self.ctypes.is_pointer(from) {
                     self.null_pointer(value)?
                 } else {
@@ -540,24 +757,88 @@ impl TypeResolver {
         })
     }
 
-    fn integer_zero(&self, e: &Expr) -> Option<bool> {
+    pub(super) fn integer_constant_zero(&mut self, e: &Expr) -> bool {
+        self.integer_constant_expression(e)
+            && self
+                .expression_type(e)
+                .is_ok_and(|c| self.ctypes.is_integer(c))
+            && self
+                .constant_integer(e)
+                .is_ok_and(|value| value.sign() == num_bigint::Sign::NoSign)
+    }
+
+    // c 6.6p6: the operand kinds an integer constant expression may contain
+    fn integer_constant_expression(&mut self, e: &Expr) -> bool {
         match &e.value {
-            ExprKind::Paren(inner) => self.integer_zero(inner),
-            ExprKind::IntegerLiteral(literal) if !literal.imaginary => {
-                Some(crate::const_expr::Parser::evaluate_ast(e).is_ok_and(|number| number == 0))
+            ExprKind::Paren(inner) => self.integer_constant_expression(inner),
+            ExprKind::IntegerLiteral(literal) => !literal.imaginary,
+            ExprKind::CharLiteral(_)
+            | ExprKind::BoolLiteral(_)
+            | ExprKind::OffsetOf { .. }
+            | ExprKind::TypesCompatible { .. } => true,
+            ExprKind::Identifier(_) => self.object(e).is_none() && self.constant(e).is_some(),
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self
+                .type_name(ty)
+                .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => self
+                .expression_type(operand)
+                .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
+            ExprKind::Cast { ty, value } => {
+                let mut operand: &Expr = value;
+                while let ExprKind::Paren(inner) = &operand.value {
+                    operand = inner;
+                }
+                self.type_name(ty).is_ok_and(|c| self.ctypes.is_integer(c))
+                    && (matches!(operand.value, ExprKind::FloatLiteral(_))
+                        || self.integer_constant_expression(operand))
             }
-            ExprKind::Identifier(_) if self.object(e).is_some() => Some(false),
-            ExprKind::Identifier(_) => Some(matches!(
-                &self.constant(e)?.value.node.value,
-                ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default()
-            )),
-            _ => None,
+            ExprKind::Unary {
+                op: UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not,
+                operand,
+            } => self.integer_constant_expression(operand),
+            ExprKind::Binary { left, right, .. } => {
+                self.integer_constant_expression(left) && self.integer_constant_expression(right)
+            }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                self.integer_constant_expression(condition)
+                    && then_value
+                        .as_ref()
+                        .is_none_or(|value| self.integer_constant_expression(value))
+                    && self.integer_constant_expression(else_value)
+            }
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => match self.generic_selection(controlling, associations) {
+                Ok(selected) => self.integer_constant_expression(selected),
+                Err(_) => false,
+            },
+            ExprKind::Call { callee, arguments } => {
+                if constant_p_operand(callee, arguments).is_some() {
+                    return true;
+                }
+                if choose_expr_operands(callee, arguments).is_some() {
+                    return self
+                        .chosen_expr(callee, arguments)
+                        .is_ok_and(|chosen| self.integer_constant_expression(chosen));
+                }
+                let mut callee = callee.as_ref();
+                while let ExprKind::Paren(inner) = &callee.value {
+                    callee = inner;
+                }
+                matches!(&callee.value, ExprKind::Identifier(name) if super::builtins::is_foldable_builtin(name))
+            }
+            _ => false,
         }
     }
 
     fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {
         let typed = self.typed(target)?;
-        if !typed.lvalue || !self.ctypes.is_scalar(typed.c) {
+        if !typed.lvalue || !(self.ctypes.is_scalar(typed.c) || self.ctypes.is_vector(typed.c)) {
             return Err(UNTYPED);
         }
         self.require_modifiable_lvalue(typed.c)?;

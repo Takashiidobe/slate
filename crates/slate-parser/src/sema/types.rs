@@ -35,6 +35,11 @@ pub(super) struct ParameterShape {
     pub array: Option<ArrayParameter>,
 }
 
+pub(super) struct FunctionNames {
+    pub plain: String,
+    pub pretty: String,
+}
+
 pub struct TypeResolver {
     dialect: Dialect,
     pub ctypes: CTypes,
@@ -53,6 +58,8 @@ pub struct TypeResolver {
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
     pub(super) inferred: Option<QualType>,
+    pub(super) function_names: Option<FunctionNames>,
+    pub(super) locals: HashMap<BindingId, QualType>,
     pub(super) constants: HashMap<BindingId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     field_alignments: HashMap<TypeId, Vec<u64>>,
@@ -85,6 +92,8 @@ impl TypeResolver {
             typeof_operands: HashMap::new(),
             expression_types: HashMap::new(),
             inferred: None,
+            function_names: None,
+            locals: HashMap::new(),
             constants: HashMap::new(),
             record_fields: HashMap::new(),
             field_alignments: HashMap::new(),
@@ -117,6 +126,19 @@ impl TypeResolver {
 
     pub(super) fn declaration_spelling(&self, q: QualType, name: &str) -> String {
         self.ctypes.declaration_spelling(q, name, &self.definitions)
+    }
+
+    pub(super) fn function_names(&self, function: QualType, name: &str) -> FunctionNames {
+        FunctionNames {
+            plain: name.to_owned(),
+            pretty: self.declaration_spelling(function, name),
+        }
+    }
+
+    pub(super) fn predefined_name(&self, name: &str) -> Option<&str> {
+        let names = self.function_names.as_ref()?;
+        let pretty = name == "__PRETTY_FUNCTION__" && self.compiler_flavor() != CompilerFlavor::Gcc;
+        Some(if pretty { &names.pretty } else { &names.plain })
     }
 
     pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
@@ -646,7 +668,9 @@ impl TypeResolver {
 
     pub(super) fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
         let id = self.references.get(&e.id)?;
-        self.entities.ty(id)
+        self.entities
+            .ty(id)
+            .or_else(|| self.locals.get(id).copied())
     }
 
     pub(super) fn constant(&self, e: &crate::ast::Expr) -> Option<&Operand> {

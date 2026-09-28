@@ -99,12 +99,18 @@ impl Checker<'_> {
     }
 
     fn function(&mut self, node: NodeId, function: &FunctionDefinition) {
+        let mut names = None;
         if let Ok(ty) = self
             .types
             .resolve(&function.specifiers, &function.declarator)
         {
             self.declare_object(node, ty, None);
+            names = function
+                .declarator
+                .name()
+                .map(|name| self.types.function_names(ty, name));
         }
+        let enclosing = std::mem::replace(&mut self.types.function_names, names);
         for parameter in function
             .declarator
             .function_parameters()
@@ -126,35 +132,7 @@ impl Checker<'_> {
         for stmt in &function.body {
             self.statement(stmt);
         }
-    }
-
-    fn completed_array(
-        &mut self,
-        resolved: super::ctype::QualType,
-        initializer: Option<&Initializer>,
-    ) -> super::ctype::QualType {
-        let Some((element, super::ctype::Extent::Incomplete)) = self.types.ctypes.element(resolved)
-        else {
-            return resolved;
-        };
-        let length = match initializer {
-            Some(Initializer::Expr(expr)) => match self.types.expression_type(expr) {
-                Ok(c) => match self.types.ctypes.element(c) {
-                    Some((_, super::ctype::Extent::Fixed(length))) => Some(length),
-                    _ => None,
-                },
-                _ => None,
-            },
-            Some(Initializer::List(items)) => self.types.inferred_array_length(element, items).ok(),
-            None => None,
-        };
-        match length {
-            Some(length) => self.types.ctypes.qual(super::ctype::CTypeKind::Array {
-                element,
-                extent: super::ctype::Extent::Fixed(length),
-            }),
-            None => resolved,
-        }
+        self.types.function_names = enclosing;
     }
 
     fn declaration(&mut self, declaration: &Declaration, global: bool) {
@@ -176,19 +154,9 @@ impl Checker<'_> {
             let Some(name) = declarator.declarator.name() else {
                 continue;
             };
-            if matches!(declaration.specifiers.ty, TypeSpecifier::Inferred)
-                && let Some(Initializer::Expr(expr)) = &declarator.initializer
-                && let Ok(value) = self.types.expression_type(expr)
-                && let Ok((base, _)) = self.types.inferred_base(&declarator.declarator, value)
-            {
-                self.types.inferred = Some(base);
-            }
-            let resolved = self.types.resolve_declarator(
-                &declaration.specifiers,
-                &declarator.declarator,
-                &declarator.attributes,
-            );
-            self.types.inferred = None;
+            let resolved = self
+                .types
+                .declarator_type(&declaration.specifiers, declarator);
             if let Ok(resolved) = resolved {
                 if declaration.specifiers.storage == StorageClass::Typedef {
                     let attributes = declaration
@@ -203,7 +171,9 @@ impl Checker<'_> {
                         attributes,
                     );
                 } else if !self.types.ctypes.is_void(resolved) {
-                    let completed = self.completed_array(resolved, declarator.initializer.as_ref());
+                    let completed = self
+                        .types
+                        .completed_array(resolved, declarator.initializer.as_ref());
                     let attributes = declaration
                         .specifiers
                         .attributes

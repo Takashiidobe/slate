@@ -59,20 +59,20 @@ h2 (void)
 // DEFAULT-NEXT:     type @type1 s = struct {
 // DEFAULT-NEXT:         field0 a: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %1 p: ptr<void> [storage=static] = null<ptr<void>> [linkage=external];
-// DEFAULT-NEXT:     global %3 q: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<void>>) [linkage=external];
+// DEFAULT-NEXT:     global %1 p: ptr<void> [storage=static] = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)) [linkage=external];
+// DEFAULT-NEXT:     global %3 q: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>))) [linkage=external];
 // DEFAULT-NEXT:     fn %4 @f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %5 r: ptr<void> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<void>>(%5, null<ptr<void>>);
-// DEFAULT-NEXT:         return null<ptr<void>>;
+// DEFAULT-NEXT:         write<ptr<void>>(%5, int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
+// DEFAULT-NEXT:         return int_to_ptr<ptr<void>, reason=return>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %6 @g(%10 <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %7 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%6, null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%6, int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %8 @g2(%11 <unnamed>: i32, %12 <unnamed>: ptr<void>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %9 @h2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<void>) -> void>(%8, const<i32>(0), null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<void>) -> void>(%8, const<i32>(0), int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

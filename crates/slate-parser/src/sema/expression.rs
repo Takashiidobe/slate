@@ -8,7 +8,6 @@ use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
-use num_bigint::BigInt;
 use std::collections::HashMap;
 
 enum Projection {
@@ -30,8 +29,6 @@ pub(super) struct Lowerer {
     pub switches: Vec<(BindingId, QualType)>,
     pub in_function: bool,
     pub in_naked_function: bool,
-    pub function_name: Option<String>,
-    pub pretty_function_name: Option<String>,
     pub files: crate::files::Files,
     pub return_type: Option<QualType>,
     pub ms_asm_return: Vec<BindingId>,
@@ -445,9 +442,12 @@ impl Lowerer {
             | SourceLocationBuiltin::FileName
             | SourceLocationBuiltin::Function => {
                 let text = match builtin {
-                    SourceLocationBuiltin::Function => {
-                        self.function_name.clone().unwrap_or_default()
-                    }
+                    SourceLocationBuiltin::Function => self
+                        .types
+                        .function_names
+                        .as_ref()
+                        .map(|names| names.plain.clone())
+                        .unwrap_or_default(),
                     SourceLocationBuiltin::FileName => {
                         let path = self
                             .files
@@ -748,20 +748,19 @@ impl Lowerer {
         }
     }
 
-    fn is_null_pointer_constant(&self, e: Option<&Expr>, value: &Operand) -> bool {
+    fn is_null_pointer_constant(&mut self, e: Option<&Expr>, value: &Operand) -> bool {
         if matches!(value.value.node.value, ValueKind::Null) {
             return true;
         }
         if !self.types.ctypes.is_integer(value.c) {
             return false;
         }
-        if matches!(&value.value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
-        {
-            return true;
+        match e {
+            Some(e) => self.types.integer_constant_zero(e),
+            None => {
+                matches!(&value.value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
+            }
         }
-        e.is_some_and(|e| {
-            crate::const_expr::Parser::evaluate_ast(e).is_ok_and(|number| number == 0)
-        })
     }
 
     fn emit_cast(
@@ -1103,14 +1102,11 @@ impl Lowerer {
                 self.place(selected)
             }
             ExprKind::Identifier(name) if predefined_function_name(name) => {
-                let pretty = name == "__PRETTY_FUNCTION__"
-                    && self.types.compiler_flavor() != crate::compiler_args::CompilerFlavor::Gcc;
-                let text = if pretty {
-                    self.pretty_function_name.clone()
-                } else {
-                    self.function_name.clone()
-                }
-                .ok_or(ResolveError::Rejected("predefined name outside a function"))?;
+                let text = self
+                    .types
+                    .predefined_name(name)
+                    .ok_or(ResolveError::Rejected("predefined name outside a function"))?
+                    .to_owned();
                 self.string_global(e, &text)
             }
             ExprKind::Identifier(_) => {
@@ -1261,70 +1257,23 @@ impl Lowerer {
     }
 
     fn shuffle_builtin(&mut self, e: &Expr, arguments: &[Expr]) -> Result<Operand, ResolveError> {
-        let Some((left, rest)) = arguments.split_first() else {
+        let [left, right, indices @ ..] = arguments else {
             return Err(ResolveError::Rejected("shuffle builtin arity"));
         };
         let left = self.expr(left)?;
-        let CTypeKind::Vector {
-            element,
-            lanes,
-            bytes,
-        } = *self.types.ctypes.canonical_kind(left.c)
-        else {
-            return Err(ResolveError::Rejected("shuffle builtin operand type"));
-        };
-        let Some((right, indices)) = rest.split_first() else {
-            return Err(ResolveError::Rejected("shuffle builtin arity"));
-        };
         let right = self.expr(right)?;
-        if indices.is_empty() {
-            let CTypeKind::Vector {
-                element: mask_element,
-                lanes: mask_lanes,
-                ..
-            } = *self.types.ctypes.canonical_kind(right.c)
-            else {
-                return Err(ResolveError::Rejected("shuffle builtin mask type"));
-            };
-            if !self.types.ctypes.is_integer(mask_element) || mask_lanes != lanes {
-                return Err(ResolveError::Rejected("shuffle builtin mask type"));
-            }
-            return Ok(self.operand(
-                e,
-                left.c,
-                ValueKind::Shuffle {
-                    left: Box::new(left.value),
-                    right: None,
-                    mask: ShuffleMask::Dynamic(Box::new(right.value)),
-                },
-            ));
-        }
-        if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
-            return Err(ResolveError::Rejected("shuffle builtin operand types"));
-        }
-        let mut mask = Vec::with_capacity(indices.len());
-        for index in indices {
-            let index = self.types.constant_integer(index)?;
-            let lane = u32::try_from(&index).ok();
-            if index != BigInt::from(-1) && !lane.is_some_and(|lane| lane < lanes * 2) {
-                return Err(ResolveError::Rejected("shuffle builtin lane index"));
-            }
-            mask.push(lane);
-        }
-        let width = u32::try_from(mask.len())
-            .map_err(|_| ResolveError::Rejected("shuffle builtin lane count"))?;
-        let c = self.types.ctypes.qual(CTypeKind::Vector {
-            element,
-            lanes: width,
-            bytes: bytes / u64::from(lanes) * u64::from(width),
-        });
+        let (c, mask) = self.types.shuffle(left.c, right.c, indices)?;
+        let (right, mask) = match mask {
+            Some(mask) => (Some(Box::new(right.value)), ShuffleMask::Lanes(mask)),
+            None => (None, ShuffleMask::Dynamic(Box::new(right.value))),
+        };
         Ok(self.operand(
             e,
             c,
             ValueKind::Shuffle {
                 left: Box::new(left.value),
-                right: Some(Box::new(right.value)),
-                mask: ShuffleMask::Lanes(mask),
+                right,
+                mask,
             },
         ))
     }
@@ -1366,7 +1315,7 @@ impl Lowerer {
                     } else if !self.types.ctypes.is_vector(value.c) {
                         return Err(error);
                     } else {
-                        let (c, mask) = self.swizzle(value.c, field)?;
+                        let (c, mask) = self.types.swizzle(value.c, field)?;
                         return Ok(Projection::Value(self.operand(
                             e,
                             c,
@@ -1386,7 +1335,7 @@ impl Lowerer {
                 .map(Projection::Place)
                 .ok_or(ResolveError::Rejected("unknown member"));
         }
-        let (c, mask) = self.swizzle(object.c, field)?;
+        let (c, mask) = self.types.swizzle(object.c, field)?;
         let lanes: Option<Vec<u32>> = mask.iter().copied().collect();
         let assignable = lanes.as_ref().is_some_and(|lanes| {
             lanes
@@ -1428,35 +1377,6 @@ impl Lowerer {
                 )))
             }
         }
-    }
-
-    fn swizzle(
-        &mut self,
-        vector: QualType,
-        field: &str,
-    ) -> Result<(QualType, Vec<Option<u32>>), ResolveError> {
-        let CTypeKind::Vector {
-            element,
-            lanes,
-            bytes,
-        } = *self.types.ctypes.canonical_kind(vector)
-        else {
-            return Err(ResolveError::Internal("expected vector"));
-        };
-        let mask = swizzle_lanes(field, lanes)
-            .ok_or(ResolveError::Rejected("illegal vector component name"))?;
-        let width = u32::try_from(mask.len())
-            .map_err(|_| ResolveError::Rejected("illegal vector component name"))?;
-        let c = if width == 1 {
-            element
-        } else {
-            self.types.ctypes.qual(CTypeKind::Vector {
-                element,
-                lanes: width,
-                bytes: bytes / u64::from(lanes) * u64::from(width),
-            })
-        };
-        Ok((c.with(self.types.ctypes.quals(vector)), mask))
     }
 
     fn lane(&mut self, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
@@ -2056,6 +1976,7 @@ impl Lowerer {
                 let to = self.resolve_type_name(ty)?;
                 let to = self.types.ctypes.unqualified(to);
                 let is_void = self.types.ctypes.is_void(to);
+                let value_expr = value;
                 let value = self.expr(value)?;
                 let cast = if let Some(index) = self.types.union_cast_member(to, value.c)? {
                     self.operand(
@@ -2070,7 +1991,7 @@ impl Lowerer {
                         },
                     )
                 } else if !is_void {
-                    self.convert(value, to, ConversionReason::Explicit)?
+                    self.convert_expr(value_expr, value, to, ConversionReason::Explicit)?
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);
                     self.operand(
@@ -2885,7 +2806,7 @@ fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
     })
 }
 
-fn swizzle_lanes(field: &str, lanes: u32) -> Option<Vec<Option<u32>>> {
+pub(super) fn swizzle_lanes(field: &str, lanes: u32) -> Option<Vec<Option<u32>>> {
     let half = lanes.next_power_of_two() / 2;
     let selected: Vec<u32> = match field {
         "lo" => (0..half).collect(),

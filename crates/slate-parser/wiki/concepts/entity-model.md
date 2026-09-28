@@ -69,18 +69,33 @@ with the type they lowered and return `Internal` on disagreement, so the rules
 cannot drift: typing rules shared with lowering (`binary_types`,
 `arithmetic_type`, `literal_type`, `derived_signature`, `builtin_callee`,
 `chosen_expr`, `real_floating_component`, `statement_expression_parts`,
-`AtomicBuiltin::result`) are factored out of the IR-building code rather than
-copied. A `sizeof` operand the typer answers is not lowered at all unless its
+`AtomicBuiltin::result`, `swizzle`, `shuffle`, `predefined_name`) are factored
+out of the IR-building code rather than copied. A `sizeof` operand the typer answers is not lowered at all unless its
 type is a VLA, which C evaluates.
 
 The static-assertion checker and `typeof` resolution type expressions through
 the same typer (`TypeResolver::expression_type`), so a constant expression
 like `sizeof(f())` is accepted wherever lowering would type `f()`.
 
-A null pointer in a pointer `?:` is decided by what lowering folds to
-`ValueKind::Null`, not by C's definition: a cast of literal `0` or of a
-zero enumerator is null, and a cast of anything the typer cannot prove zero
-(`(void *)(0, 0)`, `(void *)(1 - 1)`) leaves the conditional untyped.
+Whether an integer operand is a null pointer constant is one AST predicate,
+`TypeResolver::integer_constant_zero`: an integer constant expression by the
+C 6.6p6 operand rules (so `(void *)(1 - 1)` and `(void *)(unsigned long)0` are
+null, `(void *)(0, 0)`, `(int)(0.0 + 0.0)` and `(size_t)(void *)0` are not)
+whose value folds to zero. Lowering's `is_null_pointer_constant` and the
+typer's pointer `?:` both ask it, and an explicit cast passes its operand
+expression, so a cast of a zero ICE lowers to `null<ptr<T>>`.
+
+`__func__` and friends need the enclosing function's names, which live on
+`TypeResolver::function_names` (set by lowering and by the checker per
+function body). A statement expression's result can name a local declared in
+its own body, which lowering has not declared yet when `typeof`/`sizeof` ask;
+the typer types the body's top-level declarations itself
+(`declarator_type` + `completed_array`, shared with the checker) into
+`TypeResolver::locals`, which `object()` consults after `entities`.
+
+What the typer still cannot answer is a variably modified type (a cast to
+`int (*)[n]`, a VLA local in a statement expression): its extent binding is
+created when lowering evaluates the size.
 
 `names.rs::redeclares` decides whether a second declaration shares the first
 one's entity, and it treats `Object` and `Function` as one kind. A declarator

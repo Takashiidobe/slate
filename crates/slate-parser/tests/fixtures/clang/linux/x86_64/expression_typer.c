@@ -40,6 +40,28 @@ long g(int c, int *p) {
     return (long)made.x + *chosen + *nulled + loaded + fetched + wide + bits + (long)sizeof(__builtin_LINE());
 }
 
+typedef int v4si __attribute__((vector_size(16)));
+typedef float float4 __attribute__((ext_vector_type(4)));
+enum { E0 };
+
+int h(v4si v, float4 q, int *p) {
+    _Static_assert(sizeof(-v) == 16 && sizeof(~v) == 16 && sizeof(v[1]) == 4, "");
+    _Static_assert(sizeof(q.xy) == 8 && sizeof(q.x) == 4 && sizeof(q.xxyy) == 16, "");
+    _Static_assert(sizeof(__builtin_shufflevector(v, v, 0, 1)) == 8, "");
+    _Static_assert(sizeof(__func__) == 2, "");
+    __typeof__(v += 1) sum = v;
+    __typeof__(({ int local = 1; local; })) value = 2;
+    _Static_assert(sizeof(({ long wide = 0; wide; })) == 8, "");
+    _Static_assert(_Generic(1 ? p : (void *)(1 - 1), int *: 1, default: 0), "");
+    _Static_assert(_Generic(1 ? p : (void *)(E0 + 0), int *: 1, default: 0), "");
+    _Static_assert(_Generic(1 ? p : (void *)(unsigned long)0, int *: 1, default: 0), "");
+    _Static_assert(_Generic(1 ? p : (void *)(int)0.0, int *: 1, default: 0), "");
+    _Static_assert(_Generic(1 ? p : (void *)(0, 0), void *: 1, default: 0), "");
+    _Static_assert(_Generic(1 ? p : (void *)(int)(0.0 + 0.0), void *: 1, default: 0), "");
+    int nulled = *(1 ? p : (void *)(1 - 1));
+    return sum[0] + value + nulled;
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -76,6 +98,11 @@ long g(int c, int *p) {
 // IR-NEXT:         field0 x: f64;
 // IR-NEXT:         field1 y: f64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
+// IR-NEXT:     type @type3 v4si = vector<i32, 4>;
+// IR-NEXT:     type @type4 float4 = vector<f32, 4>;
+// IR-NEXT:     type @type5 = enum : u32 {
+// IR-NEXT:         %0 E0 = const<i32>(0);
+// IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     global %2 s: @type1 [storage=static] [linkage=external];
 // IR-NEXT:     global %3 text: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
 // IR-NEXT:     global %16 flag: atomic bool [storage=static] [linkage=external];
@@ -102,6 +129,12 @@ long g(int c, int *p) {
 // IR-NEXT:         let %26 wide: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(3));
 // IR-NEXT:         let %27 bits: i32 [storage=automatic] = const<i32>(0);
 // IR-NEXT:         return add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(field0(%21))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%22))))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%23))))), widen<i64, reason=usual_arith>(read<i32>(%24))), widen<i64, reason=usual_arith>(from_bool<i32, reason=promotion>(read<bool>(%25)))), read<i64>(%26)), widen<i64, reason=usual_arith>(read<i32>(%27))), reinterpret<i64, reason=explicit, fits=always>(const<u64>(4)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %32 @h(%33 v: vector<i32, 4>, %34 q: vector<f32, 4>, %35 p: ptr<i32>) -> i32 [linkage=external] [abi=sysv64(direct, direct, scalar) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %36 sum: vector<i32, 4> [storage=automatic] = read<vector<i32, 4>>(%33);
+// IR-NEXT:         let %38 value: i32 [storage=automatic] = const<i32>(2);
+// IR-NEXT:         let %40 nulled: i32 [storage=automatic] = read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%35), null<ptr<i32>>)));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(lane(%36, const<i32>(0))), read<i32>(%38)), read<i32>(%40));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

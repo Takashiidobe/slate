@@ -55,8 +55,6 @@ fn resolve_module(
         switches: Vec::new(),
         in_function: false,
         in_naked_function: false,
-        function_name: None,
-        pretty_function_name: None,
         files: files.clone(),
         return_type: None,
         ms_asm_return: Vec::new(),
@@ -209,8 +207,7 @@ impl Lowerer {
         self.ms_asm_return.clear();
         self.in_function = false;
         self.in_naked_function = false;
-        self.function_name = None;
-        self.pretty_function_name = None;
+        self.types.function_names = None;
         self.return_type = None;
         self.compound_start = false;
     }
@@ -298,8 +295,7 @@ fn lower_item(
             let mut prologue = Vec::new();
             lower.in_function = true;
             lower.in_naked_function = lower.is_naked(id);
-            lower.function_name = Some(name.to_string());
-            lower.pretty_function_name = Some(lower.types.declaration_spelling(resolved, name));
+            lower.types.function_names = Some(lower.types.function_names(resolved, name));
             lower.return_type = return_type.as_ref().map(|_| return_c);
             let body = lower
                 .parameters(params, Some(&mut prologue))
@@ -312,8 +308,7 @@ fn lower_item(
                 });
             lower.in_function = false;
             lower.in_naked_function = false;
-            lower.function_name = None;
-            lower.pretty_function_name = None;
+            lower.types.function_names = None;
             lower.return_type = None;
             let (parameters, mut body) = body?;
             let asm_return = lower.finish_ms_asm_return(
