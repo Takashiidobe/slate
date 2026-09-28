@@ -19,7 +19,7 @@ use crate::pp::{
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
-pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
+pub(crate) use declarator::{DeclaratorParser, builtin_integer_typedef, is_target_builtin_name};
 use input::{Annotation, ParserInput};
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;

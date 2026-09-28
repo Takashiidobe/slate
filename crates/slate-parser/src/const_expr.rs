@@ -2153,6 +2153,7 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
         Token::Ident(name) => {
             context.is_some_and(|parser| parser.is_typedef(name))
                 || crate::parser::is_target_builtin_name(name)
+                || crate::parser::builtin_integer_typedef(name).is_some()
                 || matches!(name.as_str(), "__attribute__" | "__attribute")
         }
         _ => false,

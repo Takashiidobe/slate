@@ -153,6 +153,11 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn parse_other_type(&mut self, token: Token) -> Result<TypeSpecifier, DeclaratorError> {
+        if let Token::Ident(name) = &token
+            && let Some(integer) = builtin_integer_typedef(name)
+        {
+            return Ok(TypeSpecifier::Integer(integer));
+        }
         Ok(match token {
             Token::Keyword(Keyword::Bool) => TypeSpecifier::Bool,
             Token::Keyword(Keyword::Void) => TypeSpecifier::Void,
@@ -175,18 +180,6 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Struct) => self.parse_record_type(TagKind::Struct)?,
             Token::Keyword(Keyword::Union) => self.parse_record_type(TagKind::Union)?,
             Token::Keyword(Keyword::Enum) => self.parse_enum_type()?,
-            Token::Ident(name) if name == "__int128_t" => {
-                TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Int128,
-                    signed: true,
-                })
-            }
-            Token::Ident(name) if name == "__uint128_t" => {
-                TypeSpecifier::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Int128,
-                    signed: false,
-                })
-            }
             Token::Ident(name) if is_target_builtin_name(&name) => {
                 TypeSpecifier::TargetBuiltin(name.into())
             }
@@ -918,6 +911,18 @@ impl<'a> Cursor for DeclaratorParser<'a> {
     fn set_pos(&mut self, pos: usize) {
         self.pos = pos;
     }
+}
+
+pub(crate) fn builtin_integer_typedef(name: &str) -> Option<IntegerType> {
+    let signed = match name {
+        "__int128_t" => true,
+        "__uint128_t" => false,
+        _ => return None,
+    };
+    Some(IntegerType::Ranked {
+        rank: IntegerRank::Int128,
+        signed,
+    })
 }
 
 pub(crate) fn is_target_builtin_name(name: &str) -> bool {
