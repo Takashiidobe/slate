@@ -22,10 +22,10 @@ rpmatch (const char *response)
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × linkage storage class
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010903-2.c:8:3]
+// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20010903-2.c:8:19]
 // DEFAULT: 7 │ {
 // DEFAULT: 8 │   auto inline int try (void *re);
-// DEFAULT: ·   ───────────────────────────────
+// DEFAULT: ·                   ──────────────
 // DEFAULT: 9 │
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

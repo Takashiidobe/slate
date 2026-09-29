@@ -197,6 +197,21 @@ impl TypeResolver {
         ));
     }
 
+    pub(super) fn attribute_error<'a>(
+        &self,
+        attributes: impl IntoIterator<Item = &'a Span<Attribute>>,
+        subject: Subject,
+    ) -> Result<(), ResolveError> {
+        for attribute in attributes {
+            if let Use::Rejected(reason) =
+                super::attributes::declaration_use(&attribute.value, subject)
+            {
+                return Err(ResolveError::Rejected(reason));
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn check_attributes<'a>(
         &mut self,
         attributes: impl IntoIterator<Item = &'a Span<Attribute>>,

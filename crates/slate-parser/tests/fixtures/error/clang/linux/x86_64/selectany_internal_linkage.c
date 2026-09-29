@@ -8,10 +8,10 @@ static __declspec(selectany) int chosen = 1;
 // IR: Error:   × semantic analysis failed
 // IR: Error:
 // IR: × selectany without external linkage
-// IR: ╭─[tests/fixtures/error/clang/linux/x86_64/selectany_internal_linkage.c:2:1]
+// IR: ╭─[tests/fixtures/error/clang/linux/x86_64/selectany_internal_linkage.c:2:34]
 // IR: 1 │
 // IR: 2 │ static __declspec(selectany) int chosen = 1;
-// IR: · ────────────────────────────────────────────
+// IR: ·                                  ──────────
 // IR: 3 │
 // IR: ╰────
 // SLATE-FILECHECK-END IR

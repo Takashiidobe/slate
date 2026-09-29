@@ -12,9 +12,9 @@ BAD_TYPE macro_missing;
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × object cannot have type void
-// SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:1:1]
+// SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:1:6]
 // SEMANTIC: 1 │ void invalid_object;
-// SEMANTIC: · ────────────────────
+// SEMANTIC: ·      ──────────────
 // SEMANTIC: 2 │ void *valid_pointer;
 // SEMANTIC: ╰────
 // SEMANTIC: Error:

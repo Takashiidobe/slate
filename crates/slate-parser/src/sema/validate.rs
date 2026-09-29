@@ -153,8 +153,7 @@ fn analyze(
                             specifiers.storage,
                             StorageClass::Extern | StorageClass::Typedef
                         )
-                        && declarator.name().is_some()
-                        && !declarator_indirects_void(declarator)
+                        && declares_void_array(declarator)
                     {
                         errors.push(error(
                             provenance,
@@ -240,11 +239,22 @@ impl SemaError {
     }
 }
 
-fn declarator_indirects_void(declarator: &Declarator) -> bool {
+// an array of void never resolves, so the checker cannot see it as a void object
+fn declares_void_array(declarator: &Declarator) -> bool {
+    match declarator {
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+            declares_void_array(inner)
+        }
+        Declarator::Array { inner, .. } => !declarator_indirects(inner),
+        _ => false,
+    }
+}
+
+fn declarator_indirects(declarator: &Declarator) -> bool {
     match declarator {
         Declarator::Grouped(inner)
         | Declarator::Attributed { inner, .. }
-        | Declarator::Array { inner, .. } => declarator_indirects_void(inner),
+        | Declarator::Array { inner, .. } => declarator_indirects(inner),
         Declarator::Pointer { .. } | Declarator::Function { .. } => true,
         Declarator::Abstract | Declarator::Name(_) => false,
     }

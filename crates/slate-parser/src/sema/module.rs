@@ -244,15 +244,19 @@ fn lower_item(
             );
             lower
                 .types
-                .check_attributes(attributes.iter().copied(), Subject::Function)?;
-            let mut symbol = function_symbol(attributes.iter().copied(), None)?;
+                .check_attributes(attributes.iter().copied(), Subject::Function)
+                .map_err(ResolveError::checked)?;
+            let mut symbol =
+                function_symbol(attributes.iter().copied(), None).map_err(ResolveError::checked)?;
             let name = function
                 .declarator
                 .name()
                 .ok_or(ResolveError::Internal("unnamed function"))?;
             lower.types.pragmas.apply(name, &mut symbol);
             let id = lower.declaration_id(declaration.id, name)?;
-            lower.record_function(id, &function.specifiers, &attributes, true, true)?;
+            lower
+                .record_function(id, &function.specifiers, &attributes, true, true)
+                .map_err(ResolveError::checked)?;
             let owner = lower.types.owner.replace(declaration.derive(()));
             let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
             let resolved = lower.types.apply_convention(resolved, &function.attributes);
@@ -335,7 +339,7 @@ fn lower_item(
                 parameters,
                 return_type,
                 abi,
-                linkage: linkage(function.specifiers.storage)?,
+                linkage: linkage(function.specifiers.storage).map_err(ResolveError::checked)?,
                 symbol,
                 semantics: Default::default(),
                 body: Some(body),
@@ -348,7 +352,7 @@ fn lower_item(
     Ok(())
 }
 
-fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
+pub(super) fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     match storage {
         StorageClass::Static => Ok(Linkage::Internal),
         StorageClass::None | StorageClass::Extern => Ok(Linkage::External),
@@ -356,14 +360,14 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     }
 }
 
-fn applies(attribute: &Span<ast::Attribute>, subject: Subject) -> bool {
+pub(super) fn applies(attribute: &Span<ast::Attribute>, subject: Subject) -> bool {
     !matches!(
         super::attributes::declaration_use(&attribute.value, subject),
         Use::Inapplicable { .. }
     )
 }
 
-fn symbol_attributes<'a>(
+pub(super) fn symbol_attributes<'a>(
     attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>>,
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
@@ -413,7 +417,7 @@ fn symbol_attributes<'a>(
     Ok(symbol)
 }
 
-fn function_symbol<'a>(
+pub(super) fn function_symbol<'a>(
     attributes: impl IntoIterator<Item = &'a Span<ast::Attribute>> + Clone,
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
@@ -633,7 +637,7 @@ impl Lowerer {
         existing.variable.access = merged_access;
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
-                return Err(ResolveError::Rejected("multiple global initializers"));
+                return Err(ResolveError::Internal("multiple global initializers"));
             }
             existing.variable.initializer = global.variable.initializer;
         }
@@ -715,7 +719,8 @@ impl Lowerer {
                     .chain(&parameter.attributes)
             };
             self.types
-                .check_attributes(attributes(), Subject::Parameter)?;
+                .check_attributes(attributes(), Subject::Parameter)
+                .map_err(ResolveError::checked)?;
             let alignment = super::types::requested_alignment(&mut self.types, attributes())?;
             if let Some(alignment) = alignment {
                 let rejected_by = if attributes()
@@ -874,7 +879,7 @@ impl Lowerer {
             && self.types.compiler_flavor() == CompilerFlavor::Gcc
             && item.declarators.len() > 1
         {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "'auto' may only be used with a single declarator",
             ));
         }
@@ -888,7 +893,8 @@ impl Lowerer {
                 .chain(&declarator.attributes);
             if storage_class == StorageClass::Typedef {
                 self.types
-                    .check_attributes(attributes.clone(), Subject::Typedef)?;
+                    .check_attributes(attributes.clone(), Subject::Typedef)
+                    .map_err(ResolveError::checked)?;
             }
             let thread = item.specifiers.is_thread_local
                 || attributes
@@ -921,7 +927,7 @@ impl Lowerer {
                     .local_unqualified()
                     .with(canonical.quals.without(item.specifiers.qualifiers.into()));
                 if deduced.is_some_and(|first| first != placeholder) {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "'auto' deduced as different types in one declaration",
                     ));
                 }
@@ -941,7 +947,9 @@ impl Lowerer {
                 Err(_) => resolved,
             };
             if let Some(value) = value {
-                self.check_inferred(resolved, value)?;
+                self.types
+                    .check_inferred(resolved, value)
+                    .map_err(ResolveError::checked)?;
             }
             let mut c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
@@ -958,14 +966,14 @@ impl Lowerer {
             self.types.owner = owner;
             let qualifiers = self.types.ctypes.quals(resolved);
             if item.specifiers.is_constexpr && declarator.initializer.is_none() {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "constexpr object requires an initializer",
                 ));
             }
             let ty = match self.types.layout(resolved) {
                 Some(ty) => ty,
                 None if storage_class == StorageClass::Extern => self.types.ir_type(resolved),
-                None => return Err(ResolveError::Rejected("object cannot have type void")),
+                None => return Err(ResolveError::Internal("object cannot have type void")),
             };
             let id = self.declaration_id(declarator.id, name)?;
             let previous =
@@ -981,13 +989,13 @@ impl Lowerer {
             } = &ty
             {
                 if declarator.initializer.is_some() {
-                    return Err(ResolveError::Rejected("function initializer"));
+                    return Err(ResolveError::Internal("function initializer"));
                 }
                 if thread {
-                    return Err(ResolveError::Rejected("thread-local function"));
+                    return Err(ResolveError::Internal("thread-local function"));
                 }
                 if !global && storage_class == StorageClass::Static {
-                    return Err(ResolveError::Rejected("block scope static function"));
+                    return Err(ResolveError::Internal("block scope static function"));
                 }
                 let attributes = super::function::attributes(
                     &item.specifiers,
@@ -995,11 +1003,14 @@ impl Lowerer {
                     &declarator.attributes,
                 );
                 self.types
-                    .check_attributes(attributes.iter().copied(), Subject::Function)?;
+                    .check_attributes(attributes.iter().copied(), Subject::Function)
+                    .map_err(ResolveError::checked)?;
                 let mut symbol =
-                    function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
+                    function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())
+                        .map_err(ResolveError::checked)?;
                 self.types.pragmas.apply(name, &mut symbol);
-                self.record_function(id, &item.specifiers, &attributes, false, global)?;
+                self.record_function(id, &item.specifiers, &attributes, false, global)
+                    .map_err(ResolveError::checked)?;
                 let parameters = match declarator.declarator.function_parameters() {
                     Some(params) => self.parameters(params, None)?,
                     None if !prototyped => Parameters::Unprototyped,
@@ -1033,7 +1044,7 @@ impl Lowerer {
                     parameters,
                     return_type: return_type.as_ref().map(|ty| (**ty).clone()),
                     abi,
-                    linkage: linkage(storage_class)?,
+                    linkage: linkage(storage_class).map_err(ResolveError::checked)?,
                     symbol,
                     semantics: Default::default(),
                     body: None,
@@ -1046,7 +1057,7 @@ impl Lowerer {
             let linked = global || storage_class == StorageClass::Extern;
             let storage = if !linked && storage_class != StorageClass::Static {
                 if thread {
-                    return Err(ResolveError::Rejected("thread-local automatic variable"));
+                    return Err(ResolveError::Internal("thread-local automatic variable"));
                 }
                 StorageDuration::Automatic
             } else if thread {
@@ -1057,15 +1068,18 @@ impl Lowerer {
             let subject = Subject::Object {
                 automatic: storage == StorageDuration::Automatic,
             };
-            self.types.check_attributes(attributes.clone(), subject)?;
+            self.types
+                .check_attributes(attributes.clone(), subject)
+                .map_err(ResolveError::checked)?;
             let attributes = || attributes.clone().filter(|a| applies(a, subject));
             if let Some(metadata) = self.c_attribute_metadata(attributes())? {
                 c_entries.push(metadata);
             }
             if !global && linked && declarator.initializer.is_some() {
-                return Err(ResolveError::Rejected("block scope extern initializer"));
+                return Err(ResolveError::Internal("block scope extern initializer"));
             }
-            let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())?;
+            let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())
+                .map_err(ResolveError::checked)?;
             self.types.pragmas.apply(name, &mut symbol);
             let request = super::entity::ObjectRequest {
                 alignment: super::types::requested_alignment(&mut self.types, attributes())?,
@@ -1086,7 +1100,7 @@ impl Lowerer {
                 None => (ty, None),
                 Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
                     if !matches!(initializer, ast::Initializer::List(items) if items.is_empty()) {
-                        return Err(ResolveError::Rejected("variable length array initializer"));
+                        return Err(ResolveError::Internal("variable length array initializer"));
                     }
                     let value = Value {
                         ty: ty.clone(),
@@ -1171,7 +1185,7 @@ impl Lowerer {
             if storage != StorageDuration::Automatic
                 && matches!(variable.ty, Type::VariableArray { .. })
             {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "variable length array with static storage duration",
                 ));
             }
@@ -1203,13 +1217,13 @@ impl Lowerer {
                 } else if item.specifiers.is_constexpr {
                     Linkage::Internal
                 } else {
-                    linkage(storage_class)?
+                    linkage(storage_class).map_err(ResolveError::checked)?
                 };
                 if symbol.weakref.is_some() && !matches!(declared_linkage, Linkage::Internal) {
-                    return Err(ResolveError::Rejected("weakref without internal linkage"));
+                    return Err(ResolveError::Internal("weakref without internal linkage"));
                 }
                 if symbol.selectany && !matches!(declared_linkage, Linkage::External) {
-                    return Err(ResolveError::Rejected("selectany without external linkage"));
+                    return Err(ResolveError::Internal("selectany without external linkage"));
                 }
                 let definition = (storage_class != StorageClass::Extern
                     || variable.initializer.is_some()

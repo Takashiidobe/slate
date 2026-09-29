@@ -9,12 +9,15 @@ use crate::ir::{
 use crate::visit::{self, Visitor};
 use num_bigint::{BigInt, Sign};
 
-use super::ctype::QualType;
+use super::attributes::Subject;
 use super::ctype::convert::ConversionContext;
+use super::ctype::{Extent, QualType};
 use super::entity::ObjectRequest;
+use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
+use std::collections::{HashMap, HashSet};
 
 pub(super) fn validate(
     unit: &TranslationUnit,
@@ -27,6 +30,8 @@ pub(super) fn validate(
         types,
         errors: Vec::new(),
         context: StatementContext::default(),
+        initialized: HashSet::new(),
+        inlining: HashMap::new(),
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
@@ -45,9 +50,12 @@ pub(super) fn validate(
         match &declaration.value {
             DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
             DeclKind::Declaration(declaration) => checker.declaration(declaration, true),
-            DeclKind::Function(function) => {
-                checker.function(declaration.id, Some(declaration.derive(())), function)
-            }
+            DeclKind::Function(function) => checker.function(
+                declaration.id,
+                declaration.derive(()),
+                Some(declaration.derive(())),
+                function,
+            ),
             _ => {}
         }
         let diagnostics = std::mem::take(&mut checker.types.diagnostics);
@@ -66,6 +74,8 @@ struct Checker<'a> {
     types: &'a mut TypeResolver,
     errors: Vec<SemaError>,
     context: StatementContext,
+    initialized: HashSet<BindingId>,
+    inlining: HashMap<BindingId, bool>,
 }
 
 #[derive(Default)]
@@ -162,8 +172,20 @@ impl Checker<'_> {
         );
     }
 
-    fn function(&mut self, node: NodeId, owner: Option<Span<()>>, function: &FunctionDefinition) {
+    fn function(
+        &mut self,
+        node: NodeId,
+        at: Span<()>,
+        owner: Option<Span<()>>,
+        function: &FunctionDefinition,
+    ) {
         let owner_linkage = owner.is_some();
+        let attributes = super::function::attributes(
+            &function.specifiers,
+            &function.declarator,
+            &function.attributes,
+        );
+        self.function_rules(&at, node, &function.specifiers, &attributes, None);
         let mut names = None;
         let mut returns = Returns::Unknown;
         let owner = std::mem::replace(&mut self.types.owner, owner);
@@ -199,6 +221,7 @@ impl Checker<'_> {
             .function_parameters()
             .map_or(&[][..], ParameterList::parameters)
         {
+            self.parameter_rules(parameter);
             self.specifier(&parameter.specifiers.ty);
             self.declarator(&parameter.declarator);
             let owner = self.types.owner.replace(parameter.derive(()));
@@ -244,10 +267,23 @@ impl Checker<'_> {
         self.specifier(&declaration.specifiers.ty);
         self.tag(&declaration.specifiers.ty);
         self.types.owner = owner;
+        let inferred = matches!(declaration.specifiers.ty, TypeSpecifier::Inferred);
+        if inferred
+            && self.types.compiler_flavor() == CompilerFlavor::Gcc
+            && let [_, second, ..] = declaration.declarators.as_slice()
+        {
+            self.reject(second, "'auto' may only be used with a single declarator");
+        }
+        let mut deduced = None;
         for declarator in &declaration.declarators {
             self.declarator(&declarator.declarator);
             let Some(name) = declarator.declarator.name() else {
                 continue;
+            };
+            let deduced_value = if inferred {
+                self.deduction(declaration, declarator, &mut deduced)
+            } else {
+                None
             };
             let owner = self.types.owner.replace(declarator.derive(()));
             let mut initialized = None;
@@ -264,6 +300,10 @@ impl Checker<'_> {
                     .attributes
                     .iter()
                     .chain(&declarator.attributes);
+                let result = self
+                    .types
+                    .attribute_error(attributes.clone(), Subject::Typedef);
+                self.report(declarator, result);
                 if self.types.ctypes.is_variably_modified(resolved) {
                     self.types
                         .declare_provisional_alias(declarator.id, name.to_owned(), resolved);
@@ -277,6 +317,16 @@ impl Checker<'_> {
                 }
             }
             self.types.owner = owner;
+            if let (Ok(resolved), Some(value)) = (&resolved, deduced_value) {
+                let resolved = *resolved;
+                let result = self.types.check_inferred(resolved, value);
+                self.report(declarator, result);
+            }
+            if let Ok(resolved) = resolved
+                && declaration.specifiers.storage != StorageClass::Typedef
+            {
+                self.object_rules(declaration, declarator, global, resolved);
+            }
             if let Ok(resolved) = resolved
                 && declaration.specifiers.storage != StorageClass::Typedef
                 && (!self.types.ctypes.is_void(resolved)
@@ -335,6 +385,220 @@ impl Checker<'_> {
                     self.convert(expr, to, ConversionContext::Assign);
                 }
             }
+        }
+    }
+
+    fn deduction(
+        &mut self,
+        declaration: &Declaration,
+        declarator: &InitDeclarator,
+        deduced: &mut Option<QualType>,
+    ) -> Option<QualType> {
+        let binding = *self.types.declarations.get(&declarator.id)?;
+        let expr = self.types.deduced_initializer(
+            &declaration.specifiers,
+            &declarator.declarator,
+            declarator.initializer.as_ref(),
+            binding,
+        );
+        let expr = match expr {
+            Ok(expr) => expr,
+            Err(error) => {
+                self.report(declarator, Err(error));
+                return None;
+            }
+        };
+        let value = self.types.typed(expr).ok()?.c;
+        let (base, value) = match self.types.inferred_base(&declarator.declarator, value) {
+            Ok(inferred) => inferred,
+            Err(error) => {
+                self.report(declarator, Err(error));
+                return None;
+            }
+        };
+        let canonical = self.types.ctypes.canonical(base);
+        let placeholder = canonical.local_unqualified().with(
+            canonical
+                .quals
+                .without(declaration.specifiers.qualifiers.into()),
+        );
+        if deduced.is_some_and(|first| first != placeholder) {
+            self.reject(
+                declarator,
+                "'auto' deduced as different types in one declaration",
+            );
+        }
+        *deduced = Some(placeholder);
+        Some(value)
+    }
+
+    fn object_rules(
+        &mut self,
+        declaration: &Declaration,
+        declarator: &InitDeclarator,
+        global: bool,
+        resolved: QualType,
+    ) {
+        let specifiers = &declaration.specifiers;
+        let storage = specifiers.storage;
+        let attributes = specifiers.attributes.iter().chain(&declarator.attributes);
+        let thread = specifiers.is_thread_local
+            || attributes
+                .clone()
+                .any(|attribute| matches!(attribute.value, Attribute::ThreadLocal));
+        let initializer = declarator.initializer.as_ref();
+        if specifiers.is_constexpr && initializer.is_none() {
+            self.reject(declarator, "constexpr object requires an initializer");
+        }
+        if self.types.ctypes.is_void(resolved) && storage != StorageClass::Extern {
+            self.reject(declarator, "object cannot have type void");
+            return;
+        }
+        if self.types.ctypes.is_function(resolved) {
+            if initializer.is_some() {
+                self.reject(declarator, "function initializer");
+            }
+            if thread {
+                self.reject(declarator, "thread-local function");
+            }
+            if !global && storage == StorageClass::Static {
+                self.reject(declarator, "block scope static function");
+            }
+            let attributes = super::function::attributes(
+                specifiers,
+                &declarator.declarator,
+                &declarator.attributes,
+            );
+            self.function_rules(
+                declarator,
+                declarator.id,
+                specifiers,
+                &attributes,
+                declarator.asm_label.as_ref(),
+            );
+            for parameter in declarator
+                .declarator
+                .function_parameters()
+                .map_or(&[][..], ParameterList::parameters)
+            {
+                self.parameter_rules(parameter);
+            }
+            return;
+        }
+        let linked = global || storage == StorageClass::Extern;
+        let automatic = !linked && storage != StorageClass::Static;
+        if automatic && thread {
+            self.reject(declarator, "thread-local automatic variable");
+        }
+        let subject = Subject::Object { automatic };
+        let result = self.types.attribute_error(attributes.clone(), subject);
+        self.report(declarator, result);
+        if !global && linked && initializer.is_some() {
+            self.reject(declarator, "block scope extern initializer");
+        }
+        let symbol = symbol_attributes(
+            attributes.filter(|attribute| applies(attribute, subject)),
+            declarator.asm_label.as_ref(),
+        );
+        let variable_array = matches!(
+            self.types.ctypes.element(resolved),
+            Some((_, Extent::Variable(_)))
+        );
+        if variable_array
+            && initializer.is_some_and(
+                |initializer| !matches!(initializer, Initializer::List(items) if items.is_empty()),
+            )
+        {
+            self.reject(declarator, "variable length array initializer");
+        }
+        if variable_array && !automatic {
+            self.reject(
+                declarator,
+                "variable length array with static storage duration",
+            );
+        }
+        if !linked {
+            self.report(declarator, symbol.map(drop));
+            return;
+        }
+        let linkage = if storage == StorageClass::Register {
+            Ok(Linkage::External)
+        } else if specifiers.is_constexpr {
+            Ok(Linkage::Internal)
+        } else {
+            declared_linkage(storage)
+        };
+        match (symbol, linkage) {
+            (Ok(symbol), Ok(linkage)) => {
+                if symbol.weakref.is_some() && !matches!(linkage, Linkage::Internal) {
+                    self.reject(declarator, "weakref without internal linkage");
+                }
+                if symbol.selectany && !matches!(linkage, Linkage::External) {
+                    self.reject(declarator, "selectany without external linkage");
+                }
+            }
+            (symbol, linkage) => {
+                self.report(declarator, symbol.map(drop));
+                self.report(declarator, linkage.map(drop));
+            }
+        }
+        if initializer.is_some()
+            && let Some(&id) = self.types.declarations.get(&declarator.id)
+            && !self.initialized.insert(id)
+        {
+            self.reject(declarator, "multiple global initializers");
+        }
+    }
+
+    fn function_rules<T>(
+        &mut self,
+        at: &Span<T>,
+        node: NodeId,
+        specifiers: &DeclarationSpecifiers,
+        attributes: &[&Span<Attribute>],
+        asm_label: Option<&Span<AsmLabel>>,
+    ) {
+        let result = self
+            .types
+            .attribute_error(attributes.iter().copied(), Subject::Function);
+        self.report(at, result);
+        self.report(
+            at,
+            function_symbol(attributes.iter().copied(), asm_label).map(drop),
+        );
+        self.report(at, declared_linkage(specifiers.storage).map(drop));
+        let Some(&id) = self.types.declarations.get(&node) else {
+            return;
+        };
+        for attribute in attributes {
+            let always = match attribute.value {
+                Attribute::AlwaysInline => true,
+                Attribute::NoInline => false,
+                _ => continue,
+            };
+            if self
+                .inlining
+                .insert(id, always)
+                .is_some_and(|previous| previous != always)
+            {
+                self.reject(at, "conflicting always_inline and noinline attributes");
+            }
+        }
+    }
+
+    fn parameter_rules(&mut self, parameter: &ParameterDeclaration) {
+        let attributes = parameter
+            .specifiers
+            .attributes
+            .iter()
+            .chain(&parameter.attributes);
+        let result = self.types.attribute_error(attributes, Subject::Parameter);
+        self.report(parameter, result);
+    }
+
+    fn report<T>(&mut self, at: &Span<T>, result: Result<(), ResolveError>) {
+        if let Err(ResolveError::Rejected(reason)) = result {
+            self.reject(at, reason);
         }
     }
 
@@ -420,7 +684,7 @@ impl Checker<'_> {
                 if self.types.compiler_flavor() != CompilerFlavor::Gcc {
                     self.reject(stmt, "function definition is not allowed here");
                 }
-                self.function(stmt.id, None, function)
+                self.function(stmt.id, stmt.derive(()), None, function)
             }
             StmtKind::If {
                 condition,

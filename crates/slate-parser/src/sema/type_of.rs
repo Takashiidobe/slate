@@ -185,71 +185,15 @@ impl Lowerer {
         initializer: Option<&Initializer>,
         binding: BindingId,
     ) -> Result<(QualType, QualType), ResolveError> {
-        if specifiers.storage == StorageClass::Typedef {
-            return Err(ResolveError::Rejected("'auto' not allowed in typedef"));
-        }
-        let expr = match initializer {
-            Some(Initializer::Expr(expr)) => expr,
-            Some(Initializer::List(_)) => {
-                return Err(ResolveError::Rejected(
-                    "cannot use 'auto' with an initializer list",
-                ));
-            }
-            None => {
-                return Err(ResolveError::Rejected(
-                    "declaration with deduced type requires an initializer",
-                ));
-            }
-        };
-        if self.types.compiler_flavor() == CompilerFlavor::Gcc && !plain_identifier(declarator) {
-            return Err(ResolveError::Rejected(
-                "'auto' requires a plain identifier as declarator",
-            ));
-        }
-        let mut own = OwnReference {
-            references: &self.types.references,
-            binding,
-        };
-        if own.visit_expr(expr).is_err() {
-            return Err(ResolveError::Rejected(
-                "variable declared with deduced type cannot appear in its own initializer",
-            ));
-        }
+        let expr = self
+            .types
+            .deduced_initializer(specifiers, declarator, initializer, binding)
+            .map_err(ResolveError::checked)?;
         self.reserve_extents(expr);
-        let (value, bit_field) = self.operand_type(expr)?;
-        if bit_field {
-            return Err(if self.types.compiler_flavor() == CompilerFlavor::Gcc {
-                ResolveError::Unimplemented("deduced type of a bit-field initializer")
-            } else {
-                ResolveError::Rejected("cannot use a bit-field as a deduced-type initializer")
-            });
-        }
-        self.types.inferred_base(declarator, value)
-    }
-
-    pub(super) fn check_inferred(
-        &self,
-        declared: QualType,
-        value: QualType,
-    ) -> Result<(), ResolveError> {
-        let ctypes = &self.types.ctypes;
-        let declared = ctypes.canonical(declared).local_unqualified();
-        let value = ctypes.canonical(value).local_unqualified();
-        let added_pointee_quals = match (ctypes.pointee(declared), ctypes.pointee(value)) {
-            (Some(to), Some(from)) => {
-                let (to, from) = (ctypes.canonical(to), ctypes.canonical(from));
-                to.local_unqualified() == from.local_unqualified()
-                    && from.quals.without(to.quals).is_empty()
-            }
-            _ => false,
-        };
-        if declared == value || added_pointee_quals {
-            Ok(())
-        } else {
-            Err(ResolveError::Rejected(
-                "initializer does not match the deduced declarator",
-            ))
-        }
+        let value = self.types.typed(expr)?.c;
+        self.types
+            .inferred_base(declarator, value)
+            .map_err(ResolveError::checked)
     }
 
     pub(super) fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
@@ -283,6 +227,78 @@ impl Lowerer {
 }
 
 impl TypeResolver {
+    pub(super) fn deduced_initializer<'e>(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+        initializer: Option<&'e Initializer>,
+        binding: BindingId,
+    ) -> Result<&'e Expr, ResolveError> {
+        if specifiers.storage == StorageClass::Typedef {
+            return Err(ResolveError::Rejected("'auto' not allowed in typedef"));
+        }
+        let expr = match initializer {
+            Some(Initializer::Expr(expr)) => expr,
+            Some(Initializer::List(_)) => {
+                return Err(ResolveError::Rejected(
+                    "cannot use 'auto' with an initializer list",
+                ));
+            }
+            None => {
+                return Err(ResolveError::Rejected(
+                    "declaration with deduced type requires an initializer",
+                ));
+            }
+        };
+        if self.compiler_flavor() == CompilerFlavor::Gcc && !plain_identifier(declarator) {
+            return Err(ResolveError::Rejected(
+                "'auto' requires a plain identifier as declarator",
+            ));
+        }
+        let mut own = OwnReference {
+            references: &self.references,
+            binding,
+        };
+        if own.visit_expr(expr).is_err() {
+            return Err(ResolveError::Rejected(
+                "variable declared with deduced type cannot appear in its own initializer",
+            ));
+        }
+        if self.typed(expr)?.bits.is_some() {
+            return Err(if self.compiler_flavor() == CompilerFlavor::Gcc {
+                ResolveError::Unimplemented("deduced type of a bit-field initializer")
+            } else {
+                ResolveError::Rejected("cannot use a bit-field as a deduced-type initializer")
+            });
+        }
+        Ok(expr)
+    }
+
+    pub(super) fn check_inferred(
+        &self,
+        declared: QualType,
+        value: QualType,
+    ) -> Result<(), ResolveError> {
+        let ctypes = &self.ctypes;
+        let declared = ctypes.canonical(declared).local_unqualified();
+        let value = ctypes.canonical(value).local_unqualified();
+        let added_pointee_quals = match (ctypes.pointee(declared), ctypes.pointee(value)) {
+            (Some(to), Some(from)) => {
+                let (to, from) = (ctypes.canonical(to), ctypes.canonical(from));
+                to.local_unqualified() == from.local_unqualified()
+                    && from.quals.without(to.quals).is_empty()
+            }
+            _ => false,
+        };
+        if declared == value || added_pointee_quals {
+            Ok(())
+        } else {
+            Err(ResolveError::Rejected(
+                "initializer does not match the deduced declarator",
+            ))
+        }
+    }
+
     pub(super) fn inferred_base(
         &mut self,
         declarator: &Declarator,

@@ -70,6 +70,11 @@ impl CTypes {
         if self.is_function(to) || self.is_array(to) {
             return Err(ResolveError::Rejected("conversion to a function or array"));
         }
+        if self.is_incomplete_enum(from) || self.is_incomplete_enum(to) {
+            return Err(ResolveError::Rejected(
+                "conversion involving an incomplete enum type",
+            ));
+        }
         let (from_view, to_view) = (self.unqualified_view(from), self.unqualified_view(to));
         let record = matches!(self.canonical_kind(to), CTypeKind::Record { .. });
         if self.same(from_view, to_view)
@@ -315,6 +320,10 @@ impl CTypes {
             self.canonical_kind(q),
             CTypeKind::Complex(_) | CTypeKind::Imaginary(_)
         )
+    }
+
+    fn is_incomplete_enum(&self, q: QualType) -> bool {
+        matches!(self.canonical_kind(q), CTypeKind::Enum(_)) && self.enum_underlying(q).is_none()
     }
 
     pub fn is_nullptr(&self, q: QualType) -> bool {

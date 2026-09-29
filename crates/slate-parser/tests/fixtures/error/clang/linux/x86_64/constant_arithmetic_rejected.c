@@ -69,11 +69,11 @@ int bad_pp;
 // SLATE-FILECHECK-BEGIN ARRAY
 // ARRAY: Error:   × semantic analysis failed
 // ARRAY: Error:
-// ARRAY: × nonconstant or undefined integer expression
-// ARRAY: ╭─[tests/fixtures/error/clang/linux/x86_64/constant_arithmetic_rejected.c:11:1]
+// ARRAY: × variable length array with static storage duration
+// ARRAY: ╭─[tests/fixtures/error/clang/linux/x86_64/constant_arithmetic_rejected.c:11:5]
 // ARRAY: 10 │ #ifdef ARRAY
 // ARRAY: 11 │ int bad_array[1 / 0];
-// ARRAY: · ─────────────────────
+// ARRAY: ·     ────────────────
 // ARRAY: 12 │ #endif
 // ARRAY: ╰────
 // SLATE-FILECHECK-END ARRAY

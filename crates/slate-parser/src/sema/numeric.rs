@@ -72,6 +72,13 @@ impl ResolveError {
             }
         }
     }
+
+    pub(super) fn checked(self) -> Self {
+        match self {
+            Self::Rejected(reason) => Self::Internal(reason),
+            error => error,
+        }
+    }
 }
 
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";

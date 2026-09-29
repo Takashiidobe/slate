@@ -197,6 +197,23 @@ gcc and clang: `constant_value` evaluates a conditional whose condition folds
 without requiring the unselected arm to be constant, so `case (1 ? 1 : i)`
 and `int [0 ? f() : 1]` are constant.
 
+Declaration rules are the checker's too (slate-parser-cc94.5.3). Rules with a
+shared implementation are called from both walks: `module::linkage`,
+`symbol_attributes`, `function_symbol`, `TypeResolver::deduced_initializer`
+/ `inferred_base` / `check_inferred` (the `auto` / `__auto_type` rules), and
+attribute placement (`TypeResolver::attribute_error` is the warning-free half
+of `check_attributes`). The checker reports their `Rejected`; lowering maps
+the same call through `ResolveError::checked`, which turns `Rejected` into
+`Internal`. One-line rules are restated in `Checker::object_rules` with
+lowering's copy `Internal`: void object, function initializer / thread-local
+/ block-scope `static`, thread-local automatic, block-scope `extern`
+initializer, constexpr without initializer, VLA initializer and static VLA,
+weakref/selectany linkage, multiple initializers of one linked object
+(`Checker::initialized`) and conflicting `always_inline`/`noinline`
+(`Checker::inlining`). An array of `void` never resolves, so `validate.rs`
+keeps a syntactic check for it. A conversion to or from an incomplete enum is
+rejected by `classify_conversion`.
+
 Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has

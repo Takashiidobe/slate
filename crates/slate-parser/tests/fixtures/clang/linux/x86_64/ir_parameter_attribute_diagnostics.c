@@ -37,10 +37,10 @@ void f(__declspec(code_seg("s")) int p);
 // ERR_SYMBOL: Error:   × semantic analysis failed
 // ERR_SYMBOL: Error:
 // ERR_SYMBOL: × 'section' attribute only applies to functions and global variables
-// ERR_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:7:1]
+// ERR_SYMBOL: ╭─[tests/fixtures/clang/linux/x86_64/ir_parameter_attribute_diagnostics.c:7:8]
 // ERR_SYMBOL: 6 │ #elif defined(ERR_SYMBOL)
 // ERR_SYMBOL: 7 │ void f(int p __attribute__((section("s"))));
-// ERR_SYMBOL: · ────────────────────────────────────────────
+// ERR_SYMBOL: ·        ───────────────────────────────────
 // ERR_SYMBOL: 8 │ #elif defined(WARN_SYMBOL)
 // ERR_SYMBOL: ╰────
 // SLATE-FILECHECK-END ERR_SYMBOL

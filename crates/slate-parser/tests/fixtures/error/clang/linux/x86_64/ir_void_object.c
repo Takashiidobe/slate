@@ -26,10 +26,10 @@ alias bad;
 // FILE_SCOPE: Error:   × semantic analysis failed
 // FILE_SCOPE: Error:
 // FILE_SCOPE: × object cannot have type void
-// FILE_SCOPE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:3:1]
+// FILE_SCOPE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:3:6]
 // FILE_SCOPE: 2 │ #ifdef FILE_SCOPE
 // FILE_SCOPE: 3 │ void bad;
-// FILE_SCOPE: · ─────────
+// FILE_SCOPE: ·      ───
 // FILE_SCOPE: 4 │ #endif
 // FILE_SCOPE: ╰────
 // SLATE-FILECHECK-END FILE_SCOPE
@@ -37,10 +37,10 @@ alias bad;
 // STATIC: Error:   × semantic analysis failed
 // STATIC: Error:
 // STATIC: × object cannot have type void
-// STATIC: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:6:1]
+// STATIC: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:6:13]
 // STATIC: 5 │ #ifdef STATIC
 // STATIC: 6 │ static void bad;
-// STATIC: · ────────────────
+// STATIC: ·             ───
 // STATIC: 7 │ #endif
 // STATIC: ╰────
 // SLATE-FILECHECK-END STATIC
@@ -48,10 +48,10 @@ alias bad;
 // BLOCK: Error:   × semantic analysis failed
 // BLOCK: Error:
 // BLOCK: × object cannot have type void
-// BLOCK: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:9:16]
+// BLOCK: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:9:21]
 // BLOCK: 8 │ #ifdef BLOCK
 // BLOCK: 9 │ void f(void) { void bad; (void)bad; }
-// BLOCK: ·                ─────────
+// BLOCK: ·                     ───
 // BLOCK: 10 │ #endif
 // BLOCK: ╰────
 // SLATE-FILECHECK-END BLOCK
@@ -59,10 +59,10 @@ alias bad;
 // TYPEDEF: Error:   × semantic analysis failed
 // TYPEDEF: Error:
 // TYPEDEF: × object cannot have type void
-// TYPEDEF: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:13:1]
+// TYPEDEF: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_void_object.c:13:7]
 // TYPEDEF: 12 │ typedef void alias;
 // TYPEDEF: 13 │ alias bad;
-// TYPEDEF: · ──────────
+// TYPEDEF: ·       ───
 // TYPEDEF: 14 │ #endif
 // TYPEDEF: ╰────
 // SLATE-FILECHECK-END TYPEDEF

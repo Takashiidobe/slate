@@ -838,7 +838,7 @@ impl Lowerer {
                     .types
                     .ctypes
                     .enum_underlying(to)
-                    .ok_or(ResolveError::Rejected("enum without an underlying type"))?;
+                    .ok_or(ResolveError::Internal("enum without an underlying type"))?;
                 let value = self.emit_convert_to(value, underlying, reason)?;
                 let node = value.node.clone();
                 Ok(self.value(

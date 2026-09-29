@@ -95,10 +95,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // MIXED: Error:   × semantic analysis failed
 // MIXED: Error:
 // MIXED: × 'auto' deduced as different types in one declaration
-// MIXED: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:51:3]
+// MIXED: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:51:15]
 // MIXED: 50 │ #ifdef MIXED
 // MIXED: 51 │   auto x = 1, y = 2.0;
-// MIXED: ·   ────────────────────
+// MIXED: ·               ───────
 // MIXED: 52 │ #endif
 // MIXED: ╰────
 // SLATE-FILECHECK-END MIXED
@@ -106,10 +106,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // SELF: Error:   × semantic analysis failed
 // SELF: Error:
 // SELF: × variable declared with deduced type cannot appear in its own initializer
-// SELF: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:3]
+// SELF: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:8]
 // SELF: 53 │ #ifdef SELF
 // SELF: 54 │   auto z = 1 + sizeof(z);
-// SELF: ·   ───────────────────────
+// SELF: ·        ─────────────────
 // SELF: 55 │ #endif
 // SELF: ╰────
 // SLATE-FILECHECK-END SELF
@@ -117,10 +117,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // NO_INIT: Error:   × semantic analysis failed
 // NO_INIT: Error:
 // NO_INIT: × declaration with deduced type requires an initializer
-// NO_INIT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:3]
+// NO_INIT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:15]
 // NO_INIT: 56 │ #ifdef NO_INIT
 // NO_INIT: 57 │   auto w = 1, v;
-// NO_INIT: ·   ──────────────
+// NO_INIT: ·               ─
 // NO_INIT: 58 │ #endif
 // NO_INIT: ╰────
 // SLATE-FILECHECK-END NO_INIT
@@ -128,10 +128,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // LIST: Error:   × semantic analysis failed
 // LIST: Error:
 // LIST: × cannot use 'auto' with an initializer list
-// LIST: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:3]
+// LIST: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:8]
 // LIST: 59 │ #ifdef LIST
 // LIST: 60 │   auto l = {1};
-// LIST: ·   ─────────────
+// LIST: ·        ───────
 // LIST: 61 │ #endif
 // LIST: ╰────
 // SLATE-FILECHECK-END LIST
@@ -139,10 +139,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // PARAMS: Error:   × semantic analysis failed
 // PARAMS: Error:
 // PARAMS: × initializer does not match the deduced declarator
-// PARAMS: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:3]
+// PARAMS: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:8]
 // PARAMS: 62 │ #ifdef PARAMS
 // PARAMS: 63 │   auto (*f)(int) = h;
-// PARAMS: ·   ───────────────────
+// PARAMS: ·        ─────────────
 // PARAMS: 64 │ #endif
 // PARAMS: ╰────
 // SLATE-FILECHECK-END PARAMS
@@ -150,10 +150,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // EXTENT: Error:   × semantic analysis failed
 // EXTENT: Error:
 // EXTENT: × initializer does not match the deduced declarator
-// EXTENT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:3]
+// EXTENT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:8]
 // EXTENT: 65 │ #ifdef EXTENT
 // EXTENT: 66 │   auto (*e)[4] = &arr;
-// EXTENT: ·   ────────────────────
+// EXTENT: ·        ──────────────
 // EXTENT: 67 │ #endif
 // EXTENT: ╰────
 // SLATE-FILECHECK-END EXTENT
@@ -161,10 +161,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // TOP_ARRAY: Error:   × semantic analysis failed
 // TOP_ARRAY: Error:
 // TOP_ARRAY: × initializer does not match the deduced declarator
-// TOP_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:3]
+// TOP_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:8]
 // TOP_ARRAY: 68 │ #ifdef TOP_ARRAY
 // TOP_ARRAY: 69 │   auto t[3] = arr;
-// TOP_ARRAY: ·   ────────────────
+// TOP_ARRAY: ·        ──────────
 // TOP_ARRAY: 70 │ #endif
 // TOP_ARRAY: ╰────
 // SLATE-FILECHECK-END TOP_ARRAY
@@ -172,10 +172,10 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // BIT_FIELD: Error:   × semantic analysis failed
 // BIT_FIELD: Error:
 // BIT_FIELD: × cannot use a bit-field as a deduced-type initializer
-// BIT_FIELD: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:72:3]
+// BIT_FIELD: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:72:8]
 // BIT_FIELD: 71 │ #ifdef BIT_FIELD
 // BIT_FIELD: 72 │   auto b = s.b;
-// BIT_FIELD: ·   ─────────────
+// BIT_FIELD: ·        ───────
 // BIT_FIELD: 73 │ #endif
 // BIT_FIELD: ╰────
 // SLATE-FILECHECK-END BIT_FIELD

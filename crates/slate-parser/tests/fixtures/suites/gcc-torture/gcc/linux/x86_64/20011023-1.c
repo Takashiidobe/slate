@@ -21,10 +21,10 @@ void bar (void)
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
 // DEFAULT: × linkage storage class
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20011023-1.c:8:3]
+// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/gcc/linux/x86_64/20011023-1.c:8:13]
 // DEFAULT: 7 │ {
 // DEFAULT: 8 │   auto void baz (void);
-// DEFAULT: ·   ─────────────────────
+// DEFAULT: ·             ──────────
 // DEFAULT: 9 │   void baz (void)
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT
