@@ -61,7 +61,8 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_expected:[0-9]+]] expected: array<f64, 32> [storage=static] [align=16] = aggregate<array<f64, 32>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(10.0), index2 = const<f64>(44.0), index3 = const<f64>(110.0), index4 = const<f64>(232.0), index5 = const<f64>(490.0), index6 = const<f64>(1020.0), index7 = const<f64>(2078.0), index8 = const<f64>(4152.0), index9 = const<f64>(8314.0), index10 = const<f64>(16652.0), index11 = const<f64>(33326.0), index12 = const<f64>(66664.0), index13 = const<f64>(133354.0), index14 = const<f64>(266748.0), index15 = const<f64>(533534.0), index16 = const<f64>(1067064.0), index17 = const<f64>(2134138.0), index18 = const<f64>(4268300.0), index19 = const<f64>(8536622.0), index20 = const<f64>(17073256.0), index21 = const<f64>(34146538.0), index22 = const<f64>(68293116.0), index23 = const<f64>(136586270.0), index24 = const<f64>(273172536.0), index25 = const<f64>(546345082.0), index26 = const<f64>(1092690188.0), index27 = const<f64>(2185380398.0), index28 = const<f64>(4370760808.0), index29 = const<f64>(8741521642.0), index30 = const<f64>(17483043324.0), index31 = const<f64>(6.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_expected:[0-9]+]] expected: array<f64, 32> [storage=static] [align=16] = aggregate<array<f64, 32>, zero_fill=false>(index0 = const<f64>(0.0),
+// DEFAULT-SAME: index1 = const<f64>(10.0), index2 = const<f64>(44.0), index3 = const<f64>(110.0), index4 = const<f64>(232.0), index5 = const<f64>(490.0), index6 = const<f64>(1020.0), index7 = const<f64>(2078.0), index8 = const<f64>(4152.0), index9 = const<f64>(8314.0), index10 = const<f64>(16652.0), index11 = const<f64>(33326.0), index12 = const<f64>(66664.0), index13 = const<f64>(133354.0), index14 = const<f64>(266748.0), index15 = const<f64>(533534.0), index16 = const<f64>(1067064.0), index17 = const<f64>(2134138.0), index18 = const<f64>(4268300.0), index19 = const<f64>(8536622.0), index20 = const<f64>(17073256.0), index21 = const<f64>(34146538.0), index22 = const<f64>(68293116.0), index23 = const<f64>(136586270.0), index24 = const<f64>(273172536.0), index25 = const<f64>(546345082.0), index26 = const<f64>(1092690188.0), index27 = const<f64>(2185380398.0), index28 = const<f64>(4370760808.0), index29 = const<f64>(8741521642.0), index30 = const<f64>(17483043324.0), index31 = const<f64>(6.0)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: ptr<f64>, %[[VALUE_b:[0-9]+]] b: ptr<f64>, %[[VALUE_c:[0-9]+]] c: ptr<f64>, %[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_e:[0-9]+]] e: f64, %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
@@ -75,7 +76,21 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]]))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_d]]), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_b]]), read<i32>(%[[VALUE_i]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_c]]), read<i32>(%[[VALUE_i]]))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_e]]), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]])))))));
+// DEFAULT-NEXT:                 write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<f64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<f64>(%[[VALUE_d]]), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(add<f64, rounding=nearest_even,
+// DEFAULT-SAME: exceptions=observable, contract=fast>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64,
+// DEFAULT-SAME: overflow=ub>(read<ptr<f64>>(%[[VALUE_b]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64,
+// DEFAULT-SAME: overflow=ub>(read<ptr<f64>>(%[[VALUE_c]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64,
+// DEFAULT-SAME: overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), sub<i32,
+// DEFAULT-SAME: overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64,
+// DEFAULT-SAME: overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]), add<i32,
+// DEFAULT-SAME: overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))))), mul<f64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<f64>(%[[VALUE_e]]), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64,
+// DEFAULT-SAME: overflow=ub>(read<ptr<f64>>(%[[VALUE_a]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

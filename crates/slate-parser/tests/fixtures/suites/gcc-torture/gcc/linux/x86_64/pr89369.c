@@ -131,16 +131,122 @@ int main() { return 0; }
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE_S]] [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>, ptr<const @type[[TYPE_S]]>, i32) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]]), pointer_cast<ptr<const @type[[TYPE_S]]>, reason=arg>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])), const<i32>(1));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>, ptr<const @type[[TYPE_S]]>, i32) -> void>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_y]]), pointer_cast<ptr<const @type[[TYPE_S]]>, reason=arg>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_c]])), const<i32>(1));
-// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(0))), xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(0))))), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(0)))), const<i32>(11)), const<u32>(3758096367))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(0))))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(0)))), const<i32>(18))));
-// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(1))), xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(1)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(1))))), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(1)))), const<i32>(11)), const<u32>(3724462975))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(1))))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(1)))), const<i32>(18))));
-// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(2))), xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(2)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(2))))), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(2)))), const<i32>(11)), const<u32>(3220897791))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(2))))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(2)))), const<i32>(18))));
-// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(3))), xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(3)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(3))))), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(3)))), const<i32>(11)), const<u32>(3221225462))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(3))))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(3)))), const<i32>(18))));
+// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(0))),
+// DEFAULT-SAME: xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(0))))), and<u32>(shr<u32, amount_out_of_range=ub,
+// DEFAULT-SAME: fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(0)))), const<i32>(11)), const<u32>(3758096367))),
+// DEFAULT-SAME: read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(0))))),
+// DEFAULT-SAME: shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(0)))), const<i32>(18))));
+// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(1))),
+// DEFAULT-SAME: xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(1)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(1))))), and<u32>(shr<u32, amount_out_of_range=ub,
+// DEFAULT-SAME: fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(1)))), const<i32>(11)), const<u32>(3724462975))),
+// DEFAULT-SAME: read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(1))))),
+// DEFAULT-SAME: shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(1)))), const<i32>(18))));
+// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(2))),
+// DEFAULT-SAME: xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(2)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(2))))), and<u32>(shr<u32, amount_out_of_range=ub,
+// DEFAULT-SAME: fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(2)))), const<i32>(11)), const<u32>(3220897791))),
+// DEFAULT-SAME: read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(2))))),
+// DEFAULT-SAME: shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(2)))), const<i32>(18))));
+// DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_r]])))), const<i32>(3))),
+// DEFAULT-SAME: xor<u32>(xor<u32>(xor<u32>(xor<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_a]])))), const<i32>(3)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_x]])), const<i32>(3))))), and<u32>(shr<u32, amount_out_of_range=ub,
+// DEFAULT-SAME: fill=zero_extend>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_b]])))), const<i32>(3)))), const<i32>(11)), const<u32>(3221225462))),
+// DEFAULT-SAME: read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(%[[VALUE_y]])), const<i32>(3))))),
+// DEFAULT-SAME: shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_d]])))), const<i32>(3)))), const<i32>(18))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: array<@type[[TYPE_S]], 6> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_S]], 6>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1235)), index1 = const<u32>(3159640283), index2 = const<u32>(4062961311), index3 = const<u32>(3954462607))), index1 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(61024153)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1623097926)), index2 = const<u32>(2731697901), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2057405750)))), index2 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(363037976)), index1 = const<u32>(3479526625), index2 = const<u32>(4091582868), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1357867518)))), index3 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = const<u32>(2284276487), index1 = const<u32>(3888728166), index2 = const<u32>(3236601671), index3 = const<u32>(3064478787))), index4 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = const<u32>(3440181298), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1564997079)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1510669302)), index3 = const<u32>(2930277156))), index5 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>, ptr<@type[[TYPE_S]]>, ptr<@type[[TYPE_S]]>, ptr<@type[[TYPE_S]]>, ptr<@type[[TYPE_S]]>) -> void>(%[[VALUE_baz]], addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5)))), addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(0)))), addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(1)))), addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(2)))), addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(3)))));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(0))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(1)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(1)))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(2)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(2)))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(3)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(3))))))
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a:
+// DEFAULT-SAME: array<@type[[TYPE_S]], 6> [storage=automatic] [align=16] =
+// DEFAULT-SAME: aggregate<array<@type[[TYPE_S]], 6>, zero_fill=false>(index0 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign,
+// DEFAULT-SAME: fits=always>(const<i32>(1235)), index1 = const<u32>(3159640283), index2 = const<u32>(4062961311), index3 = const<u32>(3954462607))), index1 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign,
+// DEFAULT-SAME: fits=always>(const<i32>(61024153)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1623097926)), index2 = const<u32>(2731697901), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2057405750)))), index2 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign,
+// DEFAULT-SAME: fits=always>(const<i32>(363037976)), index1 = const<u32>(3479526625), index2 = const<u32>(4091582868), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1357867518)))), index3 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = const<u32>(2284276487), index1 = const<u32>(3888728166),
+// DEFAULT-SAME: index2 = const<u32>(3236601671), index3 = const<u32>(3064478787))), index4 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>,
+// DEFAULT-SAME: zero_fill=false>(index0 = const<u32>(3440181298), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1564997079)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1510669302)), index3 = const<u32>(2930277156))), index5 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign,
+// DEFAULT-SAME: fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_S]]>) ->
+// DEFAULT-SAME: void>(%[[VALUE_baz]],
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5)))),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(0)))),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(1)))),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(2)))),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(3)))));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>,
+// DEFAULT-SAME: length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(0)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(0))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(1)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(1)))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(2)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(2)))))), ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(4))))), const<i32>(3)))), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<u32>, length=Some(4)>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_S]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>,
+// DEFAULT-SAME: length=Some(6)>(%[[VALUE_a_2]]), const<i32>(5))))), const<i32>(3))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

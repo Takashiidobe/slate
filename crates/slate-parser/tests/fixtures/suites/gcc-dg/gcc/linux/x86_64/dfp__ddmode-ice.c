@@ -128,10 +128,64 @@ foo (void)
 // DEFAULT-NEXT:                             write<d64>(%[[VALUE_c]], mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(const<d64>(0.125), add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_xx]]), read<d64>(%[[VALUE_xy]])), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_yx]]), read<d64>(%[[VALUE_yy]])))));
 // DEFAULT-NEXT:                             write<d64>(%[[VALUE_qj]], const<d64>(0.0));
 // DEFAULT-NEXT:                             write<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_dd]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_m]]))), add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_b]]), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_a]]), read<d64>(%[[VALUE_rel]]))), read<d64>(%[[VALUE_b]])));
-// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qxx]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_ip]])))), read<i32>(%[[VALUE_j]])))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(const<d64>(2.0), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_j]])))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_im]])))), read<i32>(%[[VALUE_j]]))))));
-// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qyy]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_jp]])))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(const<d64>(2.0), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_j]])))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_jm]]))))));
-// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qxy]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_ip]])))), read<i32>(%[[VALUE_jp]])))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_ip]])))), read<i32>(%[[VALUE_jm]]))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_im]])))), read<i32>(%[[VALUE_jp]]))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_y]]), read<i32>(%[[VALUE_im]])))), read<i32>(%[[VALUE_jm]]))))));
-// DEFAULT-NEXT:                             write<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>, length=Some(258)>(%[[VALUE_ry]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_m]]))), add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_a]]), read<d64>(%[[VALUE_qxx]])), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_b]]), read<d64>(%[[VALUE_qyy]]))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_c]]), read<d64>(%[[VALUE_qxy]]))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_yx]]), read<d64>(%[[VALUE_qi]]))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_yy]]), read<d64>(%[[VALUE_qj]]))));
+// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qxx]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_ip]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_j]])))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(const<d64>(2.0), read<d64>(deref(ptr_offset<ptr<d64>,
+// DEFAULT-SAME: subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_j]])))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>,
+// DEFAULT-SAME: length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_im]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_j]]))))));
+// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qyy]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jp]])))), mul<d64, rounding=nearest_even, exceptions=observable, contract=fast>(const<d64>(2.0), read<d64>(deref(ptr_offset<ptr<d64>,
+// DEFAULT-SAME: subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_j]])))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>,
+// DEFAULT-SAME: length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jm]]))))));
+// DEFAULT-NEXT:                             write<d64>(%[[VALUE_qxy]], add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_ip]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jp]])))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>,
+// DEFAULT-SAME: length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_ip]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jm]]))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>,
+// DEFAULT-SAME: length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_im]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jp]]))))), read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>,
+// DEFAULT-SAME: length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_y]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_im]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_jm]]))))));
+// DEFAULT-NEXT:                             write<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(array_decay<ptr<d64>, length=Some(258)>(deref(ptr_offset<ptr<array<d64, 258>>, subtract=false, element=array<d64, 258>, overflow=ub>(array_decay<ptr<array<d64, 258>>,
+// DEFAULT-SAME: length=Some(258)>(%[[VALUE_ry]]),
+// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
+// DEFAULT-SAME: read<i32>(%[[VALUE_m]]))), add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(add<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(add<d64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(%[[VALUE_a]]),
+// DEFAULT-SAME: read<d64>(%[[VALUE_qxx]])), mul<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(%[[VALUE_b]]),
+// DEFAULT-SAME: read<d64>(%[[VALUE_qyy]]))), mul<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(%[[VALUE_c]]),
+// DEFAULT-SAME: read<d64>(%[[VALUE_qxy]]))), mul<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(%[[VALUE_yx]]),
+// DEFAULT-SAME: read<d64>(%[[VALUE_qi]]))), mul<d64, rounding=nearest_even, exceptions=observable,
+// DEFAULT-SAME: contract=fast>(read<d64>(%[[VALUE_yy]]),
+// DEFAULT-SAME: read<d64>(%[[VALUE_qj]]))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(1), const<i32>(0));

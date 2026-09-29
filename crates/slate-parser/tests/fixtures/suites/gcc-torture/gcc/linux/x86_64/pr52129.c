@@ -67,7 +67,16 @@ int main() {
 // DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_T]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<void>, %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]], %[[VALUE_y:[0-9]+]] y: ptr<void>, %[[VALUE_z:[0-9]+]] z: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_x]]), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field0(%[[VALUE_t]])), const<i32>(2)))))), ne<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_s]])), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field1(%[[VALUE_t]])), const<i32>(5))))))), ne<u32>(read<u32>(field1(%[[VALUE_s]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(27)))), ne<ptr<void>>(read<ptr<void>>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field0(%[[VALUE_t]])), const<i32>(17))))))), ne<ptr<void>>(read<ptr<void>>(%[[VALUE_z]]), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field1(%[[VALUE_t]])), const<i32>(17)))))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_x]]), pointer_cast<ptr<void>,
+// DEFAULT-SAME: reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(64)>(field0(%[[VALUE_t]])), const<i32>(2)))))),
+// DEFAULT-SAME: ne<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_s]])), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false,
+// DEFAULT-SAME: element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field1(%[[VALUE_t]])), const<i32>(5))))))),
+// DEFAULT-SAME: ne<u32>(read<u32>(field1(%[[VALUE_s]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(27)))),
+// DEFAULT-SAME: ne<ptr<void>>(read<ptr<void>>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field0(%[[VALUE_t]])), const<i32>(17))))))),
+// DEFAULT-SAME: ne<ptr<void>>(read<ptr<void>>(%[[VALUE_z]]), pointer_cast<ptr<void>, reason=usual_arith>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i8>, length=Some(64)>(field1(%[[VALUE_t]])), const<i32>(17)))))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(29);
 // DEFAULT-NEXT:     }

@@ -66,3 +66,23 @@ checked with `-NEXT`, so a use still has to name the same entity as before.
 Only the absolute number stops mattering: a changed cross-reference fails,
 and renumbering alone doesn't. String variables, unlike numeric ones, can be
 reused on the line that defines them.
+
+### Cost of variables, and `-SAME` splitting
+
+A single `[[...]]` or `{{...}}` turns the whole check line into a regex. That
+regex is compiled per line with LLVM's backtracking engine, and its cost grows
+with pattern length times the text scanned, and superlinearly with the number
+of capture groups. A literal line is matched with memmem instead. A 256-parameter
+signature (`cpp__embed-14.c`, 5.5s) and 20KB constants with one binding
+(`bitint-39.c`, 3.7s) were the worst cases. FileCheck has no flag that changes
+this.
+
+`split_regex_checks` breaks a check line longer than 1024 characters, or one
+with more than 32 constructs, into a `-NEXT` line followed by `-SAME` pieces.
+It splits at whitespace, which no construct contains. Each piece holds at most
+one construct plus up to 160 characters of neighbouring literal text, so long
+literal runs go back to fixed-string matching. The one loosening is that a
+`-SAME` piece searches forward, so text between two pieces goes unchecked.
+Lines that are cheap on their own are not split, even when there are many of
+them: `20001226-1.c`'s 16k ~300-character lines each use `[[VALUE_x]]` and
+still take ~1.5s to check.

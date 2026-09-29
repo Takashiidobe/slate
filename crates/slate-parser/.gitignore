@@ -9,3 +9,6 @@ scratch
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# FileCheck harness scratch copies of fixtures, kept for debugging
+.*.c

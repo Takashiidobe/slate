@@ -154,7 +154,41 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_uv:[0-9]+]] uv: array<@type[[TYPE_u0]], 4> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_u0]], 4>, zero_fill=false>(index0 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(111))), index1 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(222))), index2 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(333))), index3 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(444))));
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s1]] [storage=automatic] = aggregate<@type[[TYPE_s1]], zero_fill=false>(field0 = null<ptr<ptr<@type[[TYPE_u0]]>>>, field1 = aggregate<array<@type[[TYPE_u0]], 4>, zero_fill=false>(index0 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(555))), index1 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(0))), index2 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(999))), index3 = aggregate<@type[[TYPE_u0]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(777)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<@type[[TYPE_s1]]>, ptr<const @type[[TYPE_u0]]>, i64, i64, i64) -> void>(%[[VALUE_f]], null<ptr<void>>, addr_of<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s]]), null<ptr<const @type[[TYPE_u0]]>>, widen<i64, reason=arg>(const<i32>(20000)), widen<i64, reason=arg>(const<i32>(10000)), ptr_to_int<i64, reason=explicit>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]])));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(0))))), ptr_to_int<i64, reason=explicit>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]]))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(1))))), widen<i64, reason=usual_arith>(const<i32>(0)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(2))))), widen<i64, reason=usual_arith>(const<i32>(999)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(3))))), widen<i64, reason=usual_arith>(const<i32>(777)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]]), const<i32>(0))))), widen<i64, reason=usual_arith>(const<i32>(111)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]]), const<i32>(1))))), widen<i64, reason=usual_arith>(const<i32>(222)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]]), const<i32>(2))))), widen<i64, reason=usual_arith>(const<i32>(0)))), ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false, element=@type[[TYPE_u0]], overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>, length=Some(4)>(%[[VALUE_uv]]), const<i32>(3))))), widen<i64, reason=usual_arith>(const<i32>(444))))
+// DEFAULT-NEXT:         if
+// DEFAULT-SAME: logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: subtract=false, element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(0))))), ptr_to_int<i64,
+// DEFAULT-SAME: reason=explicit>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_uv]]))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(1))))), widen<i64, reason=usual_arith>(const<i32>(0)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(2))))), widen<i64, reason=usual_arith>(const<i32>(999)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(3))))), widen<i64, reason=usual_arith>(const<i32>(777)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_uv]]), const<i32>(0))))), widen<i64, reason=usual_arith>(const<i32>(111)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_uv]]), const<i32>(1))))), widen<i64, reason=usual_arith>(const<i32>(222)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_uv]]), const<i32>(2))))), widen<i64, reason=usual_arith>(const<i32>(0)))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field1(deref(ptr_offset<ptr<@type[[TYPE_u0]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_u0]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_u0]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_uv]]), const<i32>(3))))), widen<i64, reason=usual_arith>(const<i32>(444))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

@@ -80,7 +80,32 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_accept:[0-9]+]] accept: array<i8, 3> [storage=automatic] [const] = code_units<array<i8, 3>>([97, 98, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_empty:[0-9]+]] empty: array<i8, 1> [storage=automatic] [const] = code_units<array<i8, 1>>([0]);
 // DEFAULT-NEXT:         let %[[VALUE_reject:[0-9]+]] reject: array<i8, 3> [storage=automatic] [const] = code_units<array<i8, 3>>([99, 100, 0]);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(34)>(%[[VALUE_str]])), from_bool<i32, reason=vararg>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))), const<i32>(0))), from_bool<i32, reason=vararg>(lt<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), const<i32>(0))), from_bool<i32, reason=vararg>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(0))), call<u64, signature=fn(ptr<const i8>, u64) -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>, length=Some(4)>(%[[VALUE_abc]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(99)))), call<u64, signature=fn(ptr<const i8>, u64) -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_text]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), call<u64, signature=fn(ptr<const i8>, u64) -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>, length=Some(1)>(%[[VALUE_empty]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))), call<u64, signature=fn(ptr<const i8>, ptr<const i8>) -> u64>(%[[VALUE_spans]], array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_span]]), array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_accept]])), call<u64, signature=fn(ptr<const i8>, ptr<const i8>) -> u64>(%[[VALUE_spans]], array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_span]]), array_decay<ptr<const i8>, length=Some(1)>(%[[VALUE_empty]])), call<u64, signature=fn(ptr<const i8>, ptr<const i8>) -> u64>(%[[VALUE_spans]], array_decay<ptr<const i8>, length=Some(1)>(%[[VALUE_empty]]), array_decay<ptr<const i8>, length=Some(3)>(%[[VALUE_reject]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(34)>(%[[VALUE_str]])), from_bool<i32, reason=vararg>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) ->
+// DEFAULT-SAME: i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))), const<i32>(0))), from_bool<i32,
+// DEFAULT-SAME: reason=vararg>(lt<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), const<i32>(0))), from_bool<i32,
+// DEFAULT-SAME: reason=vararg>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_bounded_cmp]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abc]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abd]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(0))), call<u64,
+// DEFAULT-SAME: signature=fn(ptr<const i8>, u64) -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_abc]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(99)))), call<u64, signature=fn(ptr<const i8>, u64)
+// DEFAULT-SAME: -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(7)>(%[[VALUE_text]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))), call<u64, signature=fn(ptr<const i8>, u64)
+// DEFAULT-SAME: -> u64>(%[[VALUE_bounded_len]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(1)>(%[[VALUE_empty]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))), call<u64, signature=fn(ptr<const i8>,
+// DEFAULT-SAME: ptr<const i8>) -> u64>(%[[VALUE_spans]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(7)>(%[[VALUE_span]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_accept]])), call<u64, signature=fn(ptr<const i8>, ptr<const i8>) ->
+// DEFAULT-SAME: u64>(%[[VALUE_spans]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(7)>(%[[VALUE_span]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(1)>(%[[VALUE_empty]])), call<u64, signature=fn(ptr<const i8>, ptr<const i8>) ->
+// DEFAULT-SAME: u64>(%[[VALUE_spans]], array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(1)>(%[[VALUE_empty]]), array_decay<ptr<const i8>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_reject]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

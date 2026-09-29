@@ -80,7 +80,15 @@ int         main(void) {
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_Y1]], mul<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_Y2]]), read<f80>(%[[VALUE_Y1]])));
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_R]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_R]]), read<f80>(%[[VALUE_Y2]])));
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_Y1]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_Y1]]), const<f80>(0.5)));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f80, exceptions=observable>(read<f80>(%[[VALUE_Z]]), float_widen<f80, reason=usual_arith>(const<f64>(68.0))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_Y]]), float_widen<f80, reason=usual_arith>(const<f64>(49.0)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_X]]), float_widen<f80, reason=usual_arith>(const<f64>(58.0)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_Y1]]), float_widen<f80, reason=usual_arith>(const<f64>(186.5)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_R]]), float_widen<f80, reason=usual_arith>(const<f64>(193.0)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_S]]), float_widen<f80, reason=usual_arith>(const<f64>(77.0)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_T]]), float_widen<f80, reason=usual_arith>(const<f64>(65.0)))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_Y2]]), float_widen<f80, reason=usual_arith>(const<f64>(11.0))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_Z]]), float_widen<f80, reason=usual_arith>(const<f64>(68.0))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_Y]]), float_widen<f80, reason=usual_arith>(const<f64>(49.0)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_X]]), float_widen<f80, reason=usual_arith>(const<f64>(58.0)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_Y1]]), float_widen<f80, reason=usual_arith>(const<f64>(186.5)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_R]]), float_widen<f80, reason=usual_arith>(const<f64>(193.0)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_S]]), float_widen<f80, reason=usual_arith>(const<f64>(77.0)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_T]]), float_widen<f80, reason=usual_arith>(const<f64>(65.0)))), ne<f80,
+// DEFAULT-SAME: exceptions=observable>(read<f80>(%[[VALUE_Y2]]), float_widen<f80, reason=usual_arith>(const<f64>(11.0))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

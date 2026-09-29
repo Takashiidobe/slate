@@ -67,7 +67,39 @@ polynomial(int a)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_polynomial:[0-9]+]] @polynomial(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(3), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]])), const<i32>(3)), read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(3),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]])), const<i32>(3)),
+// DEFAULT-SAME: read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

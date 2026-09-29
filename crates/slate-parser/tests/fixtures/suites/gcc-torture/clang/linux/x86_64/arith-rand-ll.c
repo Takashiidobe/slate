@@ -281,7 +281,16 @@ int main(void) {
 // DEFAULT-NEXT:                         let %[[VALUE_r2_6:[0-9]+]] r2: i16 [storage=automatic];
 // DEFAULT-NEXT:                         write<i16>(%[[VALUE_r1_6]], truncate<i16, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_xx_6]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])))));
 // DEFAULT-NEXT:                         write<i16>(%[[VALUE_r2_6]], truncate<i16, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_xx_6]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])))));
-// DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_r2_6]])), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%[[VALUE_r2_6]])), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_r2_6]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]]))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_r1_6]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]]))), widen<i32, reason=promotion>(read<i16>(%[[VALUE_r2_6]]))))), widen<i32, reason=promotion>(read<i16>(%[[VALUE_xx_6]]))))
+// DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_r2_6]])), const<i32>(0)), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_r2_6]])), neg<i32, overflow=ub>(widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_r2_6]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit,
+// DEFAULT-SAME: fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])), const<i32>(0)),
+// DEFAULT-SAME: widen<i32, reason=promotion>(read<i16>(%[[VALUE_yy_6]])), neg<i32, overflow=ub>(widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_yy_6]]))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(add<i32,
+// DEFAULT-SAME: overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_r1_6]])), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_yy_6]]))), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_r2_6]]))))), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i16>(%[[VALUE_xx_6]]))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     {
@@ -303,7 +312,16 @@ int main(void) {
 // DEFAULT-NEXT:                         let %[[VALUE_r2_8:[0-9]+]] r2: i8 [storage=automatic];
 // DEFAULT-NEXT:                         write<i8>(%[[VALUE_r1_8]], truncate<i8, reason=assign, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_xx_8]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])))));
 // DEFAULT-NEXT:                         write<i8>(%[[VALUE_r2_8]], truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_xx_8]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])))));
-// DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r2_8]])), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%[[VALUE_r2_8]])), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r2_8]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]]))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r1_8]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]]))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_r2_8]]))))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_xx_8]]))))
+// DEFAULT-NEXT:                         if logical_or<bool>(ge<i32>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r2_8]])), const<i32>(0)), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_r2_8]])), neg<i32, overflow=ub>(widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_r2_8]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit,
+// DEFAULT-SAME: fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(conditional<i32>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])), const<i32>(0)),
+// DEFAULT-SAME: widen<i32, reason=promotion>(read<i8>(%[[VALUE_yy_8]])), neg<i32, overflow=ub>(widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_yy_8]]))))))))), ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(add<i32,
+// DEFAULT-SAME: overflow=ub>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r1_8]])), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_yy_8]]))), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_r2_8]]))))), widen<i32,
+// DEFAULT-SAME: reason=promotion>(read<i8>(%[[VALUE_xx_8]]))))
 // DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 }

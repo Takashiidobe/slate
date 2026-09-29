@@ -53,7 +53,79 @@ int main() {
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> @type[[TYPE_A]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: array<@type[[TYPE_A]], 70> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_A]], 70>, zero_fill=false>(index0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index3 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index4 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index5 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index6 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index7 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index8 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index9 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index10 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index11 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index12 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index13 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index14 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index15 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index16 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index17 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index18 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index19 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index20 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index21 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index22 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index23 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index24 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index25 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index26 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index27 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index28 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index29 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index30 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index31 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index32 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index33 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index34 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index35 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index36 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index37 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index38 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index39 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index40 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index41 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index42 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index43 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index44 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index45 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index46 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index47 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index48 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index49 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index50 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index51 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index52 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index53 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index54 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index55 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index56 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index57 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index58 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index59 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index60 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index61 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index62 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index63 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index64 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index65 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index66 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index67 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index68 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index69 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h:
+// DEFAULT-SAME: array<@type[[TYPE_A]], 70> [storage=automatic] [align=16] =
+// DEFAULT-SAME: aggregate<array<@type[[TYPE_A]], 70>, zero_fill=false>(index0 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index1 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index2 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index3 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index4 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index5 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index6 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index7 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index8 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index9 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index10 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index11 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index12 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index13 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index14 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index15 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index16 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index17 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index18 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index19 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index20 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index21 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index22 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index23 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index24 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index25 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index26 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index27 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index28 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index29 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index30 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index31 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index32 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index33 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index34 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index35 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index36 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index37 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index38 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index39 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index40 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index41 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index42 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index43 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index44 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index45 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index46 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index47 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index48 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index49 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index50 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index51 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index52 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index53 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index54 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index55 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index56 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index57 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index58 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index59 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index60 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index61 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index62 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index63 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index64 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index65 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index66 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index67 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index68 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)), index69 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1)));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_A]], reason=return>(read<@type[[TYPE_A]]>(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(70)>(%[[VALUE_h]]), const<i32>(24)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

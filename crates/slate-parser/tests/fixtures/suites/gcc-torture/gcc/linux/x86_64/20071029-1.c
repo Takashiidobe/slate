@@ -100,7 +100,17 @@ loop:
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), read<i32>(%[[VALUE1]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field1(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0)), ne<i32>(read<i32>(field2(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i32>(read<i32>(field3(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i32>(read<i32>(field4(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i32>(read<i32>(field5(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i32>(read<i32>(field6(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i32>(read<i32>(field7(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))), ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i64>(0))), ne<i64>(read<i64>(field9(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i64>(0))), ne<i32>(read<i32>(field10(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0)))
+// DEFAULT-NEXT:         if
+// DEFAULT-SAME: logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field1(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))),
+// DEFAULT-SAME: const<i32>(0)), ne<i32>(read<i32>(field2(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field3(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field4(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field5(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field6(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field7(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field8(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i64>(0))),
+// DEFAULT-SAME: ne<i64>(read<i64>(field9(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i64>(0))),
+// DEFAULT-SAME: ne<i32>(read<i32>(field10(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_t]]))))), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(20))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

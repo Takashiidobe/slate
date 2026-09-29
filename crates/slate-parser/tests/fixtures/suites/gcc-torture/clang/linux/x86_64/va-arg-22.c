@@ -822,7 +822,50 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(72)>(field0(%[[VALUE_a72_2]])), read<i32>(%[[VALUE_i_2]]))), truncate<i8, reason=assign, fits=unknown>(xor<i32>(read<i32>(%[[VALUE_i_2]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(72), const<i32>(3)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c) -> void>(%[[VALUE_foo]], const<i32>(21), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(%[[VALUE_a0_2]])), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_a1_2]])), copy<@type[[TYPE2]], reason=vararg>(read<@type[[TYPE2]]>(%[[VALUE_a2_2]])), copy<@type[[TYPE3]], reason=vararg>(read<@type[[TYPE3]]>(%[[VALUE_a3_2]])), copy<@type[[TYPE4]], reason=vararg>(read<@type[[TYPE4]]>(%[[VALUE_a4_2]])), copy<@type[[TYPE5]], reason=vararg>(read<@type[[TYPE5]]>(%[[VALUE_a5_2]])), copy<@type[[TYPE6]], reason=vararg>(read<@type[[TYPE6]]>(%[[VALUE_a6_2]])), copy<@type[[TYPE7]], reason=vararg>(read<@type[[TYPE7]]>(%[[VALUE_a7_2]])), copy<@type[[TYPE8]], reason=vararg>(read<@type[[TYPE8]]>(%[[VALUE_a8_2]])), copy<@type[[TYPE9]], reason=vararg>(read<@type[[TYPE9]]>(%[[VALUE_a9_2]])), copy<@type[[TYPE10]], reason=vararg>(read<@type[[TYPE10]]>(%[[VALUE_a10_2]])), copy<@type[[TYPE11]], reason=vararg>(read<@type[[TYPE11]]>(%[[VALUE_a11_2]])), copy<@type[[TYPE12]], reason=vararg>(read<@type[[TYPE12]]>(%[[VALUE_a12_2]])), copy<@type[[TYPE13]], reason=vararg>(read<@type[[TYPE13]]>(%[[VALUE_a13_2]])), copy<@type[[TYPE14]], reason=vararg>(read<@type[[TYPE14]]>(%[[VALUE_a14_2]])), copy<@type[[TYPE15]], reason=vararg>(read<@type[[TYPE15]]>(%[[VALUE_a15_2]])), copy<@type[[TYPE16]], reason=vararg>(read<@type[[TYPE16]]>(%[[VALUE_a16_2]])), copy<@type[[TYPE17]], reason=vararg>(read<@type[[TYPE17]]>(%[[VALUE_a31_2]])), copy<@type[[TYPE18]], reason=vararg>(read<@type[[TYPE18]]>(%[[VALUE_a32_2]])), copy<@type[[TYPE19]], reason=vararg>(read<@type[[TYPE19]]>(%[[VALUE_a35_2]])), copy<@type[[TYPE20]], reason=vararg>(read<@type[[TYPE20]]>(%[[VALUE_a72_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c, native_c) ->
+// DEFAULT-SAME: void>(%[[VALUE_foo]], const<i32>(21),
+// DEFAULT-SAME: copy<@type[[TYPE0]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE0]]>(%[[VALUE_a0_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE1]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE1]]>(%[[VALUE_a1_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE2]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE2]]>(%[[VALUE_a2_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE3]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE3]]>(%[[VALUE_a3_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE4]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE4]]>(%[[VALUE_a4_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE5]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE5]]>(%[[VALUE_a5_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE6]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE6]]>(%[[VALUE_a6_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE7]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE7]]>(%[[VALUE_a7_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE8]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE8]]>(%[[VALUE_a8_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE9]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE9]]>(%[[VALUE_a9_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE10]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE10]]>(%[[VALUE_a10_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE11]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE11]]>(%[[VALUE_a11_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE12]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE12]]>(%[[VALUE_a12_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE13]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE13]]>(%[[VALUE_a13_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE14]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE14]]>(%[[VALUE_a14_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE15]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE15]]>(%[[VALUE_a15_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE16]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE16]]>(%[[VALUE_a16_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE17]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE17]]>(%[[VALUE_a31_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE18]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE18]]>(%[[VALUE_a32_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE19]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE19]]>(%[[VALUE_a35_2]])),
+// DEFAULT-SAME: copy<@type[[TYPE20]],
+// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE20]]>(%[[VALUE_a72_2]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

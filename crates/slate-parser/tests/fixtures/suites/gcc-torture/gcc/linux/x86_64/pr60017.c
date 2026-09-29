@@ -61,7 +61,14 @@ int main(void) {
 // DEFAULT-NEXT:         field1 m1: array<array<i8, 2>, 2>;
 // DEFAULT-NEXT:         field2 m2: array<@type[[TYPE_S0]], 2>;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 1, 6], bit_offsets=[Some(0), None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None]];
-// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_S1]] [storage=static] = aggregate<@type[[TYPE_S1]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), field1 = aggregate<array<array<i8, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(3))), index1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(5)))), field2 = aggregate<array<@type[[TYPE_S0]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(7))), index1 = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(9))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x:
+// DEFAULT-SAME: @type[[TYPE_S1]] [storage=static] =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S1]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), field1 = aggregate<array<array<i8, 2>, 2>,
+// DEFAULT-SAME: zero_fill=false>(index0 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(3))), index1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(5)))), field2 =
+// DEFAULT-SAME: aggregate<array<@type[[TYPE_S0]], 2>, zero_fill=false>(index0 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6)), field1 = truncate<i16, reason=assign,
+// DEFAULT-SAME: fits=always>(const<i32>(7))), index1 = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8)), field1 =
+// DEFAULT-SAME: truncate<i16, reason=assign, fits=always>(const<i32>(9))))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func() -> @type[[TYPE_S1]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return copy<@type[[TYPE_S1]], reason=return>(read<@type[[TYPE_S1]]>(%[[VALUE_x]]));

@@ -72,7 +72,28 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_item:[0-9]+]] item: @type[[TYPE_BitIntOrArray]] [storage=automatic] = aggregate<@type[[TYPE_BitIntOrArray]], zero_fill=false>(field1 = aggregate<array<i8, 20>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(99))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str]])), const<u64>(24), const<u64>(40), widen<i32, reason=vararg>(read<i8>(field0(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false, element=@type[[TYPE_NestedBitInt]], overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>, length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))), read<i32>(field0(field1(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false, element=@type[[TYPE_NestedBitInt]], overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>, length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))), truncate<i64, reason=explicit, fits=unknown>(read<i65b>(field1(field1(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false, element=@type[[TYPE_NestedBitInt]], overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>, length=Some(2)>(%[[VALUE_values]]), const<i32>(1))))))), widen<i32, reason=vararg>(read<i16>(field2(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false, element=@type[[TYPE_NestedBitInt]], overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>, length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))), widen<i32, reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])), const<i32>(0))))), widen<i32, reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])), const<i32>(1))))), widen<i32, reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])), const<i32>(2))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(30)>(%[[VALUE_str]])), const<u64>(24), const<u64>(40), widen<i32,
+// DEFAULT-SAME: reason=vararg>(read<i8>(field0(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_NestedBitInt]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))),
+// DEFAULT-SAME: read<i32>(field0(field1(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_NestedBitInt]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))), truncate<i64, reason=explicit,
+// DEFAULT-SAME: fits=unknown>(read<i65b>(field1(field1(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_NestedBitInt]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_values]]), const<i32>(1))))))), widen<i32,
+// DEFAULT-SAME: reason=vararg>(read<i16>(field2(deref(ptr_offset<ptr<@type[[TYPE_NestedBitInt]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_NestedBitInt]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_NestedBitInt]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_values]]), const<i32>(1)))))), widen<i32, reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8,
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])), const<i32>(0))))), widen<i32, reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>,
+// DEFAULT-SAME: subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])), const<i32>(1))))), widen<i32,
+// DEFAULT-SAME: reason=vararg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(20)>(field1(%[[VALUE_item]])),
+// DEFAULT-SAME: const<i32>(2))))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

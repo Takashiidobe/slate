@@ -63,7 +63,24 @@ int local(int n) {
 // IR-NEXT:         let %[[VALUE7:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_5]])));
 // IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE7]]>> [storage=automatic] = pointer_cast<ptr<vla<i32, %[[VALUE7]]>>, reason=assign>(array_decay<ptr<vla<i32, %[[VALUE6]]>>, length=None>(%[[VALUE_a_6]]));
 // IR-NEXT:         let %[[VALUE_g:[0-9]+]] g: ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%[[VALUE_grid]]);
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %[[VALUE6]]>>, subtract=false, element=vla<i32, %[[VALUE6]]>, overflow=ub>(array_decay<ptr<vla<i32, %[[VALUE6]]>>, length=None>(%[[VALUE_a_6]]), const<i32>(1)))), const<i32>(2)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %[[VALUE7]]>>, subtract=false, element=vla<i32, %[[VALUE7]]>, overflow=ub>(read<ptr<vla<i32, %[[VALUE7]]>>>(%[[VALUE_p]]), const<i32>(1)))), const<i32>(2))))), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=vla<i32, %[[VALUE7]]>, same_array=required, overflow=ub>(ptr_offset<ptr<vla<i32, %[[VALUE7]]>>, subtract=false, element=vla<i32, %[[VALUE7]]>, overflow=ub>(read<ptr<vla<i32, %[[VALUE7]]>>>(%[[VALUE_p]]), const<i32>(1)), read<ptr<vla<i32, %[[VALUE7]]>>>(%[[VALUE_p]])))), call<i32, signature=fn(i32, i32, ptr<vla<i32, *>>) -> i32>(read<ptr<fn(i32, i32, ptr<vla<i32, *>>) -> i32>>(%[[VALUE_g]]), read<i32>(%[[VALUE_n_5]]), read<i32>(%[[VALUE_n_5]]), pointer_cast<ptr<vla<i32, *>>, reason=arg>(array_decay<ptr<vla<i32, %[[VALUE6]]>>, length=None>(%[[VALUE_a_6]]))));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32,
+// IR-SAME: %[[VALUE6]]>>, subtract=false, element=vla<i32,
+// IR-SAME: %[[VALUE6]]>, overflow=ub>(array_decay<ptr<vla<i32,
+// IR-SAME: %[[VALUE6]]>>,
+// IR-SAME: length=None>(%[[VALUE_a_6]]), const<i32>(1)))), const<i32>(2)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
+// IR-SAME: overflow=ub>(array_decay<ptr<i32>, length=None>(deref(ptr_offset<ptr<vla<i32, %[[VALUE7]]>>, subtract=false, element=vla<i32,
+// IR-SAME: %[[VALUE7]]>, overflow=ub>(read<ptr<vla<i32,
+// IR-SAME: %[[VALUE7]]>>>(%[[VALUE_p]]), const<i32>(1)))), const<i32>(2))))), truncate<i32, reason=explicit, fits=unknown>(ptr_diff<i64, element=vla<i32,
+// IR-SAME: %[[VALUE7]]>, same_array=required, overflow=ub>(ptr_offset<ptr<vla<i32,
+// IR-SAME: %[[VALUE7]]>>, subtract=false, element=vla<i32,
+// IR-SAME: %[[VALUE7]]>, overflow=ub>(read<ptr<vla<i32,
+// IR-SAME: %[[VALUE7]]>>>(%[[VALUE_p]]), const<i32>(1)), read<ptr<vla<i32,
+// IR-SAME: %[[VALUE7]]>>>(%[[VALUE_p]])))), call<i32, signature=fn(i32, i32, ptr<vla<i32, *>>) -> i32>(read<ptr<fn(i32, i32, ptr<vla<i32, *>>) ->
+// IR-SAME: i32>>(%[[VALUE_g]]),
+// IR-SAME: read<i32>(%[[VALUE_n_5]]),
+// IR-SAME: read<i32>(%[[VALUE_n_5]]), pointer_cast<ptr<vla<i32, *>>, reason=arg>(array_decay<ptr<vla<i32,
+// IR-SAME: %[[VALUE6]]>>,
+// IR-SAME: length=None>(%[[VALUE_a_6]]))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

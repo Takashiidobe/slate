@@ -64,7 +64,30 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_e:[0-9]+]] e: array<@type[[TYPE_S]], 21> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_S]], 21>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index1 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index2 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index3 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index4 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index5 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index6 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index7 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index8 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index9 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index10 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index11 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index12 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index13 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index14 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index15 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index16 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index17 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index18 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index19 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index20 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)));
+// DEFAULT-NEXT:                     let %[[VALUE_e:[0-9]+]] e:
+// DEFAULT-SAME: array<@type[[TYPE_S]], 21> [storage=automatic] [align=16] =
+// DEFAULT-SAME: aggregate<array<@type[[TYPE_S]], 21>, zero_fill=false>(index0 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index1 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index2 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index3 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index4 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index5 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index6 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index7 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index8 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index9 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index10 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index11 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index12 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index13 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index14 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index15 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index16 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index17 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index18 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)), index19 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0)), index20 =
+// DEFAULT-SAME: aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(9)));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), ne<i32>(read<i32>(bitfield0<unit=0, bytes=0..3, bits=0..1>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(21)>(%[[VALUE_e]]), const<i32>(0))))), const<i32>(0)))));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_c]], read<i32>(bitfield1<unit=0, bytes=0..3, bits=1..21>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(21)>(%[[VALUE_e]]), const<i32>(0))))));
 // DEFAULT-NEXT:                 }

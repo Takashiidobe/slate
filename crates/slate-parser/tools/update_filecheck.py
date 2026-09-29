@@ -9,6 +9,9 @@ import tempfile
 from pathlib import Path
 
 
+RENDERER = Path("target/release/slate-parser")
+
+
 def _no_color_env() -> dict:
     env = os.environ.copy()
     env.pop("FORCE_COLOR", None)
@@ -195,8 +198,8 @@ def render(
         example = next((line.strip().removeprefix("// SLATE-FILECHECK-EXAMPLE ").strip()
                         for line in source.splitlines()
                         if line.strip().startswith("// SLATE-FILECHECK-EXAMPLE ")), None)
-        command = (["cargo", "run", "--quiet", "--example", example, "--"] if example
-                   else ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)])
+        command = (["cargo", "run", "--release", "--quiet", "--example", example, "--"] if example
+                   else [str(repo / RENDERER), "parse", str(parsed_fixture)])
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
@@ -227,7 +230,7 @@ def render_warnings(
     parsed_fixture = fixture.with_name(parsed_name)
     parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
     try:
-        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
+        command = [str(repo / RENDERER), "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
@@ -264,7 +267,7 @@ def render_error(
     parsed_fixture = fixture.with_name(parsed_name)
     parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
     try:
-        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
+        command = [str(repo / RENDERER), "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
@@ -478,6 +481,51 @@ def loosen_ir_ids(block: list[str]) -> list[str]:
     return result
 
 
+FILECHECK_REGEX_RE = re.compile(r"\{\{|\[\[")
+SPLIT_CHECK_RE = re.compile(r"^// ([^:]+?)(?:-NEXT)?: (.*)$")
+SPLIT_CHECK_LENGTH = 1024
+SPLIT_CHECK_CONSTRUCTS = 32
+REGEX_PIECE_LIMIT = 160
+
+
+def split_regex_checks(block: list[str]) -> list[str]:
+    """Split a long check line that holds a {{regex}} or [[variable]] into a
+    -NEXT/-SAME chain of short pieces. One construct turns FileCheck's whole
+    pattern into a regex, compiled per line with LLVM's backtracking engine,
+    whose cost grows with pattern length times scanned text and superlinearly
+    with capture groups: a 20KB constant with one binding, or a 256-parameter
+    signature, took seconds to check. Pieces break at whitespace, which no
+    construct contains, and each holds at most one construct, so long literal
+    runs go back to fixed-string matching."""
+    result = []
+    for line in block:
+        check = SPLIT_CHECK_RE.match(line)
+        if not check:
+            result.append(line)
+            continue
+        text = check.group(2)
+        constructs = len(FILECHECK_REGEX_RE.findall(text))
+        if not constructs or (
+            len(text) <= SPLIT_CHECK_LENGTH and constructs <= SPLIT_CHECK_CONSTRUCTS
+        ):
+            result.append(line)
+            continue
+        indent = text[: len(text) - len(text.lstrip())]
+        pieces: list[tuple[str, bool]] = []
+        for word in text.split():
+            regex = bool(FILECHECK_REGEX_RE.search(word))
+            if pieces:
+                piece, piece_regex = pieces[-1]
+                fits = len(piece) + 1 + len(word) <= REGEX_PIECE_LIMIT
+                if not (regex or piece_regex) or (fits and not (regex and piece_regex)):
+                    pieces[-1] = (f"{piece} {word}", regex or piece_regex)
+                    continue
+            pieces.append((word, regex))
+        result.append(line[: len(line) - len(text)] + indent + pieces[0][0])
+        result.extend(f"// {check.group(1)}-SAME: {piece}" for piece, _ in pieces[1:])
+    return result
+
+
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
 PIECES_OPEN_RE = re.compile(r"^(\s*)pieces: \[$")
 QUOTED_LINE_RE = re.compile(r'^\s*"((?:[^"\\]|\\.)*)",?$')
@@ -632,7 +680,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             directive = check_prefix if force == "plain" or index == 0 else f"{check_prefix}-NEXT"
             text = escape_filecheck_literal(line) if escape else line
             block.append(f"// {directive}: {text}")
-        block = loosen_ir_ids(loosen_ids(loosen_system_provenance(block)))
+        block = split_regex_checks(loosen_ir_ids(loosen_ids(loosen_system_provenance(block))))
         block.append(f"// SLATE-FILECHECK-END {check_prefix}")
         blocks.extend(block)
     return "\n".join(blocks)
@@ -690,7 +738,10 @@ def main() -> int:
     parser.add_argument("fixtures", nargs="*", type=Path)
     args = parser.parse_args()
     repo = Path(__file__).resolve().parent.parent
-    fixtures = args.fixtures or sorted((repo / "tests/fixtures").rglob("*.c"))
+    fixtures = args.fixtures or sorted(
+        path for path in (repo / "tests/fixtures").rglob("*.c") if not path.name.startswith(".")
+    )
+    subprocess.run(["cargo", "build", "--release", "--quiet", "--bin", "slate-parser"], cwd=repo, check=True)
     changed = False
     failures = []
     for fixture_arg in fixtures:

@@ -475,7 +475,35 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE_l_2:[0-9]+]] l: @type[[TYPE_D]] [storage=automatic] = aggregate<@type[[TYPE_D]], zero_fill=true>();
 // DEFAULT-NEXT:         let %[[VALUE_m_2:[0-9]+]] m: @type[[TYPE_D]] [storage=automatic] = aggregate<@type[[TYPE_D]], zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)));
 // DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: @type[[TYPE_D]] [storage=automatic] = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_D]]>, ptr<@type[[TYPE_D]]>, ptr<@type[[TYPE_D]]>) -> void>(%[[VALUE_check]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_c_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_d_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_e_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_f_2]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_g_2]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_h_2]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_i_9]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_j_2]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_k_2]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_l_2]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_m_2]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_n_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>) ->
+// DEFAULT-SAME: void>(%[[VALUE_check]],
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_c_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_d_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_e_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_f_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_g_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_h_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_i_9]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_j_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_k_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_l_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_m_2]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_set:[0-9]+]] @set(%[[VALUE_a_3:[0-9]+]] a: ptr<@type[[TYPE_A]]>, %[[VALUE_b_3:[0-9]+]] b: ptr<@type[[TYPE_B]]>, %[[VALUE_c_3:[0-9]+]] c: ptr<@type[[TYPE_B]]>, %[[VALUE_d_3:[0-9]+]] d: ptr<@type[[TYPE_B]]>, %[[VALUE_e_3:[0-9]+]] e: ptr<@type[[TYPE_B]]>, %[[VALUE_f_3:[0-9]+]] f: ptr<@type[[TYPE_B]]>, %[[VALUE_g_3:[0-9]+]] g: ptr<@type[[TYPE_B]]>, %[[VALUE_h_3:[0-9]+]] h: ptr<@type[[TYPE_U]]>, %[[VALUE_i_10:[0-9]+]] i: ptr<@type[[TYPE_U]]>, %[[VALUE_j_3:[0-9]+]] j: ptr<@type[[TYPE_U]]>, %[[VALUE_k_3:[0-9]+]] k: ptr<@type[[TYPE_U]]>, %[[VALUE_l_3:[0-9]+]] l: ptr<@type[[TYPE_D]]>, %[[VALUE_m_3:[0-9]+]] m: ptr<@type[[TYPE_D]]>, %[[VALUE_n_3:[0-9]+]] n: ptr<@type[[TYPE_D]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_3]])), not<i32>(const<i32>(0)), const<u64>(16));
@@ -508,7 +536,35 @@ main ()
 // DEFAULT-NEXT:         let %[[VALUE_l_4:[0-9]+]] l: @type[[TYPE_D]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_m_4:[0-9]+]] m: @type[[TYPE_D]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_n_4:[0-9]+]] n: @type[[TYPE_D]] [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_B]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_U]]>, ptr<@type[[TYPE_D]]>, ptr<@type[[TYPE_D]]>, ptr<@type[[TYPE_D]]>) -> void>(%[[VALUE_set]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_c_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_d_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_e_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_f_4]]), addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_g_4]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_h_4]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_i_11]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_j_4]]), addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_k_4]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_l_4]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_m_4]]), addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_n_4]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_B]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_U]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>,
+// DEFAULT-SAME: ptr<@type[[TYPE_D]]>) ->
+// DEFAULT-SAME: void>(%[[VALUE_set]],
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_c_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_d_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_e_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_f_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_g_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_h_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_i_11]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_j_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_k_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_l_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_m_4]]),
+// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_D]]>>(%[[VALUE_n_4]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_prepare]]);

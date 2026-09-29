@@ -67,7 +67,22 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_flt:[0-9]+]] flt: array<i8, 13> [storage=automatic] = code_units<array<i8, 13>>([32, 32, 45, 51, 46, 53, 101, 50, 114, 101, 115, 116, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_end_source:[0-9]+]] end_source: array<i8, 7> [storage=automatic] = code_units<array<i8, 7>>([49, 50, 116, 97, 105, 108, 0]);
 // DEFAULT-NEXT:         let %[[VALUE_end:[0-9]+]] end: ptr<i8> [storage=automatic] = null<ptr<i8>>;
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_whole]]))), call<i64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) -> i64>(%[[VALUE_strtol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_whole_long]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<u64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) -> u64>(%[[VALUE_strtoul]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_whole_unsigned]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<i64, signature=fn(ptr<const i8>) -> i64>(%[[VALUE_atol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_leading]]))), call<i64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) -> i64>(%[[VALUE_strtol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(31)>(%[[VALUE_large]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<u64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) -> u64>(%[[VALUE_strtoul]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_empty]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<f64, signature=fn(ptr<const i8>, ptr<ptr<i8>>) -> f64>(%[[VALUE_strtod]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_flt]])), null<ptr<ptr<i8>>>));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(29)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<const i8>) ->
+// DEFAULT-SAME: i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_whole]]))), call<i64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) ->
+// DEFAULT-SAME: i64>(%[[VALUE_strtol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(7)>(%[[VALUE_whole_long]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<u64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) ->
+// DEFAULT-SAME: u64>(%[[VALUE_strtoul]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_whole_unsigned]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<i64, signature=fn(ptr<const i8>) ->
+// DEFAULT-SAME: i64>(%[[VALUE_atol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(10)>(%[[VALUE_leading]]))), call<i64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) ->
+// DEFAULT-SAME: i64>(%[[VALUE_strtol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(31)>(%[[VALUE_large]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<u64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) ->
+// DEFAULT-SAME: u64>(%[[VALUE_strtoul]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(1)>(%[[VALUE_empty]])), null<ptr<ptr<i8>>>, const<i32>(10)), call<f64, signature=fn(ptr<const i8>, ptr<ptr<i8>>) ->
+// DEFAULT-SAME: f64>(%[[VALUE_strtod]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(13)>(%[[VALUE_flt]])), null<ptr<ptr<i8>>>));
 // DEFAULT-NEXT:         let %[[VALUE_raw:[0-9]+]] raw: i64 [storage=automatic] = call<i64, signature=fn(ptr<const i8>, ptr<ptr<i8>>, i32) -> i64>(%[[VALUE_strtol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_end_source]])), addr_of<ptr<ptr<i8>>>(%[[VALUE_end]]), const<i32>(10));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_2]])), read<i64>(%[[VALUE_raw]]), widen<i32, reason=vararg>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_end]])))));
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -118,7 +118,21 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_pt:[0-9]+]] pt: ptr<@type[[TYPE1]]> [storage=automatic] = null<ptr<@type[[TYPE1]]>>;
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(0));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), read<i32>(field0(%[[VALUE_E2]]))), read<i32>(field0(%[[VALUE_g2]]))), read<i32>(field0(%[[VALUE_g]]))), read<i32>(field0(%[[VALUE_s]]))), read<i32>(field0(%[[VALUE_t]]))), from_bool<i32, reason=promotion>(ne<ptr<@type[[TYPE1]]>>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_pt]]), null<ptr<@type[[TYPE1]]>>)))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e1]]))), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e2]]))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(ne<ptr<fn() -> @type[[TYPE_F]]>>(read<ptr<fn() -> @type[[TYPE_F]]>>(%[[VALUE_fp]]), null<ptr<fn() -> @type[[TYPE_F]]>>)))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b1]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() ->
+// DEFAULT-SAME: i32>(%[[VALUE_f]]),
+// DEFAULT-SAME: read<i32>(field0(%[[VALUE_E2]]))),
+// DEFAULT-SAME: read<i32>(field0(%[[VALUE_g2]]))),
+// DEFAULT-SAME: read<i32>(field0(%[[VALUE_g]]))),
+// DEFAULT-SAME: read<i32>(field0(%[[VALUE_s]]))),
+// DEFAULT-SAME: read<i32>(field0(%[[VALUE_t]]))), from_bool<i32,
+// DEFAULT-SAME: reason=promotion>(ne<ptr<@type[[TYPE1]]>>(read<ptr<@type[[TYPE1]]>>(%[[VALUE_pt]]),
+// DEFAULT-SAME: null<ptr<@type[[TYPE1]]>>)))), enum_to_int<u32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e1]]))), enum_to_int<u32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e2]]))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(ne<ptr<fn() ->
+// DEFAULT-SAME: @type[[TYPE_F]]>>(read<ptr<fn() ->
+// DEFAULT-SAME: @type[[TYPE_F]]>>(%[[VALUE_fp]]), null<ptr<fn() ->
+// DEFAULT-SAME: @type[[TYPE_F]]>>)))), reinterpret<u32, reason=usual_arith,
+// DEFAULT-SAME: fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b1]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

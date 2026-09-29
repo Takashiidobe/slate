@@ -93,7 +93,17 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_END]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_EMPTY]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_atom:[0-9]+]] @atom() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_and<bool>(ge<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(0)), lt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(8)))), ge<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(273))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(257))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(258))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(259))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(260))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(261))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(262))), eq<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(263)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_and<bool>(ge<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(0)), lt<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(8)))),
+// DEFAULT-SAME: ge<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(273))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(257))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(258))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(259))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(260))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(261))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(262))), eq<i32>(enum_to_int<i32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_tok]])), const<i32>(263)))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(0);

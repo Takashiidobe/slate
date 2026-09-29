@@ -113,7 +113,23 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(field0(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false, element=@type[[TYPE_Rec_2]], overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>, length=Some(2)>(%[[VALUE_items_2]]), read<u32>(%[[VALUE_i_2]]))))))), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_Err]]>(field2(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false, element=@type[[TYPE_Rec_2]], overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>, length=Some(2)>(%[[VALUE_items_2]]), read<u32>(%[[VALUE_i_2]])))))))), widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false, element=@type[[TYPE_Rec_2]], overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>, length=Some(2)>(%[[VALUE_items_2]]), read<u32>(%[[VALUE_i_2]]))))), const<i32>(0)))))));
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32,
+// DEFAULT-SAME: overflow=ub>(read<i32>(%[[VALUE8]]), add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit,
+// DEFAULT-SAME: fits=unknown>(read<u64>(field0(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_Rec_2]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_items_2]]),
+// DEFAULT-SAME: read<u32>(%[[VALUE_i_2]]))))))), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32,
+// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE_Err]]>(field2(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_Rec_2]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_items_2]]),
+// DEFAULT-SAME: read<u32>(%[[VALUE_i_2]])))))))), widen<i32, reason=explicit>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const
+// DEFAULT-SAME: i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_Rec_2]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_Rec_2]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_Rec_2]]>,
+// DEFAULT-SAME: length=Some(2)>(%[[VALUE_items_2]]),
+// DEFAULT-SAME: read<u32>(%[[VALUE_i_2]]))))), const<i32>(0)))))));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_total_2]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_total_2]]);
 // DEFAULT-NEXT:     }

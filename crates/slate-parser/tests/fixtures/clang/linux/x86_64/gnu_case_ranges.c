@@ -97,7 +97,20 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(4)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(5)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(7)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(8)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(9)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(10)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(11)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(12)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify_direct]], neg<i32, overflow=ub>(const<i32>(1))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify_direct]], const<i32>(3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
+// DEFAULT-SAME: length=Some(37)>(%[[VALUE_str]])), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(1)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(2)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(4)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(5)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(7)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(8)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(9)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(10)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(11)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify]], const<i32>(12)), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify_direct]], neg<i32, overflow=ub>(const<i32>(1))), call<i32, signature=fn(i32) ->
+// DEFAULT-SAME: i32>(%[[VALUE_classify_direct]], const<i32>(3)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

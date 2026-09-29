@@ -149,12 +149,50 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(1)))), const<i32>(1))
 // DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(1))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(8)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const
+// DEFAULT-SAME: @type[[TYPE_font_hints_s]]>, ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>, ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>) ->
+// DEFAULT-SAME: i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_font_hints_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_font_hints_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_fh]]), const<i32>(1))), pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_gs_fixed_point_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_gs_fixed_point_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(8)));
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
 // DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(4)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const
+// DEFAULT-SAME: @type[[TYPE_font_hints_s]]>, ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>, ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>) ->
+// DEFAULT-SAME: i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_font_hints_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_font_hints_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>,
+// DEFAULT-SAME: length=Some(3)>(%[[VALUE_fh]]), const<i32>(2))), pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_gs_fixed_point_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const
+// DEFAULT-SAME: @type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false,
+// DEFAULT-SAME: element=@type[[TYPE_gs_fixed_point_s]],
+// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>,
+// DEFAULT-SAME: length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(4)));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
